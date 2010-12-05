@@ -41,17 +41,29 @@ public class BCParametersTranslator {
 	}
 
 	/** 
+	 * Translates the key and the parameters into a CipherParameter of BC. If one of the arguments is null then 
+	 * pass to one of the other two translateParameter functions.
 	 * @param key - the KeySpec to translate to CipherParameters of BC
 	 * @param param - The additional AlgorithmParametersSpec to tranform including the key to relevan CipherParameter
 	 */
 	public CipherParameters translateParameter(KeySpec key, AlgorithmParameterSpec param) {
 		
-		//get the cipher parameter with the key.
-		CipherParameters keyparam = translateParameter(key);
+		//if one of the arguments is null than pass to one of the other 2 translateParameter functions
+		if(key==null){
+			return translateParameter(param);
+		}
+		else if(param==null){
+			return translateParameter(key);
+		}
+		else{
 		
-		if(param instanceof IvParameterSpec){
-			//pass the key and the iv
-			return new ParametersWithIV(keyparam , ((IvParameterSpec)param).getIV());
+			//get the cipher parameter with the key.
+			CipherParameters keyparam = translateParameter(key);
+			
+			if(param instanceof IvParameterSpec){
+				//pass the key and the iv
+				return new ParametersWithIV(keyparam , ((IvParameterSpec)param).getIV());
+			}
 		}
 		
 		return null;

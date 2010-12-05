@@ -7,6 +7,7 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import org.bouncycastle.crypto.AsymmetricBlockCipher;
 import org.bouncycastle.crypto.BlockCipher;
+import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.StreamCipher;
 
@@ -44,13 +45,20 @@ public class BCObjectCreator {
 	/** 
 	 * @param trapdoorPermutation
 	 * @return
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
 	public AsymmetricBlockCipher getBCAsymmetricBlockCipher(
-			TrapdoorPermutation trapdoorPermutation) {
-		// begin-user-code
-		// TODO Auto-generated method stub
-		return null;
-		// end-user-code
+			TrapdoorPermutation trapdoorPermutation) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+
+		//get the asymmetric block cipher of bc via the name of the trapdoor permutation
+		AsymmetricBlockCipher asymmetricBlockCipher = bCClassTranslator.loadBCAsymetricBlockCipher(trapdoorPermutation.getAlgorithmName());
+		
+		//get the parameters to init the cipher.
+		//CipherParameters params = bCParametersTranslator.translateParameter(trapdoorPermutation.getPubKeySpec(), trapdoorPermutation.getParams());
+		
+		return asymmetricBlockCipher;
 	}
 
 	/** 
@@ -132,14 +140,23 @@ public class BCObjectCreator {
 	}
 
 	/** 
-	 * @param prg
-	 * @return
+	 * @param prg - a PseudorandomGenerator object from which we can take attributes to pass to the classTranslator
+	 * @return - The related StreamCipher
 	 */
 	public StreamCipher getBCStreamCipher(PseudorandomGenerator prg) {
-		// begin-user-code
-		// TODO Auto-generated method stub
-		return null;
-		// end-user-code
+		
+		//get the related StreamCipher
+		
+		StreamCipher streamCipher = bCClassTranslator.loadBCStreamCipher(prg.getAlgorithmName());
+		
+		//translate the key and parameters to suit bc parameters
+		CipherParameters bcParams = bCParametersTranslator.translateParameter(prg.getSecretKeySpec(), prg.getParams());
+		
+		//init the bc stream cipher
+		streamCipher.init(false, bcParams);
+		
+		return streamCipher;
+		
 	}
 
 	

@@ -25,7 +25,11 @@ public class BCClassTranslator {
 	 * Empty constructor should be private since this class is singleton and we want to prevent user creation
 	 * of this class
 	 */
-	private BCClassTranslator(){};
+	private BCClassTranslator(){
+		
+		//load the classes from the predefined file.
+		loadClassesFromFile();
+	};
 	
 	/** 
 	 * @return
