@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import org.apache.commons.exec.TimeoutObserver;
 import org.apache.commons.exec.Watchdog;
@@ -127,16 +128,22 @@ public class CommunicationSetup implements TimeoutObserver{
 			//create a channel for this party
 			PlainChannel channel = new PlainTCPChannel(inetSocketAdd);
 			//set to NOT_INIT state
-			channel.send(State.NOT_INIT);
+			channel.setState(State.NOT_INIT);
 			//add to the established connection object
 			establishedConnections.addConnection(channel, inetSocketAdd);
+			
+			//create a key exchange output to pass to the SecringConnectionThread
+			KeyExchangeOutput keyExchangeOutput = new KeyExchangeOutput();
+			
+			//add the key exchange output to the map
+			keyExchangeMap.put(inetSocketAdd, keyExchangeOutput);
 			
 			
 			//UPWARD connection
 			if(firstParty.compareTo(party)>0){
 				
 				//create a new SecuringConnectionThread 
-				SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), true, keyExchangeProtocol);
+				SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), true, keyExchangeProtocol, keyExchangeOutput);
 				
 				//add to the thread vector
 				threadsVector.add(scThread);
@@ -149,7 +156,7 @@ public class CommunicationSetup implements TimeoutObserver{
 				
 				
 				//create a new SecuringConnectionThread 
-				SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), false, keyExchangeProtocol);
+				SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), false, keyExchangeProtocol, keyExchangeOutput);
 				
 				//add to the thread vector
 				threadsVector.add(scThread);
@@ -176,7 +183,12 @@ public class CommunicationSetup implements TimeoutObserver{
 
 		//consider using some kind of mutex.
 		while(bTimedOut==false && establishedConnections.areAllConnected()==false ){
-			//sleap(1000);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -198,6 +210,55 @@ public class CommunicationSetup implements TimeoutObserver{
 	 * setSecurityLevel
 	 */
 	private void setSecurityLevel() {
+		
+		//Set the security level only if the security level is not plain. If it is plain there is nothing to decorate
+		
+		if(securityLevel!=SecurityLevel.PLAIN){
+		
+			InetSocketAddress localInetSocketAddress = null;
+			Set<InetSocketAddress> set = establishedConnections.getConnections().keySet();
+	
+			//go over the addresses of the established connections map
+		    Iterator<InetSocketAddress> itr = set.iterator();
+		    while (itr.hasNext()) {
+		    	
+		    	//get the channel's address
+		    	localInetSocketAddress = itr.next();
+		    	
+		    	//remove the channel and save it for decoration
+		    	Channel ch = establishedConnections.removeConnection(localInetSocketAddress);
+		    	
+		    	//get the keyExchange output
+		    	KeyExchangeOutput keyExchangeOutput = keyExchangeMap.get(localInetSocketAddress) ;
+		    	
+		    	//decorate the channel
+		    	switch(securityLevel){
+		    		case ENCRYPTED :{
+		    			
+		    			//create an encrypted channel
+		    			EncryptedChannel encChannel = new EncryptedChannel(ch, keyExchangeOutput.getEncKey());
+		    			establishedConnections.addConnection(encChannel, localInetSocketAddress);
+		    		}
+		    		case AUTHENTICATED : {
+		    			
+		    			//create an authenticated channel
+		    			AuthenticatedChannel authenChannel = new AuthenticatedChannel(ch, keyExchangeOutput.getMacKey());
+		    			establishedConnections.addConnection(authenChannel, localInetSocketAddress);
+		    		}
+		    		case SECURE : {
+		    			
+		    			//decorate with authentication and then with encryption
+		    			AuthenticatedChannel authenChannel = new AuthenticatedChannel(ch, keyExchangeOutput.getMacKey());
+		    			EncryptedChannel secureChannel = new EncryptedChannel(authenChannel, keyExchangeOutput.getEncKey());
+		    			
+		    			establishedConnections.addConnection(secureChannel, localInetSocketAddress);
+		    			
+		    		}
+		    	}
+		    		
+		    }
+		}
+
 		
 	}
 

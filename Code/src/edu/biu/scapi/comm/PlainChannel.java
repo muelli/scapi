@@ -10,6 +10,8 @@
  */
 package edu.biu.scapi.comm;
 
+import java.io.IOException;
+
 /**
  * @author LabTest
  *
@@ -18,21 +20,6 @@ public abstract class PlainChannel implements Channel {
 
 	private State state;
 	
-	/**
-	 * 
-	 */
-	public void receive(Object msg) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * 
-	 */
-	public void send(Object msg) {
-		// TODO Auto-generated method stub
-
-	}
 
 	/**
 	 * returns the state of the channel. This class that implements the channel interface has a private attribute state. Other classes
@@ -51,5 +38,7 @@ public abstract class PlainChannel implements Channel {
 		this.state = state; 
 		
 	}
+	
+	public abstract boolean connect() throws IOException;
 
 }

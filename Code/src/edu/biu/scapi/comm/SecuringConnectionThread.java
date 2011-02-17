@@ -33,6 +33,7 @@ public class SecuringConnectionThread extends Thread{
 	private InetAddress ipAddres;
 	int port;
 	KeyExchangeProtocol keyExchangeProtocol;
+	KeyExchangeOutput keyExchangeOutput;
 	
 	/** 
 	 * @param channel
@@ -41,13 +42,14 @@ public class SecuringConnectionThread extends Thread{
 	 * @param doConnect
 	 */
 	public SecuringConnectionThread(PlainChannel channel, InetAddress IP, int port,
-			boolean doConnect, KeyExchangeProtocol keyExchangeProtocol) {
+			boolean doConnect, KeyExchangeProtocol keyExchangeProtocol, KeyExchangeOutput keyExchangeOutput) {
 		
 		this.doConnect = doConnect;
 		this.channel = channel;
 		this.ipAddres = IP;
 		this.port = port;
 		this.keyExchangeProtocol = keyExchangeProtocol;
+		this.keyExchangeOutput = keyExchangeOutput;
 		
 	}
 	
@@ -83,6 +85,11 @@ public class SecuringConnectionThread extends Thread{
 			keyExchangeProtocol.start(null);
 			
 			//set the output of the protocol with the keys
+			KeyExchangeOutput localKeyExchangeOutput = (KeyExchangeOutput) keyExchangeProtocol.getOutput();
+			
+			//copy the key exchange output to the output that was passed to the object in the constructor
+			keyExchangeOutput.setEncKey(localKeyExchangeOutput.getEncKey());
+			keyExchangeOutput.setMacKey(localKeyExchangeOutput.getMacKey());
 			
 			//set the channel state to READY
 			channel.setState(edu.biu.scapi.comm.State.READY);

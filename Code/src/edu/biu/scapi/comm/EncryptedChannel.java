@@ -3,13 +3,14 @@
  */
 package edu.biu.scapi.comm;
 
+import java.io.IOException;
 import java.security.Key;
 
 /** 
  * @author LabTest
  */
 public class EncryptedChannel extends ChannelDecorator {
-	private Key key;
+	private Key encKey;
 	//private EncryptionAlgorithm encryptionAlgo; ?????
 	private String algName;
 
@@ -22,23 +23,55 @@ public class EncryptedChannel extends ChannelDecorator {
 		super(channel);
 	}
 
+	EncryptedChannel(Channel channel, Key encKey){
+		
+		super(channel);
+		this.encKey = encKey;
+	}
+	
+	
 	/** 
 	 * @param data
 	 */
-	private void encrypt(byte[] data) {
-		// begin-user-code
-		// TODO Auto-generated method stub
-
-		// end-user-code
+	private byte[] encrypt(byte[] data) {
+		
+		//TODO encrypt 
+		return data;
+		
 	}
 
 	/** 
 	 * @param data
 	 */
-	private void decrypt(byte[] data) {
-		// begin-user-code
-		// TODO Auto-generated method stub
+	private byte[] decrypt(byte[] data) {
+		
+		//TODO decrypt
+		return data;
+	}
 
-		// end-user-code
+	/**
+	 * 
+	 */
+	public Message receive() throws ClassNotFoundException, IOException {
+		
+		//get the message from the channel
+		Message msg = channel.receive();
+		
+		//decrypt the encrypted message
+		msg.setData(decrypt(msg.getData()));
+		
+		return msg;
+	}
+
+	/**
+	 * 
+	 */
+	public void send(Message msg) throws IOException {
+		
+		//encrypt the message
+		msg.setData(encrypt(msg.getData()));
+		channel.send(msg);
+		
+		
 	}
 }

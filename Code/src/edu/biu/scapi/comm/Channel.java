@@ -8,13 +8,15 @@
  */
 package edu.biu.scapi.comm;
 
+import java.io.IOException;
+
 /** 
  * @author LabTest
  */
 public interface Channel{
-	public void send(Object msg);
+	public void send(Message msg) throws IOException;
 
-	public void receive(Object msg);
+	public Message receive() throws ClassNotFoundException, IOException;
 	
 	
 }

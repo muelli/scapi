@@ -35,6 +35,15 @@ public class EstablishedConnections {
 		connections = new HashMap<InetSocketAddress,Channel>();
 	}
 	
+
+
+	/**
+	 * @return the connections
+	 */
+	public Map<InetSocketAddress,Channel> getConnections() {
+		return connections;
+	}
+	
 	/** 
 	 * addConnection - adds a channel with the address key to the map
 	 * @param connection - the value/channel to insert to the map
@@ -50,10 +59,10 @@ public class EstablishedConnections {
 	 * removeConnection - removes a channel from the map.
 	 * @param address - the key of the channel in the map
 	 */
-	public void removeConnection(InetSocketAddress address) {
+	public Channel removeConnection(InetSocketAddress address) {
 		
 		//remove the connection
-		connections.remove(address);
+		return connections.remove(address);
 	}
 
 	/** 
@@ -99,4 +108,7 @@ public class EstablishedConnections {
 		else
 			;//throw exception
 	}
+
+
+
 }

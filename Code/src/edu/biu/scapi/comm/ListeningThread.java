@@ -69,48 +69,50 @@ public class ListeningThread extends Thread{
 		}
 		
 		int numOfIncomingConnections = connectingThreads.size();
-		
-		while(bStopped==false){	
-			//use the server socket to listen on incoming connections.
-			// accept connections from all the smaller processes 
-	        for (int i = 0; i < numOfIncomingConnections; i++) {
-	            Socket socket = null;
-				try {
-					socket = listener.accept();
-					
-					//s.setTcpNoDelay(true);//consider the 2 options of nagle
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				//get the address from the socket and find it the map
-				SecuringConnectionThread scThread = connectingThreads.get(socket.getLocalAddress());
-				
-				//check if the ip address is a valid address. i.e. exists in the map
-				if(scThread==null){//an un authorized ip tried to connect
-					i--; //return the index. 
-					break;
-				}
-	        	else{ //we have a thread that corresponds to this ip address. Thus, this address is valid
-	        		
-	        		//check that the channel is concrete channel and not some decoration
-	        		if(scThread.getChannel() instanceof PlainTCPChannel){
-	        			//get the channel from the thread and set the obtained socket.
-	        			((PlainTCPChannel)scThread.getChannel()).setSocket(socket);
-	        			
-	        			//start the connecting thread
-	        			scThread.start();
-	        		}
-	        		else
-	        			;//throw an exception. The channel must be concrete
-	        		
-	        	}
-	        		
-	        }
 			
-		}
+		//loop for incoming connections and make sure that this thread should not stopped.
+        for (int i = 0; i < numOfIncomingConnections && bStopped; i++) {
+        	
+            Socket socket = null;
+			try {
+				
+				//use the server socket to listen on incoming connections.
+				// accept connections from all the smaller processes 
+				socket = listener.accept();
+				
+				//s.setTcpNoDelay(true);//consider the 2 options of nagle
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//get the address from the socket and find it the map
+			SecuringConnectionThread scThread = connectingThreads.get(socket.getLocalAddress());
+			
+			//check if the ip address is a valid address. i.e. exists in the map
+			if(scThread==null){//an un authorized ip tried to connect
+				i--; //return the index. 
+				break;
+			}
+        	else{ //we have a thread that corresponds to this ip address. Thus, this address is valid
+        		
+        		//check that the channel is concrete channel and not some decoration
+        		if(scThread.getChannel() instanceof PlainTCPChannel){
+        			//get the channel from the thread and set the obtained socket.
+        			((PlainTCPChannel)scThread.getChannel()).setSocket(socket);
+        			
+        			//start the connecting thread
+        			scThread.start();
+        		}
+        		else
+        			;//throw an exception. The channel must be concrete
+        		
+        	}
+        		
+        }
+			
+		
 		
 	}
 }
