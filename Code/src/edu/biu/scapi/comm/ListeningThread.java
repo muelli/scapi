@@ -33,7 +33,7 @@ public class ListeningThread extends Thread{
 		try {
 			listener = ServerSocketChannel.open();
 			listener.socket().bind (new InetSocketAddress (port));
-			//listener.configureBlocking (false);
+			listener.configureBlocking (false);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

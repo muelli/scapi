@@ -98,6 +98,7 @@ public class PlainTCPChannel extends PlainChannel{
 		
 		//try to connect
 		System.out.println("Trying to connect to " + address.getPort());
+		socket = new Socket();
 		socket.connect(address,1000);
 			
 		
