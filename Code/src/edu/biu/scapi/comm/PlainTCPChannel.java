@@ -14,7 +14,7 @@ import java.net.Socket;
  * @author LabTest
  */
 public class PlainTCPChannel extends PlainChannel{
-	private Socket socket;
+	private Socket socket = new Socket();
 	private ObjectOutputStream outStream;
 	private ObjectInputStream inStream;
 	private InetSocketAddress address;
@@ -24,6 +24,8 @@ public class PlainTCPChannel extends PlainChannel{
 	 * @throws IOException 
 	 */
 	public void send(Message msg) throws IOException {
+		
+		System.out.println("Sending " + msg.toString());
 		
 		outStream.writeObject(msg);
 	}
@@ -35,6 +37,7 @@ public class PlainTCPChannel extends PlainChannel{
 	 */
 	public Message receive() throws ClassNotFoundException, IOException {
 		
+		System.out.println("receiving... ");
 		return ((Message)inStream.readObject());
 	}
 
@@ -91,16 +94,16 @@ public class PlainTCPChannel extends PlainChannel{
 	 * @return
 	 * @throws IOException 
 	 */
-	public boolean connect() throws IOException {
+	boolean connect() throws IOException {
 		
-		//as long as the connect fails try again
-		
-			
-		socket.connect(address);
+		//try to connect
+		System.out.println("Trying to connect to " + address.getPort());
+		socket.connect(address,1000);
 			
 		
 		if(socket.isConnected()){
 			try {
+				System.out.println("Socket connected");
 				outStream = new ObjectOutputStream(socket.getOutputStream());
 				inStream = new ObjectInputStream(socket.getInputStream());
 			} catch (IOException e) {
@@ -112,6 +115,14 @@ public class PlainTCPChannel extends PlainChannel{
 		return true;
 		
 	}
+	
+	boolean isConnected(){
+		
+		if(socket!=null)
+			return socket.isConnected();
+		else
+			return false;
+	}
 
 	
 
@@ -122,7 +133,7 @@ public class PlainTCPChannel extends PlainChannel{
 	 * @param socket the socket to set
 	 * 		
 	 */
-	public void setSocket(Socket socket) {
+	void setSocket(Socket socket) {
 		this.socket = socket;
 		
 		try {

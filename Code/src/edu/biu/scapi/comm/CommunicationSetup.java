@@ -36,9 +36,7 @@ public class CommunicationSetup implements TimeoutObserver{
 	private EstablishedConnections establishedConnections;
 	private KeyExchangeProtocol keyExchangeProtocol;
 	private ConnectivitySuccessVerifier connectivitySuccessVerifier;
-	//private Set<Party> parties;
 	private SecurityLevel securityLevel;
-	//private Set<SecuringConnectionThread> connectingThread;
 	private ListeningThread listeningThread;
 	private Vector<SecuringConnectionThread> threadsVector;
 	private Map<InetSocketAddress,KeyExchangeOutput> keyExchangeMap;
@@ -65,6 +63,8 @@ public class CommunicationSetup implements TimeoutObserver{
 		this.securityLevel = securityLevel;
 		connectivitySuccessVerifier = successLevel;
 		
+		establishedConnections = new EstablishedConnections();
+		
 		//initialize the threadVector and the map of the key exchange outputs
 		threadsVector = new Vector<SecuringConnectionThread>();
 		keyExchangeMap = new HashMap<InetSocketAddress,KeyExchangeOutput>();
@@ -73,6 +73,8 @@ public class CommunicationSetup implements TimeoutObserver{
 		Watchdog watchdog = new Watchdog(timeOut);
 		//add this instance as the observer in order to receive the event of time out.
 		watchdog.addTimeoutObserver(this);
+		
+		watchdog.start();
 		
 		//establish connections.
 		establishAndSecureConnections();
@@ -87,6 +89,7 @@ public class CommunicationSetup implements TimeoutObserver{
 		}
 		
 		//remove all connections with not READY state
+		establishedConnections.removeNotReadyConnections();
 		
 		//update the security level for each connection
 		setSecurityLevel();
@@ -181,10 +184,10 @@ public class CommunicationSetup implements TimeoutObserver{
 	 */ 
 	private void verifyConnectingStatus() {
 
-		//consider using some kind of mutex.
+		//while the thread has not been stopped and no all the channels are connected
 		while(bTimedOut==false && establishedConnections.areAllConnected()==false ){
 			try {
-				Thread.sleep(100);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -238,28 +241,28 @@ public class CommunicationSetup implements TimeoutObserver{
 		    			//create an encrypted channel
 		    			EncryptedChannel encChannel = new EncryptedChannel(ch, keyExchangeOutput.getEncKey());
 		    			establishedConnections.addConnection(encChannel, localInetSocketAddress);
+		    			break;
 		    		}
 		    		case AUTHENTICATED : {
 		    			
 		    			//create an authenticated channel
 		    			AuthenticatedChannel authenChannel = new AuthenticatedChannel(ch, keyExchangeOutput.getMacKey());
 		    			establishedConnections.addConnection(authenChannel, localInetSocketAddress);
+		    			break;
 		    		}
 		    		case SECURE : {
 		    			
-		    			//decorate with authentication and then with encryption
+		    			//decorate with authentication and then with encryption - order is important for security
 		    			AuthenticatedChannel authenChannel = new AuthenticatedChannel(ch, keyExchangeOutput.getMacKey());
 		    			EncryptedChannel secureChannel = new EncryptedChannel(authenChannel, keyExchangeOutput.getEncKey());
 		    			
 		    			establishedConnections.addConnection(secureChannel, localInetSocketAddress);
+		    			break;
 		    			
 		    		}
-		    	}
-		    		
+		    	}		    		
 		    }
-		}
-
-		
+		}	
 	}
 
 	/**
@@ -268,6 +271,8 @@ public class CommunicationSetup implements TimeoutObserver{
 	 */
 	public void timeoutOccured(Watchdog w) {
 
+		System.out.println("Timeout accured");
+		
 		//timeout has passed set the flag
 		bTimedOut = true;
 		
@@ -280,9 +285,15 @@ public class CommunicationSetup implements TimeoutObserver{
 			//sets the flag of the thread to stopped. This will make the run function of the thread to terminate if it has not finished yet.
 			thread.stopConnecting();
 			
-			//further stop the listening thread if it still runs. Similarly, it sets the flag of the listening thread to stopped.
+		}	
+		
+		//further stop the listening thread if it still runs. Similarly, it sets the flag of the listening thread to stopped.
+		if(listeningThread!=null)
 			listeningThread.stopConnecting();
-		}
+	}
+	
+	public Map<InetSocketAddress, Channel> getConnections(){
+		return establishedConnections.getConnections();
 		
 	}
 }

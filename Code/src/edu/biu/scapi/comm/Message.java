@@ -1,5 +1,7 @@
 package edu.biu.scapi.comm;
 
+import java.io.Serializable;
+
 /**
  * 
  */
@@ -7,7 +9,7 @@ package edu.biu.scapi.comm;
 /** 
  * @author LabTest
  */
-public abstract class Message {
+public class Message implements Serializable{
 	/** 
 	 * 
 	 */

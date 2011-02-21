@@ -23,25 +23,25 @@ public class KeyExchangeOutput implements ProtocolOutput {
 	/**
 	 * @param encKey the encKey to set
 	 */
-	public void setEncKey(Key encKey) {
+	void setEncKey(Key encKey) {
 		this.encKey = encKey;
 	}
 	/**
 	 * @return the encKey
 	 */
-	public Key getEncKey() {
+	Key getEncKey() {
 		return encKey;
 	}
 	/**
 	 * @param macKey the macKey to set
 	 */
-	public void setMacKey(Key macKey) {
+	void setMacKey(Key macKey) {
 		this.macKey = macKey;
 	}
 	/**
 	 * @return the macKey
 	 */
-	public Key getMacKey() {
+	Key getMacKey() {
 		return macKey;
 	}
 	

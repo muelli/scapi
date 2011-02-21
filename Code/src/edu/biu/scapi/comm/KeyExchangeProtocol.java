@@ -14,28 +14,25 @@ package edu.biu.scapi.comm;
  */
 public class KeyExchangeProtocol implements Protocol{
 
-	/* (non-Javadoc)
-	 * @see edu.biu.scapi.comm.Protocol#getOutput()
+	/**
+	 * 
 	 */
-	@Override
 	public ProtocolOutput getOutput() {
-		// TODO Auto-generated method stub
-		return null;
+
+		return new KeyExchangeOutput();
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.biu.scapi.comm.Protocol#run()
+	/**
+	 * 
 	 */
-	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.biu.scapi.comm.Protocol#start(edu.biu.scapi.comm.ProtocolInput)
+	/**
+	 * 
 	 */
-	@Override
 	public void start(ProtocolInput protocolInput) {
 		// TODO Auto-generated method stub
 		

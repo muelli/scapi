@@ -19,8 +19,6 @@ package edu.biu.scapi.comm;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-
 import edu.biu.scapi.comm.Channel;
 
 /** 
@@ -31,7 +29,7 @@ public class SecuringConnectionThread extends Thread{
 	private boolean bStopped = false;
 	private boolean doConnect;
 	private InetAddress ipAddres;
-	int port;
+	private int port;
 	KeyExchangeProtocol keyExchangeProtocol;
 	KeyExchangeOutput keyExchangeOutput;
 	
@@ -41,7 +39,7 @@ public class SecuringConnectionThread extends Thread{
 	 * @param port
 	 * @param doConnect
 	 */
-	public SecuringConnectionThread(PlainChannel channel, InetAddress IP, int port,
+	SecuringConnectionThread(PlainChannel channel, InetAddress IP, int port,
 			boolean doConnect, KeyExchangeProtocol keyExchangeProtocol, KeyExchangeOutput keyExchangeOutput) {
 		
 		this.doConnect = doConnect;
@@ -58,7 +56,7 @@ public class SecuringConnectionThread extends Thread{
 	 * stopConnecting - sets the flag bStopped to false. In the run function of this thread this flag is checked
 	 * 					if the flag is true the run functions returns, otherwise continues.
 	 */
-	public void stopConnecting(){
+	void stopConnecting(){
 		
 		//set the flag to true.
 		bStopped = true;
@@ -70,12 +68,26 @@ public class SecuringConnectionThread extends Thread{
 	 */
 	public void run() {
 
-		while(!bStopped){
-			
+		//while thread has not been stopped by owner and connection has failed
+		while(!bStopped ){
+					
+			while(!channel.isConnected()){
+				if(doConnect){
+					channel.setState(edu.biu.scapi.comm.State.CONNECTING);
+					try {
+						channel.connect();
+					} catch (IOException e) {
+	
+						//the connection has failed sleep for a little while and try again
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						
-			if(doConnect){
-				channel.setState(edu.biu.scapi.comm.State.CONNECTING);
-				//channel.connect();
+					}
+				}
 			}
 			
 			//set channel state to securing
@@ -95,13 +107,14 @@ public class SecuringConnectionThread extends Thread{
 			channel.setState(edu.biu.scapi.comm.State.READY);
 			
 		}
+		System.out.println("End of securing thread run\n");
 	}
 
 
 	/**
 	 * @return the channel
 	 */
-	public Channel getChannel() {
+	Channel getChannel() {
 		return channel;
 	}
 }

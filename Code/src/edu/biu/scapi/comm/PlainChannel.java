@@ -25,7 +25,7 @@ public abstract class PlainChannel implements Channel {
 	 * returns the state of the channel. This class that implements the channel interface has a private attribute state. Other classes
 	 * that implement channel (and the decorator abstract class) need to pass the request thru their channel private attribute.
 	 */
-	public State getState() {
+	State getState() {
 		
 		return state;
 	}
@@ -34,11 +34,13 @@ public abstract class PlainChannel implements Channel {
 	 * Sets the state of the channel. This class that implements the channel interface has a private attribute state. Other classes
 	 * that implement channel (and the decorator abstract class) need to pass the request thru their channel private attribute.
 	 */
-	public void setState(State state) {
+	void setState(State state) {
 		this.state = state; 
 		
 	}
 	
-	public abstract boolean connect() throws IOException;
+	abstract boolean connect() throws IOException;
+	
+	abstract boolean isConnected();
 
 }

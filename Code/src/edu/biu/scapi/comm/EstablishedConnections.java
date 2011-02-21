@@ -13,6 +13,7 @@ package edu.biu.scapi.comm;
 import edu.biu.scapi.comm.Channel;
 
 import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class EstablishedConnections {
 	 * @param connection - the value/channel to insert to the map
 	 * @param address - the key in the map
 	 */
-	public void addConnection(Channel connection, InetSocketAddress address) {
+	void addConnection(Channel connection, InetSocketAddress address) {
 
 		// add the channel to the map
 		connections.put(address, connection);
@@ -59,7 +60,7 @@ public class EstablishedConnections {
 	 * removeConnection - removes a channel from the map.
 	 * @param address - the key of the channel in the map
 	 */
-	public Channel removeConnection(InetSocketAddress address) {
+	Channel removeConnection(InetSocketAddress address) {
 		
 		//remove the connection
 		return connections.remove(address);
@@ -68,7 +69,7 @@ public class EstablishedConnections {
 	/** 
 	 * @return - the number of channels in the map
 	 */
-	public int getConnectionsCount() {
+	int getConnectionsCount() {
 		
 		return connections.size();
 	}
@@ -76,17 +77,21 @@ public class EstablishedConnections {
 	/** 
 	 * @return - true if all the channels are in READY state, false otherwise.
 	 */
-	public boolean areAllConnected() {
+	boolean areAllConnected() {
 
 		//set an iterator for the connection map.
-		Iterator iterator = connections.keySet().iterator();
+		Collection<Channel> c = connections.values();
+		Iterator<Channel> itr = c.iterator();
 		
+		PlainChannel plainChannel;
 		//go over the map and check if all the connections are in READY state
-		while(iterator.hasNext()){        
-		       if(((PlainChannel)iterator.next()).getState()!=State.READY){
+		while(itr.hasNext()){
+			plainChannel = (PlainChannel)itr.next();
+		       if(plainChannel.getState()!=State.READY){
 		    	   return false;
 		       }
 		}
+		
 		return true;
 	}
 
@@ -95,7 +100,7 @@ public class EstablishedConnections {
 	 * @param address - the key in the map
 	 * @param state - the state of the channel to update to.
 	 */
-	public void updateConnectionState(InetSocketAddress address, State state) {
+	void updateConnectionState(InetSocketAddress address, State state) {
 
 		//get the channel from the map
 		Channel ch = connections.get(address);
@@ -108,7 +113,24 @@ public class EstablishedConnections {
 		else
 			;//throw exception
 	}
+	
+	void removeNotReadyConnections(){
+		
+		PlainChannel plainChannel;
+		InetSocketAddress address;
+		//set an iterator for the connection map.
+		Iterator<InetSocketAddress> iterator = connections.keySet().iterator();
+		
+		//go over the map and check if all the connections are in READY state
+		while(iterator.hasNext()){ 
+			address = iterator.next();
+			plainChannel = (PlainChannel) connections.get(address);
+		       if(plainChannel.getState()!=State.READY){
 
-
+		    	   //remove this connection. It is not in READY state
+		    	   removeConnection(address);
+		       }
+		}
+	}
 
 }
