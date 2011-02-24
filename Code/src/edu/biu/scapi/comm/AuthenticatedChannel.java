@@ -43,7 +43,7 @@ public class AuthenticatedChannel extends ChannelDecorator {
 	}
 	
 	/**
-	 * 
+	 * receive : Receives a message. Since the message is authenticated you should un-mac the message before reading it.
 	 */
 	public Message receive() throws ClassNotFoundException, IOException {
 		
@@ -56,7 +56,7 @@ public class AuthenticatedChannel extends ChannelDecorator {
 	}
 
 	/**
-	 * 
+	 * send : Sends a message on the channel. Before sending it by passing it to the channel mac the message.
 	 */
 	public void send(Message msg) throws IOException {
 		
@@ -64,6 +64,15 @@ public class AuthenticatedChannel extends ChannelDecorator {
 		
 		channel.send(msg);
 		
+		
+	}
+
+	/**
+	 * close : Pass the close request to the attached channel
+	 */
+	public void close() {
+
+		channel.close();
 		
 	}
 

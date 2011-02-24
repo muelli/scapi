@@ -69,26 +69,29 @@ public class SecuringConnectionThread extends Thread{
 	public void run() {
 
 		//while thread has not been stopped by owner and connection has failed
-		while(!bStopped ){
+		while(!bStopped && !channel.isConnected()){
 					
-			while(!channel.isConnected()){
-				if(doConnect){
-					channel.setState(edu.biu.scapi.comm.State.CONNECTING);
+			
+			if(doConnect){
+				channel.setState(edu.biu.scapi.comm.State.CONNECTING);
+				try {
+					channel.connect();
+				} catch (IOException e) {
+
+					//the connection has failed sleep for a little while and try again
 					try {
-						channel.connect();
-					} catch (IOException e) {
-	
-						//the connection has failed sleep for a little while and try again
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						
+						Thread.sleep(1000);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
+					
 				}
 			}
+		}
+		
+		if(!bStopped){
+			
 			
 			//set channel state to securing
 			channel.setState(edu.biu.scapi.comm.State.SECURING);

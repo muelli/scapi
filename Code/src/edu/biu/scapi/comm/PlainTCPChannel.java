@@ -43,13 +43,21 @@ public class PlainTCPChannel extends PlainChannel{
 
 	/**
 	 * 
-	 * close
+	 * close : closes the socket and the out and in streams.
 	 */
 	public void close() {
-		// begin-user-code
-		// TODO Auto-generated method stub
 
-		// end-user-code
+		if(socket!=null){
+			try {
+				socket.close();
+				outStream.close();
+				inStream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 	}
 
 	/** 
@@ -98,8 +106,10 @@ public class PlainTCPChannel extends PlainChannel{
 		
 		//try to connect
 		System.out.println("Trying to connect to " + address.getPort());
-		socket = new Socket();
-		socket.connect(address,1000);
+		
+		//create and connect the socket. Cannot reconnect if the function connect fails since it closes the socket.
+		socket = new Socket(address.getAddress(), address.getPort());
+		//socket.connect(address);
 			
 		
 		if(socket.isConnected()){

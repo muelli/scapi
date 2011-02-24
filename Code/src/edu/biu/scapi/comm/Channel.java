@@ -14,9 +14,10 @@ import java.io.IOException;
  * @author LabTest
  */
 public interface Channel{
+	
 	public void send(Message msg) throws IOException;
 
 	public Message receive() throws ClassNotFoundException, IOException;
 	
-	
+	public void close();
 }

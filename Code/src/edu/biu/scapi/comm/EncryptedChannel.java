@@ -74,4 +74,12 @@ public class EncryptedChannel extends ChannelDecorator {
 		
 		
 	}
+
+	/**
+	 * Pass the close request to the attached channel.
+	 */
+	public void close() {
+		
+		channel.close();
+	}
 }

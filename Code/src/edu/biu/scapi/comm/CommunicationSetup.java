@@ -105,13 +105,14 @@ public class CommunicationSetup implements TimeoutObserver{
 	 * 								   We either connect by initiating a connection or by listening to incoming connection requests.
 	 * @return
 	 */
-	private boolean establishAndSecureConnections() {
+	private Map<InetSocketAddress, Channel> establishAndSecureConnections() {
 		
 		//Create an iterator to go over the list of parties 
 		Iterator<Party> itr = listOfParties.iterator();
 		Party firstParty = null;
 		Party party;
-		//Map<InetAddress , Channel> localMapForListeningThread = new HashMap<InetAddress , Channel>();
+		
+		//temp map
 		Map<InetAddress, SecuringConnectionThread> localMapforListeningThread = new HashMap<InetAddress, SecuringConnectionThread>();
 		
 		//the first party is me. Other parties identity will be compared with this party
@@ -175,12 +176,13 @@ public class CommunicationSetup implements TimeoutObserver{
 			listeningThread = new ListeningThread(localMapforListeningThread, firstParty.getPort());
 			listeningThread.start();
 		}
-		return true;
+		return establishedConnections.getConnections();
 	}
 
 	/**
 	 *  
-	 * verifyConnectingStatus
+	 * verifyConnectingStatus : This function goal is to serve as a barrier. It is called from the prepareForCommunication function. The idea
+	 * 							is to let all the threads finish running before proceeding. 
 	 */ 
 	private void verifyConnectingStatus() {
 
@@ -210,11 +212,21 @@ public class CommunicationSetup implements TimeoutObserver{
 
 	/**
 	 * 
-	 * setSecurityLevel
+	 * setSecurityLevel : In this function we decorate the channels to suit the requested security level. If the required security level
+	 * 					  is plain, no decoration is needed. For authenticated we decorate the channel by an authenticated channel. for encrypted, we 
+	 * 					  decorate with encrypted channel. For secured, we decorated with both authenticated and encrypted channel.
+	 * 
+	 *  Note:			  The decorated channel has a different pointer in memory, thus we need to put the newly decorated channel in the map
+	 *  				  and removing the plain channel from the map. Since we iterate on the map, we cannot remove and add in the middle of 
+	 *  				  iteration ( we would get the ConcurrentModificationException exception) and thus we create a temporary map with the decorated channels and at the end clear the map and add all
+	 *  				  the decorated channels.
 	 */
 	private void setSecurityLevel() {
 		
 		//Set the security level only if the security level is not plain. If it is plain there is nothing to decorate
+		
+		//create a temp map since if we change the main map in the middle of iterations we will get the exception ConcurrentModificationException 
+		Map<InetSocketAddress,Channel> tempConnections = new HashMap<InetSocketAddress,Channel>();  
 		
 		if(securityLevel!=SecurityLevel.PLAIN){
 		
@@ -228,8 +240,11 @@ public class CommunicationSetup implements TimeoutObserver{
 		    	//get the channel's address
 		    	localInetSocketAddress = itr.next();
 		    	
+		    	//get the channel from the collection
+		    	Channel ch = establishedConnections.getConnection(localInetSocketAddress);
+		    	
 		    	//remove the channel and save it for decoration
-		    	Channel ch = establishedConnections.removeConnection(localInetSocketAddress);
+		    	//Channel ch = establishedConnections.removeConnection(localInetSocketAddress);
 		    	
 		    	//get the keyExchange output
 		    	KeyExchangeOutput keyExchangeOutput = keyExchangeMap.get(localInetSocketAddress) ;
@@ -240,14 +255,16 @@ public class CommunicationSetup implements TimeoutObserver{
 		    			
 		    			//create an encrypted channel
 		    			EncryptedChannel encChannel = new EncryptedChannel(ch, keyExchangeOutput.getEncKey());
-		    			establishedConnections.addConnection(encChannel, localInetSocketAddress);
+		    			//establishedConnections.addConnection(encChannel, localInetSocketAddress);
+		    			tempConnections.put(localInetSocketAddress,encChannel);
 		    			break;
 		    		}
 		    		case AUTHENTICATED : {
 		    			
 		    			//create an authenticated channel
 		    			AuthenticatedChannel authenChannel = new AuthenticatedChannel(ch, keyExchangeOutput.getMacKey());
-		    			establishedConnections.addConnection(authenChannel, localInetSocketAddress);
+		    			//establishedConnections.addConnection(authenChannel, localInetSocketAddress);
+		    			tempConnections.put(localInetSocketAddress, authenChannel);
 		    			break;
 		    		}
 		    		case SECURE : {
@@ -256,12 +273,16 @@ public class CommunicationSetup implements TimeoutObserver{
 		    			AuthenticatedChannel authenChannel = new AuthenticatedChannel(ch, keyExchangeOutput.getMacKey());
 		    			EncryptedChannel secureChannel = new EncryptedChannel(authenChannel, keyExchangeOutput.getEncKey());
 		    			
-		    			establishedConnections.addConnection(secureChannel, localInetSocketAddress);
+		    			//establishedConnections.addConnection(secureChannel, localInetSocketAddress);
+		    			tempConnections.put(localInetSocketAddress, secureChannel);
 		    			break;
 		    			
 		    		}
 		    	}		    		
 		    }
+		    
+		    establishedConnections.getConnections().clear();
+		    establishedConnections.getConnections().putAll(tempConnections);
 		}	
 	}
 

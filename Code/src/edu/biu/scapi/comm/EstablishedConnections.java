@@ -67,6 +67,17 @@ public class EstablishedConnections {
 	}
 
 	/** 
+	 * getConnection - gets a channel from the map.
+	 * @param address - the key of the channel in the map
+	 */
+	Channel getConnection(InetSocketAddress address) {
+		
+		//remove the connection
+		return connections.get(address);
+	}
+
+	
+	/** 
 	 * @return - the number of channels in the map
 	 */
 	int getConnectionsCount() {
@@ -114,10 +125,22 @@ public class EstablishedConnections {
 			;//throw exception
 	}
 	
+	/**
+	 * 
+	 * removeNotReadyConnections : Removes all the connections which are not in READY state.
+	 * 
+	 * Note						 : Since we cannot remove connections in the middle of iterations we will create a temporary map with only the 
+	 * 							   connections in READY state. At last we will remove all the connections and add only those with READY state.
+	 */
 	void removeNotReadyConnections(){
 		
 		PlainChannel plainChannel;
 		InetSocketAddress address;
+		
+		//create a temp map since if we change the main map in the middle of iterations we will get the exception ConcurrentModificationException 
+		Map<InetSocketAddress,Channel> tempConnections = new HashMap<InetSocketAddress,Channel>();  
+		
+		
 		//set an iterator for the connection map.
 		Iterator<InetSocketAddress> iterator = connections.keySet().iterator();
 		
@@ -125,11 +148,35 @@ public class EstablishedConnections {
 		while(iterator.hasNext()){ 
 			address = iterator.next();
 			plainChannel = (PlainChannel) connections.get(address);
-		       if(plainChannel.getState()!=State.READY){
+		       if(plainChannel.getState()==State.READY){
 
-		    	   //remove this connection. It is not in READY state
-		    	   removeConnection(address);
+		    	   tempConnections.put(address, plainChannel);
 		       }
+		}
+		
+		connections.clear();
+		connections.putAll(tempConnections);
+	}
+	
+	void closeAllConnections(){
+		
+		Channel channel;
+		InetSocketAddress address;
+		
+		
+		//set an iterator for the connection map.
+		Iterator<InetSocketAddress> iterator = connections.keySet().iterator();
+		
+		//go over the map and check if all the connections are in READY state
+		while(iterator.hasNext()){ 
+			//get the address
+			address = iterator.next();
+			
+			//get the channel
+			channel = connections.get(address);
+		       
+			//close the channel
+			channel.close();
 		}
 	}
 
