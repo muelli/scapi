@@ -11,6 +11,14 @@ import edu.biu.scapi.comm.EstablishedConnections;
 * @author LabTest
  */
 public class TwoPartiesSuccess implements ConnectivitySuccessVerifier {
+	
+	/**
+	 * 
+	 */
+	public TwoPartiesSuccess() {
+		
+	}
+	
 	/** 
 	 * @param estCon
 	 * @param originalListOfParties
@@ -18,9 +26,7 @@ public class TwoPartiesSuccess implements ConnectivitySuccessVerifier {
 	 */
 	public boolean hasSucceded(EstablishedConnections estCon,
 			List<Party> originalListOfParties) {
-		// begin-user-code
-		// TODO Auto-generated method stub
 		return false;
-		// end-user-code
+		
 	}
 }

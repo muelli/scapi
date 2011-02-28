@@ -50,7 +50,7 @@ public class EstablishedConnections {
 	 * @param connection - the value/channel to insert to the map
 	 * @param address - the key in the map
 	 */
-	void addConnection(Channel connection, InetSocketAddress address) {
+	void addConnection(InetSocketAddress address, Channel connection) {
 
 		// add the channel to the map
 		connections.put(address, connection);
@@ -98,7 +98,7 @@ public class EstablishedConnections {
 		//go over the map and check if all the connections are in READY state
 		while(itr.hasNext()){
 			plainChannel = (PlainChannel)itr.next();
-		       if(plainChannel.getState()!=State.READY){
+		       if(plainChannel.getState()!=PlainChannel.State.READY){
 		    	   return false;
 		       }
 		}
@@ -111,7 +111,7 @@ public class EstablishedConnections {
 	 * @param address - the key in the map
 	 * @param state - the state of the channel to update to.
 	 */
-	void updateConnectionState(InetSocketAddress address, State state) {
+	void updateConnectionState(InetSocketAddress address, PlainChannel.State state) {
 
 		//get the channel from the map
 		Channel ch = connections.get(address);
@@ -138,7 +138,7 @@ public class EstablishedConnections {
 		InetSocketAddress address;
 		
 		//create a temp map since if we change the main map in the middle of iterations we will get the exception ConcurrentModificationException 
-		Map<InetSocketAddress,Channel> tempConnections = new HashMap<InetSocketAddress,Channel>();  
+		//Map<InetSocketAddress,Channel> tempConnections = new HashMap<InetSocketAddress,Channel>();  
 		
 		
 		//set an iterator for the connection map.
@@ -148,14 +148,15 @@ public class EstablishedConnections {
 		while(iterator.hasNext()){ 
 			address = iterator.next();
 			plainChannel = (PlainChannel) connections.get(address);
-		       if(plainChannel.getState()==State.READY){
+		       if(plainChannel.getState()!=PlainChannel.State.READY){
 
-		    	   tempConnections.put(address, plainChannel);
+		    	   iterator.remove();
+		    	   //tempConnections.put(address, plainChannel);
 		       }
 		}
 		
-		connections.clear();
-		connections.putAll(tempConnections);
+		//connections.clear();
+		//connections.putAll(tempConnections);
 	}
 	
 	void closeAllConnections(){

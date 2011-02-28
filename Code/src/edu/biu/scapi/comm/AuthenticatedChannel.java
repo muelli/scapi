@@ -9,7 +9,7 @@ import java.security.Key;
 /** 
  * @author LabTest
  */
-public class AuthenticatedChannel extends ChannelDecorator {
+class AuthenticatedChannel extends ChannelDecorator {
 	//private DigitalSignature digitalSignature;
 
 	Key authKey;
@@ -32,8 +32,11 @@ public class AuthenticatedChannel extends ChannelDecorator {
 	/** 
 	 * @param data
 	 */
-	private void sign(byte[] data) {
-			}
+	private byte[] sign(byte[] data) {
+	
+		//TODO perform sign
+		return data;
+	}
 
 	/** 
 	 * @param data
@@ -61,6 +64,7 @@ public class AuthenticatedChannel extends ChannelDecorator {
 	public void send(Message msg) throws IOException {
 		
 		//mac the message
+		msg.setData(sign(msg.getData()));
 		
 		channel.send(msg);
 		

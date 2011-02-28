@@ -17,8 +17,47 @@ public class PlainTCPChannel extends PlainChannel{
 	private Socket socket = new Socket();
 	private ObjectOutputStream outStream;
 	private ObjectInputStream inStream;
-	private InetSocketAddress address;
+	private InetSocketAddress socketAddress;
 
+	
+	/** 
+	 * @param ipAddress
+	 * @param port
+	 */
+	PlainTCPChannel(InetAddress ipAddress, int port) {
+		
+		socketAddress = new InetSocketAddress(ipAddress, port);
+	}
+	
+	/**
+	 * 
+	 */
+	public PlainTCPChannel(InetSocketAddress socketAddress) {
+
+		this.socketAddress = socketAddress;
+	}
+
+	/** 
+	 * @param existingChannel
+	 */
+	PlainTCPChannel(Channel existingChannel) {
+		// begin-user-code
+		// TODO Auto-generated constructor stub
+		// end-user-code
+	}
+
+	/** 
+	 * @param ipAddress
+	 * @param port
+	 * @param typeOfConnection
+	 */
+	PlainTCPChannel(InetAddress ipAddress, int port, Object typeOfConnection) {
+		
+	}
+
+	
+	
+	
 	/** 
 	 * @param msg
 	 * @throws IOException 
@@ -60,41 +99,7 @@ public class PlainTCPChannel extends PlainChannel{
 		}
 	}
 
-	/** 
-	 * @param ipAddress
-	 * @param port
-	 */
-	PlainTCPChannel(InetAddress ipAddress, int port) {
-		
-		address = new InetSocketAddress(ipAddress, port);
-	}
 	
-	/**
-	 * 
-	 */
-	public PlainTCPChannel(InetSocketAddress address) {
-
-		this.address = address;
-	}
-
-	/** 
-	 * @param existingChannel
-	 */
-	PlainTCPChannel(Channel existingChannel) {
-		// begin-user-code
-		// TODO Auto-generated constructor stub
-		// end-user-code
-	}
-
-	/** 
-	 * @param ipAddress
-	 * @param port
-	 * @param typeOfConnection
-	 */
-	PlainTCPChannel(InetAddress ipAddress, int port, Object typeOfConnection) {
-		
-	}
-
 	/** 
 	 * Connect : connects the socket to the InetSocketAddress of this object. If the server we are trying to connect to 
 	 * 			 is not up yet than we sleep for a while and try again until the connection is established.
@@ -105,11 +110,11 @@ public class PlainTCPChannel extends PlainChannel{
 	boolean connect() throws IOException {
 		
 		//try to connect
-		System.out.println("Trying to connect to " + address.getPort());
+		System.out.println("Trying to connect to " + socketAddress.getPort());
 		
 		//create and connect the socket. Cannot reconnect if the function connect fails since it closes the socket.
-		socket = new Socket(address.getAddress(), address.getPort());
-		//socket.connect(address);
+		socket = new Socket(socketAddress.getAddress(), socketAddress.getPort());
+		//socket.connect(socketAddress,1000);
 			
 		
 		if(socket.isConnected()){

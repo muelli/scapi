@@ -18,8 +18,23 @@ import java.io.IOException;
  */
 public abstract class PlainChannel implements Channel {
 
+	public static enum State {
+		
+		NOT_INIT,
+		CONNECTING,
+		SECURING,
+		READY
+
+	}
+	
 	private State state;
 	
+	
+	
+	PlainChannel(){
+		
+		state = State.NOT_INIT;
+	}
 
 	/**
 	 * returns the state of the channel. This class that implements the channel interface has a private attribute state. Other classes
@@ -34,7 +49,7 @@ public abstract class PlainChannel implements Channel {
 	 * Sets the state of the channel. This class that implements the channel interface has a private attribute state. Other classes
 	 * that implement channel (and the decorator abstract class) need to pass the request thru their channel private attribute.
 	 */
-	void setState(State state) {
+	void setState(PlainChannel.State state) {
 		this.state = state; 
 		
 	}

@@ -15,6 +15,12 @@ import edu.biu.scapi.comm.EstablishedConnections;
  */
 public class SecureCliqueSuccess implements ConnectivitySuccessVerifier {
 
+	/**
+	 * 
+	 */
+	public SecureCliqueSuccess() {
+		
+	}
 
 	/** 
 	 * @param estCon - the EstablishedConnections object that includes the actual connections formed

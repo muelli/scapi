@@ -40,6 +40,14 @@ public class CommunicationSetup implements TimeoutObserver{
 	private ListeningThread listeningThread;
 	private Vector<SecuringConnectionThread> threadsVector;
 	private Map<InetSocketAddress,KeyExchangeOutput> keyExchangeMap;
+	
+	
+	/**
+	 * 
+	 */
+	public CommunicationSetup() {
+		
+	}
 
 	/** 
 	 * The main function of the class. This function is also the only public function in the class. An application that wants to use
@@ -51,9 +59,9 @@ public class CommunicationSetup implements TimeoutObserver{
 	 * @param securityLevel - the required security level for all the connections. E.g Plain, encrypted, authenticated or secured.
 	 * @param successLevel - the ConnectivitySuccessVerifier algorithm to use
 	 * @param timeOut - the maximum amount of time we allow for the connection stage.
-	 * @return - true is the success function has succeeded and false otherwise.
+	 * @return - true if the success function has succeeded and false otherwise.
 	 */
-	public boolean prepareForCommunication(List<Party> listOfParties,
+	public Map<InetSocketAddress, Channel> prepareForCommunication(List<Party> listOfParties,
 			KeyExchangeProtocol keyExchange, SecurityLevel securityLevel,
 			ConnectivitySuccessVerifier successLevel, long timeOut) {
 		
@@ -83,9 +91,9 @@ public class CommunicationSetup implements TimeoutObserver{
 		verifyConnectingStatus();
 		
 		//run success function
-		if(runSuccessAlgo()==false){
+		if(!runSuccessAlgo()){
 			//remove connections from the list of established connections
-			return false;
+			return null;
 		}
 		
 		//remove all connections with not READY state
@@ -94,7 +102,8 @@ public class CommunicationSetup implements TimeoutObserver{
 		//update the security level for each connection
 		setSecurityLevel();
 		
-		return true;
+		//return the map of channels held in the established connection object.
+		return establishedConnections.getConnections();
 		
 	}
 
@@ -105,7 +114,7 @@ public class CommunicationSetup implements TimeoutObserver{
 	 * 								   We either connect by initiating a connection or by listening to incoming connection requests.
 	 * @return
 	 */
-	private Map<InetSocketAddress, Channel> establishAndSecureConnections() {
+	private void establishAndSecureConnections() {
 		
 		//Create an iterator to go over the list of parties 
 		Iterator<Party> itr = listOfParties.iterator();
@@ -113,7 +122,7 @@ public class CommunicationSetup implements TimeoutObserver{
 		Party party;
 		
 		//temp map
-		Map<InetAddress, SecuringConnectionThread> localMapforListeningThread = new HashMap<InetAddress, SecuringConnectionThread>();
+		Map<InetSocketAddress, SecuringConnectionThread> localMapforListeningThread = new HashMap<InetSocketAddress, SecuringConnectionThread>();
 		
 		//the first party is me. Other parties identity will be compared with this party
 		if(itr.hasNext()){
@@ -132,22 +141,26 @@ public class CommunicationSetup implements TimeoutObserver{
 			//create a channel for this party
 			PlainChannel channel = new PlainTCPChannel(inetSocketAdd);
 			//set to NOT_INIT state
-			channel.setState(State.NOT_INIT);
+			channel.setState(PlainChannel.State.NOT_INIT);
 			//add to the established connection object
-			establishedConnections.addConnection(channel, inetSocketAdd);
+			establishedConnections.addConnection(inetSocketAdd, channel);
 			
-			//create a key exchange output to pass to the SecringConnectionThread
+			//create a key exchange output to pass to the SecuringConnectionThread
 			KeyExchangeOutput keyExchangeOutput = new KeyExchangeOutput();
 			
 			//add the key exchange output to the map
 			keyExchangeMap.put(inetSocketAdd, keyExchangeOutput);
 			
+			boolean doConnect; 
 			
 			//UPWARD connection
 			if(firstParty.compareTo(party)>0){
 				
+				//set doConnect to true. We need the thread to connect to the other side of the channel. 
+				doConnect = true;
+				
 				//create a new SecuringConnectionThread 
-				SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), true, keyExchangeProtocol, keyExchangeOutput);
+				SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), doConnect , keyExchangeProtocol, keyExchangeOutput);
 				
 				//add to the thread vector
 				threadsVector.add(scThread);
@@ -158,15 +171,17 @@ public class CommunicationSetup implements TimeoutObserver{
 			}
 			else{ //DOWN connection
 				
+				//set to connect to false. We do not want the thread to try to connect.
+				doConnect = false;
 				
 				//create a new SecuringConnectionThread 
-				SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), false, keyExchangeProtocol, keyExchangeOutput);
+				SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), doConnect , keyExchangeProtocol, keyExchangeOutput);
 				
 				//add to the thread vector
 				threadsVector.add(scThread);
 				
 				//add thread to the local vector so the listening thread can start the securing thread.
-				localMapforListeningThread.put(party.getIpAddress(), scThread);
+				localMapforListeningThread.put(new InetSocketAddress(party.getIpAddress(), party.getPort()), scThread);
 				
 			}
 		}
@@ -176,7 +191,7 @@ public class CommunicationSetup implements TimeoutObserver{
 			listeningThread = new ListeningThread(localMapforListeningThread, firstParty.getPort());
 			listeningThread.start();
 		}
-		return establishedConnections.getConnections();
+		
 	}
 
 	/**
@@ -186,8 +201,8 @@ public class CommunicationSetup implements TimeoutObserver{
 	 */ 
 	private void verifyConnectingStatus() {
 
-		//while the thread has not been stopped and no all the channels are connected
-		while(bTimedOut==false && establishedConnections.areAllConnected()==false ){
+		//while the thread has not been stopped and not all the channels are connected
+		while(!bTimedOut && !establishedConnections.areAllConnected()){
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -223,12 +238,14 @@ public class CommunicationSetup implements TimeoutObserver{
 	 */
 	private void setSecurityLevel() {
 		
-		//Set the security level only if the security level is not plain. If it is plain there is nothing to decorate
 		
-		//create a temp map since if we change the main map in the middle of iterations we will get the exception ConcurrentModificationException 
-		Map<InetSocketAddress,Channel> tempConnections = new HashMap<InetSocketAddress,Channel>();  
-		
-		if(securityLevel!=SecurityLevel.PLAIN){
+		if(securityLevel==SecurityLevel.PLAIN)//If it is plain there is nothing to decorate
+			return;
+		else{//Set the security level only if the security level is not plain. 
+			
+			//create a temp map since if we change the main map in the middle of iterations we will get the exception ConcurrentModificationException 
+			Map<InetSocketAddress,Channel> tempConnections = new HashMap<InetSocketAddress,Channel>();  
+			
 		
 			InetSocketAddress localInetSocketAddress = null;
 			Set<InetSocketAddress> set = establishedConnections.getConnections().keySet();

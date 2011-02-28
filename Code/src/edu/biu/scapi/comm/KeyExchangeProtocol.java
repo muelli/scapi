@@ -14,6 +14,14 @@ package edu.biu.scapi.comm;
  */
 public class KeyExchangeProtocol implements Protocol{
 
+	
+	/**
+	 * 
+	 */
+	public KeyExchangeProtocol() {
+		
+	}
+	
 	/**
 	 * 
 	 */

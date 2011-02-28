@@ -11,6 +11,14 @@ import edu.biu.scapi.comm.EstablishedConnections;
  * @author LabTest
  */
 public class NaiveSuccess implements ConnectivitySuccessVerifier {
+	
+	/**
+	 * 
+	 */
+	public NaiveSuccess() {
+		
+	}
+	
 	/** 
 	 * @param estCon
 	 * @param originalListOfParties

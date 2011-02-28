@@ -45,7 +45,7 @@ public class Party {
 	 * 
 	 * compareTo compares the ip and port represented as strings between two parties
 	 * @param otherParty - the other party to compare to.
-	 * @return 0 if the two parties are equal - should not happen
+	 * @return 0 if the two parties are equal 
 	 * 		   <0 if this party's string is smaller than the otherParty string.
 	 * 		   >0 if this party's string is larger than the otherParty string.
 	 */

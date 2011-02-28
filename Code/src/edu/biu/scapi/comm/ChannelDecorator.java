@@ -12,7 +12,7 @@ public abstract class ChannelDecorator implements Channel {
 
 	/**
 	 * 
-	 * @param channel
+	 * @param channel - 
 	 */
 	public ChannelDecorator(Channel channel) {
 		this.channel = channel;

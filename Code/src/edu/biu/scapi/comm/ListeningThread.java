@@ -6,6 +6,7 @@ package edu.biu.scapi.comm;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Collection;
@@ -15,8 +16,8 @@ import java.util.Map;
 /** 
  * @author LabTest
  */
-public class ListeningThread extends Thread{
-	private Map<InetAddress , SecuringConnectionThread> connectingThreads;//map that includes only SecuringConnectionThread of the down connections
+class ListeningThread extends Thread{
+	private Map<InetSocketAddress , SecuringConnectionThread> connectingThreads;//map that includes only SecuringConnectionThread of the down connections
 	private int port;//the port to listen on
 	private boolean bStopped = false;//a flag that indicates if to keep on listening or stop
 	private ServerSocketChannel listener;
@@ -25,7 +26,7 @@ public class ListeningThread extends Thread{
 	/**
 	 * 
 	 */
-	public ListeningThread( Map<InetAddress ,SecuringConnectionThread> securingThreads, int port) {
+	public ListeningThread( Map<InetSocketAddress ,SecuringConnectionThread> securingThreads, int port) {
 
 		connectingThreads = securingThreads;
 		
@@ -35,7 +36,7 @@ public class ListeningThread extends Thread{
 			listener.socket().bind (new InetSocketAddress (port));
 			listener.configureBlocking (false);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		
@@ -68,10 +69,10 @@ public class ListeningThread extends Thread{
 		Iterator<SecuringConnectionThread> itr = c.iterator();
 		
 		while(itr.hasNext()){  
-			Channel ch = ((SecuringConnectionThread)itr.next()).getChannel();
+			PlainChannel channel = ((SecuringConnectionThread)itr.next()).getChannel();
 			
-			if(ch instanceof PlainChannel)
-		       ((PlainChannel)ch).setState(edu.biu.scapi.comm.State.CONNECTING);
+			//set the channel state to connecting
+		    channel.setState(PlainChannel.State.CONNECTING);
 		       
 		}
 		
@@ -91,7 +92,9 @@ public class ListeningThread extends Thread{
 				
 				//s.setTcpNoDelay(true);//consider the 2 options of nagle
 				
-			} catch (IOException e) {
+			}	catch (ClosedChannelException e) {
+				// TODO: handle exception
+			} 	catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

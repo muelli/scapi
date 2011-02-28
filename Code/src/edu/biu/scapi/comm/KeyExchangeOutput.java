@@ -20,6 +20,14 @@ public class KeyExchangeOutput implements ProtocolOutput {
 
 	private Key encKey;
 	private Key macKey;
+	
+	/**
+	 * 
+	 */
+	public KeyExchangeOutput() {
+		
+	}
+	
 	/**
 	 * @param encKey the encKey to set
 	 */

@@ -11,6 +11,14 @@ import edu.biu.scapi.comm.EstablishedConnections;
  * @author LabTest
  */
 public class CliqueSuccess implements ConnectivitySuccessVerifier {
+	
+	/**
+	 * 
+	 */
+	public CliqueSuccess() {
+		
+	}
+	
 	/** 
 	 * @param estCon - the EstablishedConnections object that includes the actual connections formed
 	 * @param originalListOfParties - the original list of parties

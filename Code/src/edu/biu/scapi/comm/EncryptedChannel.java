@@ -9,7 +9,7 @@ import java.security.Key;
 /** 
  * @author LabTest
  */
-public class EncryptedChannel extends ChannelDecorator {
+class EncryptedChannel extends ChannelDecorator {
 	private Key encKey;
 	//private EncryptionAlgorithm encryptionAlgo; ?????
 	private String algName;

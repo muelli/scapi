@@ -24,7 +24,7 @@ import edu.biu.scapi.comm.Channel;
 /** 
  * @author LabTest
  */
-public class SecuringConnectionThread extends Thread{
+class SecuringConnectionThread extends Thread{
 	private PlainChannel channel;
 	private boolean bStopped = false;
 	private boolean doConnect;
@@ -73,18 +73,19 @@ public class SecuringConnectionThread extends Thread{
 					
 			
 			if(doConnect){
-				channel.setState(edu.biu.scapi.comm.State.CONNECTING);
+				channel.setState(PlainChannel.State.CONNECTING);
+				System.out.println("state: connecting");
 				try {
 					channel.connect();
 				} catch (IOException e) {
 
 					//the connection has failed sleep for a little while and try again
-					try {
+					/*try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-					}
+					}*/
 					
 				}
 			}
@@ -94,7 +95,8 @@ public class SecuringConnectionThread extends Thread{
 			
 			
 			//set channel state to securing
-			channel.setState(edu.biu.scapi.comm.State.SECURING);
+			channel.setState(PlainChannel.State.SECURING);
+			System.out.println("state: securing");
 			
 			//start key exchange protocol
 			keyExchangeProtocol.start(null);
@@ -107,7 +109,8 @@ public class SecuringConnectionThread extends Thread{
 			keyExchangeOutput.setMacKey(localKeyExchangeOutput.getMacKey());
 			
 			//set the channel state to READY
-			channel.setState(edu.biu.scapi.comm.State.READY);
+			channel.setState(PlainChannel.State.READY);
+			System.out.println("state: ready");
 			
 		}
 		System.out.println("End of securing thread run\n");
@@ -117,7 +120,7 @@ public class SecuringConnectionThread extends Thread{
 	/**
 	 * @return the channel
 	 */
-	Channel getChannel() {
+	PlainChannel getChannel() {
 		return channel;
 	}
 }
