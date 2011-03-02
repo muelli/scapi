@@ -64,7 +64,8 @@ class SecuringConnectionThread extends Thread{
 	
 
 	/**
-	 * The main function of the thread.
+	 * The main function of the thread. While thread has not been stopped by owner and connection has not been established and secured connect
+	 * if the socket is not already connected. Then engage in a key exchange protocol and set the status of the channel accordingly.
 	 */
 	public void run() {
 
@@ -76,17 +77,13 @@ class SecuringConnectionThread extends Thread{
 				channel.setState(PlainChannel.State.CONNECTING);
 				System.out.println("state: connecting");
 				try {
+					//try to connect
 					channel.connect();
+					
 				} catch (IOException e) {
 
-					//the connection has failed sleep for a little while and try again
-					/*try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}*/
-					
+					//e.printStackTrace();
+										
 				}
 			}
 		}

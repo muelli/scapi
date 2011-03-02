@@ -4,6 +4,8 @@
 package edu.biu.scapi.comm;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
@@ -12,23 +14,26 @@ import java.nio.channels.SocketChannel;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Vector;
 
 /** 
  * @author LabTest
  */
 class ListeningThread extends Thread{
-	private Map<InetSocketAddress , SecuringConnectionThread> connectingThreads;//map that includes only SecuringConnectionThread of the down connections
+	private Map<InetAddress , Vector<SecuringConnectionThread>> connectingThreads;//map that includes only SecuringConnectionThread of the down connections
 	private int port;//the port to listen on
 	private boolean bStopped = false;//a flag that indicates if to keep on listening or stop
 	private ServerSocketChannel listener;
+	private int numOfIncomingConnections;
 	
 
 	/**
 	 * 
 	 */
-	public ListeningThread( Map<InetSocketAddress ,SecuringConnectionThread> securingThreads, int port) {
+	public ListeningThread( Map<InetAddress ,Vector<SecuringConnectionThread>> securingThreads, int port, int numOfIncomingConnections) {
 
 		connectingThreads = securingThreads;
+		this.numOfIncomingConnections = numOfIncomingConnections;
 		
 		//prepare the listener.
 		try {
@@ -65,7 +70,7 @@ class ListeningThread extends Thread{
 	public void run() {
 
 		//first set the channels in the map to connecting
-		Collection<SecuringConnectionThread> c = connectingThreads.values();
+		/*Collection<SecuringConnectionThread> c = connectingThreads.values();
 		Iterator<SecuringConnectionThread> itr = c.iterator();
 		
 		while(itr.hasNext()){  
@@ -74,9 +79,11 @@ class ListeningThread extends Thread{
 			//set the channel state to connecting
 		    channel.setState(PlainChannel.State.CONNECTING);
 		       
-		}
+		}*/
 		
-		int numOfIncomingConnections = connectingThreads.size();
+		//calculate the number of incoming connections
+		
+		//int numOfIncomingConnections = connectingThreads.size();
 			
 		//loop for incoming connections and make sure that this thread should not stopped.
         for (int i = 0; i < numOfIncomingConnections && !bStopped; i++) {
@@ -110,14 +117,29 @@ class ListeningThread extends Thread{
 				}
 			}
 			else{
+				
+				
+				//get the ip of the client socket
+				InetAddress inetAddr = socketChannel.socket().getInetAddress();
+				
+				
 				//get the address from the socket and find it the map
-				SecuringConnectionThread scThread = connectingThreads.get(socketChannel.socket().getLocalAddress());
+				Vector<SecuringConnectionThread> vectorScThreads = connectingThreads.get(inetAddr);
 				
 				//check if the ip address is a valid address. i.e. exists in the map
-				if(scThread==null){//an un authorized ip tried to connect
+				if(vectorScThreads==null){//an un authorized ip tried to connect
 					i--; ////iterate back since no legal ip has connected
 				}
 	        	else{ //we have a thread that corresponds to this ip address. Thus, this address is valid
+	        		
+	        		//remove the first index and get the securing thread
+	        		SecuringConnectionThread scThread = vectorScThreads.remove(0);
+	        		
+	        		//If there is nothing left in the vector remove it from the map too.
+	        		if(vectorScThreads.size()==0){
+	        			connectingThreads.remove(inetAddr);
+	        		}
+	        			
 	        		
 	        		//check that the channel is concrete channel and not some decoration
 	        		if(scThread.getChannel() instanceof PlainTCPChannel){

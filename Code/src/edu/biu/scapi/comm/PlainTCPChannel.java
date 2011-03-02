@@ -110,7 +110,7 @@ public class PlainTCPChannel extends PlainChannel{
 	boolean connect() throws IOException {
 		
 		//try to connect
-		System.out.println("Trying to connect to " + socketAddress.getPort());
+		System.out.println("Trying to connect to " + socketAddress.getAddress() + " on port " + socketAddress.getPort());
 		
 		//create and connect the socket. Cannot reconnect if the function connect fails since it closes the socket.
 		socket = new Socket(socketAddress.getAddress(), socketAddress.getPort());

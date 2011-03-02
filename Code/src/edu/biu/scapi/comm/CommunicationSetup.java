@@ -32,6 +32,7 @@ import org.apache.commons.exec.Watchdog;
 
 public class CommunicationSetup implements TimeoutObserver{
 	private boolean bTimedOut = false;
+	private boolean enableNagle = false;
 	private List<Party> listOfParties;
 	private EstablishedConnections establishedConnections;
 	private KeyExchangeProtocol keyExchangeProtocol;
@@ -106,6 +107,22 @@ public class CommunicationSetup implements TimeoutObserver{
 		return establishedConnections.getConnections();
 		
 	}
+	
+	/**
+	 * 
+	 * prepareForCommunication : Does the same as the other prepareForCommunication function only sets the flag of enableNagle first.
+	 * 
+	 * @param enableNagle - a flag indicating wether or not to use the nagle optimization algorithm. 
+	 * @return
+	 */
+	public Map<InetSocketAddress, Channel> prepareForCommunication(List<Party> listOfParties,
+			KeyExchangeProtocol keyExchange, SecurityLevel securityLevel,
+			ConnectivitySuccessVerifier successLevel, long timeOut, boolean enableNagle) {
+		
+		this.enableNagle = enableNagle;
+		
+		return prepareForCommunication(listOfParties, keyExchange, securityLevel, successLevel, timeOut);
+	}
 
 
 	/**
@@ -120,9 +137,10 @@ public class CommunicationSetup implements TimeoutObserver{
 		Iterator<Party> itr = listOfParties.iterator();
 		Party firstParty = null;
 		Party party;
+		int numOfIncomingConnections = 0;
 		
 		//temp map
-		Map<InetSocketAddress, SecuringConnectionThread> localMapforListeningThread = new HashMap<InetSocketAddress, SecuringConnectionThread>();
+		Map<InetAddress, Vector<SecuringConnectionThread>> localMapforListeningThread = new HashMap<InetAddress, Vector<SecuringConnectionThread>>();
 		
 		//the first party is me. Other parties identity will be compared with this party
 		if(itr.hasNext()){
@@ -171,7 +189,10 @@ public class CommunicationSetup implements TimeoutObserver{
 			}
 			else{ //DOWN connection
 				
-				//set to connect to false. We do not want the thread to try to connect.
+				//increase the index of incoming connections
+				numOfIncomingConnections++;
+				
+				//set doConnect to false. We do not want the thread to try to connect.
 				doConnect = false;
 				
 				//create a new SecuringConnectionThread 
@@ -180,15 +201,31 @@ public class CommunicationSetup implements TimeoutObserver{
 				//add to the thread vector
 				threadsVector.add(scThread);
 				
-				//add thread to the local vector so the listening thread can start the securing thread.
-				localMapforListeningThread.put(new InetSocketAddress(party.getIpAddress(), party.getPort()), scThread);
+				//a vector holding the securing threads
+				Vector<SecuringConnectionThread> vector; 
+				if(localMapforListeningThread.containsKey(party.getIpAddress())){
+					//ip already exists insert to the vector
+					vector = localMapforListeningThread.get(party.getIpAddress());
+					
+					//add the thread to the existing vector
+					vector.add(scThread);
+				}
+				else{//there is no such an ip. create a new vector 
+					
+					vector = new Vector<SecuringConnectionThread>();
+					vector.add(scThread);
+					
+					//add thread to the local vector so the listening thread can start the securing thread.
+					localMapforListeningThread.put(party.getIpAddress(), vector);
+					
+				}
 				
 			}
 		}
 		
 		if(localMapforListeningThread.size()>0){//there are down connections need to listen to connections using the listeningThread
 			//send information to the listening thread
-			listeningThread = new ListeningThread(localMapforListeningThread, firstParty.getPort());
+			listeningThread = new ListeningThread(localMapforListeningThread, firstParty.getPort(), numOfIncomingConnections);
 			listeningThread.start();
 		}
 		
