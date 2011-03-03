@@ -85,8 +85,9 @@ class ListeningThread extends Thread{
 		
 		//int numOfIncomingConnections = connectingThreads.size();
 			
+		int i=0;
 		//loop for incoming connections and make sure that this thread should not stopped.
-        for (int i = 0; i < numOfIncomingConnections && !bStopped; i++) {
+        while (i < numOfIncomingConnections && !bStopped) {
         	
             SocketChannel socketChannel = null;
 			try {
@@ -108,7 +109,6 @@ class ListeningThread extends Thread{
 			
 			//there was no connection request
 			if(socketChannel==null){
-				i--;//iterate back since there was no connection request
 				try {
 					Thread.sleep (1000);
 				} catch (InterruptedException e) {
@@ -128,15 +128,26 @@ class ListeningThread extends Thread{
 				
 				//check if the ip address is a valid address. i.e. exists in the map
 				if(vectorScThreads==null){//an un authorized ip tried to connect
-					i--; ////iterate back since no legal ip has connected
+					
+					//close the socket
+					try {
+						socketChannel.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 	        	else{ //we have a thread that corresponds to this ip address. Thus, this address is valid
+	        		
+	        		//increment the index
+	        		i++;
 	        		
 	        		//remove the first index and get the securing thread
 	        		SecuringConnectionThread scThread = vectorScThreads.remove(0);
 	        		
 	        		//If there is nothing left in the vector remove it from the map too.
 	        		if(vectorScThreads.size()==0){
+	        			
 	        			connectingThreads.remove(inetAddr);
 	        		}
 	        			

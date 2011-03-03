@@ -64,7 +64,7 @@ public class PlainTCPChannel extends PlainChannel{
 	 */
 	public void send(Message msg) throws IOException {
 		
-		System.out.println("Sending " + msg.toString());
+		System.out.println("Sending " + msg.getData()[0] + msg.getData()[1]);
 		
 		outStream.writeObject(msg);
 	}
@@ -76,8 +76,11 @@ public class PlainTCPChannel extends PlainChannel{
 	 */
 	public Message receive() throws ClassNotFoundException, IOException {
 		
-		System.out.println("receiving... ");
-		return ((Message)inStream.readObject());
+		
+		Message msg = (Message)inStream.readObject();
+		System.out.println("receiving... " +  msg.getData()[0] + msg.getData()[1]);
+		
+		return msg;
 	}
 
 	/**
@@ -88,9 +91,10 @@ public class PlainTCPChannel extends PlainChannel{
 
 		if(socket!=null){
 			try {
-				socket.close();
+				
 				outStream.close();
 				inStream.close();
+				socket.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -131,7 +135,9 @@ public class PlainTCPChannel extends PlainChannel{
 		return true;
 		
 	}
-	
+	/**
+	 * returns if the socket is connected
+	 */
 	boolean isConnected(){
 		
 		if(socket!=null)
@@ -153,6 +159,7 @@ public class PlainTCPChannel extends PlainChannel{
 		this.socket = socket;
 		
 		try {
+			//set t he input and output streams
 			outStream = new ObjectOutputStream(socket.getOutputStream());
 			inStream = new ObjectInputStream(socket.getInputStream());
 		} catch (IOException e) {
