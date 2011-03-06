@@ -167,6 +167,10 @@ public class PlainTCPChannel extends PlainChannel{
 			e.printStackTrace();
 		}
 	}
+	
+	Socket getSocket(){
+		return socket;
+	}
 
 
 	

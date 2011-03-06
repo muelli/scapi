@@ -13,6 +13,7 @@ package edu.biu.scapi.comm;
 import edu.biu.scapi.comm.Channel;
 
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -114,10 +115,10 @@ public class EstablishedConnections {
 	void updateConnectionState(InetSocketAddress address, PlainChannel.State state) {
 
 		//get the channel from the map
-		Channel ch = connections.get(address);
+		Channel channel = connections.get(address);
 		
-		if(ch instanceof PlainChannel){
-			PlainChannel plainChannel = (PlainChannel)ch;
+		if(channel instanceof PlainChannel){
+			PlainChannel plainChannel = (PlainChannel)channel;
 		
 			plainChannel.setState(state);
 		}
@@ -129,8 +130,8 @@ public class EstablishedConnections {
 	 * 
 	 * removeNotReadyConnections : Removes all the connections which are not in READY state.
 	 * 
-	 * Note						 : Since we cannot remove connections in the middle of iterations we will create a temporary map with only the 
-	 * 							   connections in READY state. At last we will remove all the connections and add only those with READY state.
+	 * Note						 : The connection can be removed only by the iterator and not directly through the map. Otherwise an exception
+	 * 							   will be thrown.
 	 */
 	void removeNotReadyConnections(){
 		
@@ -151,12 +152,47 @@ public class EstablishedConnections {
 		       if(plainChannel.getState()!=PlainChannel.State.READY){
 
 		    	   iterator.remove();
-		    	   //tempConnections.put(address, plainChannel);
+		    	   
 		       }
 		}
 		
-		//connections.clear();
-		//connections.putAll(tempConnections);
+	}
+	
+	void enableNagle(boolean enableNagle){
+		
+		PlainTCPChannel plainTCPChannel;
+		Channel channel;
+		InetSocketAddress address;
+		
+		
+		//set an iterator for the connection map.
+		Iterator<InetSocketAddress> iterator = connections.keySet().iterator();
+		
+		//go over the map and check if all the connections are in READY state
+		while(iterator.hasNext()){
+			
+			//get the address
+			address = iterator.next();
+			
+			channel = connections.get(address);
+			//get the plain tcp channel. Otherwise there is no point for the nagle algorithm
+			if(channel instanceof PlainTCPChannel){
+				
+				//it is safe to cast to PlainTCPChannel
+				plainTCPChannel = (PlainTCPChannel) channel;
+				
+				//enable/disable nagle
+				try {
+					plainTCPChannel.getSocket().setTcpNoDelay(!enableNagle);
+				} catch (SocketException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		    	   
+		    
+		}
+		
 	}
 	
 	void closeAllConnections(){

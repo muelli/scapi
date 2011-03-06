@@ -100,6 +100,9 @@ public class CommunicationSetup implements TimeoutObserver{
 		//remove all connections with not READY state
 		establishedConnections.removeNotReadyConnections();
 		
+		//set nagle algorithm
+		establishedConnections.enableNagle(enableNagle);
+		
 		//update the security level for each connection
 		setSecurityLevel();
 		
