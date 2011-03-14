@@ -19,7 +19,10 @@ package edu.biu.scapi.comm;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.logging.Level;
+
 import edu.biu.scapi.comm.Channel;
+import edu.biu.scapi.generals.Logging;
 
 /** 
  * @author LabTest
@@ -75,7 +78,10 @@ class SecuringConnectionThread extends Thread{
 			
 			if(doConnect){
 				channel.setState(PlainChannel.State.CONNECTING);
+				
+				Logging.getLogger().log(Level.INFO, "state: connecting " + channel.toString());
 				System.out.println("state: connecting");
+				
 				try {
 					//try to connect
 					channel.connect();
@@ -93,7 +99,8 @@ class SecuringConnectionThread extends Thread{
 			
 			//set channel state to securing
 			channel.setState(PlainChannel.State.SECURING);
-			System.out.println("state: securing");
+			
+			Logging.getLogger().log(Level.INFO, "state: securing " + channel.toString());
 			
 			//start key exchange protocol
 			keyExchangeProtocol.start(null);
@@ -107,10 +114,11 @@ class SecuringConnectionThread extends Thread{
 			
 			//set the channel state to READY
 			channel.setState(PlainChannel.State.READY);
-			System.out.println("state: ready");
+			Logging.getLogger().log(Level.INFO, "state: ready " + channel.toString());
+			
 			
 		}
-		System.out.println("End of securing thread run\n");
+		Logging.getLogger().log(Level.INFO, "End of securing thread run" + channel.toString());
 	}
 
 

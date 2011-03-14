@@ -81,6 +81,4 @@ class AuthenticatedChannel extends ChannelDecorator {
 	}
 
 
-	
-	
 }

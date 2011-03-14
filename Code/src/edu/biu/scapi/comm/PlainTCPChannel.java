@@ -9,6 +9,9 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.logging.Level;
+
+import edu.biu.scapi.generals.Logging;
 
 /** 
  * @author LabTest
@@ -64,9 +67,11 @@ public class PlainTCPChannel extends PlainChannel{
 	 */
 	public void send(Message msg) throws IOException {
 		
-		System.out.println("Sending " + msg.getData()[0] + msg.getData()[1]);
+		
 		
 		outStream.writeObject(msg);
+		
+		System.out.println("Sending " + msg.getData()[0] + msg.getData()[1]);
 	}
 
 	/** 
@@ -96,7 +101,8 @@ public class PlainTCPChannel extends PlainChannel{
 				inStream.close();
 				socket.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+
+				Logging.getLogger().log(Level.WARNING, e.toString());
 				e.printStackTrace();
 			}
 			
@@ -114,7 +120,8 @@ public class PlainTCPChannel extends PlainChannel{
 	boolean connect() throws IOException {
 		
 		//try to connect
-		System.out.println("Trying to connect to " + socketAddress.getAddress() + " on port " + socketAddress.getPort());
+		Logging.getLogger().log(Level.INFO, "Trying to connect to " + socketAddress.getAddress() + " on port " + socketAddress.getPort());
+		
 		
 		//create and connect the socket. Cannot reconnect if the function connect fails since it closes the socket.
 		socket = new Socket(socketAddress.getAddress(), socketAddress.getPort());
@@ -123,11 +130,13 @@ public class PlainTCPChannel extends PlainChannel{
 		
 		if(socket.isConnected()){
 			try {
-				System.out.println("Socket connected");
+				Logging.getLogger().log(Level.INFO, "Socket connected");
 				outStream = new ObjectOutputStream(socket.getOutputStream());
 				inStream = new ObjectInputStream(socket.getInputStream());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
+				Logging.getLogger().log(Level.FINEST, e.toString());
+				
 				e.printStackTrace();
 			}
 		}
@@ -163,7 +172,9 @@ public class PlainTCPChannel extends PlainChannel{
 			outStream = new ObjectOutputStream(socket.getOutputStream());
 			inStream = new ObjectInputStream(socket.getInputStream());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
+			Logging.getLogger().log(Level.WARNING, e.toString());
+			
 			e.printStackTrace();
 		}
 	}

@@ -11,6 +11,7 @@
 package edu.biu.scapi.comm;
 
 import edu.biu.scapi.comm.Channel;
+import edu.biu.scapi.generals.Logging;
 
 import java.net.InetSocketAddress;
 import java.net.SocketException;
@@ -18,14 +19,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
+import java.util.logging.Level;
 
 
 /** 
  * @author LabTest
   */
 public class EstablishedConnections {
-	private Map<InetSocketAddress,Channel> connections;
+	private Map<InetSocketAddress,Channel> connectionsMap;
 	//private Set<Channel> channels;
 
 	
@@ -34,7 +35,7 @@ public class EstablishedConnections {
 	 */
 	public EstablishedConnections() {
 		//initiate the map
-		connections = new HashMap<InetSocketAddress,Channel>();
+		connectionsMap = new HashMap<InetSocketAddress,Channel>();
 	}
 	
 
@@ -43,7 +44,7 @@ public class EstablishedConnections {
 	 * @return the connections
 	 */
 	public Map<InetSocketAddress,Channel> getConnections() {
-		return connections;
+		return connectionsMap;
 	}
 	
 	/** 
@@ -54,7 +55,7 @@ public class EstablishedConnections {
 	void addConnection(InetSocketAddress address, Channel connection) {
 
 		// add the channel to the map
-		connections.put(address, connection);
+		connectionsMap.put(address, connection);
 	}
 
 	/** 
@@ -64,7 +65,7 @@ public class EstablishedConnections {
 	Channel removeConnection(InetSocketAddress address) {
 		
 		//remove the connection
-		return connections.remove(address);
+		return connectionsMap.remove(address);
 	}
 
 	/** 
@@ -74,7 +75,7 @@ public class EstablishedConnections {
 	Channel getConnection(InetSocketAddress address) {
 		
 		//remove the connection
-		return connections.get(address);
+		return connectionsMap.get(address);
 	}
 
 	
@@ -83,7 +84,7 @@ public class EstablishedConnections {
 	 */
 	int getConnectionsCount() {
 		
-		return connections.size();
+		return connectionsMap.size();
 	}
 
 	/** 
@@ -92,7 +93,7 @@ public class EstablishedConnections {
 	boolean areAllConnected() {
 
 		//set an iterator for the connection map.
-		Collection<Channel> c = connections.values();
+		Collection<Channel> c = connectionsMap.values();
 		Iterator<Channel> itr = c.iterator();
 		
 		PlainChannel plainChannel;
@@ -115,7 +116,7 @@ public class EstablishedConnections {
 	void updateConnectionState(InetSocketAddress address, PlainChannel.State state) {
 
 		//get the channel from the map
-		Channel channel = connections.get(address);
+		Channel channel = connectionsMap.get(address);
 		
 		if(channel instanceof PlainChannel){
 			PlainChannel plainChannel = (PlainChannel)channel;
@@ -137,18 +138,14 @@ public class EstablishedConnections {
 		
 		PlainChannel plainChannel;
 		InetSocketAddress address;
-		
-		//create a temp map since if we change the main map in the middle of iterations we will get the exception ConcurrentModificationException 
-		//Map<InetSocketAddress,Channel> tempConnections = new HashMap<InetSocketAddress,Channel>();  
-		
-		
+			
 		//set an iterator for the connection map.
-		Iterator<InetSocketAddress> iterator = connections.keySet().iterator();
+		Iterator<InetSocketAddress> iterator = connectionsMap.keySet().iterator();
 		
 		//go over the map and check if all the connections are in READY state
 		while(iterator.hasNext()){ 
 			address = iterator.next();
-			plainChannel = (PlainChannel) connections.get(address);
+			plainChannel = (PlainChannel) connectionsMap.get(address);
 		       if(plainChannel.getState()!=PlainChannel.State.READY){
 
 		    	   iterator.remove();
@@ -166,7 +163,7 @@ public class EstablishedConnections {
 		
 		
 		//set an iterator for the connection map.
-		Iterator<InetSocketAddress> iterator = connections.keySet().iterator();
+		Iterator<InetSocketAddress> iterator = connectionsMap.keySet().iterator();
 		
 		//go over the map and check if all the connections are in READY state
 		while(iterator.hasNext()){
@@ -174,7 +171,7 @@ public class EstablishedConnections {
 			//get the address
 			address = iterator.next();
 			
-			channel = connections.get(address);
+			channel = connectionsMap.get(address);
 			//get the plain tcp channel. Otherwise there is no point for the nagle algorithm
 			if(channel instanceof PlainTCPChannel){
 				
@@ -185,7 +182,9 @@ public class EstablishedConnections {
 				try {
 					plainTCPChannel.getSocket().setTcpNoDelay(!enableNagle);
 				} catch (SocketException e) {
-					// TODO Auto-generated catch block
+
+					Logging.getLogger().log(Level.WARNING, e.toString());
+
 					e.printStackTrace();
 				}
 			}
@@ -202,7 +201,7 @@ public class EstablishedConnections {
 		
 		
 		//set an iterator for the connection map.
-		Iterator<InetSocketAddress> iterator = connections.keySet().iterator();
+		Iterator<InetSocketAddress> iterator = connectionsMap.keySet().iterator();
 		
 		//go over the map and check if all the connections are in READY state
 		while(iterator.hasNext()){ 
@@ -210,7 +209,7 @@ public class EstablishedConnections {
 			address = iterator.next();
 			
 			//get the channel
-			channel = connections.get(address);
+			channel = connectionsMap.get(address);
 		       
 			//close the channel
 			channel.close();

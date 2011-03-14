@@ -18,7 +18,9 @@
 package edu.biu.scapi.comm;
 
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,14 +28,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import org.apache.commons.exec.TimeoutObserver;
 import org.apache.commons.exec.Watchdog;
+
+import edu.biu.scapi.exceptions.DuplicatePartyException;
+import edu.biu.scapi.generals.Logging;
+
+
+
 
 
 public class CommunicationSetup implements TimeoutObserver{
 	private boolean bTimedOut = false;
 	private boolean enableNagle = false;
-	private List<Party> listOfParties;
+	private List<Party> partiesList;
 	private EstablishedConnections establishedConnections;
 	private KeyExchangeProtocol keyExchangeProtocol;
 	private ConnectivitySuccessVerifier connectivitySuccessVerifier;
@@ -43,10 +56,13 @@ public class CommunicationSetup implements TimeoutObserver{
 	private Map<InetSocketAddress,KeyExchangeOutput> keyExchangeMap;
 	
 	
+	
+	
 	/**
 	 * 
 	 */
 	public CommunicationSetup() {
+		
 		
 	}
 
@@ -66,8 +82,9 @@ public class CommunicationSetup implements TimeoutObserver{
 			KeyExchangeProtocol keyExchange, SecurityLevel securityLevel,
 			ConnectivitySuccessVerifier successLevel, long timeOut) {
 		
+		
 		//set parameters
-		this.listOfParties = listOfParties;
+		partiesList = listOfParties;
 		keyExchangeProtocol = keyExchange;
 		this.securityLevel = securityLevel;
 		connectivitySuccessVerifier = successLevel;
@@ -85,8 +102,17 @@ public class CommunicationSetup implements TimeoutObserver{
 		
 		watchdog.start();
 		
+		Logging.getLogger().log(Level.WARNING,"Testing log");
+		
 		//establish connections.
-		establishAndSecureConnections();
+		try {
+			establishAndSecureConnections();
+		} catch (DuplicatePartyException e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Logging.getLogger().log(Level.SEVERE, e.toString() );
+		}
 		
 		//verify connection
 		verifyConnectingStatus();
@@ -133,17 +159,18 @@ public class CommunicationSetup implements TimeoutObserver{
 	 * establishAndSecureConnections : using the SecuringConnectionThread and the ListeningThread we connect the parties via sockets.
 	 * 								   We either connect by initiating a connection or by listening to incoming connection requests.
 	 * @return
+	 * @throws DuplicatePartyException 
 	 */
-	private void establishAndSecureConnections() {
+	private void establishAndSecureConnections() throws DuplicatePartyException {
 		
 		//Create an iterator to go over the list of parties 
-		Iterator<Party> itr = listOfParties.iterator();
+		Iterator<Party> itr = partiesList.iterator();
 		Party firstParty = null;
 		Party party;
 		int numOfIncomingConnections = 0;
 		
 		//temp map
-		Map<InetAddress, Vector<SecuringConnectionThread>> localMapforListeningThread = new HashMap<InetAddress, Vector<SecuringConnectionThread>>();
+		Map<InetAddress, Vector<SecuringConnectionThread>> ListeningThreadMap = new HashMap<InetAddress, Vector<SecuringConnectionThread>>();
 		
 		//the first party is me. Other parties identity will be compared with this party
 		if(itr.hasNext()){
@@ -174,64 +201,101 @@ public class CommunicationSetup implements TimeoutObserver{
 			
 			boolean doConnect; 
 			
+			int partyCompare = firstParty.compareTo(party);
+			if(partyCompare==0){//should not happen since it means that there is another party in the list with the same ip+port
+				throw new DuplicatePartyException("Another party with the same ip address and port");
+			}
 			//UPWARD connection
-			if(firstParty.compareTo(party)>0){
+			else if(firstParty.compareTo(party)>0){
 				
-				//set doConnect to true. We need the thread to connect to the other side of the channel. 
-				doConnect = true;
-				
-				//create a new SecuringConnectionThread 
-				SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), doConnect , keyExchangeProtocol, keyExchangeOutput);
-				
-				//add to the thread vector
-				threadsVector.add(scThread);
-				
-				//start the thread
-				scThread.start();
+				upwardConnection(party, channel, keyExchangeOutput);
 								
 			}
 			else{ //DOWN connection
 				
-				//increase the index of incoming connections
-				numOfIncomingConnections++;
-				
-				//set doConnect to false. We do not want the thread to try to connect.
-				doConnect = false;
-				
-				//create a new SecuringConnectionThread 
-				SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), doConnect , keyExchangeProtocol, keyExchangeOutput);
-				
-				//add to the thread vector
-				threadsVector.add(scThread);
-				
-				//a vector holding the securing threads
-				Vector<SecuringConnectionThread> vector; 
-				if(localMapforListeningThread.containsKey(party.getIpAddress())){
-					//ip already exists insert to the vector
-					vector = localMapforListeningThread.get(party.getIpAddress());
-					
-					//add the thread to the existing vector
-					vector.add(scThread);
-				}
-				else{//there is no such an ip. create a new vector 
-					
-					vector = new Vector<SecuringConnectionThread>();
-					vector.add(scThread);
-					
-					//add thread to the local vector so the listening thread can start the securing thread.
-					localMapforListeningThread.put(party.getIpAddress(), vector);
-					
-				}
+				numOfIncomingConnections = downConnection(party,
+						numOfIncomingConnections, ListeningThreadMap,
+						channel, keyExchangeOutput);
 				
 			}
 		}
 		
-		if(localMapforListeningThread.size()>0){//there are down connections need to listen to connections using the listeningThread
+		if(ListeningThreadMap.size()>0){//there are down connections need to listen to connections using the listeningThread
 			//send information to the listening thread
-			listeningThread = new ListeningThread(localMapforListeningThread, firstParty.getPort(), numOfIncomingConnections);
+			listeningThread = new ListeningThread(ListeningThreadMap, firstParty.getPort(), numOfIncomingConnections);
 			listeningThread.start();
 		}
 		
+	}
+
+	/**
+	 * downConnection
+	 * @param party
+	 * @param numOfIncomingConnections
+	 * @param localMapforListeningThread
+	 * @param channel
+	 * @param keyExchangeOutput
+	 * @return
+	 */
+	private int downConnection(
+			Party party,
+			int numOfIncomingConnections,
+			Map<InetAddress, Vector<SecuringConnectionThread>> listeningThreadMap,
+			PlainChannel channel, KeyExchangeOutput keyExchangeOutput) {
+		boolean doConnect;
+		//increase the index of incoming connections
+		numOfIncomingConnections++;
+		
+		//set doConnect to false. We do not want the thread to try to connect.
+		doConnect = false;
+		
+		//create a new SecuringConnectionThread 
+		SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), doConnect , keyExchangeProtocol, keyExchangeOutput);
+		
+		//add to the thread vector
+		threadsVector.add(scThread);
+		
+		//a vector holding the securing threads
+		Vector<SecuringConnectionThread> vector; 
+		if(listeningThreadMap.containsKey(party.getIpAddress())){
+			//ip already exists insert to the vector
+			vector = listeningThreadMap.get(party.getIpAddress());
+			
+			//add the thread to the existing vector
+			vector.add(scThread);
+		}
+		else{//there is no such an ip. create a new vector 
+			
+			vector = new Vector<SecuringConnectionThread>();
+			vector.add(scThread);
+			
+			//add thread to the local vector so the listening thread can start the securing thread.
+			listeningThreadMap.put(party.getIpAddress(), vector);
+			
+		}
+		return numOfIncomingConnections;
+	}
+
+	/**
+	 * upwardConnection
+	 * @param party
+	 * @param channel
+	 * @param keyExchangeOutput
+	 */
+	private void upwardConnection(Party party, PlainChannel channel,
+			KeyExchangeOutput keyExchangeOutput) {
+		boolean doConnect;
+		//set doConnect to true. We need the thread to connect to the other side of the channel. 
+		doConnect = true;
+		
+		//create a new SecuringConnectionThread 
+		SecuringConnectionThread scThread = new SecuringConnectionThread(channel, party.getIpAddress(), party.getPort(), doConnect , keyExchangeProtocol, keyExchangeOutput);
+		
+		//add to the thread vector
+		threadsVector.add(scThread);
+		
+		//start the thread
+		scThread.start();
 	}
 
 	/**
@@ -246,7 +310,9 @@ public class CommunicationSetup implements TimeoutObserver{
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+
+				Logging.getLogger().log(Level.FINEST, e.toString());
+
 				e.printStackTrace();
 			}
 		}
@@ -262,7 +328,7 @@ public class CommunicationSetup implements TimeoutObserver{
 	private boolean runSuccessAlgo() {
 
 		//call the relevant success algorithm
-		return connectivitySuccessVerifier.hasSucceded(establishedConnections, listOfParties);
+		return connectivitySuccessVerifier.hasSucceded(establishedConnections, partiesList);
 	}
 
 	/**
@@ -284,7 +350,7 @@ public class CommunicationSetup implements TimeoutObserver{
 		else{//Set the security level only if the security level is not plain. 
 			
 			//create a temp map since if we change the main map in the middle of iterations we will get the exception ConcurrentModificationException 
-			Map<InetSocketAddress,Channel> tempConnections = new HashMap<InetSocketAddress,Channel>();  
+			Map<InetSocketAddress,Channel> tempConnectionsMap = new HashMap<InetSocketAddress,Channel>();  
 			
 		
 			InetSocketAddress localInetSocketAddress = null;
@@ -313,7 +379,7 @@ public class CommunicationSetup implements TimeoutObserver{
 		    			//create an encrypted channel
 		    			EncryptedChannel encChannel = new EncryptedChannel(ch, keyExchangeOutput.getEncKey());
 		    			//establishedConnections.addConnection(encChannel, localInetSocketAddress);
-		    			tempConnections.put(localInetSocketAddress,encChannel);
+		    			tempConnectionsMap.put(localInetSocketAddress,encChannel);
 		    			break;
 		    		}
 		    		case AUTHENTICATED : {
@@ -321,7 +387,7 @@ public class CommunicationSetup implements TimeoutObserver{
 		    			//create an authenticated channel
 		    			AuthenticatedChannel authenChannel = new AuthenticatedChannel(ch, keyExchangeOutput.getMacKey());
 		    			//establishedConnections.addConnection(authenChannel, localInetSocketAddress);
-		    			tempConnections.put(localInetSocketAddress, authenChannel);
+		    			tempConnectionsMap.put(localInetSocketAddress, authenChannel);
 		    			break;
 		    		}
 		    		case SECURE : {
@@ -331,7 +397,7 @@ public class CommunicationSetup implements TimeoutObserver{
 		    			EncryptedChannel secureChannel = new EncryptedChannel(authenChannel, keyExchangeOutput.getEncKey());
 		    			
 		    			//establishedConnections.addConnection(secureChannel, localInetSocketAddress);
-		    			tempConnections.put(localInetSocketAddress, secureChannel);
+		    			tempConnectionsMap.put(localInetSocketAddress, secureChannel);
 		    			break;
 		    			
 		    		}
@@ -339,7 +405,7 @@ public class CommunicationSetup implements TimeoutObserver{
 		    }
 		    
 		    establishedConnections.getConnections().clear();
-		    establishedConnections.getConnections().putAll(tempConnections);
+		    establishedConnections.getConnections().putAll(tempConnectionsMap);
 		}	
 	}
 
@@ -349,7 +415,7 @@ public class CommunicationSetup implements TimeoutObserver{
 	 */
 	public void timeoutOccured(Watchdog w) {
 
-		System.out.println("Timeout accured");
+		Logging.getLogger().log(Level.INFO, "Timeout accured");
 		
 		//timeout has passed set the flag
 		bTimedOut = true;

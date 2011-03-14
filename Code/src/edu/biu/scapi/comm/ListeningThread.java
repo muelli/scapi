@@ -15,12 +15,18 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Level;
+
+import edu.biu.scapi.generals.Logging;
 
 /** 
  * @author LabTest
  */
 class ListeningThread extends Thread{
-	private Map<InetAddress , Vector<SecuringConnectionThread>> connectingThreads;//map that includes only SecuringConnectionThread of the down connections
+	private Map<InetAddress , Vector<SecuringConnectionThread>> connectingThreadsMap;//map that includes vectors of SecuringConnectionThread of the down connections.
+																				  //Since we may have multiple channels from the same ip address we use a vector
+																				  //for each ip address. We can not differentiate using the port since when a client connects
+																				  //its port is unknown.
 	private int port;//the port to listen on
 	private boolean bStopped = false;//a flag that indicates if to keep on listening or stop
 	private ServerSocketChannel listener;
@@ -30,9 +36,9 @@ class ListeningThread extends Thread{
 	/**
 	 * 
 	 */
-	public ListeningThread( Map<InetAddress ,Vector<SecuringConnectionThread>> securingThreads, int port, int numOfIncomingConnections) {
+	public ListeningThread( Map<InetAddress ,Vector<SecuringConnectionThread>> securingThreadsMap, int port, int numOfIncomingConnections) {
 
-		connectingThreads = securingThreads;
+		connectingThreadsMap = securingThreadsMap;
 		this.numOfIncomingConnections = numOfIncomingConnections;
 		
 		//prepare the listener.
@@ -41,6 +47,8 @@ class ListeningThread extends Thread{
 			listener.socket().bind (new InetSocketAddress (port));
 			listener.configureBlocking (false);
 		} catch (IOException e) {
+			
+			Logging.getLogger().log(Level.WARNING, e.toString());
 			
 			e.printStackTrace();
 		}
@@ -70,20 +78,27 @@ class ListeningThread extends Thread{
 	public void run() {
 
 		//first set the channels in the map to connecting
-		/*Collection<SecuringConnectionThread> c = connectingThreads.values();
-		Iterator<SecuringConnectionThread> itr = c.iterator();
+		Collection<Vector<SecuringConnectionThread>> collection = connectingThreadsMap.values();
+		Iterator<Vector<SecuringConnectionThread>> itr = collection.iterator();
 		
-		while(itr.hasNext()){  
-			PlainChannel channel = ((SecuringConnectionThread)itr.next()).getChannel();
+		while(itr.hasNext()){ 
 			
-			//set the channel state to connecting
-		    channel.setState(PlainChannel.State.CONNECTING);
+			//get the vector of threads.
+			Vector<SecuringConnectionThread> threadsVector = itr.next();
+			int vectorSize = threadsVector.size();
+			
+			//go over the vector to set the state to connecting.
+			for(int i=0; i<vectorSize ; i++){
+				
+				//get the plain channel in order to change the state
+				PlainChannel channel = threadsVector.get(i).getChannel(); 
+			
+				//set the channel state to connecting
+				channel.setState(PlainChannel.State.CONNECTING);
+			}
 		       
-		}*/
+		}
 		
-		//calculate the number of incoming connections
-		
-		//int numOfIncomingConnections = connectingThreads.size();
 			
 		int i=0;
 		//loop for incoming connections and make sure that this thread should not stopped.
@@ -94,16 +109,17 @@ class ListeningThread extends Thread{
 				
 				//use the server socket to listen on incoming connections.
 				// accept connections from all the smaller processes
+				Logging.getLogger().log(Level.INFO, "Trying to listen "+ listener.socket().getLocalPort());
 				
-				System.out.println("Trying to listen " + listener.socket().getLocalPort());
 				socketChannel = listener.accept();
-				
-				//s.setTcpNoDelay(true);//consider the 2 options of nagle
+			
 				
 			}	catch (ClosedChannelException e) {
 				// TODO: handle exception
 			} 	catch (IOException e) {
-				// TODO Auto-generated catch block
+				
+				Logging.getLogger().log(Level.WARNING, e.toString());
+				
 				e.printStackTrace();
 			}
 			
@@ -112,7 +128,9 @@ class ListeningThread extends Thread{
 				try {
 					Thread.sleep (1000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					
+					Logging.getLogger().log(Level.INFO, e.toString());
+					
 					e.printStackTrace();
 				}
 			}
@@ -123,17 +141,20 @@ class ListeningThread extends Thread{
 				InetAddress inetAddr = socketChannel.socket().getInetAddress();
 				
 				
-				//get the address from the socket and find it the map
-				Vector<SecuringConnectionThread> vectorScThreads = connectingThreads.get(inetAddr);
+				//use the address from the socket and find it the map. We get a vector of all the SecuringConnectionThreads that have this ip address.
+				Vector<SecuringConnectionThread> scThreadsVector = connectingThreadsMap.get(inetAddr);
 				
-				//check if the ip address is a valid address. i.e. exists in the map
-				if(vectorScThreads==null){//an un authorized ip tried to connect
+				//check if the ip address is a valid address. I.e. exists in the map. If the returned vector is null it means that there is no
+				//SecuringConnectionThreads for this address.
+				if(scThreadsVector==null){//an unauthorized ip tried to connect
 					
 					//close the socket
 					try {
 						socketChannel.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
+						
+						Logging.getLogger().log(Level.WARNING, e.toString());
+						
 						e.printStackTrace();
 					}
 				}
@@ -142,13 +163,15 @@ class ListeningThread extends Thread{
 	        		//increment the index
 	        		i++;
 	        		
-	        		//remove the first index and get the securing thread
-	        		SecuringConnectionThread scThread = vectorScThreads.remove(0);
+	        		//remove the first index and get the securing thread. Get the first thread in the vector. It may be that this is not
+	        		//the thread that has the appropriate port. However this is for the key exchange algorithm to check if it is important
+	        		//to the application that use the com layer.
+	        		SecuringConnectionThread scThread = scThreadsVector.remove(0);
 	        		
 	        		//If there is nothing left in the vector remove it from the map too.
-	        		if(vectorScThreads.size()==0){
+	        		if(scThreadsVector.isEmpty()){
 	        			
-	        			connectingThreads.remove(inetAddr);
+	        			connectingThreadsMap.remove(inetAddr);
 	        		}
 	        			
 	        		
@@ -167,6 +190,7 @@ class ListeningThread extends Thread{
 			}
         		
         }	
+        Logging.getLogger().log(Level.INFO, "End of listening thread run");
         System.out.println("End of listening thread run");
 	}
 }
