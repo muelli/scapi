@@ -1,15 +1,15 @@
 /**
- * 
+ * A cryptographic hash function is a deterministic procedure that takes an arbitrary block of data and returns a fixed-size bit string, 
+ * the (cryptographic) hash value. There are two main levels of security that we will consider here: 
+ * target collision resistance (meaning that given x it is hard to find y such that H(y)=H(x)) and collision resistant for which we also 
+ * have an interface. 
  */
 package edu.biu.scapi.primitives.crypto.hash;
 
 import java.security.spec.AlgorithmParameterSpec;
 
 /** 
- * <!-- begin-UML-doc -->
- * <!-- end-UML-doc -->
  * @author LabTest
- * @generated "UML to Java (com.ibm.xtools.transform.uml2.java5.internal.UML2JavaTransform)"
  */
 public interface TargetCollisionResistant {
 	
