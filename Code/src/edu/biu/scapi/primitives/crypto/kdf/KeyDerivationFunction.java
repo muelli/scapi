@@ -1,0 +1,21 @@
+/**
+ * 
+ */
+package edu.biu.scapi.primitives.crypto.kdf;
+
+import javax.crypto.SecretKey;
+
+/** 
+  * @author LabTest
+ */
+public interface KeyDerivationFunction {
+	/** 
+
+	 * @param key
+	 * @param len
+	 * @return
+	 */
+	public SecretKey generateKey(SecretKey key, int outLen,  byte[] iv);
+	public SecretKey generateKey(SecretKey key, int outLen);
+	public void generateKey(byte[] inKey, int inOff, int inLen, byte[] outKey, int outOff, int outLen);
+}
