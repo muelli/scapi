@@ -113,11 +113,12 @@
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_HTFL0OG-Ed-RD6FdqQYKeQ" name="Watchdog"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_7Jg6gOHUEd-RD6FdqQYKeQ" name="Map&lt;Channel>"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_IsdiIOHVEd-RD6FdqQYKeQ" name="int"/>
-      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_eaZVUOJxEd-RD6FdqQYKeQ" name="Map &lt;id : int, channel : Channel>"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_eaZVUOJxEd-RD6FdqQYKeQ" name="Map &lt;id : InetSocketAddress, channel : Channel>"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_BFyKwOJ8Ed-RD6FdqQYKeQ" name="ID"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_V4yIgOKQEd-cUO7AwuUZag" name="TimeOut"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_6pVnEO_1Ed-dS9GL4c1d0Q" name="Role"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_HBgo8PCLEd-dS9GL4c1d0Q" name="State"/>
+      <packagedElement xmi:type="uml:Interface" xmi:id="_ZBeDMDOOEeCMy6dVLg6oxA" name="MacAlgorithm"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Class" xmi:id="_QTaXIOGuEd-RD6FdqQYKeQ" name="PartiesManager" clientDependency="_gnaMQOG9Ed-RD6FdqQYKeQ">
       <eAnnotations xmi:id="_TMCKEOGuEd-RD6FdqQYKeQ" source="http://www.eclipse.org/uml2/2.0.0/UML">
@@ -434,9 +435,6 @@
         <ownedAttribute xmi:id="_Bvz5EOHVEd-RD6FdqQYKeQ" name="name" visibility="private">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
         </ownedAttribute>
-        <ownedAttribute xmi:id="_TcC3APCLEd-dS9GL4c1d0Q" name="id" visibility="private">
-          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
-        </ownedAttribute>
         <ownedAttribute xmi:id="_DZnIcOHVEd-RD6FdqQYKeQ" name="ipAddress" visibility="private" type="_-1OCAODpEd-RD6FdqQYKeQ"/>
         <ownedAttribute xmi:id="_HHSUEOHVEd-RD6FdqQYKeQ" name="port" visibility="private" type="_IsdiIOHVEd-RD6FdqQYKeQ"/>
         <ownedAttribute xmi:id="_JCqboOHVEd-RD6FdqQYKeQ" name="key" visibility="private">
@@ -456,10 +454,10 @@
         </ownedAttribute>
         <ownedOperation xmi:id="_qMk7MOJ3Ed-RD6FdqQYKeQ" name="addConnection">
           <ownedParameter xmi:id="_w4ThcOJ5Ed-RD6FdqQYKeQ" name="connection" type="_XBJ8UN9PEd-RD6FdqQYKeQ"/>
-          <ownedParameter xmi:id="_7J9FgOJ7Ed-RD6FdqQYKeQ" name="id" type="_BFyKwOJ8Ed-RD6FdqQYKeQ"/>
+          <ownedParameter xmi:id="_7J9FgOJ7Ed-RD6FdqQYKeQ" name="id" type="_6LHCoDd1EeCCXKqtNBRa6w"/>
         </ownedOperation>
         <ownedOperation xmi:id="_1nT8UOJ7Ed-RD6FdqQYKeQ" name="removeConnection">
-          <ownedParameter xmi:id="_5S5dQOJ7Ed-RD6FdqQYKeQ" name="id" type="_BFyKwOJ8Ed-RD6FdqQYKeQ"/>
+          <ownedParameter xmi:id="_5S5dQOJ7Ed-RD6FdqQYKeQ" name="id" type="_6LHCoDd1EeCCXKqtNBRa6w"/>
         </ownedOperation>
         <ownedOperation xmi:id="_FQhF0OJ8Ed-RD6FdqQYKeQ" name="getConnectionsCount">
           <ownedParameter xmi:id="_HBBaIOJ8Ed-RD6FdqQYKeQ" name="Parameter1" type="_IsdiIOHVEd-RD6FdqQYKeQ" direction="return"/>
@@ -468,7 +466,7 @@
           <ownedParameter xmi:id="_JdomgOJ8Ed-RD6FdqQYKeQ" name="Parameter1" type="_s2iSAOGxEd-RD6FdqQYKeQ" direction="return"/>
         </ownedOperation>
         <ownedOperation xmi:id="_NjS0UOJ8Ed-RD6FdqQYKeQ" name="updateConnectionState">
-          <ownedParameter xmi:id="_S66ZQOJ8Ed-RD6FdqQYKeQ" name="id" type="_BFyKwOJ8Ed-RD6FdqQYKeQ"/>
+          <ownedParameter xmi:id="_S66ZQOJ8Ed-RD6FdqQYKeQ" name="id" type="_6LHCoDd1EeCCXKqtNBRa6w"/>
           <ownedParameter xmi:id="_S66ZQeJ8Ed-RD6FdqQYKeQ" name="state" type="_HBgo8PCLEd-dS9GL4c1d0Q"/>
         </ownedOperation>
       </packagedElement>
@@ -665,8 +663,10 @@
       <packagedElement xmi:type="uml:Dependency" xmi:id="_spVfgN9sEd-RD6FdqQYKeQ" supplier="_XBJ8UN9PEd-RD6FdqQYKeQ" client="_xkZLoN9pEd-RD6FdqQYKeQ"/>
       <packagedElement xmi:type="uml:Class" xmi:id="_FGK6kAdpEeCOnPMyfsFByA" name="AuthenticatedChannel" isAbstract="true">
         <generalization xmi:id="_JMIqYAdpEeCOnPMyfsFByA" general="_jtEycAdpEeCOnPMyfsFByA"/>
-        <ownedAttribute xmi:id="_JMR0UAdpEeCOnPMyfsFByA" name="digitalSignature" visibility="private" type="_8yL_EeBAEd-RD6FdqQYKeQ"/>
-        <ownedAttribute xmi:id="_JMR0UQdpEeCOnPMyfsFByA" name="channel" visibility="private" type="_XBJ8UN9PEd-RD6FdqQYKeQ"/>
+        <ownedAttribute xmi:id="_JMR0UAdpEeCOnPMyfsFByA" name="macAlgorithm" visibility="private" type="_ZBeDMDOOEeCMy6dVLg6oxA"/>
+        <ownedAttribute xmi:id="_daza8DOOEeCMy6dVLg6oxA" name="macKey" visibility="private">
+          <type xmi:type="uml:PrimitiveType" href="FirstLayer.emx#_dWbBgf3pEd-nt4IVKKjkMA?First%20Layer/PrimitiveTypes/Key?"/>
+        </ownedAttribute>
         <ownedOperation xmi:id="_JMR0VgdpEeCOnPMyfsFByA" name="AuthenticatedChannel" visibility="package">
           <ownedParameter xmi:id="_JMR0VwdpEeCOnPMyfsFByA" name="channel" type="_XBJ8UN9PEd-RD6FdqQYKeQ"/>
           <ownedParameter xmi:id="_JMR0WAdpEeCOnPMyfsFByA" name="digSign" type="_8yL_EeBAEd-RD6FdqQYKeQ"/>
@@ -2463,7 +2463,7 @@
             <children xmi:id="_aCmbUv4gEd-C0r1dxwD-jg" type="Stereotype"/>
             <children xmi:id="_aCmbU_4gEd-C0r1dxwD-jg" type="CommentBody"/>
             <styles xmi:type="umlnotation:UMLShapeStyle" xmi:id="_aCcqUv4gEd-C0r1dxwD-jg" showListStereotype="Text" showListVisibility="Text" showListSignature="true" fillColor="16763850" lineColor="16744576" showStereotype="Label"/>
-            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_aCcqU_4gEd-C0r1dxwD-jg" x="-1716" y="-1056" width="4602" height="10548"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_aCcqU_4gEd-C0r1dxwD-jg" x="-1716" y="-1056" width="4602" height="11209"/>
           </children>
           <children xmi:id="_tB3IoA6dEeC_mdB--kGvHA" element="_mNqfsA6XEeC_mdB--kGvHA">
             <children xmi:id="_tB3Iow6dEeC_mdB--kGvHA" type="ImageCompartment">
@@ -2486,6 +2486,41 @@
             </children>
             <styles xmi:type="umlnotation:UMLShapeStyle" xmi:id="_tB3IoQ6dEeC_mdB--kGvHA" showListStereotype="Text" showListVisibility="Text" showListSignature="true" showStereotype="Label"/>
             <layoutConstraint xmi:type="notation:Bounds" xmi:id="_tB3Iog6dEeC_mdB--kGvHA" x="28512" y="23232"/>
+          </children>
+          <children xmi:id="_6OiKEDd1EeCCXKqtNBRa6w" element="_6LHCoDd1EeCCXKqtNBRa6w">
+            <children xmi:id="_6OiKEzd1EeCCXKqtNBRa6w" type="ImageCompartment">
+              <layoutConstraint xmi:type="notation:Size" xmi:id="_6OiKFDd1EeCCXKqtNBRa6w" width="1320" height="1320"/>
+            </children>
+            <children xmi:id="_6OiKFTd1EeCCXKqtNBRa6w" type="Stereotype"/>
+            <children xmi:id="_6OiKFjd1EeCCXKqtNBRa6w" type="Name"/>
+            <children xmi:id="_6OiKFzd1EeCCXKqtNBRa6w" type="Parent"/>
+            <children xmi:id="_6OiKGDd1EeCCXKqtNBRa6w" type="AttributeCompartment">
+              <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_6OiKGTd1EeCCXKqtNBRa6w" showTitle="true"/>
+            </children>
+            <children xmi:id="_6OiKGjd1EeCCXKqtNBRa6w" type="OperationCompartment">
+              <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_6OiKGzd1EeCCXKqtNBRa6w" showTitle="true"/>
+            </children>
+            <children xmi:id="_6OiKHDd1EeCCXKqtNBRa6w" visible="false" type="SignalCompartment">
+              <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_6OiKHTd1EeCCXKqtNBRa6w"/>
+            </children>
+            <children xmi:id="_6OiKHjd1EeCCXKqtNBRa6w" visible="false" type="StructureCompartment">
+              <styles xmi:type="umlnotation:UMLShapeCompartmentStyle" xmi:id="_6OiKHzd1EeCCXKqtNBRa6w"/>
+            </children>
+            <styles xmi:type="umlnotation:UMLShapeStyle" xmi:id="_6OiKETd1EeCCXKqtNBRa6w" showListStereotype="Text" showListVisibility="Text" showListSignature="true" showStereotype="Label"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_6OiKEjd1EeCCXKqtNBRa6w" x="1188" y="20328" height="1907"/>
+          </children>
+          <children xmi:id="_95OTIDd1EeCCXKqtNBRa6w" type="Note">
+            <children xmi:id="_95YEIDd1EeCCXKqtNBRa6w" type="DiagramName">
+              <element xsi:nil="true"/>
+            </children>
+            <children xmi:id="_95YEITd1EeCCXKqtNBRa6w" type="Description">
+              <element xsi:nil="true"/>
+            </children>
+            <styles xmi:type="notation:ShapeStyle" xmi:id="_95OTITd1EeCCXKqtNBRa6w" description="&lt;p>&#xD;&#xA;    This class belongs to &lt;strong>java.net&lt;/strong>&amp;nbsp;:&#xD;&#xA;&lt;/p>&#xD;&#xA;&lt;p>&#xD;&#xA;    This class implements an IP Socket Address (IP address + port number) It can also be a pair (hostname + port number),&#xD;&#xA;    in which case an attempt will be made to resolve the hostname.&#xD;&#xA;&lt;/p>" fillColor="13369343" lineColor="6737151" lineWidth="1"/>
+            <styles xmi:type="notation:TextStyle" xmi:id="_95OTIjd1EeCCXKqtNBRa6w"/>
+            <styles xmi:type="notation:LineTypeStyle" xmi:id="_95OTIzd1EeCCXKqtNBRa6w"/>
+            <element xsi:nil="true"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_95OTJDd1EeCCXKqtNBRa6w" x="1584" y="22572" width="4599" height="4071"/>
           </children>
           <styles xmi:type="umlnotation:UMLDiagramStyle" xmi:id="_Objice_4Ed-dS9GL4c1d0Q"/>
           <element xsi:nil="true"/>
@@ -2760,6 +2795,13 @@
             </children>
             <styles xmi:type="umlnotation:UMLConnectorStyle" xmi:id="_tCA5zg6dEeC_mdB--kGvHA" routing="Rectilinear" lineWidth="1" showStereotype="Text"/>
             <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_tCA5zw6dEeC_mdB--kGvHA" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+          </edges>
+          <edges xmi:id="_96al8Dd1EeCCXKqtNBRa6w" type="NoteAttachment" source="_95OTIDd1EeCCXKqtNBRa6w" target="_6OiKEDd1EeCCXKqtNBRa6w">
+            <styles xmi:type="notation:ConnectorStyle" xmi:id="_96al8Td1EeCCXKqtNBRa6w" routing="Rectilinear" lineWidth="1"/>
+            <styles xmi:type="notation:ArrowStyle" xmi:id="_96al8jd1EeCCXKqtNBRa6w"/>
+            <styles xmi:type="notation:LineTypeStyle" xmi:id="_96al8zd1EeCCXKqtNBRa6w"/>
+            <element xsi:nil="true"/>
+            <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_96al9Dd1EeCCXKqtNBRa6w" points="[-5, 8, 240, -481]$[-228, 454, 17, -35]"/>
           </edges>
         </contents>
         <contents xmi:type="notation:Diagram" xmi:id="_6fgH0PC0Ed-dS9GL4c1d0Q" type="Class" name="ChannelDiagramCollapsed">
@@ -3481,6 +3523,11 @@
     This key can be a public, private or secret key, depending on wether we are using Symmetric or Asymmetric Cryptography.&#xD;
     Also for Asymmetric Crypto&amp;nbsp;if this is a party to connect to&amp;nbsp;we&amp;nbsp;need the public key&amp;nbsp;but if this is&#xD;
     our party then we need the private key.&#xD;
+&lt;/p>&#xD;
+&lt;p>&#xD;
+    Since the Party is built by the outside application the IP and port will be given as two separate items. When the&#xD;
+    CommunicationSetup gets the list of parties and prepares the data structure EstablsishedConnections it converts the two&#xD;
+    items into a InetSocketAddress.&#xD;
 &lt;/p></body>
       </ownedComment>
       <ownedComment xmi:id="_DgWKoAB2EeCC0r1dxwD-jg" annotatedElement="_0vHugPC9Ed-dS9GL4c1d0Q">
@@ -3542,6 +3589,7 @@
 &lt;/p></body>
       </ownedComment>
       <packagedElement xmi:type="uml:Class" xmi:id="_s8PbQAdqEeCOnPMyfsFByA" name="Class1"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_6LHCoDd1EeCCXKqtNBRa6w" name="InetSocketAddress"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Package" xmi:id="__0WnkABVEeCC0r1dxwD-jg" name="PrimitiveTypes">
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="__0WnkQBVEeCC0r1dxwD-jg" name="byte"/>
