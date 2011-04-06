@@ -1,13 +1,15 @@
 /**
- * 
+ * PrfFactory has a member of type FactoriesUtility to which it delegates the actual creation of the object. 
+ * This ensures proper code re-use.The 
+ * factories have two getObject methods to retrieve an algorithm compatible with the type; 
+ * one specifies the provider and the other one relies on a default provider.
  */
 package edu.biu.scapi.tools.Factories;
 
-import edu.biu.scapi.primitives.crypto.hash.TargetCollisionResistant;
 import edu.biu.scapi.primitives.crypto.prf.PseudorandomFunction;
 
 public class PrfFactory {
-	private static PrfFactory instance = new PrfFactory();
+	private static PrfFactory instance = new PrfFactory();;
 	private FactoriesUtility factoriesUtility;
 
 	
@@ -20,7 +22,7 @@ public class PrfFactory {
 	private PrfFactory() {
 
 		//create an instance of FactoriesUtility with the predefined file names.
-		FactoriesUtility factoriesUtility = new FactoriesUtility("PrfDefault.properties", "Prf.properties");
+		factoriesUtility = new FactoriesUtility("PrfDefault.properties", "Prf.properties");
 		
 	}
 	
@@ -50,5 +52,6 @@ public class PrfFactory {
 	 */
 	public static PrfFactory getInstance() {
 		return instance;
+
 	}
 }

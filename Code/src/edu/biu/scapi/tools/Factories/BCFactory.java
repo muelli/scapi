@@ -32,7 +32,7 @@ public class BCFactory {
 	 */
 	private BCFactory() {
 
-		//create an instance of FactoriesUtility with the predefined file names.
+		//create an instance of FactoriesUtility with the predefined file names.  
 		factoriesUtility = new FactoriesUtility(null, "BC.properties");
 		
 	}

@@ -1,6 +1,10 @@
 /**
- * 
+ * PrgFactory has a member of type FactoriesUtility to which it delegates the actual creation of the object. 
+ * This ensures proper code re-use.The 
+ * factories have two getObject methods to retrieve an algorithm compatible with the type; 
+ * one specifies the provider and the other one relies on a default provider.
  */
+
 package edu.biu.scapi.tools.Factories;
 
 import edu.biu.scapi.primitives.crypto.prg.PseudorandomGenerator;
@@ -22,7 +26,7 @@ public class PrgFactory {
 	private PrgFactory() {
 
 		//create an instance of FactoriesUtility with the predefined file names.
-		FactoriesUtility factoriesUtility = new FactoriesUtility("PrgDefault.properties", "Prg.properties");
+		factoriesUtility = new FactoriesUtility("PrgDefault.properties", "Prg.properties");
 		
 	}
 	

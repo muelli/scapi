@@ -78,7 +78,7 @@ public class FactoriesUtility {
 	 */
 	private boolean checkValidity(String algName) {
 
-		return defaultProviderMap.contains(algName);
+		return algsInType.containsKey(algName);
 	}
 
 	/** 
@@ -160,12 +160,12 @@ public class FactoriesUtility {
 		//get the parsed algorithm details
 		AlgDetails algDetails = parseAlgNames(algName);
 		//check the validity of the request. Meaning, the requested algorithm does exist. 
-		boolean valid = checkValidity(algDetails.name);
+		boolean valid = checkValidity(provider + algDetails.name);
 		if(!valid)
 			return null;
 		
 		//get the key as written in the property file
-		String keyToMap = prepareKey(provider, algName);
+		String keyToMap = prepareKey(provider, algDetails.name);
 		
 		//get the related algorithm class name
 		String className = algsInType.getProperty(keyToMap);
@@ -193,7 +193,7 @@ public class FactoriesUtility {
 			//prepare parameters for constructor:
 			//get the vector of parameters from the algorithm details object.
 			//create an instance of type algClass by calling the obtained constructor:
-			 newObj = constructor.newInstance(algDetails.params);
+			 newObj = constructor.newInstance(algDetails.params.toArray());
 			 
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -315,7 +315,7 @@ public class FactoriesUtility {
 		 */
 		Vector<String> getParsedParams(){
 			
-			String tempParam = new String();
+			String tempParam = "";
 			
 			//a vector that will hold the complex paramters. A parameter can be of the form "a(b,c)" even though
 			//it contains "," and is split in the params array.
@@ -338,7 +338,8 @@ public class FactoriesUtility {
 				//check that the accumulated string is a paramter or we should concatenate more
 				if(paranthesis==0){
 					//tempParam contains the full parameter add it to the vector
-					finalParams.add(tempParam);
+					if(!tempParam.isEmpty())
+						finalParams.add(tempParam);
 					//set as empty, we start a new parameter.
 					tempParam = "";
 				}

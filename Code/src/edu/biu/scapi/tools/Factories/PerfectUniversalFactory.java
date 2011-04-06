@@ -26,7 +26,7 @@ public class PerfectUniversalFactory {
 	private PerfectUniversalFactory() {
 
 		//create an instance of FactoriesUtility with the predefined file names.
-		FactoriesUtility factoriesUtility = new FactoriesUtility("PerfectUniversalDefault.properties", "PerfectUniversal.properties");
+		factoriesUtility = new FactoriesUtility("PerfectUniversalDefault.properties", "PerfectUniversal.properties");
 		
 	}
 	

@@ -24,7 +24,7 @@ public class CollResFactory {
 	private CollResFactory() {
 	
 		//create an instance of FactoriesUtility with the predefined file names.
-		FactoriesUtility factoriesUtility = new FactoriesUtility("CollResDefault.properties", "CollRes.properties");
+		factoriesUtility = new FactoriesUtility("CollResDefault.properties", "CollRes.properties");
 		
 	}
 	

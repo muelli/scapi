@@ -26,7 +26,7 @@ public class TrapdoorPermutationFactory {
 	private TrapdoorPermutationFactory() {
 
 		//create an instance of FactoriesUtility with the predefined file names.
-		FactoriesUtility factoriesUtility = new FactoriesUtility("PrgDefault.properties", "Prg.properties");
+		factoriesUtility = new FactoriesUtility("PrgDefault.properties", "Prg.properties");
 		
 	}
 	
