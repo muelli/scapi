@@ -3,11 +3,7 @@
  */
 package edu.biu.scapi.primitives.crypto.hash.bc;
 
-import java.security.spec.AlgorithmParameterSpec;
-
 import org.bouncycastle.crypto.Digest;
-import org.bouncycastle.crypto.digests.SHA1Digest;
-
 import edu.biu.scapi.primitives.crypto.hash.TargetCollisionResistantAbs;
 
 /** 
