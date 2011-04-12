@@ -22,6 +22,10 @@ import java.util.logging.Level;
  */
 public class LoggerExtendedLevel extends Level {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Create the new level
     public static final Level TIMING = new LoggerExtendedLevel("TIMING", Level.SEVERE.intValue()+10);
 
