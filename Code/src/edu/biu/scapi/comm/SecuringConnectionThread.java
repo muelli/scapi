@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.logging.Level;
 
-import edu.biu.scapi.comm.Channel;
 import edu.biu.scapi.generals.Logging;
 
 /** 
