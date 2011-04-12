@@ -83,7 +83,13 @@ public class PlainTCPChannel extends PlainChannel{
 		
 		
 		Message msg = (Message)inStream.readObject();
-		System.out.println("receiving... " +  msg.getData()[0] + msg.getData()[1]);
+		int accum=0;
+		for(int i=0;i<(msg.getData()).length; i++){
+			
+			accum+=msg.getData()[i];
+		}
+		
+		System.out.println("receiving... " +  accum);
 		
 		return msg;
 	}
