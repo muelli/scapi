@@ -18,20 +18,15 @@
 package edu.biu.scapi.comm;
 
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import org.apache.commons.exec.TimeoutObserver;
 import org.apache.commons.exec.Watchdog;
@@ -199,7 +194,6 @@ public class CommunicationSetup implements TimeoutObserver{
 			//add the key exchange output to the map
 			keyExchangeMap.put(inetSocketAdd, keyExchangeOutput);
 			
-			boolean doConnect; 
 			
 			int partyCompare = firstParty.compareTo(party);
 			if(partyCompare==0){//should not happen since it means that there is another party in the list with the same ip+port
