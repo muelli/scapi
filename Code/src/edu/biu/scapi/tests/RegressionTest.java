@@ -11,6 +11,10 @@ import edu.biu.scapi.primitives.crypto.hash.bc.BcSHA256;
 import edu.biu.scapi.primitives.crypto.hash.bc.BcSHA384;
 import edu.biu.scapi.primitives.crypto.hash.bc.BcSHA512;
 import edu.biu.scapi.primitives.crypto.hash.cryptopp.CryptoPpSHA1;
+import edu.biu.scapi.primitives.crypto.hash.cryptopp.CryptoPpSHA224;
+import edu.biu.scapi.primitives.crypto.hash.cryptopp.CryptoPpSHA256;
+import edu.biu.scapi.primitives.crypto.hash.cryptopp.CryptoPpSHA384;
+import edu.biu.scapi.primitives.crypto.hash.cryptopp.CryptoPpSHA512;
 import edu.biu.scapi.primitives.crypto.prf.Hmac;
 import edu.biu.scapi.primitives.crypto.prf.bc.BcAES;
 import edu.biu.scapi.primitives.crypto.prf.bc.BcTripleDES;
@@ -83,8 +87,12 @@ public class RegressionTest {
 		tests.add(new SHA1Test(new BcSHA1()));
 		tests.add(new SHA1Test(new CryptoPpSHA1()));
 		tests.add(new SHA224Test(new BcSHA224()));
+		tests.add(new SHA224Test(new CryptoPpSHA224()));
 		tests.add(new SHA256Test(new BcSHA256()));
+		tests.add(new SHA256Test(new CryptoPpSHA256()));
 		tests.add(new SHA384Test(new BcSHA384()));
+		tests.add(new SHA384Test(new CryptoPpSHA384()));
 		tests.add(new SHA512Test( new BcSHA512()));
+		tests.add(new SHA512Test( new CryptoPpSHA512()));
 	}
 }
