@@ -25,8 +25,7 @@ import edu.biu.scapi.primitives.crypto.hash.TargetCollisionResistantAbs;
  * Since the underlying library is written in a native language we use the JNI architecture.
  *
  */
-public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs implements
-		CollisionResistantHash {
+public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 
 	protected long collHashPtr;
 	
