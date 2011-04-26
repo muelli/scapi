@@ -12371,7 +12371,7 @@
                       <ownedParameter xmi:id="_dUoXFv3pEd-nt4IVKKjkMA" name="int"/>
                     </ownedOperation>
                   </packagedElement>
-                  <packagedElement xmi:type="uml:Class" xmi:id="_dUoXBf3pEd-nt4IVKKjkMA" name="KdfISO18033" clientDependency="_dUoXCf3pEd-nt4IVKKjkMA _dUoXHP3pEd-nt4IVKKjkMA">
+                  <packagedElement xmi:type="uml:Class" xmi:id="_dUoXBf3pEd-nt4IVKKjkMA" name="BcKdfISO18033" clientDependency="_dUoXCf3pEd-nt4IVKKjkMA _dUoXHP3pEd-nt4IVKKjkMA">
                     <ownedAttribute xmi:id="_dUoXBv3pEd-nt4IVKKjkMA" name="baseKDFBytesGenerator" visibility="private" type="_dUoXD_3pEd-nt4IVKKjkMA" aggregation="composite" association="_dUoXF_3pEd-nt4IVKKjkMA">
                       <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_dUoXB_3pEd-nt4IVKKjkMA" value="1"/>
                       <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_dUoXCP3pEd-nt4IVKKjkMA" value="1"/>
@@ -27254,6 +27254,19 @@
                         <styles xmi:type="umlnotation:UMLClassifierStyle" xmi:id="_zeBuIWWtEeCJGNwa-XrDaw" showStereotype="Label" useClassifierShape="true"/>
                         <layoutConstraint xmi:type="notation:Bounds" xmi:id="_zeBuImWtEeCJGNwa-XrDaw" x="1902" y="-8876"/>
                       </children>
+                      <children xmi:id="_myAr4G_cEeCL9NRoCTfv_g" type="Note">
+                        <children xmi:id="_myAr4W_cEeCL9NRoCTfv_g" type="DiagramName">
+                          <element xsi:nil="true"/>
+                        </children>
+                        <children xmi:id="_myAr4m_cEeCL9NRoCTfv_g" type="Description">
+                          <element xsi:nil="true"/>
+                        </children>
+                        <styles xmi:type="notation:ShapeStyle" xmi:id="_myAr42_cEeCL9NRoCTfv_g" description="In the creation of the c++ hash we will pass the name of the hash function. This way we will know the type of the concrete&#xD;&#xA;class to instanciate. From that point on we will use crypto++ OOD. Since all the hash functions inherit from the same base&#xD;&#xA;class the function calls we be the same. The only difference will be the specific instance." fillColor="13369343" lineColor="6737151" lineWidth="1"/>
+                        <styles xmi:type="notation:TextStyle" xmi:id="_myAr5G_cEeCL9NRoCTfv_g"/>
+                        <styles xmi:type="notation:LineTypeStyle" xmi:id="_myAr5W_cEeCL9NRoCTfv_g"/>
+                        <element xsi:nil="true"/>
+                        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_myAr5m_cEeCL9NRoCTfv_g" x="29103" y="-7039" width="6773"/>
+                      </children>
                       <styles xmi:type="umlnotation:UMLDiagramStyle" xmi:id="_OgZbMmWhEeCJGNwa-XrDaw"/>
                       <element xsi:nil="true"/>
                       <edges xmi:id="_TiQykGWhEeCJGNwa-XrDaw" element="_RJ0UzmWhEeCJGNwa-XrDaw" source="_ThXavWWhEeCJGNwa-XrDaw" target="_Tgw9wGWhEeCJGNwa-XrDaw">
@@ -27440,6 +27453,14 @@
                         </children>
                         <styles xmi:type="umlnotation:UMLConnectorStyle" xmi:id="_zeLfKmWtEeCJGNwa-XrDaw" routing="Rectilinear" lineWidth="1" showStereotype="Text"/>
                         <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_zeLfK2WtEeCJGNwa-XrDaw" points="[-2856, -570, 15584, 3116]$[-18400, -570, 40, 3116]$[-18400, -1781, 40, 1905]"/>
+                      </edges>
+                      <edges xmi:id="_ngDdoG_cEeCL9NRoCTfv_g" type="NoteAttachment" source="_myAr4G_cEeCL9NRoCTfv_g" target="_Tgw9wGWhEeCJGNwa-XrDaw">
+                        <styles xmi:type="notation:ConnectorStyle" xmi:id="_ngDdoW_cEeCL9NRoCTfv_g" routing="Rectilinear" lineWidth="1"/>
+                        <styles xmi:type="notation:ArrowStyle" xmi:id="_ngDdom_cEeCL9NRoCTfv_g"/>
+                        <styles xmi:type="notation:LineTypeStyle" xmi:id="_ngDdo2_cEeCL9NRoCTfv_g"/>
+                        <element xsi:nil="true"/>
+                        <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_ngDdpG_cEeCL9NRoCTfv_g" points="[0, 0, 209, -216]$[-36, 117, 173, -99]"/>
+                        <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_ngDdpW_cEeCL9NRoCTfv_g" id="(0.0,0.7596106)"/>
                       </edges>
                     </contents>
                   </eAnnotations>
