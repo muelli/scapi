@@ -13,7 +13,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.regex.PatternSyntaxException;
+import java.util.logging.Level;
+import edu.biu.scapi.generals.Logging;
 
 /** 
  * @author LabTest
@@ -49,9 +50,11 @@ public class FactoriesUtility {
 				//load default provider names for each algorithm name
 				loadDefaultProvider(defaultProviderFileName);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		}
 		
 		
@@ -196,21 +199,21 @@ public class FactoriesUtility {
 			 newObj = constructor.newInstance(algDetails.params.toArray());
 			 
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		}
-			return  newObj;
+		return  newObj;
 		
 	}
 
