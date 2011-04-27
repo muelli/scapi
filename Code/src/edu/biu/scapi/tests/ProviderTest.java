@@ -14,9 +14,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
+import java.util.logging.Level;
 
 import org.bouncycastle.util.encoders.Hex;
 
+import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.tools.Provider.ScapiProvider;
 
 /**
@@ -37,8 +39,8 @@ public class ProviderTest {
 		try {
 			sha1 = MessageDigest.getInstance("SHA1", "SCAPI");
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		}
 		
 		sha1.update(toByteArray("abc"));
