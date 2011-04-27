@@ -5,11 +5,13 @@ package edu.biu.scapi.tests.primitives;
 
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.logging.Level;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.crypto.prf.PseudorandomFunction;
 import edu.biu.scapi.tests.Test;
 
@@ -109,7 +111,8 @@ public abstract class PrfTest implements Test {
 			//compute the function
 			prf.computeBlock(in, 0, in.length, out, 0, out.length);
 		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
+			
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		}
 		//if out is equal to the outbytes than return true
 		boolean ret =  Arrays.equals(out,outBytes);
