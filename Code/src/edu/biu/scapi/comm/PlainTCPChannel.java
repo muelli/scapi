@@ -109,7 +109,6 @@ public class PlainTCPChannel extends PlainChannel{
 			} catch (IOException e) {
 
 				Logging.getLogger().log(Level.WARNING, e.toString());
-				e.printStackTrace();
 			}
 			
 		}
@@ -142,8 +141,6 @@ public class PlainTCPChannel extends PlainChannel{
 			} catch (IOException e) {
 				
 				Logging.getLogger().log(Level.FINEST, e.toString());
-				
-				e.printStackTrace();
 			}
 		}
 		
@@ -180,8 +177,6 @@ public class PlainTCPChannel extends PlainChannel{
 		} catch (IOException e) {
 
 			Logging.getLogger().log(Level.WARNING, e.toString());
-			
-			e.printStackTrace();
 		}
 	}
 	

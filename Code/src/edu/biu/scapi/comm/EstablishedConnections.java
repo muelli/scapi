@@ -184,8 +184,6 @@ public class EstablishedConnections {
 				} catch (SocketException e) {
 
 					Logging.getLogger().log(Level.WARNING, e.toString());
-
-					e.printStackTrace();
 				}
 			}
 		    	   

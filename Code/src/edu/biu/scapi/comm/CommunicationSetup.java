@@ -104,8 +104,6 @@ public class CommunicationSetup implements TimeoutObserver{
 			establishAndSecureConnections();
 		} catch (DuplicatePartyException e) {
 			
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			Logging.getLogger().log(Level.SEVERE, e.toString() );
 		}
 		
@@ -306,8 +304,6 @@ public class CommunicationSetup implements TimeoutObserver{
 			} catch (InterruptedException e) {
 
 				Logging.getLogger().log(Level.FINEST, e.toString());
-
-				e.printStackTrace();
 			}
 		}
 	}

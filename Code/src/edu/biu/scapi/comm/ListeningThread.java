@@ -48,7 +48,6 @@ class ListeningThread extends Thread{
 			
 			Logging.getLogger().log(Level.WARNING, e.toString());
 			
-			e.printStackTrace();
 		}
 		
 		
@@ -117,8 +116,6 @@ class ListeningThread extends Thread{
 			} 	catch (IOException e) {
 				
 				Logging.getLogger().log(Level.WARNING, e.toString());
-				
-				e.printStackTrace();
 			}
 			
 			//there was no connection request
@@ -128,8 +125,6 @@ class ListeningThread extends Thread{
 				} catch (InterruptedException e) {
 					
 					Logging.getLogger().log(Level.INFO, e.toString());
-					
-					e.printStackTrace();
 				}
 			}
 			else{
@@ -152,8 +147,6 @@ class ListeningThread extends Thread{
 					} catch (IOException e) {
 						
 						Logging.getLogger().log(Level.WARNING, e.toString());
-						
-						e.printStackTrace();
 					}
 				}
 	        	else{ //we have a thread that corresponds to this ip address. Thus, this address is valid
