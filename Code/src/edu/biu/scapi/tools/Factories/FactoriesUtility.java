@@ -32,7 +32,7 @@ public class FactoriesUtility {
 	}*/
 	
 	/** 
-	 * FactoriesUtility - load the files to the properties atributes.
+	 * FactoriesUtility - load the files to the properties attributes.
 	 * @param defaultProviderFileName - the file name from which to load the default provider properties from. 
 	 * 									*Note that this can be null. for example the BCFactory does not need to pass
 	 * 									 default provider for each implementation. 
@@ -61,14 +61,31 @@ public class FactoriesUtility {
 	}
 	
 	/** 
-	 * @param algNames
+	 * parseAlgNames : The string algName should be of the form “alg1Name(alg2Name, …,algnName)”, where n can be any number greater than zero. 
+	 * (If n = zero, then AlgDetails.Name = null and AlgDetails.tail = null. If n = 1 then  AlgDetails.Name = “alg1” and AlgDetails.params=null. 
+	 * If n >=2 then AlgDetails.Name = alg1 and AlgDetails.tail = [alg2Name , …,algnName)])
+	 * •	Parse the string and return the following:
+	 * o	If n = 0, then AlgDetails.name = null and AlgDetails.params = null. 
+	 * o	If n = 1, then AlgDetails.name = “alg1” and AlgDetails.params =null. 
+	 * If n >=2, then AlgDetails.name = “alg1” and AlgDetails.params = [alg2Name, …,algnName]
+	 * 
+	 * @param algNames - a string of the form "alg1Name(alg2Name,alg3Name(alg4Name, alg5Name)" where alg1 is the main algorithm which takes
+	 * 					 other algorithms as parameters (complex algorithm) and alg3 is also a complex algorithm that takes
+	 * 					 alg4 and alg5 simple algorithms as parameters. 
 	 * @return
 	 */
 	private AlgDetails parseAlgNames(String algNames) {
 
+		//create a new algdetails object to return
 		AlgDetails algDetails = new AlgDetails();
+		
+		//use the parser to separate the string into the main algorithm and the params 
 		AlgorithmStringParser parser = new AlgorithmStringParser(algNames);
+		
+		//get the main algorithm
 		algDetails.name = parser.getAlgName();
+		
+		//get the parameters
 		algDetails.params = parser.getParsedParams();
 		
 		return algDetails;
@@ -85,9 +102,9 @@ public class FactoriesUtility {
 	}
 
 	/** 
-	 * @param provider
-	 * @param algName
-	 * @return
+	 * @param provider - the required provider of the requested algorithm
+	 * @param algName - the algorithm name
+	 * @return the concatenation of provider+algorithm.
 	 */
 	private String prepareKey(String provider, String algName) {
 		
@@ -96,6 +113,8 @@ public class FactoriesUtility {
 	}
 
 	/**
+	 * loadAlgsInType : loads the names of the algorithms concatenated to the provider and the respecting name of the corresponing class name
+	 * @param algsInTypeFileName - the name of the file to load
 	 * @throws IOException 
 	 * @throws FileNotFoundException  
 	 */
@@ -117,6 +136,8 @@ public class FactoriesUtility {
 	}
 
 	/**
+	 *  loadDefaultProvider : loads the names of the algorithms with the corresponding default providers 
+	 *  @param defaultProviderFileName - the name of the file to load
 	 * @throws IOException 
 	 * @throws FileNotFoundException  
 	 */
@@ -145,7 +166,7 @@ public class FactoriesUtility {
 	 * The decision on which implementation to return will be based on the available implementations, 
 	 * on performance and other relevant reasons. 
 	 * 
-	 * @param algName
+	 * @param algName - the algorithm name to get the default provider for
 	 * @return : the default provider for the algorithm specified with the key algName.
 	 */
 	public String getDefaultImplProvider(String algName) {
@@ -154,6 +175,17 @@ public class FactoriesUtility {
 	}
 
 	/** 
+	 * getObject : pseudocode:
+	 * This function returns an Object instantiation of algName algorithm for the specified provider.
+	 * •	Parse algorithm name in order to get AlgDetails.
+	 * •	Check validity of AlgDetails.name. If not valid, throw exception.
+	 * •	Prepare key for map by concatenating provider + algName.
+	 * •	Get relevant class name from properties map with the key obtained.
+	 * •	Get an object of type Class representing our algorithm. (Class algClass).
+	 * •	Retrieve a Constructor of algClass that accepts t parameters of type String, while t=tailVector.length.
+	 * •	Create an instance of type algClass by calling the above Constructor. Pass as a parameter the “tailVector” in AlgDetails. The call Constructor.newInstance returns an object of type Object. (For example, if algName is a series of algorithms: "HMAC(SHA1)", the function creates an HMAC object and passes the tail – "SHA1" to the instance of HMAC. HMAC should be a class that takes as argument a string and in its constructor uses the factories to create the hash object. In this case, where there is a tail, the getObject function passes the String "SHA1" by retrieving a constructor that gets a String. If there is no such constructor, an exception will be thrown). 
+	 * •	 Return the object created.
+	 *
 	 * @param provider - the required provider name
 	 * @param algName - the required algorithm name
 	 * @return an object of the class that was determined by the algName + provider
@@ -196,6 +228,9 @@ public class FactoriesUtility {
 			//prepare parameters for constructor:
 			//get the vector of parameters from the algorithm details object.
 			//create an instance of type algClass by calling the obtained constructor:
+			//NOTE (Secure coding) : The command newInstance with a parameter contains a potential security risk of creating undesired objects
+			//however, the paramters passed to the newInstance function are only those of algorithms we allow. That is, the classes that 
+			//can be created here are limited and controlled.
 			 newObj = constructor.newInstance(algDetails.params.toArray());
 			 
 		} catch (SecurityException e) {
@@ -235,16 +270,20 @@ public class FactoriesUtility {
 	//nested class:
 	class AlgDetails{
 		public String name;					//the name  of the main algorithm
-		public Vector<String> params; 			//the other algorithms to use. The params will be passed as an argument to the 
+		public Vector<String> params; 		//the other algorithms to use. The params will be passed as an argument to the 
 											//constructor of the main algorithm.
 	}
 	
 	//nested class
+	
+	/**
+	 * A utility class that aids to parse 
+	 */
 	class AlgorithmStringParser{
 		
-		String algorithmCommand;
-		String algorithmParamsAsOneString = "";
-		String mainAlgName = "";
+		private String algorithmCommand;
+		private String algorithmParamsAsOneString = "";
+		private String mainAlgName = "";
 		
 		/**
 		 * AlgorithmParser - the constructor
@@ -304,16 +343,18 @@ public class FactoriesUtility {
 		
 		/**
 		 * 
-		 * getAlgName - 
+		 * getAlgName :  
 		 * @return the main algorithm string
 		 */
 		String getAlgName()
 		{
 			return mainAlgName;
 		}
+		
+		
 		/**
 		 * 
-		 * getParsedParams - retrieves the paramters of the algorithm from the String algorithmParamsAsOneString
+		 * getParsedParams - retrieves the parameters of the algorithm from the String algorithmParamsAsOneString
 		 * @return - a vector holding each parameter
 		 */
 		Vector<String> getParsedParams(){

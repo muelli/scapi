@@ -1,5 +1,4 @@
 /**
- * 
  * Suppose we wish to wrap a higher-level cryptographic element that uses a primitive interface in its inner implementation. 
  * For example, HMAC of BC holds a Digest interface but requires a specific digest to invoke its main functions. 
  * However, the users of our tool are not familiar with the classes of BC. Yet if we wish to wrap this class, 
@@ -26,19 +25,20 @@ public class BCFactory {
 	
 	/**
 	 * BCFactory - private constructor since this class is of the singleton pattern. 
-     * 	     		It creates an instance of FactoriesUtility and passes a predefined file names to the constructor
+     * 	     		It creates an instance of FactoriesUtility and passes a predefined file name to the constructor
      * 		    	of FactoriesUtility.
 	 * 
 	 */
 	private BCFactory() {
 
-		//create an instance of FactoriesUtility with the predefined file names.  
+		//create an instance of FactoriesUtility with the predefined file name.  
 		factoriesUtility = new FactoriesUtility(null, "BC.properties");
 		
 	}
 	
 	/** 
-	* @param name - the name of the pseudo random permutation equivalent to the BC block cipher
+	 * getBlockCipher : returns the equivalent BC block cipher according to the specified name.
+	 * @param name - the name of the pseudo random permutation equivalent to the BC block cipher
 	 * @return - BC BlockCipher object
 	 */
 	public BlockCipher getBlockCipher(String name) {
@@ -47,6 +47,7 @@ public class BCFactory {
 	}
 
 	/** 
+	 * getAsymetricBlockCipher : returns the equivalent BC asymmetric block cipher according to the specified name.
 	 * @param name - the name of the trapdoor permutation equivalent to the BC asymetric block cipher
 	 * @return BC AsymmetricBlockCipher object
 	 */
@@ -56,6 +57,7 @@ public class BCFactory {
 	}
 
 	/** 
+	 * getDigest : returns the equivalent BC digest according to the specified name.
 	 * @param name - the name of the collision resistant hash equivalent to the BC digest cipher
 	 * @return BC Digest object
 	 */
@@ -65,7 +67,8 @@ public class BCFactory {
 	}
 
 	/** 
-	* @param name - the name of the pseudo random generator equivalent to the BC stream cipher
+	 * getStreamCipher : returns the equivalent BC stream cipher according to the specified name. 
+	 * @param name - the name of the pseudo random generator equivalent to the BC stream cipher
 	 * @return - BC StreamCipher object
 	 */
 	public StreamCipher getStreamCipher(String name) {
