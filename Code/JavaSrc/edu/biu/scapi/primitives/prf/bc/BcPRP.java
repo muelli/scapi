@@ -16,7 +16,12 @@ import edu.biu.scapi.primitives.crypto.prf.PrpFixed;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 
 /** 
-* @author LabTest
+ * @author LabTest
+ * 
+ * A general adapter class of PrpFixed for Bouncy Castle. 
+ * This class implements all the functionality by passing requests to the adaptee interface BlockCipher. 
+ * A concrete PRP such as AES represented by the class BcAES only passes the AESEngine object in the constructor 
+ * to the base class. 
  */
 public abstract class BcPRP implements PrpFixed{
 	

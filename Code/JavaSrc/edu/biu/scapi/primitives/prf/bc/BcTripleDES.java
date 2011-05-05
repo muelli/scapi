@@ -26,7 +26,6 @@ public class BcTripleDES extends BcPRP implements TripleDES{
 	public BcTripleDES() {
 		
 		super(new DESedeEngine());
-		// TODO Auto-generated constructor stub
 	}
 
 }
