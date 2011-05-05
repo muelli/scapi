@@ -3,14 +3,16 @@
  */
 package edu.biu.scapi.primitives.crypto.prg.bc;
 
-import org.bouncycastle.crypto.StreamCipher;
+import org.bouncycastle.crypto.engines.RC4Engine;
+
+import edu.biu.scapi.primitives.crypto.prg.RC4;
 
 /** 
  * @author LabTest
  */
-public class BC_RC4 extends BC_PRG {
+public class BcRC4 extends BcPRG implements RC4{
 	
-	public BC_RC4(StreamCipher streamCipher){
-		super(streamCipher);
+	public BcRC4(){
+		super(new RC4Engine());
 	}
 }
