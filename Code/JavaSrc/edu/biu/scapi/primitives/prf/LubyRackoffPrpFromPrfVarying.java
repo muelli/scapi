@@ -14,7 +14,7 @@ import javax.crypto.IllegalBlockSizeException;
  */
 public class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	
-	LubyRackoffcomputation lrComputation = new LubyRackoffcomputation();
+	LubyRackoffComputation lrComputation = new LubyRackoffComputation();
 	
 	public LubyRackoffPrpFromPrfVarying(String prfVaringIOLengthName) {
 		

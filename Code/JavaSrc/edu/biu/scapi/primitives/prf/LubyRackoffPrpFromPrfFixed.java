@@ -10,7 +10,7 @@ import javax.crypto.IllegalBlockSizeException;
  */
 public class LubyRackoffPrpFromPrfFixed extends PrpFromPrfFixed {
 	
-	LubyRackoffcomputation lrComputation = new LubyRackoffcomputation();
+	LubyRackoffComputation lrComputation = new LubyRackoffComputation();
 	/**
 	 * 
 	 */
