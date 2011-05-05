@@ -10,9 +10,6 @@
  */
 package edu.biu.scapi.primitives.crypto.hash.cryptopp;
 
-import java.security.spec.AlgorithmParameterSpec;
-
-import edu.biu.scapi.primitives.crypto.hash.CollisionResistantHash;
 import edu.biu.scapi.primitives.crypto.hash.TargetCollisionResistantAbs;
 
 /**
@@ -29,7 +26,8 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 
 	protected long collHashPtr;
 	
-	//native functions. These functions are implemented in a c++ dll using JNI that we load.
+	//native functions. These functions are implemented in a c++ dll using JNI that we load. For secure coding always
+	//declare native functions as private and wrap them by a java function.
 	
 	private native long createHash(String hashName);//creates a hash and returns the pointer. This pointer will be passed to all
 													//the other functions so the created hash object will be used. This is due to
