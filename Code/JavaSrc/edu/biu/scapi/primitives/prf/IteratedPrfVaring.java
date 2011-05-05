@@ -3,22 +3,17 @@
  */
 package edu.biu.scapi.primitives.crypto.prf;
 
-import javax.crypto.IllegalBlockSizeException;
-
 /** 
  * @author LabTest
  * 
- * The class ScPrpFromPrfVarying is one implementation that has a varying input and output length. ScPrpFromPrfVarying is a 
- * pseudorandom permutation with varying input/output lengths, based on any PRF with a variable input/output length 
- * (as long as input length = output length). We take the interpretation that there is essentially a different random permutation
- * for every input/output length. 
+ 
  */
-public class ScPrfVaringFromPrfVaryingInput extends
+public class IteratedPrfVaring extends
 		PrfVaryingFromPrfVaryingInput {
 	/** 
 	 * @param prfVaringInputName
 	 */
-	public ScPrfVaringFromPrfVaryingInput(String prfVaringInputName) {
+	public IteratedPrfVaring(String prfVaringInputName) {
 		
 	}
 	
