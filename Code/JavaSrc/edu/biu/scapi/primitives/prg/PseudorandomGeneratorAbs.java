@@ -4,92 +4,71 @@
 package edu.biu.scapi.primitives.crypto.prg;
 
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.KeySpec;
+
+
+import javax.crypto.SecretKey;
 
 /** 
  * @author LabTest
  */
 public abstract class PseudorandomGeneratorAbs implements PseudorandomGenerator {
-	/** 
-	 */
-	private KeySpec secretKeySpec;
-	/** 
-	 */
-	private AlgorithmParameterSpec params;
+	
+	protected SecretKey secretKey = null;//secrete key
+	protected AlgorithmParameterSpec params = null;//algorithm parameters
 
 	/** 
-	 * @param secretKey
+	 * Initializes this prg with the secret key
+	 * @param secretKey - the secrete key
 	 */
-	public void init(KeySpec secretKey) {
-		// begin-user-code
-		// TODO Auto-generated method stub
+	public void init(SecretKey secretKey) {
 
-		// end-user-code
+		//init the key. Further initialization should be implemented in the derived concrete class.
+		this.secretKey = secretKey;
 	}
 
 	/** 
+	 * Initializes this prg with the secret key and the auxiliary parameters
 	 * @param secretKey
 	 * @param params
 	 */
-	public void init(KeySpec secretKey, AlgorithmParameterSpec params) {
-		// begin-user-code
-		// TODO Auto-generated method stub
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
 
-		// end-user-code
+		//init the parameters. Further initialization should be implemented in the derived concrete class.
+		this.secretKey = secretKey;
+		this.params = params;
 	}
 
 	/** 
+	 * @return The algorithm name
 	 */
-	public void getAlgorithmName() {
-		// begin-user-code
-		// TODO Auto-generated method stub
-
-		// end-user-code
-	}
+	public abstract String getAlgorithmName();
 
 	/** 
-	 * @param _byte
+	 * @param bytein - the single byte to xor
 	 */
-	public void streamSingleByte(byte bytein) {
-		// begin-user-code
-		// TODO Auto-generated method stub
-
-		// end-user-code
-	}
+	public abstract void streamSingleByte(byte bytein);
 
 	/** 
-	 * @param intlen
-	 * @param inOff
-	 * @param inBytes
-	 * @param outBytes
-	 * @param outOff
-	 * @generated "UML to Java (com.ibm.xtools.transform.uml2.java5.internal.UML2JavaTransform)"
+	 * @param inBytes - the input bytes
+	 * @param inOff - input offset
+	 * @param len - length
+	 * @param outBytes - output bytes. The result of streaming the input bytes.
+	 * @param outOff - output offset
 	 */
-	public void streamBytes(byte[] in_bytes, int inOff,
-			int len, int outOff, byte[] out_bytes) {
-		// begin-user-code
-		// TODO Auto-generated method stub
-
-		// end-user-code
-	}
-
+	public abstract void streamBytes(byte[] inBytes, int inOff,	int len, byte[] outBytes, int outOff);
 	/** 
-	 * @return
+	 * @return the parameters of this prp
 	 */
 	public AlgorithmParameterSpec getParams() {
-		// begin-user-code
-		// TODO Auto-generated method stub
-		return null;
-		// end-user-code
+		
+		return params;
 	}
 
 	/** 
 	 * @return
 	 */
-	public KeySpec getSecretKeySpec() {
-		// begin-user-code
-		// TODO Auto-generated method stub
-		return null;
-		// end-user-code
+	public SecretKey getSecretKey() {
+
+		return secretKey;
 	}
 }
