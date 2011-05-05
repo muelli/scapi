@@ -4,7 +4,9 @@
 package edu.biu.scapi.primitives.crypto.prg.bc;
 
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.KeySpec;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.StreamCipher;
@@ -15,25 +17,27 @@ import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 /** 
  * @author LabTest
  */
-public abstract class BC_PRG extends PseudorandomGeneratorAbs {
+public abstract class BcPRG extends PseudorandomGeneratorAbs {
 	
 		private StreamCipher bcStreamCipher;//the underlying stream cipher of bc
+		private CipherParameters bcParams;
+		
 
 	/** 
 	 * Sets the StreamCipher of bc to adapt to.
 	 * @param bcStreamCipher - the concrete StreamCipher of bc
 	 */
-	public BC_PRG(StreamCipher bcStreamCipher) {
+	public BcPRG(StreamCipher bcStreamCipher) {
 		this.bcStreamCipher = bcStreamCipher;
 	}
 	
-	public void init(KeySpec secretKey) {
+	public void init(SecretKey secretKey) {
 
 		//set the parameters
 		super.init(secretKey);
 		
 		//get the keyParameter relevant to the secretKey
-		CipherParameters bcParams = BCParametersTranslator.getInstance().translateParameter(secretKey);
+		bcParams = BCParametersTranslator.getInstance().translateParameter((SecretKeySpec)secretKey);
 		
 		//init the underlying stream cipher. Note that the first argument is irrelevant and thus does not matter is true or false
 		bcStreamCipher.init(false, bcParams);
@@ -44,13 +48,13 @@ public abstract class BC_PRG extends PseudorandomGeneratorAbs {
 	 * @param secretKey - the secret key
 	 * @param params - the algorithm auxilary parameters
 	 */
-	public void init(KeySpec secretKey, AlgorithmParameterSpec params) {
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
 
 		//set the parameters
 		super.init(secretKey, params);
 		
 		//send the parameters converted to bc.
-		CipherParameters bcParams = BCParametersTranslator.getInstance().translateParameter(secretKey, params);
+		bcParams = BCParametersTranslator.getInstance().translateParameter((SecretKeySpec)secretKey, params);
 		
 		//init the underlying stream cipher. Note that the first argument is irrelevant and thus does not matter is true or false
 		bcStreamCipher.init(false, bcParams);
@@ -79,16 +83,16 @@ public abstract class BC_PRG extends PseudorandomGeneratorAbs {
 
 	/** 
 	 * Pass all the arguments to the underlying bc StreamCipher.
-	 * @param in_bytes - the input bytes
+	 * @param inBytes - the input bytes
 	 * @param inOff - input offset
 	 * @param len - length
-	 * @param out_bytes - output bytes. The result of streaming the input bytes.
+	 * @param outBytes - output bytes. The result of streaming the input bytes.
 	 * @param outOff - output offset
 	 */
-	public void streamBytes(byte[] in_bytes, int inOff,
-			int len, byte[] out_bytes, int outOff){
+	public void streamBytes(byte[] inBytes, int inOff,
+			int len, byte[] outBytes, int outOff){
 
-		bcStreamCipher.processBytes(in_bytes, inOff, len, out_bytes, outOff);
+		bcStreamCipher.processBytes(inBytes, inOff, len, outBytes, outOff);
 	}
 
 
