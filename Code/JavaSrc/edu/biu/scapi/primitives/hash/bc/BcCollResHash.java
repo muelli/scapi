@@ -13,7 +13,6 @@ import edu.biu.scapi.primitives.crypto.hash.TargetCollisionResistantAbs;
  * This class implements all the functionality by passing requests to the adaptee interface Digest. 
  * A concrete hash function such as SHA1 represented by the class BcSHA1 only passes the SHA1Digest object in the constructor 
  * to the base class. 
-
  */
 public abstract class BcCollResHash extends TargetCollisionResistantAbs {
 	private Digest digest;
