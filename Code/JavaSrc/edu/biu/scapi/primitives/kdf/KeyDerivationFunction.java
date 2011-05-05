@@ -1,5 +1,7 @@
 /**
  * 
+ * A key derivation function (or KDF) is used to derive (close to) uniformly distributed string/s from a secret value 
+ * with high entropy (but no other guarantee regarding its distribution). 
  */
 package edu.biu.scapi.primitives.crypto.kdf;
 
