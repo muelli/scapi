@@ -12,14 +12,13 @@ import org.bouncycastle.crypto.generators.KDF1BytesGenerator;
 import org.bouncycastle.crypto.params.ISO18033KDFParameters;
 import org.bouncycastle.crypto.params.KDFParameters;
 
-import edu.biu.scapi.primitives.crypto.hash.TargetCollisionResistant;
 import edu.biu.scapi.primitives.crypto.kdf.KeyDerivationFunction;
-import edu.biu.scapi.tools.Translation.BCObjectCreator;
+import edu.biu.scapi.tools.Factories.BCFactory;
 
 /** 
  * @author LabTest
 */
-public class KdfISO18033 implements KeyDerivationFunction {
+public class BcKdfISO18033 implements KeyDerivationFunction {
 
 	BaseKDFBytesGenerator bcKdfGenerator;
 	
@@ -29,8 +28,10 @@ public class KdfISO18033 implements KeyDerivationFunction {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public KdfISO18033(TargetCollisionResistant hash) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		bcKdfGenerator = new KDF1BytesGenerator(BCObjectCreator.getInstance().getBCDigest(hash));
+	public BcKdfISO18033(String hash) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		
+		//pass a digest to the KDF.
+		bcKdfGenerator = new KDF1BytesGenerator(BCFactory.getInstance().getDigest(hash));
 		
 	}
 	
@@ -72,7 +73,7 @@ public class KdfISO18033 implements KeyDerivationFunction {
 	
 	/**
 	 * 
-	 * generateParameters - generate the bc related parameters of type DerivationParameters
+	 * generateParameters : generate the bc related parameters of type DerivationParameters
 	 * @param shared - the input key 
 	 * @param iv
 	 */
