@@ -18,7 +18,7 @@ import javax.crypto.IllegalBlockSizeException;
  * This class does the actual computation of the Luby Rackoff algorithm. It is used by the classes LubyRackoffPrpFromPrfFixed and LubyRackoffPrpFromPrfVarying
  * to avoid code duplication. Both classes do similar computation only the underlying pseudorandom function may be either fixed or varying.
  */
-class LubyRackoffcomputation {
+class LubyRackoffComputation {
 	
 	/** computeBlock - pseudocode: 
 	 * Input :
