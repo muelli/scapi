@@ -1,11 +1,11 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.crypto.prg.bc;
+package edu.biu.scapi.primitives.prg.bc;
 
 import org.bouncycastle.crypto.engines.RC4Engine;
 
-import edu.biu.scapi.primitives.crypto.prg.RC4;
+import edu.biu.scapi.primitives.prg.RC4;
 
 /** 
  * @author LabTest
