@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.crypto.prf;
+package edu.biu.scapi.primitives.prf;
 
 import javax.crypto.IllegalBlockSizeException;
 

@@ -2,7 +2,7 @@
  * 
  * This is a key derivation function that has a rigorous justification as to its security
  */
-package edu.biu.scapi.primitives.crypto.kdf;
+package edu.biu.scapi.primitives.kdf;
 
 import java.util.logging.Level;
 
@@ -11,7 +11,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import edu.biu.scapi.generals.Logging;
-import edu.biu.scapi.primitives.crypto.prf.Hmac;
+import edu.biu.scapi.primitives.prf.Hmac;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 

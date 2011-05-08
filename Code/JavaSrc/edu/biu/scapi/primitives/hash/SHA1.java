@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.crypto.hash;
+package edu.biu.scapi.primitives.hash;
 
 /** 
  * @author LabTest

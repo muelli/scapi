@@ -1,6 +1,6 @@
 /**
  * Project: scapi.
- * Package: edu.biu.scapi.primitives.crypto.hash.cryptopp.
+ * Package: edu.biu.scapi.primitives.hash.cryptopp.
  * File: CryptoPpSHA512.java.
  * Creation date Apr 12, 2011
  * Create by LabTest
@@ -8,9 +8,9 @@
  *
  * This file TODO
  */
-package edu.biu.scapi.primitives.crypto.hash.cryptopp;
+package edu.biu.scapi.primitives.hash.cryptopp;
 
-import edu.biu.scapi.primitives.crypto.hash.SHA512;
+import edu.biu.scapi.primitives.hash.SHA512;
 
 /**
  * @author LabTest

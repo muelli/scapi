@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.crypto.prg.bc;
+package edu.biu.scapi.primitives.prg.bc;
 
 import java.security.spec.AlgorithmParameterSpec;
 
@@ -11,7 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.StreamCipher;
 
-import edu.biu.scapi.primitives.crypto.prg.PseudorandomGeneratorAbs;
+import edu.biu.scapi.primitives.prg.PseudorandomGeneratorAbs;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 
 /** 

@@ -4,7 +4,7 @@
  * The length of the input/output is determined upon user request. 
  * The interface PrpVaryingIOLength, groups and provides type safety for every PRP with varying input/output length. 
  */
-package edu.biu.scapi.primitives.crypto.prf;
+package edu.biu.scapi.primitives.prf;
 
 /** 
   * @author LabTest

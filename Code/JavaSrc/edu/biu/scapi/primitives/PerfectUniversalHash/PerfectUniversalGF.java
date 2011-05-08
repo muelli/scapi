@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.crypto.PerfectUniversalHash;
+package edu.biu.scapi.primitives.PerfectUniversalHash;
 
 /** 
 * @author LabTest

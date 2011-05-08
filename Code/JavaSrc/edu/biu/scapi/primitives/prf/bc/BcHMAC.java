@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.crypto.prf.bc;
+package edu.biu.scapi.primitives.prf.bc;
 
 import java.security.spec.AlgorithmParameterSpec;
 
@@ -14,7 +14,7 @@ import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.macs.HMac;
 
 
-import edu.biu.scapi.primitives.crypto.prf.Hmac;
+import edu.biu.scapi.primitives.prf.Hmac;
 import edu.biu.scapi.tools.Factories.BCFactory;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 

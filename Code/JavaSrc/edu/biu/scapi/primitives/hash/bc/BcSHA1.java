@@ -1,11 +1,11 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.crypto.hash.bc;
+package edu.biu.scapi.primitives.hash.bc;
 
 import org.bouncycastle.crypto.digests.SHA1Digest;
 
-import edu.biu.scapi.primitives.crypto.hash.SHA1;
+import edu.biu.scapi.primitives.hash.SHA1;
 
 /** 
  * @author LabTest

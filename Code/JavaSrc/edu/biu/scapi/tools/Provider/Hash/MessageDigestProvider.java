@@ -5,12 +5,12 @@ package edu.biu.scapi.tools.Provider.Hash;
 
 import java.security.MessageDigest;
 
-import edu.biu.scapi.primitives.crypto.hash.CollisionResistantHash;
-import edu.biu.scapi.primitives.crypto.hash.bc.BcSHA1;
-import edu.biu.scapi.primitives.crypto.hash.bc.BcSHA224;
-import edu.biu.scapi.primitives.crypto.hash.bc.BcSHA256;
-import edu.biu.scapi.primitives.crypto.hash.bc.BcSHA384;
-import edu.biu.scapi.primitives.crypto.hash.bc.BcSHA512;
+import edu.biu.scapi.primitives.hash.CollisionResistantHash;
+import edu.biu.scapi.primitives.hash.bc.BcSHA1;
+import edu.biu.scapi.primitives.hash.bc.BcSHA224;
+import edu.biu.scapi.primitives.hash.bc.BcSHA256;
+import edu.biu.scapi.primitives.hash.bc.BcSHA384;
+import edu.biu.scapi.primitives.hash.bc.BcSHA512;
 
 /** 
  * 

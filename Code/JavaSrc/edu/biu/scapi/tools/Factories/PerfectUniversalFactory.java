@@ -7,7 +7,7 @@
 package edu.biu.scapi.tools.Factories;
 
 
-import edu.biu.scapi.primitives.crypto.PerfectUniversalHash.PerfectUniversalHash;
+import edu.biu.scapi.primitives.PerfectUniversalHash.PerfectUniversalHash;
 
 /** 
  * @author LabTest

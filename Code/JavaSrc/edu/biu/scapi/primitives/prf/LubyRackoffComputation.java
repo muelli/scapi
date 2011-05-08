@@ -1,6 +1,6 @@
 /**
  * Project: scapi.
- * Package: edu.biu.scapi.primitives.crypto.prf.
+ * Package: edu.biu.scapi.primitives.prf.
  * File: LubyRackoffcomputation.java.
  * Creation date May 3, 2011
  * Create by LabTest
@@ -8,7 +8,7 @@
  *
  * This file TODO
  */
-package edu.biu.scapi.primitives.crypto.prf;
+package edu.biu.scapi.primitives.prf;
 
 import javax.crypto.IllegalBlockSizeException;
 

@@ -4,7 +4,7 @@
  * no efficient algorithm can distinguish (with significant advantage) between a function chosen randomly from the PRF family and a random oracle 
  * (a function whose outputs are fixed completely at random).Pseudorandom function is the root of this family
  */
-package edu.biu.scapi.primitives.crypto.prf;
+package edu.biu.scapi.primitives.prf;
 
 import java.security.spec.AlgorithmParameterSpec;
 

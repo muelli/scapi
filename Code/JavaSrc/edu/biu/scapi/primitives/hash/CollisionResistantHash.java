@@ -5,7 +5,7 @@
  * collision resistance - this interface (meaning that it is hard to find any x and y such that H(x)=H(y)). 
  * 
  */
-package edu.biu.scapi.primitives.crypto.hash;
+package edu.biu.scapi.primitives.hash;
 
 /** 
  * @author LabTest

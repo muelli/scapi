@@ -3,7 +3,7 @@
  * As such, they are of the pseudorandom function type and their input length always equals their output length. 
  * In addition (and unlike general pseudorandom functions), they are efficiently invertible.
  */
-package edu.biu.scapi.primitives.crypto.prf;
+package edu.biu.scapi.primitives.prf;
 
 import javax.crypto.IllegalBlockSizeException;
 

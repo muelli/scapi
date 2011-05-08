@@ -6,7 +6,7 @@
  */
 package edu.biu.scapi.tools.Factories;
 
-import edu.biu.scapi.primitives.crypto.hash.TargetCollisionResistant;
+import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
 
 /** 
 * @author LabTest

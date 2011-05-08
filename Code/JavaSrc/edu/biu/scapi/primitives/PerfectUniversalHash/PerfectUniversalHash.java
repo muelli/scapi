@@ -9,7 +9,7 @@
  * 
  * The input and output lengths of a perfect universal hash function are fixed for any given instantiation, and are set upon init.
  */
-package edu.biu.scapi.primitives.crypto.PerfectUniversalHash;
+package edu.biu.scapi.primitives.PerfectUniversalHash;
 
 import java.security.spec.AlgorithmParameterSpec;
 

@@ -1,10 +1,10 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.crypto.hash.bc;
+package edu.biu.scapi.primitives.hash.bc;
 
 import org.bouncycastle.crypto.Digest;
-import edu.biu.scapi.primitives.crypto.hash.TargetCollisionResistantAbs;
+import edu.biu.scapi.primitives.hash.TargetCollisionResistantAbs;
 
 /** 
  * @author LabTest

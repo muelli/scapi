@@ -1,6 +1,6 @@
 /**
  * Project: scapi.
- * Package: edu.biu.scapi.primitives.crypto.prf.bc.
+ * Package: edu.biu.scapi.primitives.prf.bc.
  * File: BC_AES.java.
  * Creation date 10:19:00 AM.
  * Create by LabTest
@@ -8,11 +8,11 @@
  *
  * This file TODO
  */
-package edu.biu.scapi.primitives.crypto.prf.bc;
+package edu.biu.scapi.primitives.prf.bc;
 
 import org.bouncycastle.crypto.engines.AESEngine;
 
-import edu.biu.scapi.primitives.crypto.prf.AES;
+import edu.biu.scapi.primitives.prf.AES;
 
 /**
  * @author LabTest

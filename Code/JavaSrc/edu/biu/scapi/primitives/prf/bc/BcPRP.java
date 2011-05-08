@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.crypto.prf.bc;
+package edu.biu.scapi.primitives.prf.bc;
 
 import java.security.spec.AlgorithmParameterSpec;
 
@@ -12,7 +12,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
 
-import edu.biu.scapi.primitives.crypto.prf.PrpFixed;
+import edu.biu.scapi.primitives.prf.PrpFixed;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 
 /** 

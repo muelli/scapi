@@ -7,7 +7,7 @@
 
 package edu.biu.scapi.tools.Factories;
 
-import edu.biu.scapi.primitives.crypto.trapdoor_permutation.TrapdoorPermutation;
+import edu.biu.scapi.primitives.trapdoor_permutation.TrapdoorPermutation;
 
 /** 
  * @author LabTest

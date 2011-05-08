@@ -1,7 +1,7 @@
 /**
  * Hmac has varying input length and thus implements the interface PrfVaryingInputLength.
  */
-package edu.biu.scapi.primitives.crypto.prf;
+package edu.biu.scapi.primitives.prf;
 
 /** 
  * @author LabTest

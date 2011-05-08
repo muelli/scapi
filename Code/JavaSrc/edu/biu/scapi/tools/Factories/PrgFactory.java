@@ -7,7 +7,7 @@
 
 package edu.biu.scapi.tools.Factories;
 
-import edu.biu.scapi.primitives.crypto.prg.PseudorandomGenerator;
+import edu.biu.scapi.primitives.prg.PseudorandomGenerator;
 
 /** 
   * @author LabTest

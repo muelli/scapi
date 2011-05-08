@@ -4,7 +4,7 @@
  * target collision resistance (meaning that given x it is hard to find y such that H(y)=H(x)) and collision resistant for which we also 
  * have an interface. 
  */
-package edu.biu.scapi.primitives.crypto.hash;
+package edu.biu.scapi.primitives.hash;
 
 import java.security.spec.AlgorithmParameterSpec;
 

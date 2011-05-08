@@ -6,7 +6,7 @@
  */
 package edu.biu.scapi.tools.Factories;
 
-import edu.biu.scapi.primitives.crypto.prf.PseudorandomFunction;
+import edu.biu.scapi.primitives.prf.PseudorandomFunction;
 
 public class PrfFactory {
 	private static PrfFactory instance = new PrfFactory();;

@@ -1,6 +1,6 @@
 /**
  * Project: scapi.
- * Package: edu.biu.scapi.primitives.crypto.prf.bc.
+ * Package: edu.biu.scapi.primitives.prf.bc.
  * File: TripleDES.java.
  * Creation date 10:35:11 AM.
  * Create by LabTest
@@ -8,11 +8,11 @@
  *
  * This file TODO
  */
-package edu.biu.scapi.primitives.crypto.prf.bc;
+package edu.biu.scapi.primitives.prf.bc;
 
 import org.bouncycastle.crypto.engines.DESedeEngine;
 
-import edu.biu.scapi.primitives.crypto.prf.TripleDES;
+import edu.biu.scapi.primitives.prf.TripleDES;
 
 /**
  * @author LabTest

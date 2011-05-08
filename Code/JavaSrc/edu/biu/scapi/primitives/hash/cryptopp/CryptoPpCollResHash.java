@@ -1,6 +1,6 @@
 /**
  * Project: scapi.
- * Package: edu.biu.scapi.primitives.crypto.hash.cryptopp.
+ * Package: edu.biu.scapi.primitives.hash.cryptopp.
  * File: CryptoPpCollResHash.java.
  * Creation date Apr 12, 2011
  * Create by LabTest
@@ -8,9 +8,9 @@
  *
  * This file TODO
  */
-package edu.biu.scapi.primitives.crypto.hash.cryptopp;
+package edu.biu.scapi.primitives.hash.cryptopp;
 
-import edu.biu.scapi.primitives.crypto.hash.TargetCollisionResistantAbs;
+import edu.biu.scapi.primitives.hash.TargetCollisionResistantAbs;
 
 /**
  * @author LabTest
