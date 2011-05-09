@@ -47,8 +47,8 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	public CryptoPpCollResHash(String hashName) {
 		
 		
-		//instantiate a SHA1 object in crypto++. Remember to delete it using the finalize method.
-		//we keep a pointer to the created SHA1 object in c++.
+		//instantiate a hash object in crypto++. Remember to delete it using the finalize method.
+		//we keep a pointer to the created hash object in c++.
 		collHashPtr = createHash(hashName);
 		
 	}
@@ -99,8 +99,16 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	}
 	
 	 static {
-	        System.loadLibrary("JavaInterface");
+		 
+		 	//String path = System.getProperty("user.dir");
+		 	
+		 	//System.out.print(path);
+		 	
+	        //System.load(path + "\\JavaSrc\\lib\\JavaInterface.dll");
+	        
+	      
+		 
+		 System.loadLibrary("JavaInterface");
 	 }
-
 
 }
