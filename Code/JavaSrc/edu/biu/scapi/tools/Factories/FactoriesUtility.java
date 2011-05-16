@@ -6,14 +6,16 @@
  */
 package edu.biu.scapi.tools.Factories;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
+
+
 import edu.biu.scapi.generals.Logging;
 
 /** 
@@ -22,6 +24,8 @@ import edu.biu.scapi.generals.Logging;
 public class FactoriesUtility {
 	private Properties defaultProviderMap;
 	private Properties algsInType;
+	
+	private static final String PROPERTIES_FILES_PATH = "/propertiesFiles/";
 
 	
 	/*public static void main(String[] args){
@@ -130,9 +134,10 @@ public class FactoriesUtility {
         BcAES = BcAES
         ScAES = AES " */
         
-        	
-        //load the algsInTypeFileName file
-		algsInType.load(new FileInputStream(algsInTypeFileName));
+		//load the algsInTypeFileName file
+		InputStream in=  (InputStream) getClass().getResourceAsStream(PROPERTIES_FILES_PATH + algsInTypeFileName);
+		
+		algsInType.load(in);
 	}
 
 	/**
@@ -153,9 +158,10 @@ public class FactoriesUtility {
         DES = BC
         AES = Sc " */
         
-        	
-        //load the defaultProviderFileName file
-		defaultProviderMap.load(new FileInputStream(defaultProviderFileName));
+		//load the defaultProviderFileName file
+		InputStream in=  (InputStream) getClass().getResourceAsStream(PROPERTIES_FILES_PATH + defaultProviderFileName);
+		
+		algsInType.load(in);
 		
 		
 	}
