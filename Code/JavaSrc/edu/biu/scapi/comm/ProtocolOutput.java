@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.comm.
  * File: ProtocolOutput.java.
  * Creation date Feb 15, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
