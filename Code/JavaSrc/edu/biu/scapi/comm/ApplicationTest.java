@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.comm.
  * File: ApplicationTest.java.
  * Creation date Feb 20, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
