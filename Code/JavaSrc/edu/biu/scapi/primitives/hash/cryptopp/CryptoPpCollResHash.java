@@ -3,10 +3,16 @@
  * Package: edu.biu.scapi.primitives.hash.cryptopp.
  * File: CryptoPpCollResHash.java.
  * Creation date Apr 12, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
- * This file TODO
+ * 
+ * A general adapter class of hash for Crypto++. 
+ * This class implements all the functionality by passing requests to the adaptee c++ abstract class HashTransformation of crypto++ using the JNI dll. 
+ * A concrete hash function such as SHA1 represented by the class CryptoPpSHA1 only passes the name of the hash in the constructor 
+ * to this base class. 
+ * Since the underlying library is written in a native language we use the JNI architecture.
+ *
  */
 package edu.biu.scapi.primitives.hash.cryptopp;
 
@@ -15,12 +21,6 @@ import edu.biu.scapi.primitives.hash.TargetCollisionResistantAbs;
 /**
  * @author LabTest
  * 
- * A general adapter class of hash for Crypto++. 
- * This class implements all the functionality by passing requests to the adaptee c++ abstract class HashTransformation of cryto++ using the JNI dll. 
- * A concrete hash function such as SHA1 represented by the class CryptoPpSHA1 only passes the name of the hash in the constructor 
- * to this base class. 
- * Since the underlying library is written in a native language we use the JNI architecture.
- *
  */
 public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 
@@ -35,13 +35,14 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	
 	private native String algName(long ptr);//returns crypto++ name of the hash
 	private native void updateHash(long ptr, byte[] input, long len); //updates the hash
-	private native void finalHash(long ptr, byte[] output, long collHashSize);//finishes the hash computation
+	private native void finalHash(long ptr, byte[] output);//finishes the hash computation
+	private native int getDigestSize(long ptr);
 	private native void deleteHash(long ptr);//deletes the created pointer.
 	
 	
 	/**
 	 * CryptoPpCollResHash - constructs the related pointer of the underlying crypto++ hash.
-	 * @param hashName - the name of the hash. This will be passed to the crypto++ function createHash so it will know
+	 * @param hashName - the name of the hash. This will be passed to the jni dll function createHash so it will know
 	 * 					 which hash to create.
 	 */
 	public CryptoPpCollResHash(String hashName) {
@@ -63,32 +64,41 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	}
 	
 	/**
-	 * update : Adds the byte array to the existing msg to hash. 
+	 * update : Adds the byte array to the existing message to hash. 
 	 * @param in - input byte array
-	 * @param inOffset - the offset within the byte arrat
+	 * @param inOffset - the offset within the byte array
 	 * @param inLen - the length. The number of bytes to take after the offset
 	 * */
 	public void update(byte[] in, int inOffset, int inLen) {
 		
-			updateHash(collHashPtr, in, inLen);
+		//call the native function
+		updateHash(collHashPtr, in, inLen);
 	}
 
 	/** 
-	 * @param out - the output in byte arrat
+	 * @param out - the output in byte array
 	 * @param outOffset - the offset from which to take bytes from
 	 */
 	public void hashFinal(byte[] out, int outOffset) {
 		
 		//call the native function final. There is no use of the offset in the native code and thus should be dealt before
 		//the call to the native function.
-		finalHash(collHashPtr, out, getHashedMsgSize());
+		finalHash(collHashPtr, out);
 
 	}
 
+	/** 
+	 * @return the size of the hashed massage from crypto++
+	 */
+	public int getHashedMsgSize() {
+		
+		//call the native function
+		return getDigestSize(collHashPtr);
+	}
 	
 	
 	/**
-	 * delete the related collision resistant hash object
+	 * finalize : delete the related collision resistant hash object
 	 */
 	protected void finalize() throws Throwable {
 		
@@ -100,14 +110,7 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	
 	 static {
 		 
-		 	//String path = System.getProperty("user.dir");
-		 	
-		 	//System.out.print(path);
-		 	
-	        //System.load(path + "\\JavaSrc\\lib\\JavaInterface.dll");
-	        
-	      
-		 
+		 //load the crypto++ jni dll
 		 System.loadLibrary("JavaInterface");
 	 }
 
