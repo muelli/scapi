@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.primitives.hash.bc.
  * File: BcSHA256.java.
  * Creation date Mar 28, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
@@ -18,7 +18,7 @@ import edu.biu.scapi.primitives.hash.SHA256;
  * @author LabTest
  *
  */
-public class BcSHA256 extends BcCollResHash implements SHA256 {
+public final class BcSHA256 extends BcCollResHash implements SHA256 {
 
 	/**
 	 * 

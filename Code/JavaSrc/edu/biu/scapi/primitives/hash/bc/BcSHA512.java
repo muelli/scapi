@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.primitives.hash.bc.
  * File: BcSHA512.java.
  * Creation date Mar 28, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
@@ -18,7 +18,7 @@ import edu.biu.scapi.primitives.hash.SHA512;
  * @author LabTest
  *
  */
-public class BcSHA512 extends BcCollResHash implements SHA512 {
+public final class BcSHA512 extends BcCollResHash implements SHA512 {
 
 	/**
 	 * 

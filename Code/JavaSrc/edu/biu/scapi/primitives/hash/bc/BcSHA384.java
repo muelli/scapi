@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.primitives.hash.bc.
  * File: BcSHA384.java.
  * Creation date Mar 28, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
@@ -18,7 +18,7 @@ import edu.biu.scapi.primitives.hash.SHA384;
  * @author LabTest
  *
  */
-public class BcSHA384 extends BcCollResHash implements SHA384 {
+public final class BcSHA384 extends BcCollResHash implements SHA384 {
 
 	/**
 	 * 

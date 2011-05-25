@@ -10,7 +10,7 @@ import edu.biu.scapi.primitives.hash.SHA1;
 /** 
  * @author LabTest
  */
-public class BcSHA1 extends BcCollResHash implements SHA1 {
+public final class BcSHA1 extends BcCollResHash implements SHA1 {
 	/** 
 	 * pass the digest SHA1 of BC. 
 	 */
