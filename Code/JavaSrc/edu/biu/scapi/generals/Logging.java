@@ -3,10 +3,10 @@
  * Package: edu.biu.scapi.generals.
  * File: Logging.java.
  * Creation date Mar 10, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
- * This file TODO
+ * This class is a singleton class for the logger. We have a single logger for the project.
  */
 package edu.biu.scapi.generals;
 
@@ -46,11 +46,19 @@ public class Logging {
 		    
 	}
 	
+	/**
+	 * Sets the logging level.
+	 * @param level the required level of logging
+	 */
 	public static void setLoggingLevel(Level level){
 		
 		logger.setLevel(level);
 	}
 	
+	/**
+	 * return the static Logger.
+	 * @return
+	 */
 	public static Logger getLogger(){
 		
 		return logger;
