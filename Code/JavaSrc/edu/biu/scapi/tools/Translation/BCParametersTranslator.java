@@ -19,7 +19,7 @@ import org.bouncycastle.crypto.params.RSAKeyParameters;
 /** 
  * @author LabTest
  */
-public class BCParametersTranslator {
+public final class BCParametersTranslator {
 	/** 
 	 */
 	//create the singleton object
@@ -44,7 +44,7 @@ public class BCParametersTranslator {
 	 * Translates the key and the parameters into a CipherParameter of BC. If one of the arguments is null then 
 	 * pass to one of the other two translateParameter functions.
 	 * @param key - the KeySpec to translate to CipherParameters of BC
-	 * @param param - The additional AlgorithmParametersSpec to tranform including the key to relevan CipherParameter
+	 * @param param - The additional AlgorithmParametersSpec to transform including the key to relevant CipherParameter
 	 */
 	public CipherParameters translateParameter(KeySpec key, AlgorithmParameterSpec param) {
 		
