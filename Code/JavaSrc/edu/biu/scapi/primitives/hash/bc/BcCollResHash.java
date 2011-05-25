@@ -18,10 +18,11 @@ public abstract class BcCollResHash extends TargetCollisionResistantAbs {
 	private Digest digest;
 	
 	 /**
-	 * @param digest - the underlying digest of BC
+	 * @param digest the underlying digest of BC
 	 */
 	public BcCollResHash(Digest digest) {
 	
+		//set the underlying bc digest
 		this.digest = digest;
 	}
 
@@ -36,30 +37,35 @@ public abstract class BcCollResHash extends TargetCollisionResistantAbs {
 	}
 
 	/**
-	 * @return - the size of the hashed message as returned from BC
+	 * @return the size of the hashed message as returned from BC
 	 */
 	public int getHashedMsgSize() {
 		
+		//get the size from the underlying digest
 		return digest.getDigestSize();
 	}
 
 	/**
-	 * update : Adds the byte array to the existing msg to hash. 
-	 * @param in - input byte array
-	 * @param inOffset - the offset within the byte arrat
-	 * @param inLen - the length. The number of bytes to take after the offset
+	 * Adds the byte array to the existing message to hash. 
+	 * @param in input byte array
+	 * @param inOffset the offset within the byte array
+	 * @param inLen the length. The number of bytes to take after the offset
 	 * */
 	public void update(byte[] in, int inOffset, int inLen) {
 		
+		//delegate the update request to the underlying digest
 		digest.update(in, inOffset, inLen);
 	}
 
 	/** 
-	 * @param out - the output in byte arrat
-	 * @param outOffset - the offset from which to take bytes from
+	 * Completes the hash computation and puts the result in the out array.
+	 * @param out the output in byte array
+	 * @param outOffset the offset from which to take bytes from
 	 */
 	public void hashFinal(byte[] out, int outOffset) {
 		
+		//delegate the update request to the underlying digest by calling it's function doFinal. This function
+		//will update the out array.
 		digest.doFinal(out, outOffset);
 	}
 }
