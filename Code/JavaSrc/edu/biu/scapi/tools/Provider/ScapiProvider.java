@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.tools.Provider.
  * File: ScapiProvider.java.
  * Creation date Apr 7, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
@@ -16,7 +16,7 @@ import java.security.Provider;
  * @author LabTest
  *
  */
-public class ScapiProvider extends Provider {
+public final class ScapiProvider extends Provider {
 
 	private static final long serialVersionUID = 5008575665601412726L;
 
