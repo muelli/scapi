@@ -10,7 +10,7 @@ import edu.biu.scapi.primitives.prg.RC4;
 /** 
  * @author LabTest
  */
-public class BcRC4 extends BcPRG implements RC4{
+public final class BcRC4 extends BcPRG implements RC4{
 	
 	public BcRC4(){
 		super(new RC4Engine());
