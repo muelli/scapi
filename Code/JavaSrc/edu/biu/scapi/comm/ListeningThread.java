@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 
+import edu.biu.scapi.exceptions.InvalidChannel;
 import edu.biu.scapi.generals.Logging;
 
 /** 
@@ -22,8 +23,8 @@ import edu.biu.scapi.generals.Logging;
  */
 class ListeningThread extends Thread{
 	private Map<InetAddress , Vector<SecuringConnectionThread>> connectingThreadsMap;//map that includes vectors of SecuringConnectionThread of the down connections.
-																				  //Since we may have multiple channels from the same ip address we use a vector
-																				  //for each ip address. We can not differentiate using the port since when a client connects
+																				  //Since we may have multiple channels from the same IP address we use a vector
+																				  //for each IP address. We can not differentiate using the port since when a client connects
 																				  //its port is unknown.
 	private int port;//the port to listen on
 	private boolean bStopped = false;//a flag that indicates if to keep on listening or stop
@@ -33,6 +34,9 @@ class ListeningThread extends Thread{
 
 	/**
 	 * 
+	 * @param securingThreadsMap
+	 * @param port
+	 * @param numOfIncomingConnections
 	 */
 	public ListeningThread( Map<InetAddress ,Vector<SecuringConnectionThread>> securingThreadsMap, int port, int numOfIncomingConnections) {
 
@@ -55,7 +59,7 @@ class ListeningThread extends Thread{
 	
 	/**
 	 * 
-	 * stopConnecting - sets the flag bStopped to false. In the run function of this thread this flag is checked
+	 * Sets the flag bStopped to false. In the run function of this thread this flag is checked
 	 * 					if the flag is true the run functions returns, otherwise continues.
 	 */
 	public void stopConnecting(){
@@ -67,7 +71,7 @@ class ListeningThread extends Thread{
 	
 	
 	/**
-	 * run : This function is the main function of the ListeningThread. Mainly, we listen and accept valid connections as long
+	 * This function is the main function of the ListeningThread. Mainly, we listen and accept valid connections as long
 	 *  	 as the flag bStopped is false.
 	 *       We use the ServerSocketChannel rather than the regular ServerSocket since we want the accept to be non-blocking. If
 	 *       the accept function is blocking the flag bStopped will not be checked until the thread is unblocked.  
@@ -173,9 +177,11 @@ class ListeningThread extends Thread{
 	        			
 	        			//start the connecting thread
 	        			scThread.start();
-	        		}
-	        		else
-	        			;//throw an exception. The channel must be concrete
+	        		} else
+						
+						//all the channels must be plian. Should not be 
+						throw new InvalidChannel("All channels must be plain");
+						
 	        		
 	        	}
 			}
