@@ -36,16 +36,17 @@ public interface TargetCollisionResistant {
 	public int getHashedMsgSize();
 
 	/**
-	 * update : Adds the byte array to the existing msg to hash. 
-	 * @param in - input byte array
-	 * @param inOffset - the offset within the byte arrat
-	 * @param inLen - the length. The number of bytes to take after the offset
+	 * Adds the byte array to the existing message to hash. 
+	 * @param in input byte array
+	 * @param inOffset the offset within the byte array
+	 * @param inLen the length. The number of bytes to take after the offset
 	 * */
 	public void update(byte[] in, int inOffset, int inLen);
 
 	/** 
-	 * @param out - the output in byte arrat
-	 * @param outOffset - the offset from which to take bytes from
+	 * Completes the hash computation and puts the result in the out array.
+	 * @param out the output in byte array
+	 * @param outOffset the offset from which to take bytes from
 	 */
 	public void hashFinal(byte[] out, int outOffset);
 }
