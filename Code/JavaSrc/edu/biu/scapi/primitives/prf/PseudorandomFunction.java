@@ -17,13 +17,13 @@ import javax.crypto.SecretKey;
  */
 public interface PseudorandomFunction {
 	/**
-	 * Initializes this prf with the secret key
+	 * init : Initializes this prf with the secret key
 	 * @param secretKey - the secrete key
 	 *  */
 	public void init(SecretKey secretKey);
 
 	/** 
-	 * Initializes this prf with the secret key and the auxiliary parameters
+	 * init : Initializes this prf with the secret key and the auxiliary parameters
 	 * @param secretKey - secret key
 	 * @param params - algorithm parameters
 	 */
@@ -52,6 +52,10 @@ public interface PseudorandomFunction {
 	public int getBlockSize();
 
 	/** 
+	 * computeBlock : computes the function using the secret key. The user supplies the input byte array and the offset from 
+	 * which to take the data from. The user also supplies the output byte array as well as the offset. 
+	 * The computeBlock function will put the output starting at the offset. This function is suitable for block ciphers where 
+	 * the input/output length is known in advance.
 	 * @param inBytes - input bytes to compute
 	 * @param inOff - input offset in the inBytes array
 	 * @param outBytes - output bytes. The resulted bytes of compute.
@@ -62,7 +66,7 @@ public interface PseudorandomFunction {
 	
 	/**
 	 * 
-	 * computetBlock
+	 * computetBlock : This function is provided in the interface especially for the sub-family PrfVaryingInputLength
 	 * 
 	 * This function is necessary since some of the Prf's we implement may have variable input and output length.
 	 * If the implemented algorithm is a block cipher then the size of the input as well as the output is known in advence and 
@@ -79,7 +83,9 @@ public interface PseudorandomFunction {
 	
 	/**
 	 * 
-	 * computetBlock
+	 * computetBlock : This function is provided in this PseudorandomFunction interface for the sake of interfaces (or classes) for which 
+	 * the input-output lengths can be different for each computation. Hmac and Prf/Prp with variable input/output length are examples of 
+	 * such interfaces.
 	 * 
 	 * This function is necessary since some of the Prf's we implement may have only variable input and fixed output length.
 	 * @param inBytes- input bytes to compute
