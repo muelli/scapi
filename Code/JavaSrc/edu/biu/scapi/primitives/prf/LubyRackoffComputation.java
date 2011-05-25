@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.primitives.prf.
  * File: LubyRackoffcomputation.java.
  * Creation date May 3, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
@@ -29,17 +29,16 @@ class LubyRackoffComputation {
 	 *		Let R0 be the second |x|/2 bits of x 
 	 *		For i = 1 to 4 
 	 *		SET Li = Ri-1 
-     *		compute Ri = L0 | PRF_VARY_INOUT(k,(Ri-1,i),L)  
+     *		compute Ri = Li-1 | PRF_VARY_INOUT(k,(Ri-1,i),L)  
 	 *		[key=k, data=(Ri-1,i),  outlen = L] 
 	 *		return (L4,R4) 
 	 *
 	 * @param prf - the underlying pseudo random function that is used for the computation.
-	 * @param inBytes- input bytes to compute
-	 * @param inLen - the length of the input array
+	 * @param inBytes - input bytes to compute
+	 * @param len - the length of the input array
 	 * @param inOff - input offset in the inBytes array
 	 * @param outBytes - output bytes. The resulted bytes of compute.
 	 * @param outOff - output offset in the outBytes array to take the result from
-	 * @param outLen - the length of the output array
 	 * @throws IllegalBlockSizeException 
 	 */
 	public void computeBlock(PseudorandomFunction prf,  byte[] inBytes, int inOff, int len, byte[] outBytes, int outOff) throws IllegalBlockSizeException {
@@ -49,12 +48,12 @@ class LubyRackoffComputation {
 			throw new IllegalBlockSizeException("Length of input must be even");
 		}
 		
-		int sideSize = len/2;
+		int sideSize = len/2;//L in the pseudo code
 		byte[] tmpReference;
 		byte[] leftCurrent = new byte[sideSize];
-		byte[] rightCurrent = new byte[sideSize+1];//keep space for the index
+		byte[] rightCurrent = new byte[sideSize+1];//keep space for the index. Size of L+1. 
 		byte[] leftNext = new byte[sideSize];
-		byte[] rightNext = new byte[sideSize+1];//keep space for the index
+		byte[] rightNext = new byte[sideSize+1];//keep space for the index. Size of L+1.
 		
 			
 		//Let left_current be the first half bits of the input
@@ -72,8 +71,9 @@ class LubyRackoffComputation {
 			//do PRF_VARY_INOUT(k,(Ri-1,i),L) of the pseudocode
 			//put the result in the rightNext array. Later we will XOr it with leftCurrent. Note that the result size is not the entire
 			//rightNext array. It is one byte less. The remaining byte will contain the index for the next iteration.
-			prf.computeBlock(rightCurrent, 0, rightCurrent.length, rightNext, 0, len);
+			prf.computeBlock(rightCurrent, 0, rightCurrent.length, rightNext, 0, sideSize);
 			
+			//do Ri = L0 ^ PRF_VARY_INOUT(k,(Ri-1,i),L)  
 			//XOR rightNext (which is the resulting prf computation by now) with leftCurrent.
 			for(int j=0;j<sideSize;j++){
 				
