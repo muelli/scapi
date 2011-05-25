@@ -11,14 +11,14 @@ import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
 /** 
 * @author LabTest
  */
-public class CollResFactory {
+public final class CollResFactory {
 	private FactoriesUtility factoriesUtility;
 	private static CollResFactory instance = new CollResFactory();
 
 	/**
-	 * CollResFactory - private constructor since this class is of the singleton pattern. 
-	 * 					It creates an instance of FactoriesUtility and passes a predefined file names to the constructor
-	 * 					of FactoriesUtility.
+	 * Private constructor since this class is of the singleton pattern. 
+	 * It creates an instance of FactoriesUtility and passes a predefined file names to the constructor
+	 * of FactoriesUtility.
 	 * 
 	 */
 	private CollResFactory() {
@@ -29,8 +29,8 @@ public class CollResFactory {
 	}
 	
 	/** 
-	 * @param provider - the required provider name
-	 * @param algName - the required algorithm name
+	 * @param provider the required provider name
+	 * @param algName the required algorithm name
 	 * @return an object of type TargetCollisionResistant class that was determined by the algName + provider
 	 */
 	public TargetCollisionResistant getObject(String algName, String provider) {
@@ -40,8 +40,8 @@ public class CollResFactory {
 
 	/** 
 	 * 
-	 * @param algName - the required algorithm name
-	 * @return an object of type TargetCollisionResistant class that was determined by the algName + the default provider for that algorithm.
+	 * @param algName the required algorithm name
+	 * @return an object of type TargetCollisionResistant class that was determined by the algName + the default provider for that algorithm
 	 */
 	public TargetCollisionResistant getObject(String algName) {
 		

@@ -12,7 +12,7 @@ import edu.biu.scapi.primitives.trapdoor_permutation.TrapdoorPermutation;
 /** 
  * @author LabTest
  */
-public class TrapdoorPermutationFactory {
+public final class TrapdoorPermutationFactory {
 	private FactoriesUtility factoriesUtility;
 	private static TrapdoorPermutationFactory instance;
 

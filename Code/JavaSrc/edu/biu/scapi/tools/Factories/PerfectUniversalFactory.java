@@ -12,7 +12,7 @@ import edu.biu.scapi.primitives.PerfectUniversalHash.PerfectUniversalHash;
 /** 
  * @author LabTest
  */
-public class PerfectUniversalFactory {
+public final class PerfectUniversalFactory {
 	private FactoriesUtility factoriesUtility;
 	private static PerfectUniversalFactory instance = new PerfectUniversalFactory();
 

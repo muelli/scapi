@@ -12,7 +12,7 @@ import edu.biu.scapi.primitives.prg.PseudorandomGenerator;
 /** 
   * @author LabTest
   */
-public class PrgFactory {
+public final class PrgFactory {
 	
 	private FactoriesUtility factoriesUtility;
 	private static PrgFactory instance = new PrgFactory();
