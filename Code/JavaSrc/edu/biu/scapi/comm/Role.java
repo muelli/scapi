@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.comm.
  * File: Role.java.
  * Creation date Feb 2, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
