@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.primitives.prf.bc.
  * File: TripleDES.java.
  * Creation date 10:35:11 AM.
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
@@ -18,7 +18,7 @@ import edu.biu.scapi.primitives.prf.TripleDES;
  * @author LabTest
  *
  */
-public class BcTripleDES extends BcPRP implements TripleDES{
+public final class BcTripleDES extends BcPRP implements TripleDES{
 
 	/**
 	 * Pass the DesedeEngine of BC to the abstract super class
