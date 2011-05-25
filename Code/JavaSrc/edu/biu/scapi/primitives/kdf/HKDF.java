@@ -18,7 +18,7 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
 /** 
   * @author LabTest
  */
-public class HKDF implements KeyDerivationFunction {
+public final class HKDF implements KeyDerivationFunction {
 	
 	private Hmac hmac;
 
