@@ -39,7 +39,7 @@ public class IteratedPrfVaring extends
 	
 	/**
 	 * 
-	 * computetBlock
+	 * 
 	 * Pseudocode:
 	 * 
 	 * outlen = outBytes.length
@@ -51,12 +51,12 @@ public class IteratedPrfVaring extends
 	 *	return the first outlen bits of Y1,…,Ym  
 	 * 
 	 * This function is necessary since this Prf has variable input and output length.
-	 * @param inBytes- input bytes to compute
-	 * @param inLen - the length of the input array
-	 * @param inOff - input offset in the inBytes array
-	 * @param outBytes - output bytes. The resulted bytes of compute.
-	 * @param outOff - output offset in the outBytes array to take the result from
-	 * @param outLen - the length of the output array
+	 * @param inBytesinput bytes to compute
+	 * @param inLen the length of the input array
+	 * @param inOff input offset in the inBytes array
+	 * @param outBytes output bytes. The resulted bytes of compute
+	 * @param outOff output offset in the outBytes array to take the result from
+	 * @param outLen the length of the output array
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen){
 		
