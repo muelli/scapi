@@ -75,7 +75,6 @@ public class PlainTCPChannel extends PlainChannel{
 	}
 
 	/** 
-	 * @param msg
 	 * @throws ClassNotFoundException 
 	 * @throws IOException 
 	 */
@@ -96,7 +95,7 @@ public class PlainTCPChannel extends PlainChannel{
 
 	/**
 	 * 
-	 * close : closes the socket and the out and in streams.
+	 * Closes the socket and the out and in streams.
 	 */
 	public void close() {
 
@@ -116,7 +115,7 @@ public class PlainTCPChannel extends PlainChannel{
 
 	
 	/** 
-	 * Connect : connects the socket to the InetSocketAddress of this object. If the server we are trying to connect to 
+	 * Connects the socket to the InetSocketAddress of this object. If the server we are trying to connect to 
 	 * 			 is not up yet than we sleep for a while and try again until the connection is established.
 	 * 			 After the connection has succeeded the input and output streams are set for the send and receive functions.
 	 * @return
@@ -162,7 +161,7 @@ public class PlainTCPChannel extends PlainChannel{
 
 
 	/**
-	 * setSocket : Sets the socket and the input and output streams. If the user uses this function it means that 
+	 * Sets the socket and the input and output streams. If the user uses this function it means that 
 	 * 			   the connect function will not be called and thus, the streams should be set here.
 	 * @param socket the socket to set
 	 * 		

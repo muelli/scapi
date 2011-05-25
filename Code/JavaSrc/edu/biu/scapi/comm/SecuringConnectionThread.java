@@ -55,7 +55,7 @@ class SecuringConnectionThread extends Thread{
 	
 	/**
 	 * 
-	 * stopConnecting - sets the flag bStopped to false. In the run function of this thread this flag is checked
+	 * Sets the flag bStopped to false. In the run function of this thread this flag is checked
 	 * 					if the flag is true the run functions returns, otherwise continues.
 	 */
 	void stopConnecting(){
