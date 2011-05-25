@@ -48,12 +48,8 @@ public abstract class MessageDigestProvider extends MessageDigest {
 		
 	}
 
-	/** 
+	/**
 	 * 
-	 * engineUpdate
-	 * @param byteinput
-	 * @param intoffset
-	 * @param intlen
 	 */
 	public void engineUpdate(byte[] in, int inOffset, int inLen) {
 		
@@ -73,7 +69,7 @@ public abstract class MessageDigestProvider extends MessageDigest {
 
 	/**
 	 * 
-	 * @param hash
+	 * @param crHash
 	 */
 	public MessageDigestProvider(CollisionResistantHash crHash) {
 		
@@ -85,7 +81,7 @@ public abstract class MessageDigestProvider extends MessageDigest {
 	static public class SHA1 extends MessageDigestProvider{
 
 		/**
-		 * @param crHash
+		 * 
 		 */
 		public SHA1() {
 			super(new BcSHA1());
@@ -96,7 +92,7 @@ public abstract class MessageDigestProvider extends MessageDigest {
 	static public class SHA224 extends MessageDigestProvider{
 
 		/**
-		 * @param crHash
+		 * 
 		 */
 		public SHA224() {
 			super(new BcSHA224());
@@ -108,7 +104,7 @@ public abstract class MessageDigestProvider extends MessageDigest {
 	static public class SHA256 extends MessageDigestProvider{
 
 		/**
-		 * @param crHash
+		 * 
 		 */
 		public SHA256() {
 			super(new BcSHA256());
@@ -120,7 +116,7 @@ public abstract class MessageDigestProvider extends MessageDigest {
 	static public class SHA384 extends MessageDigestProvider{
 
 		/**
-		 * @param crHash
+		 * 
 		 */
 		public SHA384() {
 			super(new BcSHA384());
@@ -132,7 +128,7 @@ public abstract class MessageDigestProvider extends MessageDigest {
 	static public class SHA512 extends MessageDigestProvider{
 
 		/**
-		 * @param crHash
+		 * 
 		 */
 		public SHA512() {
 			super(new BcSHA512());
