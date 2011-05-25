@@ -1,5 +1,8 @@
 /**
- * 
+ * The class LubyRackoffPrpFromPrfVarying is one implementation that has a varying input and output length. LubyRackoffPrpFromPrfVarying is a 
+ * pseudorandom permutation with varying input/output lengths, based on any PRF with a variable input/output length 
+ * (as long as input length = output length). We take the interpretation that there is essentially a different random permutation
+ * for every input/output length.
  */
 package edu.biu.scapi.primitives.prf;
 
@@ -7,12 +10,9 @@ import javax.crypto.IllegalBlockSizeException;
 
 /** 
  * @author LabTest
- * The class LubyRackoffPrpFromPrfVarying is one implementation that has a varying input and output length. LubyRackoffPrpFromPrfVarying is a 
- * pseudorandom permutation with varying input/output lengths, based on any PRF with a variable input/output length 
- * (as long as input length = output length). We take the interpretation that there is essentially a different random permutation
- * for every input/output length.
+ * 
  */
-public class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
+public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	
 	LubyRackoffComputation lrComputation = new LubyRackoffComputation();
 	
@@ -22,12 +22,12 @@ public class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	}
 	
 	/** 
-	 * @param inBytes- input bytes to compute
-	 * @param inLen - the length of the input array
-	 * @param inOff - input offset in the inBytes array
-	 * @param outBytes - output bytes. The resulted bytes of compute.
-	 * @param outOff - output offset in the outBytes array to take the result from
-	 * @param outLen - the length of the output array
+	 * @param inBytes input bytes to compute
+	 * @param inLen the length of the input array
+	 * @param inOff input offset in the inBytes array
+	 * @param outBytes output bytes. The resulted bytes of compute
+	 * @param outOff output offset in the outBytes array to take the result from
+	 * @param outLen the length of the output array
 	 * @throws IllegalBlockSizeException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException {
