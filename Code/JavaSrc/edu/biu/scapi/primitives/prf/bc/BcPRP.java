@@ -1,5 +1,9 @@
 /**
- * 
+ * A general adapter class of PrpFixed for Bouncy Castle. 
+ * This class implements all the functionality by passing requests to the adaptee interface BlockCipher. 
+ * A concrete PRP such as AES represented by the class BcAES only passes the AESEngine object in the constructor 
+ * to the base class. 
+ *  
  */
 package edu.biu.scapi.primitives.prf.bc;
 
@@ -18,28 +22,61 @@ import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 /** 
  * @author LabTest
  * 
- * A general adapter class of PrpFixed for Bouncy Castle. 
- * This class implements all the functionality by passing requests to the adaptee interface BlockCipher. 
- * A concrete PRP such as AES represented by the class BcAES only passes the AESEngine object in the constructor 
- * to the base class. 
+ * 
  */
 public abstract class BcPRP implements PrpFixed{
 	
 	private BlockCipher bcBlockCipher = null;//bc block cipher
-	private CipherParameters bcParams = null;//bc paramters
-	private boolean forEncryption = true;//set for true. If decryption is needed the flag will be set to false. DO NOT CHANGE SINCE THE INIT IS FOR TRUE
+	private CipherParameters bcParams = null;//bc parameters
+	private boolean forEncryption = true;//set for true. If decryption is needed the flag will be set to false. 
 	private SecretKey secretKey = null;
 	private AlgorithmParameterSpec params = null;
 	
 
 	/** 
-	 * @param bcBlockCipher - the underlying bc block cipher
+	 * @param bcBlockCipher the underlying bc block cipher
 	 */
 	public BcPRP(BlockCipher bcBlockCipher) {
 		
 		this.bcBlockCipher = bcBlockCipher;
 	}
 
+
+	/** 
+	 * Creates the relevant bc parameters to pass when inverting or computing.
+	 * @param secretKey secret key
+	 */
+	public void init(SecretKey secretKey) {
+		
+		//init parameters
+		this.secretKey = secretKey;
+		
+		//get the parameters converted to bc.
+		bcParams = BCParametersTranslator.getInstance().translateParameter((SecretKeySpec)secretKey);
+		
+		//at the beginning forEncryption is set to true. Init the BC block cipher.
+		bcBlockCipher.init(forEncryption, bcParams);
+			
+	}
+
+	/** 
+	 * Creates the relevant bc parameters to pass when inverting or computing.
+	 * @param secretKey secret key
+	 * @param params algorithm parameters
+	 */
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
+
+		//init parameters
+		this.secretKey = secretKey;
+		this.params = params;
+		
+		//send the parameters converted to bc.
+		bcParams = BCParametersTranslator.getInstance().translateParameter((SecretKeySpec)secretKey, params);
+		
+		//at the beginning forEncryption is set to true. Init the BC block cipher.
+		bcBlockCipher.init(forEncryption, bcParams);
+		
+	}
 	
 	/** 
 	 */
@@ -55,12 +92,12 @@ public abstract class BcPRP implements PrpFixed{
 	}
 
 	/** 
-	 * computeBlock : call the underlying bc block cipher processBlock. Since we wish to computeBlock we first set the flag
+	 * Call the underlying bc block cipher processBlock. Since we wish to computeBlock we first set the flag
 	 * of forEncryption to true.
-	 * @param inBytes- input bytes to compute
-	 * @param inOff - input offset in the inBytes array
-	 * @param outBytes - output bytes. The resulted bytes of compute.
-	 * @param outOff - output offset in the outBytes array to take the result from
+	 * @param inBytes input bytes to compute
+	 * @param inOff input offset in the inBytes array
+	 * @param outBytes output bytes. The resulted bytes of compute.
+	 * @param outOff output offset in the outBytes array to take the result from
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes,
 			int outOff) {
@@ -77,14 +114,14 @@ public abstract class BcPRP implements PrpFixed{
 	
 	/**
 	 * 
-	 * computetBlock : Call computeBlock if the input length is correct. Otherwise, throw an exception.
+	 * Call computeBlock if the input length is correct. Otherwise, throw an exception.
 	 * 
 	 * 
-	 * @param inBytes- input bytes to compute
-	 * @param inLen - the length of the input array
-	 * @param inOff - input offset in the inBytes array
-	 * @param outBytes - output bytes. The resulted bytes of invert.
-	 * @param outOff - output offset in the outBytes array to take the result from
+	 * @param inBytes input bytes to compute
+	 * @param inLen the length of the input array
+	 * @param inOffset input offset in the inBytes array
+	 * @param outBytes output bytes. The resulted bytes of invert
+	 * @param outOffset output offset in the outBytes array to take the result from
 	 */
 
 	public void computeBlock(byte[] inBytes, int inOffset, int inLen,
@@ -98,12 +135,12 @@ public abstract class BcPRP implements PrpFixed{
 	
 
 	/** 
-	 * invertBlock : call the underlying bc block cipher processBlock. Since we wish to invertBlock we first set the flag
+	 * Call the underlying bc block cipher processBlock. Since we wish to invertBlock we first set the flag
 	 * of forEncryption to false.
-	 * @param inBytes- input bytes to compute
-	 * @param inOff - input offset in the inBytes array
-	 * @param outBytes - output bytes. The resulted bytes of invert.
-	 * @param outOff - output offset in the outBytes array to take the result from
+	 * @param inBytes input bytes to compute
+	 * @param inOff input offset in the inBytes array
+	 * @param outBytes output bytes. The resulted bytes of invert
+	 * @param outOff output offset in the outBytes array to take the result from
 	 */
 	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,	int outOff) {
 		
@@ -118,49 +155,16 @@ public abstract class BcPRP implements PrpFixed{
 	}
 
 	
-	/** 
-	 * Creates the relevant bc parameters to pass when inverting or computing.
-	 * @param secretKey - secret key
-	 */
-	public void init(SecretKey secretKey) {
-		
-		//init parameters
-		this.secretKey = secretKey;
-		
-		//get the parameters converted to bc.
-		bcParams = BCParametersTranslator.getInstance().translateParameter((SecretKeySpec)secretKey);
-		
-		bcBlockCipher.init(true, bcParams);
-			
-	}
-
-	/** 
-	 * Creates the relevant bc parameters to pass when inverting or computing.
-	 * @param secretKey - secret key
-	 * @param params - algorithm parameters
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
-
-		//init parameters
-		this.secretKey = secretKey;
-		this.params = params;
-		
-		//send the parameters converted to bc.
-		bcParams = BCParametersTranslator.getInstance().translateParameter((SecretKeySpec)secretKey, params);
-		
-		bcBlockCipher.init(true, bcParams);
-		
-	}
 	
 	/**
-	 *  since both Input and output variables are fixed this function should not normally be call. 
-	 * If the user still wants to use this function, the specified argument len should be the same as 
-	 * the result of getBlockSize, otherwise, throw an exception. 
-	 * @param inBytes - input bytes to invert
-	 * @param inOff - input offset in the inBytes array
-	 * @param outBytes - output bytes. The resulted bytes of invert.
-	 * @param outOff - output offset in the outBytes array to take the result from
-	 * @param len - the length of the input and the output.
+	 *  since both Input and output variables are fixed this function should not normally be called. 
+	 * If the user still wants to use this function, the specified argument <code>len<code> should be the same as 
+	 * the result of <code>getBlockSize<code>, otherwise, throw an exception. 
+	 * @param inBytes input bytes to invert
+	 * @param inOff input offset in the inBytes array
+	 * @param outBytes output bytes. The resulted bytes of invert.
+	 * @param outOff output offset in the outBytes array to take the result from
+	 * @param len the length of the input and the output.
 	 * @throws IllegalBlockSizeException 
 	 */
 	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,
@@ -174,13 +178,13 @@ public abstract class BcPRP implements PrpFixed{
 	}
 
 	/** 
-	 * computeBlock - since both Input and output variables are fixed this function should not normally be call. 
+	 * Since both Input and output variables are fixed this function should not normally be call. 
 	 * If the user still wants to use this function, the input and output lengths should be the same as 
-	 * the result of getBlockSize, otherwise, throw an exception.
-	 * @param inBytes - input bytes to compute
-	 * @param inOff - input offset in the inBytes array
-	 * @param outBytes - output bytes. The resulted bytes of compute.
-	 * @param outOff - output offset in the outBytes array to take the result from
+	 * the result of <code>getBlockSize<code>, otherwise, throw an exception.
+	 * @param inBytes input bytes to compute
+	 * @param inOff input offset in the inBytes array
+	 * @param outBytes output bytes. The resulted bytes of compute.
+	 * @param outOff output offset in the outBytes array to take the result from
 	 * @throws IllegalBlockSizeException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen,
@@ -204,7 +208,7 @@ public abstract class BcPRP implements PrpFixed{
 
 
 	/**
-	 * @return - the secret key
+	 * @return the secret key
 	 */
 	public SecretKey getSecretKey() {
 		return secretKey;
