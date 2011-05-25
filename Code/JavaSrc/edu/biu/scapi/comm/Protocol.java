@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.comm.
  * File: Protocol.java.
  * Creation date Feb 15, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  * Any algorithm that needs to be run by an application as a protocol has to implement the Protocol Interface. It has three methods:
  * •	start(ProtocolInput); initialize input
