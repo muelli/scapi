@@ -18,15 +18,15 @@ import org.bouncycastle.crypto.StreamCipher;
 /** 
  * @author LabTest
  */
-public class BCFactory {
+public final class BCFactory {
 	private FactoriesUtility factoriesUtility;
-	private static BCFactory instance = new BCFactory();
+	private static BCFactory instance = new BCFactory();//singleton
 
 	
 	/**
-	 * BCFactory - private constructor since this class is of the singleton pattern. 
-     * 	     		It creates an instance of FactoriesUtility and passes a predefined file name to the constructor
-     * 		    	of FactoriesUtility.
+	 * Private constructor since this class is of the singleton pattern. 
+     * It creates an instance of FactoriesUtility and passes a predefined file name to the constructor
+     * of FactoriesUtility.
 	 * 
 	 */
 	private BCFactory() {
@@ -37,9 +37,9 @@ public class BCFactory {
 	}
 	
 	/** 
-	 * getBlockCipher : returns the equivalent BC block cipher according to the specified name.
-	 * @param name - the name of the pseudo random permutation equivalent to the BC block cipher
-	 * @return - BC BlockCipher object
+	 * Returns the equivalent BC block cipher according to the specified name.
+	 * @param name the name of the pseudo random permutation equivalent to the BC block cipher
+	 * @return BC <code>BlockCipher<code> object
 	 */
 	public BlockCipher getBlockCipher(String name) {
 		
@@ -47,9 +47,9 @@ public class BCFactory {
 	}
 
 	/** 
-	 * getAsymetricBlockCipher : returns the equivalent BC asymmetric block cipher according to the specified name.
-	 * @param name - the name of the trapdoor permutation equivalent to the BC asymetric block cipher
-	 * @return BC AsymmetricBlockCipher object
+	 * Returns the equivalent BC asymmetric block cipher according to the specified name.
+	 * @param name the name of the trapdoor permutation equivalent to the BC asymmetric block cipher
+	 * @return BC <code>AsymmetricBlockCipher<code> object
 	 */
 	public AsymmetricBlockCipher getAsymetricBlockCipher(String name) {
 		
@@ -57,9 +57,9 @@ public class BCFactory {
 	}
 
 	/** 
-	 * getDigest : returns the equivalent BC digest according to the specified name.
-	 * @param name - the name of the collision resistant hash equivalent to the BC digest cipher
-	 * @return BC Digest object
+	 * Returns the equivalent BC digest according to the specified name.
+	 * @param name the name of the collision resistant hash equivalent to the BC digest cipher
+	 * @return BC <code>Digest<code> object
 	 */
 	public Digest getDigest(String name) {
 		
@@ -67,9 +67,9 @@ public class BCFactory {
 	}
 
 	/** 
-	 * getStreamCipher : returns the equivalent BC stream cipher according to the specified name. 
-	 * @param name - the name of the pseudo random generator equivalent to the BC stream cipher
-	 * @return - BC StreamCipher object
+	 * Returns the equivalent BC stream cipher according to the specified name. 
+	 * @param name the name of the pseudo random generator equivalent to the BC stream cipher
+	 * @return BC <code>StreamCipher<code> object
 	 */
 	public StreamCipher getStreamCipher(String name) {
 		
