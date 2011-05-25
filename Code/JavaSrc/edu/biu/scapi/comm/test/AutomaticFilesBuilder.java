@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.comm.test.
  * File: AutomaticPropertiesFilesBuilder.java.
  * Creation date Mar 8, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
@@ -16,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.util.Properties;
 
 /**

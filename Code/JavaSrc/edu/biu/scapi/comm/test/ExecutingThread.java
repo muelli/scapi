@@ -3,7 +3,7 @@
  * Package: edu.biu.scapi.comm.test.
  * File: ExecutingThread.java.
  * Creation date Mar 13, 2011
- * Create by LabTest
+ * Created by LabTest
  *
  *
  * This file TODO
@@ -14,9 +14,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 
 /**
