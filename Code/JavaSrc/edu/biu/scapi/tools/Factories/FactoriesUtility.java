@@ -28,19 +28,12 @@ public class FactoriesUtility {
 	private static final String PROPERTIES_FILES_PATH = "/propertiesFiles/";
 
 	
-	/*public static void main(String[] args){
-		
-		FactoriesUtility.AlgorithmStringParser parser = new FactoriesUtility.AlgorithmStringParser("a(x(b,c),d,e(f))");
-		String name = parser.getAlgName();
-		Vector<String> vec = parser.getParsedParams();
-	}*/
-	
 	/** 
-	 * FactoriesUtility - load the files to the properties attributes.
-	 * @param defaultProviderFileName - the file name from which to load the default provider properties from. 
+	 * Loads the files to the properties attributes.
+	 * @param defaultProviderFileName the file name from which to load the default provider properties from. 
 	 * 									*Note that this can be null. for example the BCFactory does not need to pass
 	 * 									 default provider for each implementation. 
-	 * @param algsInTypeFileName - the file name from which to load the algorithms in type properties from
+	 * @param algsInTypeFileName the file name from which to load the algorithms in type properties from
 	 */
 	public FactoriesUtility(String defaultProviderFileName,
 			String algsInTypeFileName) {
@@ -73,14 +66,14 @@ public class FactoriesUtility {
 	 * o	If n = 1, then AlgDetails.name = “alg1” and AlgDetails.params =null. 
 	 * If n >=2, then AlgDetails.name = “alg1” and AlgDetails.params = [alg2Name, …,algnName]
 	 * 
-	 * @param algNames - a string of the form "alg1Name(alg2Name,alg3Name(alg4Name, alg5Name)" where alg1 is the main algorithm which takes
+	 * @param algNames a string of the form "alg1Name(alg2Name,alg3Name(alg4Name, alg5Name)" where alg1 is the main algorithm which takes
 	 * 					 other algorithms as parameters (complex algorithm) and alg3 is also a complex algorithm that takes
 	 * 					 alg4 and alg5 simple algorithms as parameters. 
 	 * @return
 	 */
 	private AlgDetails parseAlgNames(String algNames) {
 
-		//create a new algdetails object to return
+		//create a new algDetails object to return
 		AlgDetails algDetails = new AlgDetails();
 		
 		//use the parser to separate the string into the main algorithm and the params 
@@ -97,8 +90,8 @@ public class FactoriesUtility {
 	}
 
 	/** 
-	 * @param algName - the algorithm for which to check validity for
-	 * @return : true - if the algorithm exists in the defaultProviderMap, else false.
+	 * @param algName the algorithm for which to check validity for
+	 * @return true if the algorithm exists in the defaultProviderMap, else false.
 	 */
 	private boolean checkValidity(String algName) {
 
@@ -106,8 +99,8 @@ public class FactoriesUtility {
 	}
 
 	/** 
-	 * @param provider - the required provider of the requested algorithm
-	 * @param algName - the algorithm name
+	 * @param provider the required provider of the requested algorithm
+	 * @param algName the algorithm name
 	 * @return the concatenation of provider+algorithm.
 	 */
 	private String prepareKey(String provider, String algName) {
@@ -117,8 +110,8 @@ public class FactoriesUtility {
 	}
 
 	/**
-	 * loadAlgsInType : loads the names of the algorithms concatenated to the provider and the respecting name of the corresponing class name
-	 * @param algsInTypeFileName - the name of the file to load
+	 * Loads the names of the algorithms concatenated to the provider and the respecting name of the corresponing class name
+	 * @param algsInTypeFileName the name of the file to load
 	 * @throws IOException 
 	 * @throws FileNotFoundException  
 	 */
@@ -141,8 +134,8 @@ public class FactoriesUtility {
 	}
 
 	/**
-	 *  loadDefaultProvider : loads the names of the algorithms with the corresponding default providers 
-	 *  @param defaultProviderFileName - the name of the file to load
+	 *  Loads the names of the algorithms with the corresponding default providers 
+	 *  @param defaultProviderFileName the name of the file to load
 	 * @throws IOException 
 	 * @throws FileNotFoundException  
 	 */
@@ -167,13 +160,13 @@ public class FactoriesUtility {
 	}
 
 	/** 
-	 * getDefaultImplProvider : This function may return different libraries for different objects. 
+	 * This function may return different libraries for different algorithms. 
 	 * For example, it may return "Crypto++" when requesting a Rabin trapdoor permutation and "BC" when requesting an AES implementation. 
 	 * The decision on which implementation to return will be based on the available implementations, 
 	 * on performance and other relevant reasons. 
 	 * 
-	 * @param algName - the algorithm name to get the default provider for
-	 * @return : the default provider for the algorithm specified with the key algName.
+	 * @param algName the algorithm name to get the default provider for
+	 * @return the default provider for the algorithm specified with the key algName
 	 */
 	public String getDefaultImplProvider(String algName) {
 		
@@ -181,7 +174,7 @@ public class FactoriesUtility {
 	}
 
 	/** 
-	 * getObject : pseudocode:
+	 * pseudocode:
 	 * This function returns an Object instantiation of algName algorithm for the specified provider.
 	 * •	Parse algorithm name in order to get AlgDetails.
 	 * •	Check validity of AlgDetails.name. If not valid, throw exception.
@@ -192,18 +185,22 @@ public class FactoriesUtility {
 	 * •	Create an instance of type algClass by calling the above Constructor. Pass as a parameter the “tailVector” in AlgDetails. The call Constructor.newInstance returns an object of type Object. (For example, if algName is a series of algorithms: "HMAC(SHA1)", the function creates an HMAC object and passes the tail – "SHA1" to the instance of HMAC. HMAC should be a class that takes as argument a string and in its constructor uses the factories to create the hash object. In this case, where there is a tail, the getObject function passes the String "SHA1" by retrieving a constructor that gets a String. If there is no such constructor, an exception will be thrown). 
 	 * •	 Return the object created.
 	 *
-	 * @param provider - the required provider name
-	 * @param algName - the required algorithm name
+	 * @param provider the required provider name
+	 * @param algName the required algorithm name
 	 * @return an object of the class that was determined by the algName + provider
 	 */
-	public Object getObject(String provider, String algName) {
+	public Object getObject(String provider, String algName) throws IllegalArgumentException{
 		
 		//get the parsed algorithm details
 		AlgDetails algDetails = parseAlgNames(algName);
+		
 		//check the validity of the request. Meaning, the requested algorithm does exist. 
 		boolean valid = checkValidity(provider + algDetails.name);
-		if(!valid)
-			return null;
+		
+		//if invalid throw IllegalArgumentException exception
+		if(!valid){
+			throw (new IllegalArgumentException("Algorithm " + algDetails.name + " is not supported for provider " + provider));
+		}
 		
 		//get the key as written in the property file
 		String keyToMap = prepareKey(provider, algDetails.name);
@@ -227,7 +224,7 @@ public class FactoriesUtility {
 				classes[i] = String.class;
 			}
 			
-			//get the constructor that has classes.length number of arguments of string type  
+			//get the constructor that has <code>classes.length<code> number of arguments of string type  
 			Constructor constructor = algClass.getConstructor(classes);
 			
 			
@@ -235,7 +232,7 @@ public class FactoriesUtility {
 			//get the vector of parameters from the algorithm details object.
 			//create an instance of type algClass by calling the obtained constructor:
 			//NOTE (Secure coding) : The command newInstance with a parameter contains a potential security risk of creating undesired objects
-			//however, the paramters passed to the newInstance function are only those of algorithms we allow. That is, the classes that 
+			//however, the parameters passed to the newInstance function are only those of algorithms we allow. That is, the classes that 
 			//can be created here are limited and controlled.
 			 newObj = constructor.newInstance(algDetails.params.toArray());
 			 
@@ -262,10 +259,10 @@ public class FactoriesUtility {
 
 	/** 
 	 * 
-	 * @param algName - the required algorithm name
-	 * @return an object of the class that was determined by the algName + the default provider for that algorithm.
+	 * @param algName the required algorithm name
+	 * @return an object of the class that was determined by the algName + the default provider for that algorithm
 	 */
-	public Object getObject(String algName) {
+	public Object getObject(String algName) throws IllegalArgumentException{
 
 		//no provider has been supplied. Get the provider name from the default implementation properties.
 		String provider = getDefaultImplProvider(algName);
@@ -292,8 +289,8 @@ public class FactoriesUtility {
 		private String mainAlgName = "";
 		
 		/**
-		 * AlgorithmParser - the constructor
-		 * @param algorithmCommand - the string to work on
+		 * AlgorithmParser the constructor
+		 * @param algorithmCommand the string to work on
 		 */
 		public AlgorithmStringParser(String algorithmCommand) {
 			
@@ -304,9 +301,9 @@ public class FactoriesUtility {
 		
 		/**
 		 * 
-		 * occurrences - counts the number of occurrences of the parameter searchFor in base String
-		 * @param searchFor - the string for which we wish to count the number of occurrences for
-		 * @return - the number of occurrences of searchFor in base
+		 * Counts the number of occurrences of the parameter searchFor in base String
+		 * @param searchFor the string for which we wish to count the number of occurrences for
+		 * @return the number of occurrences of searchFor in base
 		 */
 		int occurances(String base, String searchFor){
 			
@@ -325,8 +322,8 @@ public class FactoriesUtility {
 		
 		/**
 		 * 
-		 * splitToNameAndParamsAsString - retrieves the main algorithm from the String algorithmCommand and generates the string
-		 * 								  algorithmParamsAsOneString.
+		 * Retrieves the main algorithm from the String <code>algorithmCommand<code> and generates the string
+		 * <code>algorithmParamsAsOneString<code>.
 		 */
 		void splitToNameAndParamsAsString()
 		{
@@ -360,14 +357,14 @@ public class FactoriesUtility {
 		
 		/**
 		 * 
-		 * getParsedParams - retrieves the parameters of the algorithm from the String algorithmParamsAsOneString
-		 * @return - a vector holding each parameter
+		 * Retrieves the parameters of the algorithm from the String <code>algorithmParamsAsOneString<code>.
+		 * @return a vector holding each parameter
 		 */
 		Vector<String> getParsedParams(){
 			
 			String tempParam = "";
 			
-			//a vector that will hold the complex paramters. A parameter can be of the form "a(b,c)" even though
+			//a vector that will hold the complex parameters. A parameter can be of the form "a(b,c)" even though
 			//it contains "," and is split in the params array.
 			Vector<String> finalParams = new Vector<String>();
 			//get the parameters into strings. The problems is that we may get more than we should. for example,
@@ -376,16 +373,16 @@ public class FactoriesUtility {
 			
 			int paranthesis = 0;
 			
-			//go over the simple splitted arguments of params and form the complex params if there are any.
+			//go over the simple split arguments of params and form the complex params if there are any.
 			for(int i=0; i< params.length ; i++){
 				
 				//concatenate the new param
 				tempParam+= params[i];
 				
-				//count the number of left parenthesis minus the number of right paranthesis
+				//count the number of left parenthesis minus the number of right parenthesis
 				paranthesis = occurances(tempParam, "(") - occurances(tempParam, ")");
 				
-				//check that the accumulated string is a paramter or we should concatenate more
+				//check that the accumulated string is a parameter or we should concatenate more
 				if(paranthesis==0){
 					//tempParam contains the full parameter add it to the vector
 					if(!tempParam.isEmpty())
