@@ -8,7 +8,7 @@ import javax.crypto.IllegalBlockSizeException;
 /** 
  * @author LabTest
  */
-public class LubyRackoffPrpFromPrfFixed extends PrpFromPrfFixed {
+public final class LubyRackoffPrpFromPrfFixed extends PrpFromPrfFixed {
 	
 	LubyRackoffComputation lrComputation = new LubyRackoffComputation();
 	/**
