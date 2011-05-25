@@ -66,12 +66,12 @@ public class CommunicationSetup implements TimeoutObserver{
 	 * the communication layer will call this function in order to prepare for communication after providing the required parameters. 
 	 * This function initiates the creation of the final actual socket connections between the parties. If this function succeeds, the 
 	 * application may use the send and receive functions of the created channels to pass messages.
-	 * @param listOfParties - the original list of parties to connect to
-	 * @param keyExchange - the key exchange algorithm protocol to use after a channel is connected
-	 * @param securityLevel - the required security level for all the connections. E.g Plain, encrypted, authenticated or secured.
-	 * @param successLevel - the ConnectivitySuccessVerifier algorithm to use
-	 * @param timeOut - the maximum amount of time we allow for the connection stage.
-	 * @return - true if the success function has succeeded and false otherwise.
+	 * @param listOfParties the original list of parties to connect to
+	 * @param keyExchange the key exchange algorithm protocol to use after a channel is connected
+	 * @param securityLevel the required security level for all the connections. E.g Plain, encrypted, authenticated or secured
+	 * @param successLevel the ConnectivitySuccessVerifier algorithm to use
+	 * @param timeOut the maximum amount of time we allow for the connection stage
+	 * @return true if the success function has succeeded and false otherwise
 	 */
 	public Map<InetSocketAddress, Channel> prepareForCommunication(List<Party> listOfParties,
 			KeyExchangeProtocol keyExchange, SecurityLevel securityLevel,
@@ -132,9 +132,9 @@ public class CommunicationSetup implements TimeoutObserver{
 	
 	/**
 	 * 
-	 * prepareForCommunication : Does the same as the other prepareForCommunication function only sets the flag of enableNagle first.
+	 * Does the same as the other prepareForCommunication function only sets the flag of enableNagle first.
 	 * 
-	 * @param enableNagle - a flag indicating wether or not to use the nagle optimization algorithm. 
+	 * @param enableNagle a flag indicating weather or not to use the nagle optimization algorithm 
 	 * @return
 	 */
 	public Map<InetSocketAddress, Channel> prepareForCommunication(List<Party> listOfParties,
@@ -149,10 +149,9 @@ public class CommunicationSetup implements TimeoutObserver{
 
 	/**
 	 * 
-	 * establishAndSecureConnections : using the SecuringConnectionThread and the ListeningThread we connect the parties via sockets.
+	 * Using the SecuringConnectionThread and the ListeningThread we connect the parties via sockets.
 	 * 								   We either connect by initiating a connection or by listening to incoming connection requests.
-	 * @return
-	 * @throws DuplicatePartyException 
+	 * @throws DuplicatePartyException This exception is for the case where there are two parties in the list of parties with the same ip+port
 	 */
 	private void establishAndSecureConnections() throws DuplicatePartyException {
 		
@@ -221,10 +220,10 @@ public class CommunicationSetup implements TimeoutObserver{
 	}
 
 	/**
-	 * downConnection
+	 * 
 	 * @param party
 	 * @param numOfIncomingConnections
-	 * @param localMapforListeningThread
+	 * @param listeningThreadMap
 	 * @param channel
 	 * @param keyExchangeOutput
 	 * @return
@@ -269,7 +268,7 @@ public class CommunicationSetup implements TimeoutObserver{
 	}
 
 	/**
-	 * upwardConnection
+	 * 
 	 * @param party
 	 * @param channel
 	 * @param keyExchangeOutput
@@ -292,7 +291,7 @@ public class CommunicationSetup implements TimeoutObserver{
 
 	/**
 	 *  
-	 * verifyConnectingStatus : This function goal is to serve as a barrier. It is called from the prepareForCommunication function. The idea
+	 * This function goal is to serve as a barrier. It is called from the prepareForCommunication function. The idea
 	 * 							is to let all the threads finish running before proceeding. 
 	 */ 
 	private void verifyConnectingStatus() {
@@ -310,8 +309,8 @@ public class CommunicationSetup implements TimeoutObserver{
 
 	/** 
 	 * 
-	 * runSuccessAlgo : Runs the success algorithm. 
-	 * @return : true if the connections in the connections in the establishedConnections and possibly connections of the other parties 
+	 * Runs the success algorithm. 
+	 * @return true if the connections in the connections in the establishedConnections and possibly connections of the other parties 
 	 * 			 has succeeded in terms of the success algorithm. Otherwise, false. If the success has failed all the connections of the 
 	 * 			 establishedConnections are removed
 	 */
@@ -323,7 +322,7 @@ public class CommunicationSetup implements TimeoutObserver{
 
 	/**
 	 * 
-	 * setSecurityLevel : In this function we decorate the channels to suit the requested security level. If the required security level
+	 * In this function we decorate the channels to suit the requested security level. If the required security level
 	 * 					  is plain, no decoration is needed. For authenticated we decorate the channel by an authenticated channel. for encrypted, we 
 	 * 					  decorate with encrypted channel. For secured, we decorated with both authenticated and encrypted channel.
 	 * 
@@ -400,7 +399,7 @@ public class CommunicationSetup implements TimeoutObserver{
 	}
 
 	/**
-	 * timeoutOccured : An event called if the timeout has passed. This is called by the infrastructure of the watchdog and the fact that
+	 * An event called if the timeout has passed. This is called by the infrastructure of the watchdog and the fact that
 	 * 					this class is also an observer.
 	 */
 	public void timeoutOccured(Watchdog w) {

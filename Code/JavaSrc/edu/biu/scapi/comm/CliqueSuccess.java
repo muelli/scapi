@@ -20,13 +20,16 @@ public class CliqueSuccess implements ConnectivitySuccessVerifier {
 	}
 	
 	/** 
-	 * @param estCon - the EstablishedConnections object that includes the actual connections formed
-	 * @param originalListOfParties - the original list of parties
 	 * 
 	 * •	Check if connected to all parties in original list.
 	 * •	Ask every party if they are connected to all parties in their list.
 	 * •	If all answers are true, return true,
 	 * •	Else, return false.
+	 * 
+	 * @param estCon the EstablishedConnections object that includes the actual connections formed
+	 * @param originalListOfParties the original list of parties
+	 * 
+	 * 
 	 */
 	public boolean hasSucceded(EstablishedConnections estCon,
 			List<Party> originalListOfParties) {

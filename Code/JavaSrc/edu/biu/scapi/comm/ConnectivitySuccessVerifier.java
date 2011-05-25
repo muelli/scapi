@@ -19,11 +19,11 @@ import edu.biu.scapi.comm.EstablishedConnections;
 public interface ConnectivitySuccessVerifier {
 
 	/** 
-	 * @param estCon - this object includes the map of connections. These connections are the actual connections that were created. 
+	 * @param estCon this object includes the map of connections. These connections are the actual connections that were created. 
 	 *                 The decision if the success is true or false will be based on the actual connections compared to the original list of parties 
-	 *                 and possibly concrete connctions of other parties (in that case the information will be sent to us by the other parties)
-	 * @param originalListOfParties - the original list of parties to connect to
-	 * @return true - if the connections are satisfiable and false otherwise.
+	 *                 and possibly concrete connections of other parties (in that case the information will be sent to us by the other parties)
+	 * @param originalListOfParties the original list of parties to connect to
+	 * @return true if the connections are satisfiable and false otherwise.
 	 */
 	public boolean hasSucceded(EstablishedConnections estCon, List<Party> originalListOfParties);
 	
