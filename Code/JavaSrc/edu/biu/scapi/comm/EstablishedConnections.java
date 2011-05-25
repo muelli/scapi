@@ -11,6 +11,7 @@
 package edu.biu.scapi.comm;
 
 import edu.biu.scapi.comm.Channel;
+import edu.biu.scapi.exceptions.InvalidChannel;
 import edu.biu.scapi.generals.Logging;
 
 import java.net.InetSocketAddress;
@@ -112,8 +113,9 @@ public class EstablishedConnections {
 	 * updateConnectionState - updates a channel state to a new state
 	 * @param address - the key in the map
 	 * @param state - the state of the channel to update to.
+	 * @throws InvalidChannel 
 	 */
-	void updateConnectionState(InetSocketAddress address, PlainChannel.State state) {
+	void updateConnectionState(InetSocketAddress address, PlainChannel.State state) throws InvalidChannel {
 
 		//get the channel from the map
 		Channel channel = connectionsMap.get(address);
@@ -124,7 +126,7 @@ public class EstablishedConnections {
 			plainChannel.setState(state);
 		}
 		else
-			;//throw exception
+			throw new InvalidChannel("The related channel must be a plain channel");
 	}
 	
 	/**
