@@ -45,7 +45,6 @@ public interface PerfectUniversalHash {
 	/** 
 	 * @param in
 	 * @param inOffset
-	 * @param inLen
 	 * @param out
 	 * @param outOffset
 	 */
