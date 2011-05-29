@@ -80,14 +80,14 @@ public final class HKDF implements KeyDerivationFunction {
 	}
 
 	/**
-	 * nextRounds : does the following part of the pseudo code:
+	 * Does the following part of the pseudo code:
 	 * FOR i = 2 TO t
 	 * K(i) = HMAC(PRK,(K(i-1),CTXinfo,i)) [key=PRK, data=(K(i-1),CTXinfo,i)]
 	 * @param outLen
-	 * @param iv - the iv : ctxInfo
-	 * @param hmacLength - the size of the output of the hmac.
-	 * @param outBytes - the result of the overall computation
-	 * @param intermediateOutBytes - round result K(i) in the pseudocode
+	 * @param iv the iv : ctxInfo
+	 * @param hmacLength the size of the output of the hmac.
+	 * @param outBytes the result of the overall computation
+	 * @param intermediateOutBytes round result K(i) in the pseudocode
 	 */
 	private void nextRounds(int outLen, byte[] iv, int hmacLength,
 			byte[] outBytes, byte[] intermediateOutBytes) {
@@ -143,11 +143,11 @@ public final class HKDF implements KeyDerivationFunction {
 	}
 
 	/**
-	 * firstRound
-	 * @param iv - ctxInfo
-	 * @param intermediateOutBytes - round result K(1) in the pseudocode
-	 * @param hmacLength - the size of the output of the hmac.
-	 * @param outBytes - the result of the overall computation
+	 * 
+	 * @param iv ctxInfo
+	 * @param intermediateOutBytes round result K(1) in the pseudocode
+	 * @param hmacLength the size of the output of the hmac.
+	 * @param outBytes the result of the overall computation
 	 */
 	private void firstRound(byte [] outBytes, byte[] iv, byte[] intermediateOutBytes, int hmacLength) {
 		Integer zero;

@@ -73,8 +73,8 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 	
 	/**
 	 * 
-	 * generateParameters : generate the bc related parameters of type DerivationParameters
-	 * @param shared - the input key 
+	 * Generate the bc related parameters of type DerivationParameters
+	 * @param shared the input key 
 	 * @param iv
 	 */
 	private DerivationParameters generateParameters(byte[] shared, byte[] iv){
