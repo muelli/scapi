@@ -18,9 +18,9 @@ public final class TrapdoorPermutationFactory {
 
 	
 	/**
-	 * TrapdoorPermutationFactory - private constructor since this class is of the singleton pattern. 
-     * 	     						It creates an instance of FactoriesUtility and passes a predefined file names to the constructor
-     * 		    					of FactoriesUtility.
+	 * Private constructor since this class is of the singleton pattern. 
+     * It creates an instance of FactoriesUtility and passes a predefined file names to the constructor
+     * of FactoriesUtility.
 	 * 
 	 */
 	private TrapdoorPermutationFactory() {
@@ -32,8 +32,8 @@ public final class TrapdoorPermutationFactory {
 	
 	
 	/** 
-	 * @param provider - the required provider name
-	 * @param algName - the required algorithm name
+	 * @param provider the required provider name
+	 * @param algName the required algorithm name
 	 * @return an object of type TrapdoorPermutation class that was determined by the algName + provider
 	 */
 	public TrapdoorPermutation getObject(String algName, String provider) {
@@ -43,8 +43,8 @@ public final class TrapdoorPermutationFactory {
 
 	/** 
 	 * 
-	 * @param algName - the required algorithm name
-	 * @return an object of type TrapdoorPermutation class that was determined by the algName + the default provider for that algorithm.
+	 * @param algName the required algorithm name
+	 * @return an object of type TrapdoorPermutation class that was determined by the algName + the default provider for that algorithm
 	 */
 	public TrapdoorPermutation getObject(String algName) {
 		

@@ -14,9 +14,9 @@ public final class PrfFactory {
 
 	
 	/**
-	 * PrfFactory - private constructor since this class is of the singleton pattern. 
-     * 	     		It creates an instance of FactoriesUtility and passes a predefined file names to the constructor
-     * 		    	of FactoriesUtility.
+	 * Private constructor since this class is of the singleton pattern. 
+     * It creates an instance of FactoriesUtility and passes a predefined file names to the constructor
+     * of FactoriesUtility.
 	 * 
 	 */
 	private PrfFactory() {
@@ -28,8 +28,8 @@ public final class PrfFactory {
 	
 	
 	/** 
-	 * @param provider - the required provider name
-	 * @param algName - the required algorithm name
+	 * @param provider the required provider name
+	 * @param algName the required algorithm name
 	 * @return an object of type PseudorandomFunction class that was determined by the algName + provider
 	 */
 	public PseudorandomFunction getObject(String algName, String provider) {
@@ -39,7 +39,7 @@ public final class PrfFactory {
 
 	/** 
 	 * 
-	 * @param algName - the required algorithm name
+	 * @param algName the required algorithm name
 	 * @return an object of type PseudorandomFunction class that was determined by the algName + the default provider for that algorithm.
 	 */
 	public PseudorandomFunction getObject(String algName) {

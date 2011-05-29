@@ -18,9 +18,9 @@ public final class PerfectUniversalFactory {
 
 	
 	/**
-	 * PerfectUniversalFactory - private constructor since this class is of the singleton pattern. 
-	 * 					   		 It creates an instance of FactoriesUtility and passes a predefined file names to the constructor
-	 * 							 of FactoriesUtility.
+	 * Private constructor since this class is of the singleton pattern. 
+	 * It creates an instance of FactoriesUtility and passes a predefined file names to the constructor
+	 * of FactoriesUtility.
 	 * 
 	 */
 	private PerfectUniversalFactory() {
@@ -31,8 +31,8 @@ public final class PerfectUniversalFactory {
 	}
 	
 	/** 
-	 * @param provider - the required provider name
-	 * @param algName - the required algorithm name
+	 * @param provider the required provider name
+	 * @param algName the required algorithm name
 	 * @return an object of type PerfectUniversalHash class that was determined by the algName + provider
 	 */
 	public Object getObject(String algName, String provider) {
@@ -42,7 +42,7 @@ public final class PerfectUniversalFactory {
 
 	/** 
 	 * 
-	 * @param algName - the required algorithm name
+	 * @param algName the required algorithm name
 	 * @return an object of type PerfectUniversalHash class that was determined by the algName + the default provider for that algorithm.
 	 */public Object getObject(String algName) {
 		
