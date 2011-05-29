@@ -15,6 +15,7 @@ public abstract class PseudorandomGeneratorAbs implements PseudorandomGenerator 
 	
 	protected SecretKey secretKey = null;//secrete key
 	protected AlgorithmParameterSpec params = null;//algorithm parameters
+	protected boolean isInitialized = false;//until isInitialized() is called set to false.
 
 	/** 
 	 * Initializes this prg with the secret key
@@ -23,6 +24,7 @@ public abstract class PseudorandomGeneratorAbs implements PseudorandomGenerator 
 	public void init(SecretKey secretKey) {
 
 		//init the key. Further initialization should be implemented in the derived concrete class.
+		isInitialized = true;
 		this.secretKey = secretKey;
 	}
 
@@ -34,10 +36,19 @@ public abstract class PseudorandomGeneratorAbs implements PseudorandomGenerator 
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
 
 		//init the parameters. Further initialization should be implemented in the derived concrete class.
+		isInitialized = true;
 		this.secretKey = secretKey;
 		this.params = params;
 	}
 
+	/**
+	 * 
+	 * @return true if the object was initialized by calling the function init.
+	 */
+	public boolean isInitialized(){
+		return isInitialized;
+	}
+	
 	/** 
 	 * @return The algorithm name
 	 */
