@@ -41,7 +41,7 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	
 	
 	/**
-	 * CryptoPpCollResHash - constructs the related pointer of the underlying crypto++ hash.
+	 * Constructs the related pointer of the underlying crypto++ hash.
 	 * @param hashName - the name of the hash. This will be passed to the jni dll function createHash so it will know
 	 * 					 which hash to create.
 	 */
@@ -55,7 +55,7 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	}
 	
 	/**
-	 * getAlgorithmName - the algorithm name taken from Crypto++
+	 * The algorithm name taken from Crypto++
 	 */
 	public String getAlgorithmName() {
 		
@@ -64,10 +64,10 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	}
 	
 	/**
-	 * update : Adds the byte array to the existing message to hash. 
-	 * @param in - input byte array
-	 * @param inOffset - the offset within the byte array
-	 * @param inLen - the length. The number of bytes to take after the offset
+	 * Adds the byte array to the existing message to hash. 
+	 * @param in input byte array
+	 * @param inOffset the offset within the byte array
+	 * @param inLen the length. The number of bytes to take after the offset
 	 * */
 	public void update(byte[] in, int inOffset, int inLen) {
 		
@@ -76,8 +76,8 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	}
 
 	/** 
-	 * @param out - the output in byte array
-	 * @param outOffset - the offset from which to take bytes from
+	 * @param out the output in byte array
+	 * @param outOffset the offset from which to take bytes from
 	 */
 	public void hashFinal(byte[] out, int outOffset) {
 		
@@ -98,7 +98,7 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	
 	
 	/**
-	 * finalize : delete the related collision resistant hash object
+	 * Deletes the related collision resistant hash object
 	 */
 	protected void finalize() throws Throwable {
 		

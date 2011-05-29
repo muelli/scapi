@@ -19,6 +19,12 @@ public interface TargetCollisionResistant {
 	 * @param params
 	 */
 	public void init(AlgorithmParameterSpec params);
+	
+	/**
+	 * 
+	 * @return true if the object was initialized. Usually this means that the function init was called
+	 */
+	public boolean isInitialized();
 
 	/** 
 	 * @return the parameter spec of this target collision resistant hash
