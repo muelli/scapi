@@ -29,8 +29,9 @@ public abstract class BcPRP implements PrpFixed{
 	private BlockCipher bcBlockCipher = null;//bc block cipher
 	private CipherParameters bcParams = null;//bc parameters
 	private boolean forEncryption = true;//set for true. If decryption is needed the flag will be set to false. 
-	private SecretKey secretKey = null;
-	private AlgorithmParameterSpec params = null;
+	protected SecretKey secretKey = null;
+	protected AlgorithmParameterSpec params = null;
+	protected boolean isInitialized = false;//until isInitialized() is called set to false.
 	
 
 	/** 
@@ -48,7 +49,10 @@ public abstract class BcPRP implements PrpFixed{
 	 */
 	public void init(SecretKey secretKey) {
 		
+		
+		
 		//init parameters
+		isInitialized = true;
 		this.secretKey = secretKey;
 		
 		//get the parameters converted to bc.
@@ -57,6 +61,14 @@ public abstract class BcPRP implements PrpFixed{
 		//at the beginning forEncryption is set to true. Init the BC block cipher.
 		bcBlockCipher.init(forEncryption, bcParams);
 			
+	}
+	
+	/**
+	 * 
+	 * @return true if the object was initialized by calling the function init.
+	 */
+	public boolean isInitialized(){
+		return isInitialized;
 	}
 
 	/** 
@@ -67,6 +79,7 @@ public abstract class BcPRP implements PrpFixed{
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
 
 		//init parameters
+		isInitialized = true;
 		this.secretKey = secretKey;
 		this.params = params;
 		

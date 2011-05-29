@@ -20,7 +20,8 @@ import javax.crypto.IllegalBlockSizeException;
  */
 class LubyRackoffComputation {
 	
-	/** computeBlock - pseudocode: 
+	/** 
+	 * pseudocode: 
 	 * Input :
 	 *		 x = inBytes – should  be of even length                                                      
 	 *		-----------------
@@ -33,12 +34,12 @@ class LubyRackoffComputation {
 	 *		[key=k, data=(Ri-1,i),  outlen = L] 
 	 *		return (L4,R4) 
 	 *
-	 * @param prf - the underlying pseudo random function that is used for the computation.
-	 * @param inBytes - input bytes to compute
-	 * @param len - the length of the input array
-	 * @param inOff - input offset in the inBytes array
-	 * @param outBytes - output bytes. The resulted bytes of compute.
-	 * @param outOff - output offset in the outBytes array to take the result from
+	 * @param prf the underlying pseudo random function that is used for the computation
+	 * @param inBytes input bytes to compute
+	 * @param len the length of the input array
+	 * @param inOff input offset in the inBytes array
+	 * @param outBytes output bytes. The resulted bytes of compute
+	 * @param outOff output offset in the outBytes array to take the result from
 	 * @throws IllegalBlockSizeException 
 	 */
 	public void computeBlock(PseudorandomFunction prf,  byte[] inBytes, int inOff, int len, byte[] outBytes, int outOff) throws IllegalBlockSizeException {

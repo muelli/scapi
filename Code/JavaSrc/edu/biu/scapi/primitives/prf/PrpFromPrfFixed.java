@@ -15,8 +15,9 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 	
 	
 	protected PrfFixed prfFixed;
-	private AlgorithmParameterSpec params = null;
-	private SecretKey secretKey = null;
+	protected AlgorithmParameterSpec params = null;
+	protected SecretKey secretKey = null;
+	protected boolean isInitialized = false;//until isInitialized() is called set to false.
 	
 	/** 
 	 * Initializes this PrpFromPrfFixed with the secret key and the auxiliary parameters.
@@ -25,6 +26,7 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 	
 	public void init(SecretKey secretKey) {
 
+		isInitialized = true;
 		this.secretKey = secretKey;
 		
 	}
@@ -39,9 +41,18 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 	
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
 
+		isInitialized = true;
 		this.secretKey = secretKey;
 		this.params = params;
 		
+	}
+	
+	/**
+	 * 
+	 * @return true if the object was initialized by calling the function init.
+	 */
+	public boolean isInitialized(){
+		return isInitialized;
 	}
 	
 	/** 

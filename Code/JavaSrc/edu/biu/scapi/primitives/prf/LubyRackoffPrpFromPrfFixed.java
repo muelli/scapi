@@ -41,10 +41,10 @@ public final class LubyRackoffPrpFromPrfFixed extends PrpFromPrfFixed {
 	}
 
 	/** 
-	 * @param inBytes- input bytes to compute
-	 * @param inOff - input offset in the inBytes array
-	 * @param outBytes - output bytes. The resulted bytes of compute.
-	 * @param outOff - output offset in the outBytes array to take the result from
+	 * @param inBytes input bytes to compute
+	 * @param inOff input offset in the inBytes array
+	 * @param outBytes output bytes. The resulted bytes of compute.
+	 * @param outOff output offset in the outBytes array to take the result from
 	 * @throws IllegalBlockSizeException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes,

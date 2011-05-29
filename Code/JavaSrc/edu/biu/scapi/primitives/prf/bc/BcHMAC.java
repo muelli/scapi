@@ -28,6 +28,7 @@ public final class BcHMAC implements  Hmac {
 	private HMac hMac;//The underlying wrapped hmac of BC.
 	private AlgorithmParameterSpec params = null;
 	private SecretKey secretKey = null;
+	private boolean isInitialized = false;//until isInitialized() is called set to false.
 
 	/** 
 	 * A constructor that can be called from the factory
@@ -62,6 +63,9 @@ public final class BcHMAC implements  Hmac {
 	 */
 	public void init(SecretKey secretKey) {
 		
+		//set flag to true. Object is initializing.
+		isInitialized = true;
+		
 		//assign the key
 		this.secretKey = secretKey;
 		
@@ -74,7 +78,13 @@ public final class BcHMAC implements  Hmac {
 		
 	}
 	
-	
+	/**
+	 * 
+	 * @return true if the object was initialized by calling the function init.
+	 */
+	public boolean isInitialized(){
+		return isInitialized;
+	}
 
 	/** 
 	 * Since the input is not fixed, it must be supplied. This function should not be called. 

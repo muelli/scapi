@@ -20,22 +20,31 @@ import javax.crypto.SecretKey;
 public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLength {
 	
 	protected PrfVaryingInputLength prfVaryingInputLength;
-	private AlgorithmParameterSpec params = null;
-	private SecretKey secretKey = null;
+	protected AlgorithmParameterSpec params = null;
+	protected SecretKey secretKey = null;
+	protected boolean isInitialized = false;//until isInitialized() is called set to false. 
 	
 	
 	/** 
-	 * Initializes this PrfVaryingFromPrfVaryingInput with the secret key and the auxiliary parameters
+	 * Initializes this PrfVaryingFromPrfVaryingInput with the secret key and the auxiliary parameters.
 	 * @param secretKey secret key
 	 * @param params algorithm parameters
 	 */
 	
 	public void init(SecretKey secretKey) {
 
+		isInitialized = true;
 		this.secretKey = secretKey;
 		
 	}
 
+	/**
+	 * 
+	 * @return true if the object was initialized by calling the function init.
+	 */
+	public boolean isInitialized(){
+		return isInitialized;
+	}
 
 	/**
 	 * Initializes this PrfVaryingFromPrfVaryingInput with the secret key
