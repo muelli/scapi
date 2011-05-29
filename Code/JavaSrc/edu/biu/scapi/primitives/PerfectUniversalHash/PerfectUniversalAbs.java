@@ -10,17 +10,27 @@ import java.security.spec.AlgorithmParameterSpec;
  */
 public abstract class PerfectUniversalAbs implements PerfectUniversalHash {
 	protected AlgorithmParameterSpec params;
+	protected boolean isInitialized = true;//most target collision resistant hash functions do not need to call init
+										   //if a certain hash does need to pass some parameters in init, it must set this
+										   //flag to false in the constructor and to true in the init function.
 
 	/** 
 	 * @param params
 	 */
 	public void init(AlgorithmParameterSpec params) {
-		// begin-user-code
-		// TODO Auto-generated method stub
 
-		// end-user-code
+		isInitialized = true;
+		this.params = params;
 	}
 
+	/**
+	 * 
+	 * @return the flag isInitialized
+	 */
+	public boolean isInitialized(){
+		return isInitialized;
+	}
+	
 	/** 
 	 * @return
 	 */

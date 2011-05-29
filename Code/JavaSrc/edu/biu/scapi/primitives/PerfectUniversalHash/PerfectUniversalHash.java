@@ -22,6 +22,12 @@ public interface PerfectUniversalHash {
 	 */
 	public void init(AlgorithmParameterSpec params);
 
+	/**
+	 * 
+	 * @return true if the object was initialized by calling the function init.
+	 */
+	public boolean isInitialized();
+	
 	/** 
 	 * @return
 	 */
