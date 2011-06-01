@@ -14,7 +14,7 @@ import edu.biu.scapi.primitives.trapdoor_permutation.TrapdoorPermutation;
  */
 public final class TrapdoorPermutationFactory {
 	private FactoriesUtility factoriesUtility;
-	private static TrapdoorPermutationFactory instance;
+	private static TrapdoorPermutationFactory instance = new TrapdoorPermutationFactory();
 
 	
 	/**
@@ -26,7 +26,7 @@ public final class TrapdoorPermutationFactory {
 	private TrapdoorPermutationFactory() {
 
 		//create an instance of FactoriesUtility with the predefined file names.
-		factoriesUtility = new FactoriesUtility("PrgDefault.properties", "Prg.properties");
+		factoriesUtility = new FactoriesUtility("TPDefault.properties", "TP.properties");
 		
 	}
 	
