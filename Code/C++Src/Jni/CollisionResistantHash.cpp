@@ -84,22 +84,34 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollR
  * param size		   : the length of the byte array. This will be different for different hash functions
  */
 JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash_finalHash
-(JNIEnv *env, jobject, jlong hashPtr, jbyteArray output, jlong size){
+(JNIEnv *env, jobject, jlong hashPtr, jbyteArray output){
+
+	HashTransformation *localHashPtr = (HashTransformation *)hashPtr;
 
 	//allocate a new byte array with the size of the specific hash algorithm.
-	byte *ret = new byte[size]; 
+	byte *ret = new byte[localHashPtr->DigestSize()]; 
 
 	//perform the final function
-	((HashTransformation *)hashPtr)->Final(ret);
+	localHashPtr->Final(ret);
 
 	//put the result of the final computation in the output array passed from java
-	env->SetByteArrayRegion(output, 0, size, (jbyte*)ret); 
+	env->SetByteArrayRegion(output, 0, localHashPtr->DigestSize(), (jbyte*)ret); 
 
 	//make sure to release the dynamically allocated memory. Will not be deleted by the JVM.
 	delete ret;
 
 
 }
+
+
+JNIEXPORT jint JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash_getDigestSize
+  (JNIEnv *, jobject, jlong hashPtr){
+
+	  HashTransformation *localHashPtr = (HashTransformation *)hashPtr;
+	  return (jint) localHashPtr->DigestSize();
+}
+
+
 
 /* function deleteHash : This function deletes the hash dynamically allocated pointer that was created in c++. This
  *						 memory allocation will not be deleted by the JVM.

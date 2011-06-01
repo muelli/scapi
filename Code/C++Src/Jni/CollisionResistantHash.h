@@ -39,7 +39,17 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollR
  * Signature: (J[BJ)V
  */
 JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash_finalHash
-  (JNIEnv *, jobject, jlong, jbyteArray, jlong);
+  (JNIEnv *, jobject, jlong, jbyteArray);
+
+
+/*
+ * Class:     edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash
+ * Method:    getDigestSize
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash_getDigestSize
+  (JNIEnv *, jobject, jlong);
+
 
 /*
  * Class:     edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash
