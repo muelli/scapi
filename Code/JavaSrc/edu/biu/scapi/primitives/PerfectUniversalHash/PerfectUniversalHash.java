@@ -17,7 +17,8 @@ import java.security.spec.AlgorithmParameterSpec;
  @author LabTest
  */
 public interface PerfectUniversalHash {
-	/** 
+	/**
+	 * Initialize this perfect universal hash with the auxiliary parameters 
 	 * @param params
 	 */
 	public void init(AlgorithmParameterSpec params);
@@ -29,30 +30,32 @@ public interface PerfectUniversalHash {
 	public boolean isInitialized();
 	
 	/** 
-	 * @return
+	 * @return the parameter spec of this perfect universal hash
 	 */
 	public AlgorithmParameterSpec getParams();
 
 	/** 
-	 * @return
+	 * @return the algorithm name
 	 */
 	public String getAlgorithmName();
 
 	/** 
-	 * @return
+	 * @return the input size of this hash function
 	 */
 	public int geInputSize();
 
 	/** 
-	 * @return
+	 * @return the output size of this hash function
 	 */
 	public int geOutputSize();
 
 	/** 
-	 * @param in
-	 * @param inOffset
-	 * @param out
-	 * @param outOffset
+	 * Compute the hash function on the in byte array and put the result in the output byte array
+	 * @param in - input byte array
+	 * @param inOffset - the offset within the input byte array
+	 * @param inLen - length. The number of bytes to take after the offset
+	 * @param out - output byte array
+	 * @param outOffset - the offset within the output byte array
 	 */
 	public void compute(byte[] in, int inOffset, byte[] out,
 			int outOffset);

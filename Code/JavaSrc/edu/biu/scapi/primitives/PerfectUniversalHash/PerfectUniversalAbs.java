@@ -14,7 +14,8 @@ public abstract class PerfectUniversalAbs implements PerfectUniversalHash {
 										   //if a certain hash does need to pass some parameters in init, it must set this
 										   //flag to false in the constructor and to true in the init function.
 
-	/** 
+	/**
+	 * Initialize this perfect universal hash with the auxiliary parameters 
 	 * @param params
 	 */
 	public void init(AlgorithmParameterSpec params) {
@@ -32,53 +33,11 @@ public abstract class PerfectUniversalAbs implements PerfectUniversalHash {
 	}
 	
 	/** 
-	 * @return
+	 * @return the parameter spec of this perfect universal hash
 	 */
 	public AlgorithmParameterSpec getParams() {
-		// begin-user-code
-		// TODO Auto-generated method stub
-		return null;
-		// end-user-code
-	}
 
-	/** 
-	 * @return
-	 */
-	public int geInputSize() {
-		// begin-user-code
-		// TODO Auto-generated method stub
-		return 0;
-		// end-user-code
+		return params;
 	}
-
-	/** 
-	 * @return
-	 */
-	public int geOutputSize() {
-		// begin-user-code
-		// TODO Auto-generated method stub
-		return 0;
-		// end-user-code
-	}
-
-	/**
-	 * 
-	 */
-	public String getAlgorithmName() {
-		// begin-user-code
-		// TODO Auto-generated method stub
-		return null;
-		// end-user-code
-	}
-
-	/**
-	 * 
-	 */
-	public void compute(byte[] in, int inOffset, byte[] out,
-			int outOffset) {
-		// begin-user-code
-		// TODO Auto-generated method stub
-
-		// end-user-code
-	}
+	
 }
