@@ -176,7 +176,6 @@ public class FactoriesUtility {
 	/** 
 	 * pseudocode:
 	 * This function returns an Object instantiation of algName algorithm for the specified provider.
-	 * •	Parse algorithm name in order to get AlgDetails.
 	 * •	Check validity of AlgDetails.name. If not valid, throw exception.
 	 * •	Prepare key for map by concatenating provider + algName.
 	 * •	Get relevant class name from properties map with the key obtained.
@@ -187,27 +186,23 @@ public class FactoriesUtility {
 	 *
 	 * @param provider the required provider name
 	 * @param algName the required algorithm name
+	 * @param params - the required parameters to the algorithm 
 	 * @return an object of the class that was determined by the algName + provider
 	 */
-	public Object getObject(String provider, String algName) throws IllegalArgumentException{
-		
-		//get the parsed algorithm details
-		AlgDetails algDetails = parseAlgNames(algName);
+	public Object getObject(String provider, String algName, Object[] params) throws IllegalArgumentException{
 		
 		//check the validity of the request. Meaning, the requested algorithm does exist. 
-		boolean valid = checkValidity(provider + algDetails.name);
-		
+		boolean valid = checkValidity(provider + algName);
 		//if invalid throw IllegalArgumentException exception
 		if(!valid){
-			throw (new IllegalArgumentException("Algorithm " + algDetails.name + " is not supported for provider " + provider));
+			throw (new IllegalArgumentException("Algorithm " + algName + " is not supported for provider " + provider));
 		}
 		
 		//get the key as written in the property file
-		String keyToMap = prepareKey(provider, algDetails.name);
+		String keyToMap = prepareKey(provider, algName);
 		
 		//get the related algorithm class name
 		String className = algsInType.getProperty(keyToMap);
-		
 		Class algClass  = null;//will hold an Object of type Class representing our alg class
 		Object newObj = null;//will the final create algorithm object
 		try {
@@ -216,14 +211,12 @@ public class FactoriesUtility {
 	
 			//fill the classes of strings with the length of the vector. This will ensure that we get the right/relevant
 			//constructor
-			int size = algDetails.params.size();
+			int size = params.length;
 			Class[] classes = new Class[size]; 
-			
 			//fill the array with String classes
 			for(int i=0;i<size;i++){
-				classes[i] = String.class;
+				classes[i] = params[i].getClass();
 			}
-			
 			//get the constructor that has <code>classes.length<code> number of arguments of string type  
 			Constructor constructor = algClass.getConstructor(classes);
 			
@@ -234,7 +227,7 @@ public class FactoriesUtility {
 			//NOTE (Secure coding) : The command newInstance with a parameter contains a potential security risk of creating undesired objects
 			//however, the parameters passed to the newInstance function are only those of algorithms we allow. That is, the classes that 
 			//can be created here are limited and controlled.
-			 newObj = constructor.newInstance(algDetails.params.toArray());
+			 newObj = constructor.newInstance(params);
 			 
 		} catch (SecurityException e) {
 			Logging.getLogger().log(Level.WARNING, e.toString());
@@ -255,8 +248,20 @@ public class FactoriesUtility {
 		
 	}
 
+	/** 
+	 * @param provider - the required provider name
+	 * @param algName - the required algorithm name
+	 * @return an object of the class that was determined by the algName + the provider for that algorithm.
+	 */
+	public Object getObject(String provider, String algName) {
 	
-
+		//get the parsed algorithm details to have name and params
+		AlgDetails algDetails = parseAlgNames(algName);
+		
+		
+		return getObject(provider, algDetails.name, algDetails.params.toArray());
+	}
+	
 	/** 
 	 * 
 	 * @param algName the required algorithm name
@@ -268,6 +273,20 @@ public class FactoriesUtility {
 		String provider = getDefaultImplProvider(algName);
 		
 		return getObject(provider, algName);
+	}
+	
+	/** 
+	 * 
+	 * @param algName - the required algorithm name
+	 * @param params - the required parameters to the algorithm
+	 * @return an object of the class that was determined by the algName + the default provider for that algorithm.
+	 */
+	public Object getObject(String algName, Object[] params) {
+
+		//no provider has been supplied. Get the provider name from the default implementation properties.
+		String provider = getDefaultImplProvider(algName);
+		
+		return getObject(provider, algName, params);
 	}
 	
 	//nested class:
