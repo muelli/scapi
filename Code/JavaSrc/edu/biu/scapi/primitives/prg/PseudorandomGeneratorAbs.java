@@ -50,24 +50,6 @@ public abstract class PseudorandomGeneratorAbs implements PseudorandomGenerator 
 	}
 	
 	/** 
-	 * @return The algorithm name
-	 */
-	public abstract String getAlgorithmName();
-
-	/** 
-	 * @param bytein - the single byte to xor
-	 */
-	public abstract void streamSingleByte(byte bytein);
-
-	/** 
-	 * @param inBytes - the input bytes
-	 * @param inOff - input offset
-	 * @param len - length
-	 * @param outBytes - output bytes. The result of streaming the input bytes.
-	 * @param outOff - output offset
-	 */
-	public abstract void streamBytes(byte[] inBytes, int inOff,	int len, byte[] outBytes, int outOff);
-	/** 
 	 * @return the parameters of this prp
 	 */
 	public AlgorithmParameterSpec getParams() {

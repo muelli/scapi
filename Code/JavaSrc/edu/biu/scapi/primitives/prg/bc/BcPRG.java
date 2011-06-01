@@ -60,8 +60,6 @@ public abstract class BcPRG extends PseudorandomGeneratorAbs {
 		bcStreamCipher.init(false, bcParams);
 	}
 	
-	
-	
 	/** 
 	 * Get the name of the algorithm through the underlying StreamCipher
 	 * @return - the underlying algorithm name
@@ -71,28 +69,20 @@ public abstract class BcPRG extends PseudorandomGeneratorAbs {
 		return bcStreamCipher.getAlgorithmName();
 	}
 
-	
 	/** 
-	 * Pass the byte to the underlying bc StreamCipher.
-	 * @param bytein - the single byte to xor
+	 * Pass all the arguments to the underlying bc StreamCipher, which stream the bytes.
+	 * @param outBytes - output bytes. The result of streaming the bytes.
+	 * @param outOffset - output offset
+	 * @param outlen - length
 	 */
-	public void streamSingleByte(byte bytein) {
+	public void getPRGBytes(byte[] outBytes, int outOffset,
+			int outlen) {
+
+		//in array filled with zeroes
+		byte[] inBytes = new byte[outlen];
 		
-		bcStreamCipher.returnByte(bytein);
-	}
-
-	/** 
-	 * Pass all the arguments to the underlying bc StreamCipher.
-	 * @param inBytes - the input bytes
-	 * @param inOff - input offset
-	 * @param len - length
-	 * @param outBytes - output bytes. The result of streaming the input bytes.
-	 * @param outOff - output offset
-	 */
-	public void streamBytes(byte[] inBytes, int inOff,
-			int len, byte[] outBytes, int outOff){
-
-		bcStreamCipher.processBytes(inBytes, inOff, len, outBytes, outOff);
+		//out array filled with pseudorandom bytes (that were xored with zeroes in the in array)
+		bcStreamCipher.processBytes(inBytes, 0, outlen, outBytes, outOffset);
 	}
 
 
