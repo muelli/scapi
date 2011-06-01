@@ -3,10 +3,8 @@
 
 #include "stdafx.h"
 #include "jni.h" 
-#include <string>
 #include "cryptlib.h"
 
-using namespace std;
 using namespace CryptoPP;
 
 class Utils {
@@ -14,8 +12,12 @@ class Utils {
 public:
 
 	Utils();
-	Integer byteArrToInteger (JNIEnv *env, jbyteArray byteArrToConvert);
-	jbyteArray integerToByteArr (JNIEnv *env, Integer integerToConvert);
+	Integer jbyteArrayToCryptoPPInteger (JNIEnv *env, jbyteArray byteArrToConvert);
+	Integer* jbyteArrayToCryptoPPIntegerPointer (JNIEnv *env, jbyteArray byteArrToConvert);
+	Integer* getPointerToInteger (Integer integerToPointer);
+	jbyteArray CryptoPPIntegerTojbyteArray (JNIEnv *env, Integer integerToConvert);
+	void extendedEuclideanAlg(Integer a, Integer b, Integer & gcd, Integer & x, Integer&  y);
+	Integer SquareRoot(Integer value, Integer mod, Integer p, Integer q);
 };
 
 
