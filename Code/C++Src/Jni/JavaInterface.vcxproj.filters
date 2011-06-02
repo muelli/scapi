@@ -27,16 +27,16 @@
     <ClCompile Include="Examples.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\c++\javaInterface\TPElement.cpp">
+    <ClCompile Include="RabinPermutation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\c++\javaInterface\Utils.cpp">
+    <ClCompile Include="RSAPermutation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\c++\javaInterface\RSAPermutation.cpp">
+    <ClCompile Include="TPElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\c++\javaInterface\RabinPermutation.cpp">
+    <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,16 +53,16 @@
     <ClInclude Include="CollisionResistantHash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\c++\javaInterface\TPElement.h">
+    <ClInclude Include="RabinPermutation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\c++\javaInterface\Utils.h">
+    <ClInclude Include="RSAPermutation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\c++\javaInterface\RSAPermutation.h">
+    <ClInclude Include="TPElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\c++\javaInterface\RabinPermutation.h">
+    <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
