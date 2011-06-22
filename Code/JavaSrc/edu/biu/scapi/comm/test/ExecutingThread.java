@@ -38,7 +38,7 @@ public class ExecutingThread extends Thread{
 	}
 	
 	/**
-	 * run : run the batch file.
+	 * Run the batch file.
 	 */
 	public void run() {
 	
