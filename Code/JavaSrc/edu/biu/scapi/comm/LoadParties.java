@@ -46,7 +46,10 @@ public class LoadParties {
         
 	}
 	
-	
+	/**
+	 * 
+	 * @return
+	 */
 	List<Party> getPartiesList(){
 		
 		List<Party> listOfParties = new LinkedList<Party>();
