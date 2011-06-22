@@ -49,9 +49,9 @@ public class EstablishedConnections {
 	}
 	
 	/** 
-	 * addConnection - adds a channel with the address key to the map
-	 * @param connection - the value/channel to insert to the map
-	 * @param address - the key in the map
+	 * Adds a channel with the address key to the map
+	 * @param connection the value/channel to insert to the map
+	 * @param address the key in the map
 	 */
 	void addConnection(InetSocketAddress address, Channel connection) {
 
@@ -60,8 +60,8 @@ public class EstablishedConnections {
 	}
 
 	/** 
-	 * removeConnection - removes a channel from the map.
-	 * @param address - the key of the channel in the map
+	 * Removes a channel from the map.
+	 * @param address the key of the channel in the map
 	 */
 	Channel removeConnection(InetSocketAddress address) {
 		
@@ -70,8 +70,8 @@ public class EstablishedConnections {
 	}
 
 	/** 
-	 * getConnection - gets a channel from the map.
-	 * @param address - the key of the channel in the map
+	 * Gets a channel from the map.
+	 * @param address the key of the channel in the map
 	 */
 	Channel getConnection(InetSocketAddress address) {
 		
@@ -81,7 +81,7 @@ public class EstablishedConnections {
 
 	
 	/** 
-	 * @return - the number of channels in the map
+	 * @return the number of channels in the map
 	 */
 	int getConnectionsCount() {
 		
@@ -89,7 +89,7 @@ public class EstablishedConnections {
 	}
 
 	/** 
-	 * @return - true if all the channels are in READY state, false otherwise.
+	 * @return true if all the channels are in READY state, false otherwise
 	 */
 	boolean areAllConnected() {
 
@@ -110,9 +110,9 @@ public class EstablishedConnections {
 	}
 
 	/** 
-	 * updateConnectionState - updates a channel state to a new state
-	 * @param address - the key in the map
-	 * @param state - the state of the channel to update to.
+	 * Updates a channel state to a new state
+	 * @param address the key in the map
+	 * @param state the state of the channel to update to.
 	 * @throws InvalidChannel 
 	 */
 	void updateConnectionState(InetSocketAddress address, PlainChannel.State state) throws InvalidChannel {
@@ -131,7 +131,7 @@ public class EstablishedConnections {
 	
 	/**
 	 * 
-	 * removeNotReadyConnections : Removes all the connections which are not in READY state.
+	 * Removes all the connections which are not in READY state.
 	 * 
 	 * Note						 : The connection can be removed only by the iterator and not directly through the map. Otherwise an exception
 	 * 							   will be thrown.
@@ -157,6 +157,10 @@ public class EstablishedConnections {
 		
 	}
 	
+	/**
+	 * 
+	 * @param enableNagle true for enabling nagle, otherwise false
+	 */
 	void enableNagle(boolean enableNagle){
 		
 		PlainTCPChannel plainTCPChannel;
@@ -194,6 +198,9 @@ public class EstablishedConnections {
 		
 	}
 	
+	/**
+	 * Closes the channels and frees the resources.
+	 */
 	void closeAllConnections(){
 		
 		Channel channel;
