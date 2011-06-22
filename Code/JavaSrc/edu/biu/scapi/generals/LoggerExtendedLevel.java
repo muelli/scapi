@@ -17,8 +17,6 @@ import java.util.logging.Level;
 /**
  * @author LabTest
  * 
- * 
- *
  */
 public class LoggerExtendedLevel extends Level {
 
@@ -31,8 +29,8 @@ public class LoggerExtendedLevel extends Level {
 
     /**
      * 
-     * @param name - the name of the level
-     * @param value - the int value of the level.
+     * @param name the name of the level
+     * @param value the int value of the level.
      */
     public LoggerExtendedLevel(String name, int value) {
         super(name, value);
