@@ -154,7 +154,7 @@ public class FactoriesUtility {
 		//load the defaultProviderFileName file
 		InputStream in=  (InputStream) getClass().getResourceAsStream(PROPERTIES_FILES_PATH + defaultProviderFileName);
 		
-		algsInType.load(in);
+		defaultProviderMap.load(in);
 		
 		
 	}
@@ -170,7 +170,11 @@ public class FactoriesUtility {
 	 */
 	public String getDefaultImplProvider(String algName) {
 		
-		return defaultProviderMap.getProperty(algName);
+		//get the parsed algorithm details to have name and params
+		AlgDetails algDetails = parseAlgNames(algName);
+		
+		//get the provider for the main algorithm
+		return defaultProviderMap.getProperty(algDetails.name);
 	}
 
 	/** 
