@@ -6,6 +6,7 @@ package edu.biu.scapi.primitives.prf;
 import java.util.logging.Level;
 
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
 
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.tools.Factories.PrfFactory;
@@ -24,6 +25,18 @@ public class IteratedPrfVarying extends
 	public IteratedPrfVarying(String prfVaringInputName) {
 		//get the requested prfVaringInput from the factory. 
 		prfVaryingInputLength = (PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaringInputName);
+	}
+	
+	public void init(SecretKey secretKey) {
+
+		prfVaryingInputLength.init(secretKey);
+		
+	}
+	
+	public boolean isInitialized() {
+
+		//if the hmac is initialized than the HKDF is initialized as well.
+		return prfVaryingInputLength.isInitialized(); 
 	}
 	
 
@@ -80,7 +93,7 @@ public class IteratedPrfVarying extends
 		//copy the x (inSize) to the input of the prf in the beginning
 		System.arraycopy(inBytes, 0, currentInBytes, 0, inLen);
 		//copy the outLen to the input of the prf after the x
-		System.arraycopy(outLenByte.byteValue(), 0, currentInBytes, inLen, 1);
+		currentInBytes[inLen] = outLenByte.byteValue();
 		
 		Integer round;
 		
@@ -89,7 +102,7 @@ public class IteratedPrfVarying extends
 			round = new Integer(i);
 			
 			//copy the i to the input of the prf
-			System.arraycopy(round.byteValue(), 0, currentInBytes, inLen+1, 1);
+			currentInBytes[inLen+1] = round.byteValue();
 			
 			//operate the computeBlock of the prf to get the round output
 			try {
@@ -101,9 +114,9 @@ public class IteratedPrfVarying extends
 			
 			if (i==rounds) { //copy the round result to the output byte array
 				//in case of the last round - copy only the number of bytes left to match outLen
-				System.arraycopy(intermediateOutBytes, 0, outBytes, i*prfLength, outLen-(i*prfLength));
+				System.arraycopy(intermediateOutBytes, 0, outBytes, (i - 1)*prfLength, outLen-((i-1)*prfLength));
 			} else { //in other cases - copy all the result bytes
-				System.arraycopy(intermediateOutBytes, 0, outBytes, i*prfLength, prfLength);
+				System.arraycopy(intermediateOutBytes, 0, outBytes, (i-1)*prfLength, prfLength);
 			}
 		}
 	}
