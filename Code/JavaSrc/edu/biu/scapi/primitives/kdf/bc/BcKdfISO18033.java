@@ -3,6 +3,8 @@
  */
 package edu.biu.scapi.primitives.kdf.bc;
 
+import java.security.spec.AlgorithmParameterSpec;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -87,5 +89,32 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 			return new KDFParameters(shared, iv);
 		}
 		
+	}
+
+
+	/**
+	 * 
+	 */
+	public void init(SecretKey secretKey) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	/**
+	 * 
+	 */
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	/**
+	 * 
+	 */
+	public boolean isInitialized() {
+		// initialization is not needed
+		return true;
 	}
 }
