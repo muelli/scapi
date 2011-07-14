@@ -4,6 +4,7 @@
  */
 package edu.biu.scapi.primitives.kdf;
 
+import java.security.spec.AlgorithmParameterSpec;
 import java.util.logging.Level;
 
 import javax.crypto.IllegalBlockSizeException;
@@ -25,7 +26,7 @@ public final class HKDF implements KeyDerivationFunction {
 	/*
 	 * We assume that the hmac is initialized with the required key.
 	 */
-	HKDF(String hmac){
+	public HKDF(String hmac){
 		
 		this.hmac = (Hmac) PrfFactory.getInstance().getObject(hmac);
 	}
@@ -36,7 +37,7 @@ public final class HKDF implements KeyDerivationFunction {
 	 * 
 	 *   COMPUTE PRK = HMAC(XTS, SKM) [key=XTS, data=SKM]
 	 *   Let t be the smallest number so that t * |H|>L where |H| is the HMAC output length
-	 *   K(1) = HMAC(PRK,(CTXinfo,0)) [key=PRK, data=(CTXinfo,0)]
+	 *   K(1) = HMAC(PRK,(CTXinfo,1)) [key=PRK, data=(CTXinfo,1)]
 	 *   FOR i = 2 TO t
 	 *     K(i) = HMAC(PRK,(K(i-1),CTXinfo,i)) [key=PRK, data=(K(i-1),CTXinfo,i)]
 	 *   OUTPUT the first L bits of K(1),…,K(t)
@@ -62,11 +63,12 @@ public final class HKDF implements KeyDerivationFunction {
 			Logging.getLogger().log(Level.WARNING, e.toString());
 		}
 		
+		
 		//init the hmac with the new key. From now on this is the key for all the rounds.
 		hmac.init(new SecretKeySpec(roundKey, "HKDF"));
 		
 		//calculate the first round
-		//K(1) = HMAC(PRK,(CTXinfo,0)) [key=PRK, data=(CTXinfo,0)]
+		//K(1) = HMAC(PRK,(CTXinfo,1)) [key=PRK, data=(CTXinfo,1)]
 		firstRound(outBytes, iv, intermediateOutBytes, hmacLength);
 		
 		//calculate the next rounds
@@ -113,13 +115,14 @@ public final class HKDF implements KeyDerivationFunction {
 				
 		for(int i=2;i<=rounds; i++){
 			
-			roundIndex = new Integer(i-1);//create the round integer for the data
+			//roundIndex = new Integer(i-1);//create the round integer for the data
+			roundIndex = new Integer(i);//MEITAL create the round integer for the data
 			
 			//copy the output of the last results
 			System.arraycopy(intermediateOutBytes, 0, currentInBytes, 0, hmacLength);
-			
-			//copy the round integer to the data array 
-			System.arraycopy(roundIndex.byteValue(), 0,currentInBytes , currentInBytesSize -1, 1);
+				
+			//copy the round integer to the data array
+			currentInBytes[currentInBytesSize - 1] = roundIndex.byteValue();
 			
 			
 			//operate the hmac to get the round output 
@@ -133,7 +136,7 @@ public final class HKDF implements KeyDerivationFunction {
 			if(i==rounds){//We fill the rest of the array with a portion of the last result.
 				
 				//copy the results to the output array
-				System.arraycopy(intermediateOutBytes, 0,outBytes , hmacLength*(i-1), outLen - hmacLength*i);
+				System.arraycopy(intermediateOutBytes, 0,outBytes , hmacLength*(i-1), outLen - hmacLength*(i-1));
 			}
 			else{
 				//copy the results to the output array
@@ -150,7 +153,7 @@ public final class HKDF implements KeyDerivationFunction {
 	 * @param outBytes the result of the overall computation
 	 */
 	private void firstRound(byte [] outBytes, byte[] iv, byte[] intermediateOutBytes, int hmacLength) {
-		Integer zero;
+		Integer one;
 		//round 1
 		byte[] firstRoundInput;//data for the creating K(1)
 		if(iv!=null)
@@ -162,10 +165,10 @@ public final class HKDF implements KeyDerivationFunction {
 		if(iv!=null)
 			System.arraycopy(iv, 0, firstRoundInput,0 , iv.length);
 		
-		zero = new Integer(0);//create the round integer for the date
-		
-		//copy the integer with zero to the data array 
-		System.arraycopy(zero.byteValue(), 0,firstRoundInput , firstRoundInput.length -1, 1);
+		one = new Integer(1);//create the round integer for the date
+			
+		//copy the integer with zero to the data array
+		firstRoundInput[firstRoundInput.length - 1] = one.byteValue();
 		
 			
 		//first compute the new key. The new key is the result of computing the hmac function.
@@ -191,5 +194,29 @@ public final class HKDF implements KeyDerivationFunction {
 
 		//create a key out of the byte array and send it to the function generateKey(SecretKey key, int outLen, byte[] iv)
 		
+	}
+
+	/**
+	 * 
+	 */
+	public void init(SecretKey secretKey) {
+		hmac.init(secretKey);
+		
+	}
+
+	/**
+	 * 
+	 */
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
+		// there are no params ignore the params and send to the other init function
+		init(secretKey);
+		
+	}
+
+	@Override
+	public boolean isInitialized() {
+
+		//if the hmac is initialized than the HKDF is initialized as well.
+		return hmac.isInitialized(); 
 	}
 }
