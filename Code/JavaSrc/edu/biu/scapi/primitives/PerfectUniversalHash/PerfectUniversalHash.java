@@ -13,6 +13,8 @@ package edu.biu.scapi.primitives.PerfectUniversalHash;
 
 import java.security.spec.AlgorithmParameterSpec;
 
+import javax.crypto.SecretKey;
+
 /** 
  @author LabTest
  */
@@ -21,7 +23,18 @@ public interface PerfectUniversalHash {
 	 * Initialize this perfect universal hash with the auxiliary parameters 
 	 * @param params
 	 */
-	public void init(AlgorithmParameterSpec params);
+	/**
+	 * Initializes this PerfectUniversalHash with the secret key.
+	 * @param secretKey the secrete key
+	 *  */
+	public void init(SecretKey secretKey);
+
+	/** 
+	 * Initializes this PerfectUniversalHash with the secret key and the auxiliary parameters.
+	 * @param secretKey secret key
+	 * @param params algorithm parameters
+	 */
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params);
 
 	/**
 	 * 
