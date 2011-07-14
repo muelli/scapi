@@ -43,8 +43,8 @@ public final class BCParametersTranslator {
 	/** 
 	 * Translates the key and the parameters into a CipherParameter of BC. If one of the arguments is null then 
 	 * pass to one of the other two translateParameter functions.
-	 * @param key - the KeySpec to translate to CipherParameters of BC
-	 * @param param - The additional AlgorithmParametersSpec to transform including the key to relevant CipherParameter
+	 * @param key the KeySpec to translate to CipherParameters of BC
+	 * @param param The additional AlgorithmParametersSpec to transform including the key to relevant CipherParameter
 	 */
 	public CipherParameters translateParameter(KeySpec key, AlgorithmParameterSpec param) {
 		
@@ -71,10 +71,10 @@ public final class BCParametersTranslator {
 	}
 
 	/** 
-	 * This function translates a secret key into a KeyParameter or other asymmetric key parameters. 
-	 * @param key - the key
-	 * @return KeyParameter - this is used in may of the bc BlockCipher and bc StreamCipher.
-	 *         AssymetricKeyParameter - for trapdoor permutation and asymmetric encryption
+	 * This function translates a secret key into a <code>KeyParameter<code> or other asymmetric key parameters. 
+	 * @param key the key
+	 * @return KeyParameter this is used in may of the bc BlockCipher and bc StreamCipher.
+	 *         AssymetricKeyParameter for trapdoor permutation and asymmetric encryption
 	 */
 	public CipherParameters translateParameter(KeySpec key) {
 		
