@@ -18,31 +18,21 @@ public abstract class PrpFromPrfVarying implements PrpVaryingIOLength {
 	protected SecretKey secretKey = null;
 	protected boolean isInitialized = false;//until isInitialized() is called set to false.
 	
-	/** 
-	 * Initializes this PrpFromPrfVarying with the secret key and the auxiliary parameters
-	 * @param secretKey secret key
-	 * @param params algorithm parameters
-	 */
-	
 	public void init(SecretKey secretKey) {
 
-		isInitialized = true;
-		this.secretKey = secretKey;
+		prfVaryingIOLength.init(secretKey);
 		
 	}
 
-
-
 	/**
-	 * Initializes this PrpFromPrfVarying with the secret key
+	 * Initializes this PrpFromPrfFixed with the secret key
 	 * @param secretKey the secrete key
+	 * @param params the auxiliary parameters
 	 */
 	
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
 
-		isInitialized = true;
-		this.secretKey = secretKey;
-		this.params = params;
+		prfVaryingIOLength.init(secretKey, params);
 		
 	}
 	
@@ -51,7 +41,7 @@ public abstract class PrpFromPrfVarying implements PrpVaryingIOLength {
 	 * @return true if the object was initialized by calling the function init.
 	 */
 	public boolean isInitialized(){
-		return isInitialized;
+		return prfVaryingIOLength.isInitialized();
 	}
 	
 	/** 
