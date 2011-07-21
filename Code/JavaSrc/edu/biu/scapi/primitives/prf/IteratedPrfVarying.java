@@ -8,7 +8,10 @@ import java.util.logging.Level;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
+import org.bouncycastle.crypto.macs.HMac;
+
 import edu.biu.scapi.generals.Logging;
+import edu.biu.scapi.tools.Factories.BCFactory;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
@@ -26,6 +29,20 @@ public class IteratedPrfVarying extends
 		//get the requested prfVaringInput from the factory. 
 		prfVaryingInputLength = (PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaringInputName);
 	}
+	
+	public IteratedPrfVarying(PrfVaryingInputLength prfVaringInput) {
+		
+		//first check that the hmac is initialized.
+		if(prfVaringInput.isInitialized()){
+			//assign the prf varying input.
+			prfVaryingInputLength = prfVaringInput;
+		}
+		else{//the user must pass an initialized object, otherwise throw an exception
+			throw new IllegalStateException("The input variable must be initialized");
+		}
+		
+	}
+	
 	
 	public void init(SecretKey secretKey) {
 

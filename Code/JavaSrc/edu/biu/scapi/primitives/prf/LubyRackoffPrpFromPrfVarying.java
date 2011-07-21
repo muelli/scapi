@@ -8,6 +8,8 @@ package edu.biu.scapi.primitives.prf;
 
 import javax.crypto.IllegalBlockSizeException;
 
+import edu.biu.scapi.tools.Factories.PrfFactory;
+
 /** 
  * @author LabTest
  * 
@@ -18,10 +20,12 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	
 	public LubyRackoffPrpFromPrfVarying(String prfVaringIOLengthName) {
 		
-		//get the prf using the factory and set it.
+		//get the requested prpFixed from the factory. 
+		prfVaryingIOLength = (PrfVaryingIOLength) PrfFactory.getInstance().getObject(prfVaringIOLengthName);
 	}
 	
 	/** 
+	 * Delegate to LubyRackoffComputation object computeFuction.
 	 * @param inBytes input bytes to compute
 	 * @param inLen the length of the input array
 	 * @param inOff input offset in the inBytes array
@@ -42,11 +46,14 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	}
 
 	/**
-	 * 
+	 * Delegate to LubyRackoffComputation object invert. The invert function inverts the permutation using the given key. Since LubyRackoff permutation can also have varying input and output length 
+	 * (although the input and the output should be the same length), the common parameter <code>len<code> of the input and the output is needed.
+	 * LubyRackoff has a feistel structure and thus invert is possible even though the underlying prf is not invertible.
 	 */
 	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,
 			int outOff, int len) throws IllegalBlockSizeException {
-		// TODO Auto-generated method stub
+
+		lrComputation.invertBlock(prfVaryingIOLength, inBytes, inOff, outBytes, outOff, len);
 		
 	}
 
