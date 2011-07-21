@@ -11,9 +11,12 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.Digest;
+import org.bouncycastle.crypto.generators.KDF1BytesGenerator;
 import org.bouncycastle.crypto.macs.HMac;
 
 
+import edu.biu.scapi.primitives.hash.CollisionResistantHash;
+import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
 import edu.biu.scapi.primitives.prf.Hmac;
 import edu.biu.scapi.tools.Factories.BCFactory;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
@@ -36,16 +39,28 @@ public final class BcHMAC implements  Hmac {
 	 */
 	public BcHMAC(String hashName) {
 		
-		Digest digest = null;
-		digest = BCFactory.getInstance().getDigest(hashName);
-		
-		
-		//create the Hmac of BC
-		hMac = new HMac(digest);
+		hMac = new HMac(BCFactory.getInstance().getDigest(hashName));
 		
 		
 	}
 
+	/**
+	 * A constructor that gets a SCAPI collision resistant hash and retrieves the name of the hash in
+	 * order to crete the related digest for the BC Hmac this class uses.
+	 * @param hash - the underlying collision resistant hash
+	 */
+	public BcHMAC(CollisionResistantHash hash) {
+	
+		//first check that the hmac is initialized.
+		if(hash.isInitialized()){
+			//pass a digest to the KDF.
+			hMac = new HMac(BCFactory.getInstance().getDigest(hash.getAlgorithmName()));
+		}
+		else{//the user must pass an initialized object, otherwise throw an exception
+			throw new IllegalStateException("argumrnt hash must be initialized");
+		}
+	}
+	
 	/** 
 	 * Initializes this hmac with the secret key and the auxiliary parameters
 	 * @param secretKey secret key 
