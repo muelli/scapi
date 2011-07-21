@@ -23,12 +23,54 @@ public final class HKDF implements KeyDerivationFunction {
 	
 	private Hmac hmac;
 
-	/*
-	 * We assume that the hmac is initialized with the required key.
+	/**
+	 * 
+	 * @param hmac
 	 */
 	public HKDF(String hmac){
 		
 		this.hmac = (Hmac) PrfFactory.getInstance().getObject(hmac);
+	}
+	
+	/**
+	 * 
+	 * @param hmac the underlying hmac. MUST be initialized.
+	 */
+	public HKDF(Hmac hmac){
+		
+		//first check that the hmac is initialized.
+		if(hmac.isInitialized()){
+			this.hmac = hmac;
+		}
+		else{//the user must pass an initialized object, otherwise throw an exception
+			throw new IllegalStateException("argumrnt hmac must be initialized");
+		}
+			
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void init(SecretKey secretKey) {
+		hmac.init(secretKey);
+		
+	}
+
+	/**
+	 * 
+	 */
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
+		// there are no params ignore the params and send to the other init function
+		init(secretKey);
+		
+	}
+
+	@Override
+	public boolean isInitialized() {
+
+		//if the hmac is initialized than the HKDF is initialized as well.
+		return hmac.isInitialized(); 
 	}
 
 	/**
@@ -196,27 +238,5 @@ public final class HKDF implements KeyDerivationFunction {
 		
 	}
 
-	/**
-	 * 
-	 */
-	public void init(SecretKey secretKey) {
-		hmac.init(secretKey);
-		
-	}
 
-	/**
-	 * 
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
-		// there are no params ignore the params and send to the other init function
-		init(secretKey);
-		
-	}
-
-	@Override
-	public boolean isInitialized() {
-
-		//if the hmac is initialized than the HKDF is initialized as well.
-		return hmac.isInitialized(); 
-	}
 }
