@@ -14,6 +14,8 @@ import org.bouncycastle.crypto.generators.KDF1BytesGenerator;
 import org.bouncycastle.crypto.params.ISO18033KDFParameters;
 import org.bouncycastle.crypto.params.KDFParameters;
 
+import edu.biu.scapi.primitives.hash.CollisionResistantHash;
+import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
 import edu.biu.scapi.primitives.kdf.KeyDerivationFunction;
 import edu.biu.scapi.tools.Factories.BCFactory;
 
@@ -37,6 +39,46 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 		
 	}
 	
+	/**
+	 * create the related bc kdf. Retrieve the related Digest out of the hash name 
+	 * @param hash - the underlying collision resistant hash
+	 */
+	public BcKdfISO18033(TargetCollisionResistant hash) {
+		//first check that the hmac is initialized.
+		if(hash.isInitialized()){
+			//pass a digest to the KDF.
+			bcKdfGenerator = new KDF1BytesGenerator(BCFactory.getInstance().getDigest(hash.getAlgorithmName()));
+		}
+		else{//the user must pass an initialized object, otherwise throw an exception
+			throw new IllegalStateException("argumrnt hmac must be initialized");
+		}
+	}
+	
+	/**
+	 * Should not be called. There is not key for this class.
+	 */
+	public void init(SecretKey secretKey) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	/**
+	 * Should not be called. There is not key for this class.
+	 */
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	/**
+	 * 
+	 */
+	public boolean isInitialized() {
+		// initialization is not needed
+		return true;
+	}
 	
 	public SecretKey generateKey(SecretKey key, int len) {
 		
@@ -92,29 +134,5 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 	}
 
 
-	/**
-	 * 
-	 */
-	public void init(SecretKey secretKey) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	/**
-	 * 
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	/**
-	 * 
-	 */
-	public boolean isInitialized() {
-		// initialization is not needed
-		return true;
-	}
+	
 }
