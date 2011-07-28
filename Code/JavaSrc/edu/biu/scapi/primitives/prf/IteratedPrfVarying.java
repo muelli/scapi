@@ -22,7 +22,7 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
 public class IteratedPrfVarying extends
 		PrfVaryingFromPrfVaryingInput {
 	/** 
-	 * @param prfVaringInputName - the prf to use. 
+	 * @param prfVaringInputName  the prf to use. 
 	 * The initialization of this prf is in the function init of PrfVaryingFromPrfVaryingInput.
 	 */
 	public IteratedPrfVarying(String prfVaringInputName) {
@@ -30,6 +30,10 @@ public class IteratedPrfVarying extends
 		prfVaryingInputLength = (PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaringInputName);
 	}
 	
+	/**
+	 * 
+	 * @param prfVaringInput the underlying prf varying. MUST be initialized.
+	 */
 	public IteratedPrfVarying(PrfVaryingInputLength prfVaringInput) {
 		
 		//first check that the hmac is initialized.
