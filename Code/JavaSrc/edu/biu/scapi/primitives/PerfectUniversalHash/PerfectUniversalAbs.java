@@ -53,3 +53,7 @@ public abstract class PerfectUniversalAbs implements PerfectUniversalHash {
 	 * @return the parameter spec of this perfect universal hash
 	 */
 	public AlgorithmParameterSpec getParams() {
+		return params;
+		
+	}
+}
