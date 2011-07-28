@@ -24,6 +24,23 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 		prfVaryingIOLength = (PrfVaryingIOLength) PrfFactory.getInstance().getObject(prfVaringIOLengthName);
 	}
 	
+	
+	/**
+	 * 
+	 * @param prfFixed the underlying prf fixed. MUST be initialized.
+	 */
+	public LubyRackoffPrpFromPrfVarying(PrfVaryingIOLength prfVaryingIOLength){
+		
+		//first check that the prp fixed is initialized.
+		if(prfVaryingIOLength.isInitialized()){
+			//assign the prf fixed input.
+			this.prfVaryingIOLength = prfVaryingIOLength;
+		}
+		else{//the user must pass an initialized object, otherwise throw an exception
+			throw new IllegalStateException("The input variable must be initialized");
+		}
+		
+	}
 	/** 
 	 * Delegate to LubyRackoffComputation object computeFuction.
 	 * @param inBytes input bytes to compute
