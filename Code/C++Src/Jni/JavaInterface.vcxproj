@@ -139,6 +139,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CollisionResistantHash.cpp" />
+    <ClCompile Include="DlogElement.cpp" />
+    <ClCompile Include="DlogGroup.cpp" />
     <ClCompile Include="Examples.cpp" />
     <ClCompile Include="JavaInterface.cpp" />
     <ClCompile Include="RabinPermutation.cpp" />
@@ -154,6 +156,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionResistantHash.h" />
+    <ClInclude Include="DlogElement.h" />
+    <ClInclude Include="DlogGroup.h" />
     <ClInclude Include="Examples.h" />
     <ClInclude Include="JavaCryptopp.h" />
     <ClInclude Include="RabinPermutation.h" />
