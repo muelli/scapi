@@ -16,13 +16,16 @@ public class ECF2mPentanomialBasis extends ECF2mGroupParams{
 	
 	
 	
-	public ECF2mPentanomialBasis(int m, int k1, int k2, int k3, BigInteger a, BigInteger b){
+	public ECF2mPentanomialBasis(BigInteger q, BigInteger xG, BigInteger yG, int m, int k1, int k2, int k3, BigInteger a, BigInteger b){
+		this.q = q;
+		this.xG = xG;
+		this.yG = yG;
+		this.a = a;
+		this.b = b;
 		this.m = m;
 		this.k1 = k1;
 		this.k2 = k2;
 		this.k3 = k3;
-		this.a = a;
-		this.b = b;
 	}
 	
 	public int getK1(){

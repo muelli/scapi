@@ -9,8 +9,8 @@ import java.math.BigInteger;
  */
 public class ECF2mKoblitz extends ECF2mGroupParams{
 	
-	private BigInteger n; //order of the main subgroup
-	private BigInteger h; //cofactor
+	private BigInteger n; 	//order of the main subgroup
+	private BigInteger h; 	//cofactor
 	ECF2mGroupParams curve; //underline curve
 	
 	
@@ -24,8 +24,8 @@ public class ECF2mKoblitz extends ECF2mGroupParams{
 		return curve.getM();
 	}
 	
-	/*
-	 * return k1 of the underline curve
+	/**
+	 * @return k1 of the underline curve
 	 */
 	public int getK1(){
 		int k1 = 0;
@@ -38,8 +38,8 @@ public class ECF2mKoblitz extends ECF2mGroupParams{
 		return k1;
 	}
 	
-	/*
-	 * return k2 of the underline curve
+	/**
+	 * @return k2 of the underline curve
 	 */
 	public int getK2(){
 		int k2 = 0;
@@ -47,13 +47,13 @@ public class ECF2mKoblitz extends ECF2mGroupParams{
 			k2 = 0;
 		
 		if (curve instanceof ECF2mPentanomialBasis)
-			k2 = ((ECF2mPentanomialBasis)curve).getK1();
+			k2 = ((ECF2mPentanomialBasis)curve).getK2();
 		
 		return k2;
 	}
 	
-	/*
-	 * return k3 of the underline curve
+	/**
+	 * @return k3 of the underline curve
 	 */
 	public int getK3(){
 		int k3 = 0;
@@ -61,9 +61,20 @@ public class ECF2mKoblitz extends ECF2mGroupParams{
 			k3 = 0;
 		
 		if (curve instanceof ECF2mPentanomialBasis)
-			k3 = ((ECF2mPentanomialBasis)curve).getK1();
+			k3 = ((ECF2mPentanomialBasis)curve).getK3();
 		
 		return k3;
+	}
+	
+	public BigInteger getQ(){
+		return curve.getQ();
+	}
+	
+	public BigInteger getXg(){
+		return curve.getXg();
+	}
+	public BigInteger getYg(){
+		return curve.getYg();
 	}
 	
 	public BigInteger getA(){

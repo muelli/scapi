@@ -13,10 +13,13 @@ public class ECFpGroupParams extends ECGroupParams{
 	 * @param a
 	 * @param b
 	 */
-	public ECFpGroupParams(BigInteger p, BigInteger a, BigInteger b) {
-		this.p = p;
+	public ECFpGroupParams(BigInteger q, BigInteger xG, BigInteger yG, BigInteger p, BigInteger a, BigInteger b) {
+		this.q = q;
+		this.xG = xG;
+		this.yG = yG;
 		this.a = a;
-		this.b = b;	
+		this.b = b;
+		this.p = p;
 	}
 	
 	/**

@@ -12,11 +12,14 @@ public class ECF2mTrinomialBasis extends ECF2mGroupParams{
 
 	private int k; 
 	
-	public ECF2mTrinomialBasis(int m, int k, BigInteger a, BigInteger b){
-		this.m = m;
-		this.k = k;
+	public ECF2mTrinomialBasis(BigInteger q, BigInteger xG, BigInteger yG, int m, int k, BigInteger a, BigInteger b){
+		this.q = q;
+		this.xG = xG;
+		this.yG = yG;
 		this.a = a;
 		this.b = b;
+		this.m = m;
+		this.k = k;
 	}
 	
 	
