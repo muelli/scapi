@@ -5,9 +5,7 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import edu.biu.scapi.generals.Logging;
-import edu.biu.scapi.primitives.dlog.DlogGroup;
 import edu.biu.scapi.primitives.dlog.ZpElement;
-import edu.biu.scapi.primitives.dlog.groupParams.ZpGroupParams;
 
 public class ZpElementCryptoPp implements ZpElement{
 
@@ -24,18 +22,13 @@ public class ZpElementCryptoPp implements ZpElement{
 	 * @param zp
 	 * @throws IllegalArgumentException
 	 */
-	public ZpElementCryptoPp(BigInteger x, DlogGroup zp) throws IllegalArgumentException{
-		//if the groupDesc doesn't match the GroupElement throw exception
-		if (zp instanceof CryptoPpDlogZp){
-			
-			BigInteger p = ((ZpGroupParams)zp.getGroupParams()).getP(); //get the prime modulus
-			
-			//if the element is in the expected range, set it. else, throw exception
-			if ((x.compareTo(BigInteger.ZERO)>0) && (x.compareTo(p.add(BigInteger.ONE.negate()))<=0))
-				pointerToElement = getPointerToElement(x.toByteArray());
-			else throw new IllegalArgumentException("element out of range");
-		}
-		else throw new IllegalArgumentException("DlogGroup doesn't match the GroupElement");
+	public ZpElementCryptoPp(BigInteger x, BigInteger p) throws IllegalArgumentException{
+		
+		//if the element is in the expected range, set it. else, throw exception
+		if ((x.compareTo(BigInteger.ZERO)>0) && (x.compareTo(p.add(BigInteger.ONE.negate()))<=0))
+			pointerToElement = getPointerToElement(x.toByteArray());
+		else throw new IllegalArgumentException("element out of range");
+		
 	}
 	
 	/**
@@ -48,31 +41,28 @@ public class ZpElementCryptoPp implements ZpElement{
 	 *  if x<p return x
      *  Return “fail"
      *  
-	 * @param zp - dklogGroup
+	 * @param zp - dlogGroup
 	 * @throws IllegalArgumentException
 	 */
-	public ZpElementCryptoPp(DlogGroup zp)throws IllegalArgumentException{
-		//if the groupDesc doesn't match the GroupElement throw exception
-		if (zp instanceof CryptoPpDlogZp){
-			
-			BigInteger p = ((ZpGroupParams)zp.getGroupParams()).getP(); //get the prime modulus
-			int len = 2*(p.bitLength()); //get the security parameter for the algorithm
-			Random generator = new Random();
-			BigInteger x = null;
-			
-			//find an element in the range [0, ..., p-1]
-			for(int i=0; i<len; i++){
-				x = new BigInteger(len, generator); //get an element
-				//if the element is in the range, set it. 
-				if (x.compareTo(p)<0){
-					pointerToElement = getPointerToElement(x.toByteArray());
-					i = len;
-				}
+	public ZpElementCryptoPp(BigInteger p)throws IllegalArgumentException{
+		
+		int len = p.bitLength(); //get the security parameter for the algorithm
+		Random generator = new Random();
+		BigInteger element = null;
+		
+		//find an element in the range [0, ..., p-1]
+		for(int i=0; i<(2*len); i++){
+			element = new BigInteger(len, generator); //get an element
+			element.add(BigInteger.ONE);  //element in the range [1, ..., p]
+			//if the element is in the range, set it. 
+			if (element.compareTo(p)<0){
+				pointerToElement = getPointerToElement(element.toByteArray());
+				i = 2*len;
 			}
-			//if the algorithm failed, write it to the log
-			if (x.compareTo(p)>0)
-				Logging.getLogger().log(Level.WARNING, "couldn't find a random element");
-		} else throw new IllegalArgumentException("GroupDesc doesn't match the GroupElement");
+		}
+		//if the algorithm failed, write it to the log
+		if (element.compareTo(p)>0)
+			Logging.getLogger().log(Level.WARNING, "couldn't find a random element");
 	}
 	
 	/**
