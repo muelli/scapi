@@ -6,11 +6,16 @@ import java.util.Vector;
 
 import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 
+/**
+ * DlogGroupAbs is an abstract class that implements common functionality of the Dlog group.
+ * @author Moriya
+ *
+ */
 public abstract class DlogGroupAbs implements DlogGroup{
 
-	protected BigInteger q;				//order of the group
-	protected GroupParams groupParams;		//group parameters
-	protected GroupElement generator;	//generator of the group
+	protected GroupParams groupParams;			//group parameters
+	protected GroupElement generator;			//generator of the group
+	protected boolean isInitialized = false;	//flag if an object is initialized or not
 	//map for multExponentiationsWithSameBase calculations
 	private HashMap<GroupElement, GroupElementsExponentiations> exponentiationsMap = new HashMap<GroupElement, GroupElementsExponentiations>();
 	
@@ -35,22 +40,36 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * @return the order of that Dlog group
 	 */
 	public BigInteger getOrder(){
-		return q;
+		return groupParams.getQ();
 	}
 	
 	/**
-	 * Check if the order is a prime number
+	 * Checks if the order is a prime number
 	 * @return true if the order is a prime number. false, otherwise.
 	 */
 	public boolean isPrimeOrder(){
-		if (q.isProbablePrime(8))
+		
+		/* isProbablePrime is BigInteger function, which gets a certainty parameter.
+		 * We will test some values to decide which is appropriate to our demands.
+		 */
+		if (getOrder().isProbablePrime(8))
 			return true;
 		else return false;
 	}
 
+	/**
+	 * checks if the order is greater than 2^numBits
+	 * @param numBits
+	 * @return true if the order is greater than 2^numBits, false - otherwise.
+	 */
+	public boolean isOrderGreaterThan(int numBits){
+		if (getOrder().compareTo(new BigInteger("2").pow(numBits)) > 0)
+			return true;
+		else return false;
+	}
 	
 	/**
-	 * Compute the product of several exponentiations with distinct bases 
+	 * Computes the product of several exponentiations with distinct bases 
 	 * and distinct exponents. 
 	 * Instead of computing each part separately, an optimization is used to 
 	 * compute it simultaneously. 
@@ -58,7 +77,6 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * @param exponentiations
 	 * @return the exponentiation result
 	 */
-	
 	public GroupElement simultaneousMultipleExponentiations
 					(GroupElement[] groupElements, BigInteger[] exponentiations){
 		/*
@@ -67,12 +85,13 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		int preCompLen = (int) Math.pow(2, groupElements.length);
 		
 		GroupElement[] preComp = new GroupElement[preCompLen];
+		
 		/* calculates the value of each cell in the preComputation array */
 		for(int k=0; k<preCompLen; k++){
 			BigInteger count = new BigInteger(String.valueOf(k));
 			GroupElement result = null;
 			int bitCount = count.bitLength();
-			//if the i bit is set, multiply the result with the i group element
+			//if the i bit is set, multiplies the result with the i group element
 			for (int i=0; i<bitCount; i++){
 				if (count.testBit(i)==true){
 					if (result==null)
@@ -89,13 +108,14 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		for (int i=0; i<exponentiations.length; i++)
 			if (bigExp.compareTo(exponentiations[i])<0)
 				bigExp = exponentiations[i];
+		
 		/*
-		 * calculate the indexes array
+		 * calculates the indexes array
 		 */
 		int t = bigExp.bitLength();
 		int[] indexArr = new int[t];
 		int size = exponentiations.length;
-		//calculate the index of each cell in the indexes array
+		//calculates the index of each cell in the indexes array
 		for (int j=0; j<t-1; j++){
 			int result = 0;
 			for (int i=0; i<size; i++){
@@ -107,7 +127,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		}
 		
 		/*
-		 * calculate the multiplication result
+		 * calculates the multiplication result
 		 */
 		GroupElement a = preComp[indexArr[0]];
 		
@@ -116,13 +136,12 @@ public abstract class DlogGroupAbs implements DlogGroup{
 			if (preComp[indexArr[i]] != null)		
 				a = multiplyGroupElements(a,preComp[indexArr[i]]);	
 		}
-		
 		return a;
 		
 	}
 	
 	/**
-	 * Compute the product of several exponentiations of the same base
+	 * Computes the product of several exponentiations of the same base
 	 * and distinct exponents. 
 	 * An optimization is used to compute it more quickly by keeping in memory 
 	 * the result of h1, h2, h4,h8,... and using it in the calculation.  
@@ -132,15 +151,15 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 */
 	public GroupElement multExponentiationsWithSameBase
 					(GroupElement groupElement, int exponent){
-		//extract from the map the GroupElementsExponentiations object corresponding to the accepted base
+		//extracts from the map the GroupElementsExponentiations object corresponding to the accepted base
 		GroupElementsExponentiations exponentiations = exponentiationsMap.get(groupElement);
 	
-		// if there is no object matches this base - create it and add it to the map
+		// if there is no object matches this base - creates it and add it to the map
 		if (exponentiations == null){
 			exponentiations = new GroupElementsExponentiations(groupElement);
 			exponentiationsMap.put(groupElement, exponentiations);
 		}
-		//calculate the required exponent 
+		//calculates the required exponent 
 		return exponentiations.getExponentiation(exponent);
 		
 	}
@@ -206,12 +225,12 @@ public abstract class DlogGroupAbs implements DlogGroup{
 			int index = (int) Math.floor(log); 
 			
 			GroupElement exponent = null;
-			/* if the requested index out of the vector bounds, the exponents have not been calculated yet, so calculate them.*/
+			/* if the requested index out of the vector bounds, the exponents have not been calculated yet, so calculates them.*/
 			if (exponentiations.size()<= index)
 				prepareExponentiations(size);
 			
 			exponent = exponentiations.get(index); //get the closest exponent in the exponentiations vector
-			/* if size is not power 2, calculate the additional multiplications */
+			/* if size is not power 2, calculates the additional multiplications */
 			if ((double) index != log){
 				for (int i=(int) Math.pow(2, index); i<size; i++){
 					exponent = multiplyGroupElements(base, exponent);
@@ -221,5 +240,11 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		}
 	}
 	
-	
+	/**
+	 * 
+	 * @return true if the object was initialized. Usually this means that the function init was called
+	 */
+	public boolean isInitialized(){
+		return isInitialized;
+	}
 }

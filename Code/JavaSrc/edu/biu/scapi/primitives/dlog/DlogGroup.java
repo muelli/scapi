@@ -11,29 +11,18 @@ import java.math.BigInteger;
 import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 
 /**
- * 
+ * The general interface for discrete logarithm group. every class in DlogGroup family implements that interface.
  * @author Moriya
  *
  */
 public interface DlogGroup {
 
 	/**
-	 * Initialize the DlogGroup with order, generator and GroupDesc.
-	 * @param groupOrder
-	 * @param generator
-	 * @param groupDesc
-	 * @throws IllegalArgumentException
+	 * 
+	 * @return true if the object was initialized. Usually this means that the function init was called
 	 */
-	public void init(BigInteger groupOrder, GroupElement generator, 
-					 GroupParams groupParams) throws IllegalArgumentException;
-	
-	/**
-	 * Initialize the DlogGroup with one of NIST recommended elliptic curve
-	 * @param name - name of NIST curve to initialized
-	 * @throws IllegalAccessException
-	 */
-	public void init(String nistName) throws IllegalAccessException;
-	
+	public boolean isInitialized();
+
 	/**
 	 * 
 	 * @return the generator of that Dlog group
@@ -65,6 +54,13 @@ public interface DlogGroup {
 	 * @return true if the order is a prime number. false, otherwise.
 	 */
 	public boolean isPrimeOrder();
+	
+	/**
+	 * check if the order is greater than 2^numBits
+	 * @param numBits
+	 * @return true if the order is greater than 2^numBits, false - otherwise.
+	 */
+	public boolean isOrderGreaterThan(int numBits);
 	
 	/**
 	 * Check if the given generator is indeed the generator of the group
