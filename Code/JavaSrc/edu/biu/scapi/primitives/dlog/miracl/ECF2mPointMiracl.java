@@ -1,8 +1,9 @@
 package edu.biu.scapi.primitives.dlog.miracl;
 
 import java.math.BigInteger;
+import java.util.logging.Level;
 
-import edu.biu.scapi.primitives.dlog.DlogGroup;
+import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 /**
@@ -13,7 +14,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 public class ECF2mPointMiracl implements ECElement{
 
 	private native long createF2mPoint(long mip, byte[] x, byte[] y, boolean[] validity);
-	private native long createRandomF2mPoint(long mip, int m);
+	private native long createRandomF2mPoint(long mip, int m, boolean[] validity);
 	private native void deletePointF2m(long p);
 	
 	private long point = 0;
@@ -25,49 +26,37 @@ public class ECF2mPointMiracl implements ECElement{
 	 * @param y
 	 * @param curve - DlogGroup
 	 */
-	public ECF2mPointMiracl(BigInteger x, BigInteger y, DlogGroup curve){
-		//the DlogGroup that matches this class is MiraclAdapterDlogEC
-		if (curve instanceof MiraclAdapterDlogEC){
-			//creates point - if the values are valid point - return true. else - return false.
-			if (!createPoint(x,y,(ECF2mGroupParams)curve.getGroupParams(), ((MiraclAdapterDlogEC) curve).getMip())){
-				point = 0;
-				throw new IllegalArgumentException("x, y values are not a point on this curve");
-			}
-			//if the DlogGroup is not MiraclAdapterDlogEC throw exception
-		} else throw new IllegalArgumentException("DlogGroup type doesn't match the GroupElement type");
-	}
-	
-	/**
-	 * Creates a point with the given values.
-	 * @param x
-	 * @param y
-	 * @param mip - MIRACL pointer
-	 * @return true if the point is valid. false, otherwise
-	 */
-	boolean createPoint(BigInteger x, BigInteger y, ECF2mGroupParams curveDesc, long mip) {
+	public ECF2mPointMiracl(BigInteger x, BigInteger y, MiraclDlogECF2m curve){
 		
 		boolean validity[] = new boolean[1];
-		/*
-		 * create the point with the given parameters,
-		 * and set the point.
-		 */
-		point = createF2mPoint(mip, x.toByteArray(), y.toByteArray(), validity);
-		System.out.println(validity[0]);
-		return validity[0];
+
+		//creates a point in the field with the given parameters
+		point = createF2mPoint(curve.getMip(), x.toByteArray(), y.toByteArray(), validity);
+		
+		//if the creation failed - throws exception
+		if (validity[0]==false){
+			point = 0;
+			throw new IllegalArgumentException("x, y values are not a point on this curve");
+		}
 	}
 	
 	/**
 	 *  Constructor that gets DlogGroup and choose random point in the group
 	 * @param curve
 	 */
-	public ECF2mPointMiracl(DlogGroup curve){
-		//the DlogGroup that matches this class is MiraclAdapterDlogEC
-		if (curve instanceof MiraclAdapterDlogEC){
-			//call for native function that creates random point in the field.
-			createRandomF2mPoint(((MiraclAdapterDlogEC) curve).getMip(), 
-								((ECF2mGroupParams)curve.getGroupParams()).getM());
+	public ECF2mPointMiracl(MiraclDlogECF2m curve){
+	
+		boolean validity[] = new boolean[1];
+		
+		//call for native function that creates random point in the field.
+		point = createRandomF2mPoint(((MiraclAdapterDlogEC) curve).getMip(), 
+							((ECF2mGroupParams)curve.getGroupParams()).getM(), validity);
+		
 		//if the algorithm for random element failed - throws exception
-		} else throw new IllegalArgumentException("DlogGroup type doesn't match the GroupElement type");
+		if(validity[0]==false){
+			point = 0;
+			Logging.getLogger().log(Level.WARNING, "couldn't find random element");
+		}
 	}
 	
 	/**
