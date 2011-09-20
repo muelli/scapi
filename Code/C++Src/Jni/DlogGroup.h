@@ -41,6 +41,22 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpDlog
 
 /*
  * Class:     edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpDlogZp
+ * Method:    validateZpGroup
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpDlogZp_validateZpGroup
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpDlogZp
+ * Method:    validateZpGenerator
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpDlogZp_validateZpGenerator
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpDlogZp
  * Method:    deleteDlogZp
  * Signature: (J)J
  */
