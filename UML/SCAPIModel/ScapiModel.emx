@@ -914,15 +914,24 @@
           <generalization xmi:id="_dUfIA_3pEd-nt4IVKKjkMA">
             <general xmi:type="uml:Class" href="primitives.efx#_dUVbj_3pEd-nt4IVKKjkMA?SCAPI%20Model/edu/biu/scapi/primitives/trapdoorpermutation/TrapdoorPermutationAbs?"/>
           </generalization>
+          <generalization xmi:id="_vhjD0O2cEeC8av2_mh-J3A">
+            <general xmi:type="uml:Class" href="primitives.efx#_OjqLyO2VEeC8av2_mh-J3A?SCAPI%20Model/edu/biu/scapi/primitives/trapdoor_permutation/TrapdoorPermutationAbs?"/>
+          </generalization>
         </packagedElement>
         <packagedElement xmi:type="uml:Class" xmi:id="_dUfIBP3pEd-nt4IVKKjkMA" name="RSA4096">
           <generalization xmi:id="_dUfIBf3pEd-nt4IVKKjkMA">
             <general xmi:type="uml:Class" href="primitives.efx#_dUVbj_3pEd-nt4IVKKjkMA?SCAPI%20Model/edu/biu/scapi/primitives/trapdoorpermutation/TrapdoorPermutationAbs?"/>
           </generalization>
+          <generalization xmi:id="_t9_mYO2cEeC8av2_mh-J3A">
+            <general xmi:type="uml:Class" href="primitives.efx#_OjqLyO2VEeC8av2_mh-J3A?SCAPI%20Model/edu/biu/scapi/primitives/trapdoor_permutation/TrapdoorPermutationAbs?"/>
+          </generalization>
         </packagedElement>
         <packagedElement xmi:type="uml:Class" xmi:id="_dUfIBv3pEd-nt4IVKKjkMA" name="RSA2048">
           <generalization xmi:id="_dUfIB_3pEd-nt4IVKKjkMA">
             <general xmi:type="uml:Class" href="primitives.efx#_dUVbj_3pEd-nt4IVKKjkMA?SCAPI%20Model/edu/biu/scapi/primitives/trapdoorpermutation/TrapdoorPermutationAbs?"/>
+          </generalization>
+          <generalization xmi:id="_uWnhwO2cEeC8av2_mh-J3A">
+            <general xmi:type="uml:Class" href="primitives.efx#_OjqLyO2VEeC8av2_mh-J3A?SCAPI%20Model/edu/biu/scapi/primitives/trapdoor_permutation/TrapdoorPermutationAbs?"/>
           </generalization>
         </packagedElement>
         <packagedElement xmi:type="uml:Class" xmi:id="_dUfICP3pEd-nt4IVKKjkMA" name="SHA512" clientDependency="_9k0acBiqEeC20cbJ9z5wpw">
@@ -935,6 +944,9 @@
           <generalization xmi:id="_dUfIC_3pEd-nt4IVKKjkMA">
             <general xmi:type="uml:Class" href="primitives.efx#_dUVbj_3pEd-nt4IVKKjkMA?SCAPI%20Model/edu/biu/scapi/primitives/trapdoorpermutation/TrapdoorPermutationAbs?"/>
           </generalization>
+          <generalization xmi:id="_wwhYYO2cEeC8av2_mh-J3A">
+            <general xmi:type="uml:Class" href="primitives.efx#_OjqLyO2VEeC8av2_mh-J3A?SCAPI%20Model/edu/biu/scapi/primitives/trapdoor_permutation/TrapdoorPermutationAbs?"/>
+          </generalization>
         </packagedElement>
         <packagedElement xmi:type="uml:Class" xmi:id="_dUfIDP3pEd-nt4IVKKjkMA" name="SHA384">
           <elementImport xmi:id="_FXHSEBirEeC20cbJ9z5wpw" importedElement="_9k0acBiqEeC20cbJ9z5wpw"/>
@@ -942,6 +954,9 @@
         <packagedElement xmi:type="uml:Class" xmi:id="_dUfIDv3pEd-nt4IVKKjkMA" name="Rabin2048">
           <generalization xmi:id="_dUfID_3pEd-nt4IVKKjkMA">
             <general xmi:type="uml:Class" href="primitives.efx#_dUVbj_3pEd-nt4IVKKjkMA?SCAPI%20Model/edu/biu/scapi/primitives/trapdoorpermutation/TrapdoorPermutationAbs?"/>
+          </generalization>
+          <generalization xmi:id="_wF8xYO2cEeC8av2_mh-J3A">
+            <general xmi:type="uml:Class" href="primitives.efx#_OjqLyO2VEeC8av2_mh-J3A?SCAPI%20Model/edu/biu/scapi/primitives/trapdoor_permutation/TrapdoorPermutationAbs?"/>
           </generalization>
         </packagedElement>
       </packagedElement>
@@ -2408,27 +2423,6 @@
                       <element xsi:nil="true"/>
                       <layoutConstraint xmi:type="notation:Bounds" xmi:id="_dUfS8_3pEd-nt4IVKKjkMA" x="18626" y="1084" width="2591" height="793"/>
                     </children>
-                    <children xmi:id="_LbQ2kOz2EeC8av2_mh-J3A">
-                      <children xmi:id="_LbRdoOz2EeC8av2_mh-J3A" type="ImageCompartment">
-                        <layoutConstraint xmi:type="notation:Size" xmi:id="_LbRdoez2EeC8av2_mh-J3A" width="530" height="530"/>
-                      </children>
-                      <children xmi:id="_LbRdouz2EeC8av2_mh-J3A" type="Stereotype"/>
-                      <children xmi:id="_LbRdo-z2EeC8av2_mh-J3A" type="Kind"/>
-                      <children xmi:id="_LbSEsOz2EeC8av2_mh-J3A" type="Name"/>
-                      <children xmi:id="_LbSEsez2EeC8av2_mh-J3A" type="Parent"/>
-                      <children xmi:id="_LbSEsuz2EeC8av2_mh-J3A" type="AttributeCompartment">
-                        <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_LbSEs-z2EeC8av2_mh-J3A"/>
-                      </children>
-                      <children xmi:id="_LbSEtOz2EeC8av2_mh-J3A" type="OperationCompartment">
-                        <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_LbSEtez2EeC8av2_mh-J3A"/>
-                      </children>
-                      <children xmi:id="_LbSrwOz2EeC8av2_mh-J3A" visible="false" type="SignalCompartment">
-                        <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_LbSrwez2EeC8av2_mh-J3A"/>
-                      </children>
-                      <styles xmi:type="umlnotation:UMLClassifierStyle" xmi:id="_LbQ2kez2EeC8av2_mh-J3A" fontName="Segoe UI" showStereotype="Label" useClassifierShape="true"/>
-                      <element xmi:type="uml:Interface" href="primitives.efx#_wF_lVOz0EeC8av2_mh-J3A?SCAPI%20Model/edu/biu/scapi/primitives/hash/CollisionResistantHash?"/>
-                      <layoutConstraint xmi:type="notation:Bounds" xmi:id="_LbQ2kuz2EeC8av2_mh-J3A" x="23760" y="4884"/>
-                    </children>
                     <styles xmi:type="umlnotation:UMLDiagramStyle" xmi:id="_dUfTA_3pEd-nt4IVKKjkMA"/>
                     <element xsi:nil="true"/>
                     <edges xmi:id="_dUfTBP3pEd-nt4IVKKjkMA" element="_dUfTXf3pEd-nt4IVKKjkMA" source="_dUfSn_3pEd-nt4IVKKjkMA" target="_dUfSj_3pEd-nt4IVKKjkMA">
@@ -2521,55 +2515,6 @@
                       <styles xmi:type="umlnotation:UMLConnectorStyle" xmi:id="_D1U6IUAGEeCSvu-Ih3o73g" routing="Rectilinear" lineWidth="1" showStereotype="Text"/>
                       <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_D1U6IkAGEeCSvu-Ih3o73g" points="[37, 0, -314, 14]$[279, -1, -72, 13]"/>
                     </edges>
-                    <edges xmi:id="_Vu4bcOz2EeC8av2_mh-J3A" element="_VupK4Oz2EeC8av2_mh-J3A" source="_dUfSn_3pEd-nt4IVKKjkMA" target="_LbQ2kOz2EeC8av2_mh-J3A">
-                      <children xmi:id="_Vu5CgOz2EeC8av2_mh-J3A" type="NameLabel">
-                        <children xmi:id="_Vu5Cguz2EeC8av2_mh-J3A" type="Stereotype"/>
-                        <children xmi:id="_Vu5Cg-z2EeC8av2_mh-J3A" type="Name"/>
-                        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Vu5Cgez2EeC8av2_mh-J3A" y="-186"/>
-                      </children>
-                      <children xmi:id="_Vu5ChOz2EeC8av2_mh-J3A" type="ToMultiplicityLabel" element="_VurAEOz2EeC8av2_mh-J3A">
-                        <children xmi:id="_Vu5Chuz2EeC8av2_mh-J3A" type="ToMultiplicity"/>
-                        <layoutConstraint xmi:type="notation:Location" xmi:id="_Vu5Chez2EeC8av2_mh-J3A" y="396"/>
-                      </children>
-                      <children xmi:id="_Vu5Ch-z2EeC8av2_mh-J3A" type="ToRoleLabel" element="_VurAEOz2EeC8av2_mh-J3A">
-                        <children xmi:id="_Vu5pkOz2EeC8av2_mh-J3A" type="ToRole"/>
-                        <layoutConstraint xmi:type="notation:Location" xmi:id="_Vu5CiOz2EeC8av2_mh-J3A" y="-397"/>
-                      </children>
-                      <children xmi:id="_Vu5pkez2EeC8av2_mh-J3A" type="FromMultiplicityLabel" element="_Vupx8Oz2EeC8av2_mh-J3A">
-                        <children xmi:id="_Vu5pk-z2EeC8av2_mh-J3A" type="FromMultiplicity"/>
-                        <layoutConstraint xmi:type="notation:Location" xmi:id="_Vu5pkuz2EeC8av2_mh-J3A" y="396"/>
-                      </children>
-                      <children xmi:id="_Vu5plOz2EeC8av2_mh-J3A" visible="false" type="FromRoleLabel" element="_Vupx8Oz2EeC8av2_mh-J3A">
-                        <children xmi:id="_Vu5pluz2EeC8av2_mh-J3A" type="FromRole"/>
-                        <layoutConstraint xmi:type="notation:Location" xmi:id="_Vu5plez2EeC8av2_mh-J3A" y="-397"/>
-                      </children>
-                      <children xmi:id="_Vu5pl-z2EeC8av2_mh-J3A" type="ToQualifierLabel" element="_VurAEOz2EeC8av2_mh-J3A">
-                        <children xmi:id="_Vu6QoOz2EeC8av2_mh-J3A" type="QualifierCompartment">
-                          <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_Vu6Qoez2EeC8av2_mh-J3A"/>
-                        </children>
-                        <layoutConstraint xmi:type="notation:Location" xmi:id="_Vu5pmOz2EeC8av2_mh-J3A" y="-186"/>
-                      </children>
-                      <children xmi:id="_Vu6Qouz2EeC8av2_mh-J3A" type="FromQualifierLabel" element="_Vupx8Oz2EeC8av2_mh-J3A">
-                        <children xmi:id="_Vu6QpOz2EeC8av2_mh-J3A" type="QualifierCompartment">
-                          <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_Vu6Qpez2EeC8av2_mh-J3A"/>
-                        </children>
-                        <layoutConstraint xmi:type="notation:Location" xmi:id="_Vu6Qo-z2EeC8av2_mh-J3A" y="-186"/>
-                      </children>
-                      <children xmi:id="_Vu6Qpuz2EeC8av2_mh-J3A" type="ToConstraintLabel" element="_VurAEOz2EeC8av2_mh-J3A">
-                        <children xmi:id="_Vu6QqOz2EeC8av2_mh-J3A" type="ToConstraintCompartment">
-                          <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_Vu6Qqez2EeC8av2_mh-J3A"/>
-                        </children>
-                        <layoutConstraint xmi:type="notation:Location" xmi:id="_Vu6Qp-z2EeC8av2_mh-J3A" y="1058"/>
-                      </children>
-                      <children xmi:id="_Vu6Qquz2EeC8av2_mh-J3A" type="FromConstraintLabel" element="_Vupx8Oz2EeC8av2_mh-J3A">
-                        <children xmi:id="_Vu63sOz2EeC8av2_mh-J3A" type="FromConstraintCompartment">
-                          <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_Vu63sez2EeC8av2_mh-J3A"/>
-                        </children>
-                        <layoutConstraint xmi:type="notation:Location" xmi:id="_Vu6Qq-z2EeC8av2_mh-J3A" y="1058"/>
-                      </children>
-                      <styles xmi:type="umlnotation:UMLConnectorStyle" xmi:id="_Vu4bcez2EeC8av2_mh-J3A" fontName="Segoe UI" routing="Rectilinear" lineWidth="1" showStereotype="Text"/>
-                      <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_Vu4bcuz2EeC8av2_mh-J3A" points="[147, 5, -254, 10]$[333, 25, -68, 30]"/>
-                    </edges>
                   </contents>
                 </eAnnotations>
                 <packagedElement xmi:type="uml:Class" xmi:id="_dUfTVP3pEd-nt4IVKKjkMA" name="MessageDigest">
@@ -2588,11 +2533,6 @@
                     <type xmi:type="uml:Interface" href="primitives.efx#_dUVc7f3pEd-nt4IVKKjkMA?SCAPI%20Model/edu/biu/scapi/primitives/hash/CollisionResistantHash?"/>
                     <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_t-2WEUAFEeCSvu-Ih3o73g" value="1"/>
                     <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_t-2WEEAFEeCSvu-Ih3o73g" value="1"/>
-                  </ownedAttribute>
-                  <ownedAttribute xmi:id="_Vupx8Oz2EeC8av2_mh-J3A" name="collisionResistantHash2" visibility="private" aggregation="composite" association="_VupK4Oz2EeC8av2_mh-J3A">
-                    <type xmi:type="uml:Interface" href="primitives.efx#_wF_lVOz0EeC8av2_mh-J3A?SCAPI%20Model/edu/biu/scapi/primitives/hash/CollisionResistantHash?"/>
-                    <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_VuqZAez2EeC8av2_mh-J3A" value="*"/>
-                    <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_VuqZAOz2EeC8av2_mh-J3A"/>
                   </ownedAttribute>
                   <ownedOperation xmi:id="_dUfTYf3pEd-nt4IVKKjkMA" name="engineReset"/>
                   <ownedOperation xmi:id="_dUfTYv3pEd-nt4IVKKjkMA" name="engineGetDigestLength"/>
@@ -2645,12 +2585,6 @@
                   <ownedEnd xmi:id="_D1B_NEAGEeCSvu-Ih3o73g" name="" visibility="private" type="_dUfTav3pEd-nt4IVKKjkMA" association="_D1B_MEAGEeCSvu-Ih3o73g">
                     <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_D1B_NkAGEeCSvu-Ih3o73g" value="1"/>
                     <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_D1B_NUAGEeCSvu-Ih3o73g" value="1"/>
-                  </ownedEnd>
-                </packagedElement>
-                <packagedElement xmi:type="uml:Association" xmi:id="_VupK4Oz2EeC8av2_mh-J3A" memberEnd="_Vupx8Oz2EeC8av2_mh-J3A _VurAEOz2EeC8av2_mh-J3A">
-                  <ownedEnd xmi:id="_VurAEOz2EeC8av2_mh-J3A" name="" visibility="private" type="_dUfTXP3pEd-nt4IVKKjkMA" association="_VupK4Oz2EeC8av2_mh-J3A">
-                    <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_VurAEuz2EeC8av2_mh-J3A" value="1"/>
-                    <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_VurAEez2EeC8av2_mh-J3A" value="1"/>
                   </ownedEnd>
                 </packagedElement>
               </packagedElement>
@@ -7733,14 +7667,14 @@
               </packagedElement>
               <packagedElement xmi:type="uml:Class" xmi:id="_xm3s1ez1EeC8av2_mh-J3A" name="DlogGroupTest" clientDependency="_xm4Skuz1EeC8av2_mh-J3A" isAbstract="true">
                 <ownedAttribute xmi:id="_xm3s1uz1EeC8av2_mh-J3A" name="testDataVector" visibility="protected">
-                  <type xmi:type="uml:PrimitiveType" href="platform:/resource/SCAPIModel_moriya_25_9_11/ScapiModel.emx#_TNp9QOdCEeCPnr6XY5X1jg?First%20Layer/PrimitiveTypes/TestData?"/>
+                  <type xmi:type="uml:PrimitiveType" href="platform:/resource/SCAPIModel_moriya_25_9_11/ScapiModel.emx#_TNp9QOdCEeCPnr6XY5X1jg"/>
                 </ownedAttribute>
                 <ownedAttribute xmi:id="_xm3s1-z1EeC8av2_mh-J3A" name="dlog" visibility="protected">
-                  <type xmi:type="uml:PrimitiveType" href="platform:/resource/SCAPIModel_moriya_25_9_11/ScapiModel.emx#_Ww4MYOdCEeCPnr6XY5X1jg?First%20Layer/PrimitiveTypes/DlogGroup?"/>
+                  <type xmi:type="uml:PrimitiveType" href="platform:/resource/SCAPIModel_moriya_25_9_11/ScapiModel.emx#_Ww4MYOdCEeCPnr6XY5X1jg"/>
                 </ownedAttribute>
                 <ownedOperation xmi:id="_xm3s2Oz1EeC8av2_mh-J3A" name="DlogGroupTest">
                   <ownedParameter xmi:id="_xm3s2ez1EeC8av2_mh-J3A" name="dlog">
-                    <type xmi:type="uml:PrimitiveType" href="platform:/resource/SCAPIModel_moriya_25_9_11/ScapiModel.emx#_Ww4MYOdCEeCPnr6XY5X1jg?First%20Layer/PrimitiveTypes/DlogGroup?"/>
+                    <type xmi:type="uml:PrimitiveType" href="platform:/resource/SCAPIModel_moriya_25_9_11/ScapiModel.emx#_Ww4MYOdCEeCPnr6XY5X1jg"/>
                   </ownedParameter>
                 </ownedOperation>
                 <ownedOperation xmi:id="_xm3s2uz1EeC8av2_mh-J3A" name="runTest"/>
