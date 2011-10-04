@@ -19,6 +19,7 @@ import edu.biu.scapi.primitives.hash.CollisionResistantHash;
 import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
 import edu.biu.scapi.primitives.prf.Hmac;
 import edu.biu.scapi.tools.Factories.BCFactory;
+import edu.biu.scapi.tools.Factories.FactoriesException;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 
 
@@ -36,8 +37,9 @@ public final class BcHMAC implements  Hmac {
 	/** 
 	 * A constructor that can be called from the factory
 	 * @param hashName - the hash function to translate into digest of bc hmac
+	 * @throws FactoriesException 
 	 */
-	public BcHMAC(String hashName) {
+	public BcHMAC(String hashName) throws FactoriesException {
 		
 		hMac = new HMac(BCFactory.getInstance().getDigest(hashName));
 		
@@ -48,8 +50,9 @@ public final class BcHMAC implements  Hmac {
 	 * A constructor that gets a SCAPI collision resistant hash and retrieves the name of the hash in
 	 * order to crete the related digest for the BC Hmac this class uses.
 	 * @param hash - the underlying collision resistant hash
+	 * @throws FactoriesException, IllegalStateException 
 	 */
-	public BcHMAC(CollisionResistantHash hash) {
+	public BcHMAC(CollisionResistantHash hash) throws FactoriesException, IllegalStateException {
 	
 		//first check that the hmac is initialized.
 		if(hash.isInitialized()){
@@ -57,7 +60,7 @@ public final class BcHMAC implements  Hmac {
 			hMac = new HMac(BCFactory.getInstance().getDigest(hash.getAlgorithmName()));
 		}
 		else{//the user must pass an initialized object, otherwise throw an exception
-			throw new IllegalStateException("argumrnt hash must be initialized");
+			throw new IllegalStateException("argument hash must be initialized");
 		}
 	}
 	
