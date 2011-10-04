@@ -27,8 +27,9 @@ public class TPElementFactory {
 	 * @param algName - the required algorithm name
 	 * @param modN - the required modulus to the TPElement constructor
 	 * @return an object of type PseudorandomGenerator class that was determined by the algName + provider
+	 * @throws FactoriesException 
 	 */
-	public TPElement getRandomElement(String algName, String provider, BigInteger modN) {
+	public TPElement getRandomElement(String algName, String provider, BigInteger modN) throws FactoriesException {
 		
 		Object[] params = new Object[1];
 		params[0] = modN;
@@ -39,8 +40,9 @@ public class TPElementFactory {
 	 * @param algName - the required algorithm name
 	 * @param modN - the required modulus to the TPElement constructor
 	 * @return an object of type PseudorandomGenerator class that was determined by the algName + the default provider for that algorithm.
+	 * @throws FactoriesException 
 	 */
-	public TPElement getRandomElement(String algName, BigInteger modN) {
+	public TPElement getRandomElement(String algName, BigInteger modN) throws FactoriesException {
 		
 		Object[] params = new Object[1];
 		params[0] = modN;
@@ -53,8 +55,9 @@ public class TPElementFactory {
 	 * @param modN - the required modulus to the TPElement constructor
 	 * @param x - the required value to the TPElement constructor
 	 * @return an object of type PseudorandomGenerator class that was determined by the algName + provider
+	 * @throws FactoriesException 
 	 */
-	public TPElement getElement(String algName, String provider, BigInteger modN, BigInteger x) {
+	public TPElement getElement(String algName, String provider, BigInteger modN, BigInteger x) throws FactoriesException {
 		
 		Object[] params = new Object[2];
 		params[0] = modN;
@@ -67,8 +70,9 @@ public class TPElementFactory {
 	 * @param modN - the required modulus to the TPElement constructor
 	 * @param x - the required value to the TPElement constructor
 	 * @return an object of type PseudorandomGenerator class that was determined by the algName + the default provider for that algorithm.
+	 * @throws FactoriesException 
 	 */
-	public TPElement getElement(String algName, BigInteger modN, BigInteger x) {
+	public TPElement getElement(String algName, BigInteger modN, BigInteger x) throws FactoriesException {
 		
 		Object[] params = new Object[2];
 		params[0] = modN;
