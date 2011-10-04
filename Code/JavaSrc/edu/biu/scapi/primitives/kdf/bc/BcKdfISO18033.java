@@ -18,6 +18,7 @@ import edu.biu.scapi.primitives.hash.CollisionResistantHash;
 import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
 import edu.biu.scapi.primitives.kdf.KeyDerivationFunction;
 import edu.biu.scapi.tools.Factories.BCFactory;
+import edu.biu.scapi.tools.Factories.FactoriesException;
 
 /** 
  * @author LabTest
@@ -31,8 +32,9 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 	 * @throws ClassNotFoundException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
+	 * @throws FactoriesException 
 	 */
-	public BcKdfISO18033(String hash) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+	public BcKdfISO18033(String hash) throws InstantiationException, IllegalAccessException, ClassNotFoundException, FactoriesException {
 		
 		//pass a digest to the KDF.
 		bcKdfGenerator = new KDF1BytesGenerator(BCFactory.getInstance().getDigest(hash));
@@ -42,8 +44,9 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 	/**
 	 * create the related bc kdf. Retrieve the related Digest out of the hash name 
 	 * @param hash - the underlying collision resistant hash
+	 * @throws FactoriesException 
 	 */
-	public BcKdfISO18033(TargetCollisionResistant hash) {
+	public BcKdfISO18033(TargetCollisionResistant hash) throws FactoriesException {
 		//first check that the hmac is initialized.
 		if(hash.isInitialized()){
 			//pass a digest to the KDF.
