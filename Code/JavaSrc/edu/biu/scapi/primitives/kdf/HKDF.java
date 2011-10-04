@@ -13,6 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.prf.Hmac;
+import edu.biu.scapi.tools.Factories.FactoriesException;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 
@@ -26,8 +27,9 @@ public final class HKDF implements KeyDerivationFunction {
 	/**
 	 * 
 	 * @param hmac
+	 * @throws FactoriesException 
 	 */
-	public HKDF(String hmac){
+	public HKDF(String hmac) throws FactoriesException{
 		
 		this.hmac = (Hmac) PrfFactory.getInstance().getObject(hmac);
 	}
