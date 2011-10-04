@@ -35,8 +35,9 @@ public final class PrgFactory {
 	 * @param provider the required provider name
 	 * @param algName the required algorithm name
 	 * @return an object of type PseudorandomGenerator class that was determined by the algName + provider
+	 * @throws FactoriesException 
 	 */
-	public PseudorandomGenerator getObject(String algName, String provider) {
+	public PseudorandomGenerator getObject(String algName, String provider) throws FactoriesException {
 		
 		return (PseudorandomGenerator) factoriesUtility.getObject(provider, algName);
 	}
@@ -45,8 +46,9 @@ public final class PrgFactory {
 	 * 
 	 * @param algName the required algorithm name
 	 * @return an object of type PseudorandomGenerator class that was determined by the algName + the default provider for that algorithm
+	 * @throws FactoriesException 
 	 */
-	public PseudorandomGenerator getObject(String algName) {
+	public PseudorandomGenerator getObject(String algName) throws FactoriesException {
 		
 		return (PseudorandomGenerator) factoriesUtility.getObject(algName);
 	}
