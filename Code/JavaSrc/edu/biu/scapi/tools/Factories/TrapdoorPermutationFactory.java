@@ -35,8 +35,9 @@ public final class TrapdoorPermutationFactory {
 	 * @param provider the required provider name
 	 * @param algName the required algorithm name
 	 * @return an object of type TrapdoorPermutation class that was determined by the algName + provider
+	 * @throws FactoriesException 
 	 */
-	public TrapdoorPermutation getObject(String algName, String provider) {
+	public TrapdoorPermutation getObject(String algName, String provider) throws FactoriesException {
 		
 		return (TrapdoorPermutation) factoriesUtility.getObject(provider, algName);
 	}
@@ -45,8 +46,9 @@ public final class TrapdoorPermutationFactory {
 	 * 
 	 * @param algName the required algorithm name
 	 * @return an object of type TrapdoorPermutation class that was determined by the algName + the default provider for that algorithm
+	 * @throws FactoriesException 
 	 */
-	public TrapdoorPermutation getObject(String algName) {
+	public TrapdoorPermutation getObject(String algName) throws FactoriesException {
 		
 		return (TrapdoorPermutation) factoriesUtility.getObject(algName);
 	}
