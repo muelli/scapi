@@ -6,7 +6,10 @@
  */
 package edu.biu.scapi.tools.Factories;
 
+import java.lang.reflect.InvocationTargetException;
+
 import edu.biu.scapi.primitives.prf.PseudorandomFunction;
+import edu.biu.scapi.tools.Factories.FactoriesException;
 
 public final class PrfFactory {
 	private static PrfFactory instance = new PrfFactory();;
@@ -31,8 +34,9 @@ public final class PrfFactory {
 	 * @param provider the required provider name
 	 * @param algName the required algorithm name
 	 * @return an object of type PseudorandomFunction class that was determined by the algName + provider
+	 * @throws FactoriesException 
 	 */
-	public PseudorandomFunction getObject(String algName, String provider) {
+	public PseudorandomFunction getObject(String algName, String provider) throws FactoriesException {
 		
 		return (PseudorandomFunction) factoriesUtility.getObject(provider, algName);
 	}
@@ -41,8 +45,9 @@ public final class PrfFactory {
 	 * 
 	 * @param algName the required algorithm name
 	 * @return an object of type PseudorandomFunction class that was determined by the algName + the default provider for that algorithm.
+	 * @throws FactoriesException 
 	 */
-	public PseudorandomFunction getObject(String algName) {
+	public PseudorandomFunction getObject(String algName) throws FactoriesException {
 		
 		return (PseudorandomFunction) factoriesUtility.getObject(algName);
 	}
@@ -54,4 +59,6 @@ public final class PrfFactory {
 		return instance;
 
 	}
+	
+	
 }
