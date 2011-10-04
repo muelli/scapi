@@ -4,6 +4,7 @@
 package edu.biu.scapi.primitives.prf;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
@@ -12,6 +13,7 @@ import org.bouncycastle.crypto.macs.HMac;
 
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.tools.Factories.BCFactory;
+import edu.biu.scapi.tools.Factories.FactoriesException;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
@@ -22,24 +24,25 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
 public class IteratedPrfVarying extends
 		PrfVaryingFromPrfVaryingInput {
 	/** 
-	 * @param prfVaringInputName  the prf to use. 
+	 * @param prfVaryingInputName  the prf to use. 
 	 * The initialization of this prf is in the function init of PrfVaryingFromPrfVaryingInput.
+	 * @throws FactoriesException 
 	 */
-	public IteratedPrfVarying(String prfVaringInputName) {
-		//get the requested prfVaringInput from the factory. 
-		prfVaryingInputLength = (PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaringInputName);
+	public IteratedPrfVarying(String prfVaryingInputName) throws FactoriesException {
+		//get the requested prfVaryingInput from the factory. 
+		prfVaryingInputLength = (PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaryingInputName);	
 	}
 	
 	/**
 	 * 
-	 * @param prfVaringInput the underlying prf varying. MUST be initialized.
+	 * @param prfVaryingInput the underlying prf varying. MUST be initialized.
 	 */
-	public IteratedPrfVarying(PrfVaryingInputLength prfVaringInput) {
+	public IteratedPrfVarying(PrfVaryingInputLength prfVaryingInput) {
 		
 		//first check that the hmac is initialized.
-		if(prfVaringInput.isInitialized()){
+		if(prfVaryingInput.isInitialized()){
 			//assign the prf varying input.
-			prfVaryingInputLength = prfVaringInput;
+			prfVaryingInputLength = prfVaryingInput;
 		}
 		else{//the user must pass an initialized object, otherwise throw an exception
 			throw new IllegalStateException("The input variable must be initialized");
@@ -56,7 +59,7 @@ public class IteratedPrfVarying extends
 	
 	public boolean isInitialized() {
 
-		//if the hmac is initialized than the HKDF is initialized as well.
+		//if the hmac is initialized then the HKDF is initialized as well.
 		return prfVaryingInputLength.isInitialized(); 
 	}
 	
@@ -104,7 +107,7 @@ public class IteratedPrfVarying extends
 	public void computeBlock(byte[] inBytes, int inOff, int inLen, 
 			byte[] outBytes, int outOff, int outLen) {
 		
-		int prfLength = prfVaryingInputLength.getBlockSize();            //the output size of the prfVaringInputLength
+		int prfLength = prfVaryingInputLength.getBlockSize();            //the output size of the prfVaryingInputLength
 		int rounds = (int) Math.ceil((float)outLen / (float)prfLength);  //the smallest integer for which rounds*)prfLength > outlen
 		byte[] intermediateOutBytes = new byte[prfLength];               //round result
 		byte[] currentInBytes = new byte[inLen+2];                       //the data for the prf 
