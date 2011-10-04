@@ -32,8 +32,9 @@ public final class KdfFactory {
 	 * @param provider the required provider name
 	 * @param algName the required algorithm name
 	 * @return an object of type PseudorandomFunction class that was determined by the algName + provider
+	 * @throws FactoriesException 
 	 */
-	public KeyDerivationFunction getObject(String algName, String provider) {
+	public KeyDerivationFunction getObject(String algName, String provider) throws FactoriesException {
 		
 		return (KeyDerivationFunction) factoriesUtility.getObject(provider, algName);
 	}
@@ -42,8 +43,9 @@ public final class KdfFactory {
 	 * 
 	 * @param algName the required algorithm name
 	 * @return an object of type PseudorandomFunction class that was determined by the algName + the default provider for that algorithm.
+	 * @throws FactoriesException 
 	 */
-	public KeyDerivationFunction getObject(String algName) {
+	public KeyDerivationFunction getObject(String algName) throws FactoriesException {
 		
 		return (KeyDerivationFunction) factoriesUtility.getObject(algName);
 	}
