@@ -8,6 +8,7 @@ package edu.biu.scapi.primitives.prf;
 
 import javax.crypto.IllegalBlockSizeException;
 
+import edu.biu.scapi.tools.Factories.FactoriesException;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
@@ -17,8 +18,7 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
 public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	
 	
-	
-	public LubyRackoffPrpFromPrfVarying(String prfVaringIOLengthName) {
+	public LubyRackoffPrpFromPrfVarying(String prfVaringIOLengthName) throws FactoriesException {
 		
 		//get the requested prpFixed from the factory. 
 		prfVaryingIOLength = (PrfVaryingIOLength) PrfFactory.getInstance().getObject(prfVaringIOLengthName);
