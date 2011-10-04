@@ -1,9 +1,3 @@
-/**
- * 
- * The FactoriesUtility class as its name indicates is a utility class used by all the factories. 
- * The actual creation of the object is done with this class in the public function getObject. 
- * All the factories call this method and cast the created object to the actual type they need to return. 
- */
 package edu.biu.scapi.tools.Factories;
 
 import java.io.FileNotFoundException;
@@ -12,23 +6,30 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 
 
 import edu.biu.scapi.generals.Logging;
 
-/** 
+/* 
  * @author LabTest
  */
-public class FactoriesUtility {
+/*
+ * The FactoriesUtility class as its name indicates is a utility class used by all the factories
+ * and only by the factories since it is package private and belongs to the  edu.biu.scapi.tools.Factories package 
+ * The actual creation of the object is done with this class in the public function getObject
+ * All the factories call this method and cast the created object to the actual type they need to return 
+ */
+class FactoriesUtility {
 	private Properties defaultProviderMap;
 	private Properties algsInType;
 	
 	private static final String PROPERTIES_FILES_PATH = "/propertiesFiles/";
 
 	
-	/** 
+	/* 
 	 * Loads the files to the properties attributes.
 	 * @param defaultProviderFileName the file name from which to load the default provider properties from. 
 	 * 									*Note that this can be null. for example the BCFactory does not need to pass
@@ -53,11 +54,9 @@ public class FactoriesUtility {
 			
 			Logging.getLogger().log(Level.WARNING, e.toString());
 		}
-		
-		
 	}
 	
-	/** 
+	/* 
 	 * parseAlgNames : The string algName should be of the form “alg1Name(alg2Name, …,algnName)”, where n can be any number greater than zero. 
 	 * (If n = zero, then AlgDetails.Name = null and AlgDetails.tail = null. If n = 1 then  AlgDetails.Name = “alg1” and AlgDetails.params=null. 
 	 * If n >=2 then AlgDetails.Name = alg1 and AlgDetails.tail = [alg2Name , …,algnName)])
@@ -89,16 +88,37 @@ public class FactoriesUtility {
 		
 	}
 
-	/** 
-	 * @param algName the algorithm for which to check validity for
-	 * @return true if the algorithm exists in the defaultProviderMap, else false.
+	/* 
+	 * This function checks that the algorithm requested is in effect an algorithm within the cryptographic
+	 * type for which the object is being created.
+	 * @param algName the algorithm for which to check validity
+	 * @return true if the algorithm exists in the algsInTypeMap, else false.
 	 */
-	private boolean checkValidity(String algName) {
-
-		return algsInType.containsKey(algName);
+	private boolean checkAlgorithmsValidityForType(String algName) {
+		
+		boolean valid = false;
+		Set<String> setOfKeys = algsInType.stringPropertyNames();
+		for(String key: setOfKeys){
+			if(key.contains(algName)){
+				valid  = true;
+				break;
+			}
+		}
+		return valid;
 	}
 
-	/** 
+	/* This function checks that the algorithm requested is implemented by the provider specified
+	 * @param provider name of possibly implementing provider
+	 * @param algName the algorithm for which to check validity
+	 * @return true if the algorithm is implemented by the specified provider, else false.
+	 */
+	private boolean checkProviderImplementationOfAlgorithm(String provider, String algName) {
+
+		return algsInType.containsKey(provider + algName);
+	}
+
+	
+	/* 
 	 * @param provider the required provider of the requested algorithm
 	 * @param algName the algorithm name
 	 * @return the concatenation of provider+algorithm.
@@ -109,33 +129,38 @@ public class FactoriesUtility {
 
 	}
 
-	/**
-	 * Loads the names of the algorithms concatenated to the provider and the respecting name of the corresponing class name
+	/*
+	 * Loads the names of the algorithms concatenated to the provider and the full name of the corresponding implementing JAVA class
+	 * For example, for the PRF family the loaded file could like this:
+	 *  # prf classes
+	 *	BCHMac = edu.biu.scapi.primitives.prf.bc.BcHMACC
+	 *  SCIteratedPrfVarying = edu.biu.scapi.primitives.prf.IteratedPrfVarying
+	 *  BCAES = edu.biu.scapi.primitives.prf.bc.BcAES
+	 *   
 	 * @param algsInTypeFileName the name of the file to load
 	 * @throws IOException 
 	 * @throws FileNotFoundException  
 	 */
 	private void loadAlgsInType(String algsInTypeFileName) throws FileNotFoundException, IOException {
 		
-		//instantiate the default provider properties
 		algsInType = new Properties();
-        
-        /*
-        //the algorithm classes file should look something like this:
-        
-        "# Bouncy Castle 
-        BcAES = BcAES
-        ScAES = AES " */
-        
-		//load the algsInTypeFileName file
+		//Load the algsInTypeFileName file
+		//Instead of loading the plain file, which only works from outside a jar file, we load it as a resource 
+		//that can also work from within a jar file. The path from which we load the properties file from is from now under bin\propertiesFiles.
 		InputStream in=  (InputStream) getClass().getResourceAsStream(PROPERTIES_FILES_PATH + algsInTypeFileName);
-		
 		algsInType.load(in);
+		
 	}
 
-	/**
-	 *  Loads the names of the algorithms with the corresponding default providers 
-	 *  @param defaultProviderFileName the name of the file to load
+	/*
+	 * Loads the names of the algorithms with the corresponding default providers 
+	 * For example, for the PRF family the loaded file could look like this:
+	 *  # prf default provider 
+	 *  HMac = BC
+	 *  IteratedPrfVarying = SC
+	 *  AES = BC
+	 * 
+	 * @param defaultProviderFileName the name of the file to load
 	 * @throws IOException 
 	 * @throws FileNotFoundException  
 	 */
@@ -144,22 +169,16 @@ public class FactoriesUtility {
 		//instantiate the default provider properties
 		defaultProviderMap = new Properties();
         
-        /*
-        //the default provider file should look something like this:
-        
-        "# Bouncy Castle 
-        DES = BC
-        AES = Sc " */
-        
-		//load the defaultProviderFileName file
+		//Load the defaultProviderFileName file
+		//Instead of loading the plain file, which only works from outside a jar file, we load it as a resource 
+		//that can also work from within a jar file. The path from which we load the properties file from is from now under bin\propertiesFiles.
 		InputStream in=  (InputStream) getClass().getResourceAsStream(PROPERTIES_FILES_PATH + defaultProviderFileName);
 		
 		defaultProviderMap.load(in);
-		
-		
+			
 	}
 
-	/** 
+	/* 
 	 * This function may return different libraries for different algorithms. 
 	 * For example, it may return "Crypto++" when requesting a Rabin trapdoor permutation and "BC" when requesting an AES implementation. 
 	 * The decision on which implementation to return will be based on the available implementations, 
@@ -177,7 +196,7 @@ public class FactoriesUtility {
 		return defaultProviderMap.getProperty(algDetails.name);
 	}
 
-	/** 
+	/* 
 	 * pseudocode:
 	 * This function returns an Object instantiation of algName algorithm for the specified provider.
 	 * •	Check validity of AlgDetails.name. If not valid, throw exception.
@@ -186,17 +205,24 @@ public class FactoriesUtility {
 	 * •	Get an object of type Class representing our algorithm. (Class algClass).
 	 * •	Retrieve a Constructor of algClass that accepts t parameters of type String, while t=tailVector.length.
 	 * •	Create an instance of type algClass by calling the above Constructor. Pass as a parameter the “tailVector” in AlgDetails. The call Constructor.newInstance returns an object of type Object. (For example, if algName is a series of algorithms: "HMAC(SHA1)", the function creates an HMAC object and passes the tail – "SHA1" to the instance of HMAC. HMAC should be a class that takes as argument a string and in its constructor uses the factories to create the hash object. In this case, where there is a tail, the getObject function passes the String "SHA1" by retrieving a constructor that gets a String. If there is no such constructor, an exception will be thrown). 
-	 * •	 Return the object created.
+	 * •    Return the object created.
 	 *
 	 * @param provider the required provider name
 	 * @param algName the required algorithm name
 	 * @param params - the required parameters to the algorithm 
 	 * @return an object of the class that was determined by the algName + provider
 	 */
-	public Object getObject(String provider, String algName, Object[] params) throws IllegalArgumentException{
+	public Object getObject(String provider, String algName, Object[] params) throws FactoriesException	{
 		
-		//check the validity of the request. Meaning, the requested algorithm does exist. 
-		boolean valid = checkValidity(provider + algName);
+		//check that the algorithm requested belongs to the cryptographic type for which the object is being created
+		boolean valid = checkAlgorithmsValidityForType(algName);
+		//if invalid throw IllegalArgumentException exception
+		if(!valid){
+			throw (new IllegalArgumentException("This factory does not support the algorithm: " + algName));
+		}
+		
+		//check that there exist an implementation of the requested algorithm by the requested provider 
+		valid = checkProviderImplementationOfAlgorithm(provider, algName);
 		//if invalid throw IllegalArgumentException exception
 		if(!valid){
 			throw (new IllegalArgumentException("Algorithm " + algName + " is not supported for provider " + provider));
@@ -207,9 +233,10 @@ public class FactoriesUtility {
 		
 		//get the related algorithm class name
 		String className = algsInType.getProperty(keyToMap);
-		Class algClass  = null;//will hold an Object of type Class representing our alg class
-		Object newObj = null;//will the final create algorithm object
+		Class algClass  = null;			//will hold an Object of type Class representing our alg class
+		Object newObj = null;			//will the final create algorithm object
 		try {
+			
 			//get the class object thru the name of the algorithm class
 			algClass = Class.forName(className);
 	
@@ -232,32 +259,38 @@ public class FactoriesUtility {
 			//however, the parameters passed to the newInstance function are only those of algorithms we allow. That is, the classes that 
 			//can be created here are limited and controlled.
 			 newObj = constructor.newInstance(params);
-			 
+		//When JAVA SE7 will be available to use with the Eclipse IDE we can change the following ugly block of catches to the
+		//new, more elegant form  : catch ( SecurityException | NoSuchMethodException | ClassNotFoundException | IllegalArgumentException | 
+		//								    InstantiationException | IllegalAccessException | InvocationTargetException e)
 		} catch (SecurityException e) {
-			Logging.getLogger().log(Level.WARNING, e.toString());
+			throw new FactoriesException(e);
 		} catch (NoSuchMethodException e) {
-			Logging.getLogger().log(Level.WARNING, e.toString());
+			throw new FactoriesException(e);
 		} catch (ClassNotFoundException e) {
-			Logging.getLogger().log(Level.WARNING, e.toString());
+			throw new FactoriesException(e);
 		} catch (IllegalArgumentException e) {
-			Logging.getLogger().log(Level.WARNING, e.toString());
+			throw new FactoriesException(e);
 		} catch (InstantiationException e) {
-			Logging.getLogger().log(Level.WARNING, e.toString());
+			throw new FactoriesException(e);
 		} catch (IllegalAccessException e) {
-			Logging.getLogger().log(Level.WARNING, e.toString());
+			throw new FactoriesException(e);
 		} catch (InvocationTargetException e) {
-			Logging.getLogger().log(Level.WARNING, e.toString());
+			throw new FactoriesException(e);
 		}
+		
+		//Finally, if we got to this, return the newly created object!!
 		return  newObj;
 		
-	}
+	}	
+	
+	
 
-	/** 
+	/* 
 	 * @param provider - the required provider name
 	 * @param algName - the required algorithm name
 	 * @return an object of the class that was determined by the algName + the provider for that algorithm.
 	 */
-	public Object getObject(String provider, String algName) {
+	public Object getObject(String provider, String algName) throws FactoriesException {
 	
 		//get the parsed algorithm details to have name and params
 		AlgDetails algDetails = parseAlgNames(algName);
@@ -266,12 +299,14 @@ public class FactoriesUtility {
 		return getObject(provider, algDetails.name, algDetails.params.toArray());
 	}
 	
-	/** 
+	/* 
 	 * 
 	 * @param algName the required algorithm name
 	 * @return an object of the class that was determined by the algName + the default provider for that algorithm
 	 */
-	public Object getObject(String algName) throws IllegalArgumentException{
+	public Object getObject(String algName) throws FactoriesException /*throws IllegalArgumentException, SecurityException, ClassNotFoundException, 
+												   NoSuchMethodException, InstantiationException, IllegalAccessException, 
+												   InvocationTargetException*/{
 
 		//no provider has been supplied. Get the provider name from the default implementation properties.
 		String provider = getDefaultImplProvider(algName);
@@ -279,13 +314,15 @@ public class FactoriesUtility {
 		return getObject(provider, algName);
 	}
 	
-	/** 
+	/* 
 	 * 
 	 * @param algName - the required algorithm name
 	 * @param params - the required parameters to the algorithm
 	 * @return an object of the class that was determined by the algName + the default provider for that algorithm.
 	 */
-	public Object getObject(String algName, Object[] params) {
+	public Object getObject(String algName, Object[] params) throws FactoriesException /*throws IllegalArgumentException, SecurityException, ClassNotFoundException,
+																	NoSuchMethodException, InstantiationException, IllegalAccessException, 
+																	InvocationTargetException */{
 
 		//no provider has been supplied. Get the provider name from the default implementation properties.
 		String provider = getDefaultImplProvider(algName);
@@ -302,7 +339,7 @@ public class FactoriesUtility {
 	
 	//nested class
 	
-	/**
+	/*
 	 * A utility class that aids to parse 
 	 */
 	class AlgorithmStringParser{
@@ -311,7 +348,7 @@ public class FactoriesUtility {
 		private String algorithmParamsAsOneString = "";
 		private String mainAlgName = "";
 		
-		/**
+		/*
 		 * AlgorithmParser the constructor
 		 * @param algorithmCommand the string to work on
 		 */
@@ -322,13 +359,13 @@ public class FactoriesUtility {
 			
 		}
 		
-		/**
+		/*
 		 * 
 		 * Counts the number of occurrences of the parameter searchFor in base String
 		 * @param searchFor the string for which we wish to count the number of occurrences for
 		 * @return the number of occurrences of searchFor in base
 		 */
-		int occurances(String base, String searchFor){
+		int occurences(String base, String searchFor){
 			
 			int len = searchFor.length();
 			int result = 0;
@@ -343,7 +380,7 @@ public class FactoriesUtility {
 				
 		}
 		
-		/**
+		/*
 		 * 
 		 * Retrieves the main algorithm from the String <code>algorithmCommand<code> and generates the string
 		 * <code>algorithmParamsAsOneString<code>.
@@ -367,7 +404,7 @@ public class FactoriesUtility {
 			}
 		}
 		
-		/**
+		/*
 		 * 
 		 * getAlgName :  
 		 * @return the main algorithm string
@@ -378,7 +415,7 @@ public class FactoriesUtility {
 		}
 		
 		
-		/**
+		/*
 		 * 
 		 * Retrieves the parameters of the algorithm from the String <code>algorithmParamsAsOneString<code>.
 		 * @return a vector holding each parameter
@@ -403,7 +440,7 @@ public class FactoriesUtility {
 				tempParam+= params[i];
 				
 				//count the number of left parenthesis minus the number of right parenthesis
-				paranthesis = occurances(tempParam, "(") - occurances(tempParam, ")");
+				paranthesis = occurences(tempParam, "(") - occurences(tempParam, ")");
 				
 				//check that the accumulated string is a parameter or we should concatenate more
 				if(paranthesis==0){
@@ -425,4 +462,6 @@ public class FactoriesUtility {
 		
 		
 	}
+	
+	
 }
