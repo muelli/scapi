@@ -34,8 +34,9 @@ public final class PerfectUniversalFactory {
 	 * @param provider the required provider name
 	 * @param algName the required algorithm name
 	 * @return an object of type PerfectUniversalHash class that was determined by the algName + provider
+	 * @throws FactoriesException 
 	 */
-	public Object getObject(String algName, String provider) {
+	public Object getObject(String algName, String provider) throws FactoriesException {
 		
 		return (PerfectUniversalHash) factoriesUtility.getObject(algName, provider);
 	}
@@ -44,7 +45,8 @@ public final class PerfectUniversalFactory {
 	 * 
 	 * @param algName the required algorithm name
 	 * @return an object of type PerfectUniversalHash class that was determined by the algName + the default provider for that algorithm.
-	 */public Object getObject(String algName) {
+	 * @throws FactoriesException 
+	 */public Object getObject(String algName) throws FactoriesException {
 		
 		return (PerfectUniversalHash) factoriesUtility.getObject(algName);
 	}
