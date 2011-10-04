@@ -1,3 +1,13 @@
+package edu.biu.scapi.tools.Factories;
+
+import org.bouncycastle.crypto.AsymmetricBlockCipher;
+import org.bouncycastle.crypto.BlockCipher;
+import org.bouncycastle.crypto.Digest;
+import org.bouncycastle.crypto.StreamCipher;
+
+/** 
+ * @author LabTest
+ */
 /**
  * Suppose we wish to wrap a higher-level cryptographic element that uses a primitive interface in its inner implementation. 
  * For example, HMAC of BC holds a Digest interface but requires a specific digest to invoke its main functions. 
@@ -6,17 +16,6 @@
  * The aim of the BCFactory is to translate from an algorithm name string to an external library instance. 
  * For example, in BcHMAC the user passes a hash name that eventually will be translated to a digest. 
  * If the user passed the "SHA1" string, the translation tool generates the related SHA1 digest.
- */
-package edu.biu.scapi.tools.Factories;
-
-import org.bouncycastle.crypto.AsymmetricBlockCipher;
-import org.bouncycastle.crypto.BlockCipher;
-import org.bouncycastle.crypto.Digest;
-import org.bouncycastle.crypto.StreamCipher;
-
-
-/** 
- * @author LabTest
  */
 public final class BCFactory {
 	private FactoriesUtility factoriesUtility;
@@ -40,8 +39,9 @@ public final class BCFactory {
 	 * Returns the equivalent BC block cipher according to the specified name.
 	 * @param name the name of the pseudo random permutation equivalent to the BC block cipher
 	 * @return BC <code>BlockCipher<code> object
+	 * @throws FactoriesException 
 	 */
-	public BlockCipher getBlockCipher(String name) {
+	public BlockCipher getBlockCipher(String name) throws FactoriesException {
 		
 		return (BlockCipher) factoriesUtility.getObject("BC", name);
 	}
@@ -50,8 +50,9 @@ public final class BCFactory {
 	 * Returns the equivalent BC asymmetric block cipher according to the specified name.
 	 * @param name the name of the trapdoor permutation equivalent to the BC asymmetric block cipher
 	 * @return BC <code>AsymmetricBlockCipher<code> object
+	 * @throws FactoriesException 
 	 */
-	public AsymmetricBlockCipher getAsymetricBlockCipher(String name) {
+	public AsymmetricBlockCipher getAsymetricBlockCipher(String name) throws FactoriesException {
 		
 		return (AsymmetricBlockCipher) factoriesUtility.getObject("BC", name);
 	}
@@ -60,8 +61,9 @@ public final class BCFactory {
 	 * Returns the equivalent BC digest according to the specified name.
 	 * @param name the name of the collision resistant hash equivalent to the BC digest cipher
 	 * @return BC <code>Digest<code> object
+	 * @throws FactoriesException 
 	 */
-	public Digest getDigest(String name) {
+	public Digest getDigest(String name) throws FactoriesException {
 		
 		return (Digest) factoriesUtility.getObject("BC", name);
 	}
@@ -70,8 +72,9 @@ public final class BCFactory {
 	 * Returns the equivalent BC stream cipher according to the specified name. 
 	 * @param name the name of the pseudo random generator equivalent to the BC stream cipher
 	 * @return BC <code>StreamCipher<code> object
+	 * @throws FactoriesException 
 	 */
-	public StreamCipher getStreamCipher(String name) {
+	public StreamCipher getStreamCipher(String name) throws FactoriesException {
 		
 		return (StreamCipher) factoriesUtility.getObject("BC", name);
 	}
