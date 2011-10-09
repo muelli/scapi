@@ -4,6 +4,8 @@
 package edu.biu.scapi.primitives.hash.bc;
 
 import org.bouncycastle.crypto.Digest;
+
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.hash.TargetCollisionResistantAbs;
 
 /** 
@@ -50,9 +52,17 @@ public abstract class BcCollResHash extends TargetCollisionResistantAbs {
 	 * @param in input byte array
 	 * @param inOffset the offset within the byte array
 	 * @param inLen the length. The number of bytes to take after the offset
+	 * @throws UnInitializedException 
 	 * */
-	public void update(byte[] in, int inOffset, int inLen) {
-		
+	public void update(byte[] in, int inOffset, int inLen) throws UnInitializedException {
+		//check that the object is initialized
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		//check that the offset and length are correct
+		if ((inOffset > in.length) || (inOffset+inLen > in.length)){
+			throw new ArrayIndexOutOfBoundsException("input array too short");
+		}
 		//delegate the update request to the underlying digest
 		digest.update(in, inOffset, inLen);
 	}
@@ -61,9 +71,17 @@ public abstract class BcCollResHash extends TargetCollisionResistantAbs {
 	 * Completes the hash computation and puts the result in the out array.
 	 * @param out the output in byte array
 	 * @param outOffset the offset from which to take bytes from
+	 * @throws UnInitializedException 
 	 */
-	public void hashFinal(byte[] out, int outOffset) {
-		
+	public void hashFinal(byte[] out, int outOffset) throws UnInitializedException {
+		//check that the object is initialized
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		//check that the offset and length are correct
+		if ((outOffset > out.length) || (outOffset+getHashedMsgSize() > out.length)){
+			throw new ArrayIndexOutOfBoundsException("output array too short");
+		}
 		//delegate the update request to the underlying digest by calling it's function doFinal. This function
 		//will update the out array.
 		digest.doFinal(out, outOffset);
