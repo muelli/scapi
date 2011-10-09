@@ -68,16 +68,16 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException, UnInitializedException {
-		//check that the object is initialised
+		//check that the object is initialized
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outBytes.length) || (outOff+outLen > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		
 		if (inLen!=outLen){
@@ -169,12 +169,12 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+len > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outBytes.length) || (outOff+len > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		//check that the input is of even length.
 		if(!(len % 2==0) ){//odd throw exception

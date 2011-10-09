@@ -108,12 +108,12 @@ public class IteratedPrfVarying extends
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outBytes.length) || (outOff+outLen > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		int prfLength = prfVaryingInputLength.getBlockSize();            //the output size of the prfVaryingInputLength
 		int rounds = (int) Math.ceil((float)outLen / (float)prfLength);  //the smallest integer for which rounds*)prfLength > outlen

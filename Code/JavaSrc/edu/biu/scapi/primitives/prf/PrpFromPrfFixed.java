@@ -86,12 +86,12 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outBytes.length) || (outOff+outLen > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		
 		if (inLen==outLen && inLen==getBlockSize())
@@ -121,12 +121,12 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outBytes.length) || (outOff+getBlockSize() > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		if (inLen==getBlockSize())//the length is correct
 			//call the derived class implementation of computeBlock ignoring inLen
