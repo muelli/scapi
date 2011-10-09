@@ -14,11 +14,11 @@ import org.bouncycastle.crypto.generators.KDF1BytesGenerator;
 import org.bouncycastle.crypto.params.ISO18033KDFParameters;
 import org.bouncycastle.crypto.params.KDFParameters;
 
-import edu.biu.scapi.primitives.hash.CollisionResistantHash;
+import edu.biu.scapi.exceptions.FactoriesException;
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
 import edu.biu.scapi.primitives.kdf.KeyDerivationFunction;
 import edu.biu.scapi.tools.Factories.BCFactory;
-import edu.biu.scapi.tools.Factories.FactoriesException;
 
 /** 
  * @author LabTest
@@ -26,6 +26,7 @@ import edu.biu.scapi.tools.Factories.FactoriesException;
 public class BcKdfISO18033 implements KeyDerivationFunction {
 
 	BaseKDFBytesGenerator bcKdfGenerator;
+	boolean isInitialized = false;
 	
 	/**
 	 * create the related bc kdf
@@ -61,7 +62,7 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 	 * Should not be called. There is not key for this class.
 	 */
 	public void init(SecretKey secretKey) {
-		// TODO Auto-generated method stub
+		isInitialized = true;
 		
 	}
 
@@ -70,7 +71,7 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 	 * Should not be called. There is not key for this class.
 	 */
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
-		// TODO Auto-generated method stub
+		isInitialized = true;
 		
 	}
 
@@ -79,20 +80,23 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 	 * 
 	 */
 	public boolean isInitialized() {
-		// initialization is not needed
-		return true;
+		
+		return isInitialized;
 	}
 	
-	public SecretKey generateKey(SecretKey key, int len) {
+	public SecretKey generateKey(SecretKey key, int len) throws UnInitializedException {
 		
 		return generateKey(key, len, null);
 	}
 
 	/**
+	 * @throws UnInitializedException 
 	 * 
 	 */
-	public SecretKey generateKey(SecretKey key, int outLen, byte[] iv) {
-		
+	public SecretKey generateKey(SecretKey key, int outLen, byte[] iv) throws UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
 		byte[] generatedKey = new byte[outLen];//generated key bytes
 		
 		//generate the related derivation parameter for bc
@@ -107,14 +111,25 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 
 
 	/**
+	 * @throws UnInitializedException 
 	 * 
 	 */
 	public void generateKey(byte[] inKey, int inOff, int inLen, byte[] outKey,
-			 int outOff,int outLen) {
+			 int outOff,int outLen) throws UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		//check that the offset and length are correct
+		if ((inOff > inKey.length) || (inOff+inLen > inKey.length)){
+			throw new ArrayIndexOutOfBoundsException("input array too short");
+		}
+		if ((outOff > outKey.length) || (outOff+outLen > outKey.length)){
+			throw new ArrayIndexOutOfBoundsException("output array too short");
+		}
 		
 		bcKdfGenerator.init(generateParameters(inKey,null));
 		
-		bcKdfGenerator.generateBytes(outKey, 0, outLen);
+		bcKdfGenerator.generateBytes(outKey, outOff, outLen);
 		
 	}
 	
