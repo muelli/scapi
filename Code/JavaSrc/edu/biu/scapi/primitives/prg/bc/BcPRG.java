@@ -11,6 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.StreamCipher;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.prg.PseudorandomGeneratorAbs;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 
@@ -74,15 +75,23 @@ public abstract class BcPRG extends PseudorandomGeneratorAbs {
 	 * @param outBytes - output bytes. The result of streaming the bytes.
 	 * @param outOffset - output offset
 	 * @param outlen - length
+	 * @throws UnInitializedException 
 	 */
 	public void getPRGBytes(byte[] outBytes, int outOffset,
-			int outlen) {
-
+			int outLen) throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		//check that the offset and the length are correct
+		if ((outOffset > outBytes.length) || ((outOffset + outLen) > outBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("output array too short");
+		}
+		
 		//in array filled with zeroes
-		byte[] inBytes = new byte[outlen];
+		byte[] inBytes = new byte[outLen];
 		
 		//out array filled with pseudorandom bytes (that were xored with zeroes in the in array)
-		bcStreamCipher.processBytes(inBytes, 0, outlen, outBytes, outOffset);
+		bcStreamCipher.processBytes(inBytes, 0, outLen, outBytes, outOffset);
 	}
 
 
