@@ -4,22 +4,21 @@
 package edu.biu.scapi.primitives.prf.bc;
 
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.crypto.CipherParameters;
-import org.bouncycastle.crypto.Digest;
-import org.bouncycastle.crypto.generators.KDF1BytesGenerator;
 import org.bouncycastle.crypto.macs.HMac;
 
 
+import edu.biu.scapi.exceptions.FactoriesException;
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.hash.CollisionResistantHash;
-import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
 import edu.biu.scapi.primitives.prf.Hmac;
 import edu.biu.scapi.tools.Factories.BCFactory;
-import edu.biu.scapi.tools.Factories.FactoriesException;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 
 
@@ -49,9 +48,10 @@ public final class BcHMAC implements  Hmac {
 	/**
 	 * A constructor that gets a SCAPI collision resistant hash and retrieves the name of the hash in
 	 * order to crete the related digest for the BC Hmac this class uses.
-	 * @param hash - the underlying collision resistant hash
+	 * @param hash - the underlying collision resistant hash 
 	 * @throws FactoriesException, IllegalStateException 
 	 */
+
 	public BcHMAC(CollisionResistantHash hash) throws FactoriesException, IllegalStateException {
 	
 		//first check that the hmac is initialized.
@@ -68,9 +68,9 @@ public final class BcHMAC implements  Hmac {
 	 * Initializes this hmac with the secret key and the auxiliary parameters
 	 * @param secretKey secret key 
 	 * @param params algorithm parameter
+	 * @throws InvalidParameterSpecException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
-		
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException {
 		//no auxiliary parameters for HMAC. Pass the key
 		init(secretKey);
 	}
@@ -112,9 +112,12 @@ public final class BcHMAC implements  Hmac {
 	 * @param outBytes output bytes. The resulted bytes of compute
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException{
-		
+	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException, UnInitializedException{
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
 		throw new IllegalBlockSizeException("Size of input is not specified");
 	}
 	
@@ -131,9 +134,19 @@ public final class BcHMAC implements  Hmac {
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @param outLen the length of the output array
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException{
-		
+	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException, UnInitializedException{
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		/* check that the offset and length are correct */
+		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+		}
+		if ((outOff > outBytes.length) || (outOff+outLen > outBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+		}
 		//make sure the output size is correct
 		if(outLen==hMac.getMacSize())
 			computeBlock(inBytes, inOff, inLen, outBytes, outOff);
@@ -153,11 +166,21 @@ public final class BcHMAC implements  Hmac {
 	 * @param inOffset input offset in the inBytes array
 	 * @param outBytes output bytes. The resulted bytes of compute
 	 * @param outOffset output offset in the outBytes array to take the result from
+	 * @throws UnInitializedException 
 	 */
 
 	public void computeBlock(byte[] inBytes, int inOffset, int inLen,
-			byte[] outBytes, int outOffset) throws IllegalBlockSizeException {
-		
+			byte[] outBytes, int outOffset) throws IllegalBlockSizeException, UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		/* check that the offset and length are correct */
+		if ((inOffset > inBytes.length) || (inOffset+inLen > inBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+		}
+		if ((outOffset > outBytes.length) || (outOffset+getBlockSize() > outBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+		}
 		//pass the input bytes to update
 		hMac.update(inBytes, inOffset, inLen);
 		
@@ -178,16 +201,20 @@ public final class BcHMAC implements  Hmac {
 
 	/**
 	 * @return the block size of the BC hmac
+	 * @throws UnInitializedException 
 	 */
-	public int getBlockSize() {
-		
+	public int getBlockSize(){
 		return hMac.getMacSize();
 	}
 
 	/** 
 	 * @return the parameters spec
+	 * @throws UnInitializedException 
 	 */
-	public AlgorithmParameterSpec getParams() {
+	public AlgorithmParameterSpec getParams() throws UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return params;
 	}
 
@@ -195,8 +222,12 @@ public final class BcHMAC implements  Hmac {
 
 	/**
 	 * @return the secret key
+	 * @throws UnInitializedException 
 	 */
-	public SecretKey getSecretKey() {
+	public SecretKey getSecretKey() throws UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return secretKey;
 	}
 

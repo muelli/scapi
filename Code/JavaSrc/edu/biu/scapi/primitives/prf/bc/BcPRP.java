@@ -8,6 +8,7 @@
 package edu.biu.scapi.primitives.prf.bc;
 
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
@@ -16,6 +17,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.prf.PrpFixed;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 
@@ -50,7 +52,6 @@ public abstract class BcPRP implements PrpFixed{
 	public void init(SecretKey secretKey) {
 		
 		
-		
 		//init parameters
 		isInitialized = true;
 		this.secretKey = secretKey;
@@ -75,8 +76,9 @@ public abstract class BcPRP implements PrpFixed{
 	 * Creates the relevant bc parameters to pass when inverting or computing.
 	 * @param secretKey secret key
 	 * @param params algorithm parameters
+	 * @throws InvalidParameterSpecException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException {
 
 		//init parameters
 		isInitialized = true;
@@ -91,16 +93,18 @@ public abstract class BcPRP implements PrpFixed{
 		
 	}
 	
-	/** 
+	/**
+	 *  
 	 */
 	public String getAlgorithmName() {
-		
 		return bcBlockCipher.getAlgorithmName();
 	}
 
-	/** 
+	/**  
+	 * 
 	 */
-	public int getBlockSize() {
+	public int getBlockSize(){
+		
 		return bcBlockCipher.getBlockSize();
 	}
 
@@ -111,10 +115,20 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param inOff input offset in the inBytes array
 	 * @param outBytes output bytes. The resulted bytes of compute.
 	 * @param outOff output offset in the outBytes array to take the result from
+	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff) {
-		
+			int outOff) throws UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		/* check that the offset and length are correct */
+		if ((inOff > inBytes.length) || (inOff+getBlockSize() > inBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+		}
+		if ((outOff > outBytes.length) || (outOff+getBlockSize() > outBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+		}
 		//if the bc block cipher is not already in encryption mode init the block cipher with forEncryption=true
 		if(forEncryption==false){
 			forEncryption = true;
@@ -135,11 +149,21 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param inOffset input offset in the inBytes array
 	 * @param outBytes output bytes. The resulted bytes of invert
 	 * @param outOffset output offset in the outBytes array to take the result from
+	 * @throws UnInitializedException 
 	 */
 
 	public void computeBlock(byte[] inBytes, int inOffset, int inLen,
-			byte[] outBytes, int outOffset) throws IllegalBlockSizeException {
-		
+			byte[] outBytes, int outOffset) throws IllegalBlockSizeException, UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		/* check that the offset and length are correct */
+		if ((inOffset > inBytes.length) || (inOffset+inLen > inBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+		}
+		if ((inOffset > outBytes.length) || (inOffset+getBlockSize() > outBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+		}
 		if(inLen==getBlockSize())
 			computeBlock(inBytes, inOffset, outBytes, outOffset);
 		else
@@ -154,8 +178,13 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param inOff input offset in the inBytes array
 	 * @param outBytes output bytes. The resulted bytes of invert
 	 * @param outOff output offset in the outBytes array to take the result from
+	 * @throws UnInitializedException 
 	 */
-	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,	int outOff) {
+	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,	int outOff) throws UnInitializedException {
+		
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
 		
 		//if the bc block cipher is not already in decryption mode init the block cipher with forEncryption=false
 		if(forEncryption==true){
@@ -179,10 +208,20 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @param len the length of the input and the output.
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
 	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff, int len) throws IllegalBlockSizeException {
-		
+			int outOff, int len) throws IllegalBlockSizeException, UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		/* check that the offset and length are correct */
+		if ((inOff > inBytes.length) || (inOff+len > inBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+		}
+		if ((inOff > outBytes.length) || (inOff+len > outBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+		}
 		if (len==getBlockSize())
 			invertBlock(inBytes, inOff, outBytes, outOff);
 		else 
@@ -199,11 +238,21 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param outBytes output bytes. The resulted bytes of compute.
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen,
 			byte[] outBytes, int outOff, int outLen)
-			throws IllegalBlockSizeException {
-		
+			throws IllegalBlockSizeException, UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		/* check that the offset and length are correct */
+		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+		}
+		if ((inOff > outBytes.length) || (inOff+outLen > outBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+		}
 		if (inLen==outLen && inLen==getBlockSize())
 			computeBlock(inBytes, inOff, outBytes, outOff);
 		else 
@@ -213,8 +262,12 @@ public abstract class BcPRP implements PrpFixed{
 
 	/** 
 	 * @return the parameters spec
+	 * @throws UnInitializedException 
 	 */
-	public AlgorithmParameterSpec getParams() {
+	public AlgorithmParameterSpec getParams() throws UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return params;
 	}
 
@@ -222,8 +275,12 @@ public abstract class BcPRP implements PrpFixed{
 
 	/**
 	 * @return the secret key
+	 * @throws UnInitializedException 
 	 */
-	public SecretKey getSecretKey() {
+	public SecretKey getSecretKey() throws UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return secretKey;
 	}
 }
