@@ -15,14 +15,13 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.SecretKey;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
+
 /** 
  @author LabTest
  */
 public interface PerfectUniversalHash {
-	/**
-	 * Initialize this perfect universal hash with the auxiliary parameters 
-	 * @param params
-	 */
+	
 	/**
 	 * Initializes this PerfectUniversalHash with the secret key.
 	 * @param secretKey the secrete key
@@ -44,8 +43,9 @@ public interface PerfectUniversalHash {
 	
 	/** 
 	 * @return the parameter spec of this perfect universal hash
+	 * @throws UnInitializedException 
 	 */
-	public AlgorithmParameterSpec getParams();
+	public AlgorithmParameterSpec getParams() throws UnInitializedException;
 
 	/** 
 	 * @return the algorithm name
@@ -55,12 +55,12 @@ public interface PerfectUniversalHash {
 	/** 
 	 * @return the input size of this hash function
 	 */
-	public int geInputSize();
+	public int getInputSize();
 
 	/** 
 	 * @return the output size of this hash function
 	 */
-	public int geOutputSize();
+	public int getOutputSize();
 
 	/** 
 	 * Compute the hash function on the in byte array and put the result in the output byte array
@@ -69,7 +69,8 @@ public interface PerfectUniversalHash {
 	 * @param inLen - length. The number of bytes to take after the offset
 	 * @param out - output byte array
 	 * @param outOffset - the offset within the output byte array
+	 * @throws UnInitializedException 
 	 */
 	public void compute(byte[] in, int inOffset, byte[] out,
-			int outOffset);
+			int outOffset) throws UnInitializedException;
 }

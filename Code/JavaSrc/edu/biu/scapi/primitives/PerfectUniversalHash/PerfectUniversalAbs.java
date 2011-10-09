@@ -7,6 +7,8 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.SecretKey;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
+
 /** 
   * @author LabTest
  */
@@ -14,9 +16,7 @@ public abstract class PerfectUniversalAbs implements PerfectUniversalHash {
 	protected AlgorithmParameterSpec params = null;
 	protected SecretKey secretKey = null;
 	
-	protected boolean isInitialized = true;//most target collision resistant hash functions do not need to call init
-										   //if a certain hash does need to pass some parameters in init, it must set this
-										   //flag to false in the constructor and to true in the init function.
+	protected boolean isInitialized = false;
 
 	/**
 	 * Initialize this perfect universal hash with the auxiliary parameters 
@@ -51,8 +51,12 @@ public abstract class PerfectUniversalAbs implements PerfectUniversalHash {
 	
 	/** 
 	 * @return the parameter spec of this perfect universal hash
+	 * @throws UnInitializedException 
 	 */
-	public AlgorithmParameterSpec getParams() {
+	public AlgorithmParameterSpec getParams() throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return params;
 		
 	}
