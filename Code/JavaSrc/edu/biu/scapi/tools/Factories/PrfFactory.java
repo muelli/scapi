@@ -6,10 +6,8 @@
  */
 package edu.biu.scapi.tools.Factories;
 
-import java.lang.reflect.InvocationTargetException;
-
+import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.primitives.prf.PseudorandomFunction;
-import edu.biu.scapi.tools.Factories.FactoriesException;
 
 public final class PrfFactory {
 	private static PrfFactory instance = new PrfFactory();;
