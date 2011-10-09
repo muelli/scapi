@@ -84,7 +84,7 @@ public abstract class BcPRG extends PseudorandomGeneratorAbs {
 		}
 		//check that the offset and the length are correct
 		if ((outOffset > outBytes.length) || ((outOffset + outLen) > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		
 		//in array filled with zeroes
