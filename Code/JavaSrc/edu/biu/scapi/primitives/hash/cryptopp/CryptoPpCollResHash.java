@@ -78,7 +78,7 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 		}
 		//check that the offset and length are correct
 		if ((inOffset > in.length) || (inOffset+inLen > in.length)){
-			throw new ArrayIndexOutOfBoundsException("input array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		//call the native function
 		updateHash(collHashPtr, in, inLen);
@@ -96,7 +96,7 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 		}
 		//check that the offset and length are correct
 		if ((outOffset > out.length) || (outOffset+getHashedMsgSize() > out.length)){
-			throw new ArrayIndexOutOfBoundsException("output array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		//call the native function final. There is no use of the offset in the native code and thus should be dealt before
 		//the call to the native function.
