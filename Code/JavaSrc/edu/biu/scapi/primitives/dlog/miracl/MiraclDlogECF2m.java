@@ -7,6 +7,7 @@ import java.util.logging.Level;
 
 import org.bouncycastle.util.encoders.Hex;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogECF2m;
 import edu.biu.scapi.primitives.dlog.ECElement;
@@ -46,9 +47,9 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 			if (!curveName.startsWith("B-") && !curveName.startsWith("K-")){
 				throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match the DlogGroup type"); 
 			}
-			
-			doInit(ecProperties, curveName);  // set the data and initialize the curve
 			isInitialized = true; 
+			doInit(ecProperties, curveName);  // set the data and initialize the curve
+			
 			
 		} catch (IOException e) {
 			Logging.getLogger().log(Level.WARNING, "error while loading the NIST elliptic curves file");
@@ -110,12 +111,23 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	}
 	
 	/**
+	 * @return the type of the group - ECF2m
+	 */
+	public String getGroupType(){
+		return "elliptic curve over F2m";
+	}
+	
+	/**
 	 * Calculate the inverse of the given GroupElement
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException{
+	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException, UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		//if the GroupElement doesn't match the DlogGroup, throw exception
 		if (groupElement instanceof ECF2mPointMiracl){
 			
@@ -134,10 +146,14 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	 * @param groupElement2
 	 * @return the multiplication result
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
 	public GroupElement multiplyGroupElements(GroupElement groupElement1, 
 											  GroupElement groupElement2) 
-											  throws IllegalArgumentException{
+											  throws IllegalArgumentException, UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		//if the GroupElements don't match the DlogGroup, throw exception
 		if ((groupElement1 instanceof ECF2mPointMiracl) && (groupElement2 instanceof ECF2mPointMiracl)){
 			
@@ -158,9 +174,13 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	 * @param base 
 	 * @return the result of the exponentiation
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
 	public GroupElement exponentiate(BigInteger exponent, GroupElement base) 
-									 throws IllegalArgumentException{
+									 throws IllegalArgumentException, UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		//if the GroupElements don't match the DlogGroup, throw exception
 		if (base instanceof ECF2mPointMiracl){
 			
@@ -176,16 +196,24 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	/**
 	 * Create a random member of that Dlog group
 	 * @return the random element
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement getRandomElement(){
+	public GroupElement getRandomElement() throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return new ECF2mPointMiracl(this);
 	}
 	
 	/**
 	 * Create a point in the F2m field with the given parameters 
 	 * @return the random element
+	 * @throws UnInitializedException 
 	 */
-	public ECElement getElement(BigInteger x, BigInteger y){
+	public ECElement getElement(BigInteger x, BigInteger y) throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return new ECF2mPointMiracl(x, y, this);
 	}
 	
@@ -193,9 +221,13 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	 * Check if the given element is member of that Dlog group
 	 * @param element - 
 	 * @return true if the given element is member of that group. false, otherwise.
+	 * @throws UnInitializedException 
 	 * @throws IllegalArgumentException
 	 */
-	public boolean isMember(GroupElement element) {
+	public boolean isMember(GroupElement element) throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		boolean member = false;
 		if(element instanceof ECF2mPointMiracl){
 			//call for native function that checks is the element is a point of this curve

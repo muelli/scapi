@@ -3,6 +3,7 @@ package edu.biu.scapi.primitives.dlog.miracl;
 import java.math.BigInteger;
 import java.util.logging.Level;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
@@ -43,8 +44,9 @@ public class ECF2mPointMiracl implements ECElement{
 	/**
 	 *  Constructor that gets DlogGroup and choose random point in the group
 	 * @param curve
+	 * @throws UnInitializedException 
 	 */
-	public ECF2mPointMiracl(MiraclDlogECF2m curve){
+	public ECF2mPointMiracl(MiraclDlogECF2m curve) throws UnInitializedException{
 	
 		boolean validity[] = new boolean[1];
 		
