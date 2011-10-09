@@ -121,10 +121,10 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 		}
 		//check that the offset and length are correct
 		if ((inOff > inKey.length) || (inOff+inLen > inKey.length)){
-			throw new ArrayIndexOutOfBoundsException("input array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outKey.length) || (outOff+outLen > outKey.length)){
-			throw new ArrayIndexOutOfBoundsException("output array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		
 		bcKdfGenerator.init(generateParameters(inKey,null));
