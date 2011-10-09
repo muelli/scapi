@@ -5,6 +5,8 @@ import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.StreamCipher;
 
+import edu.biu.scapi.exceptions.FactoriesException;
+
 /** 
  * @author LabTest
  */
