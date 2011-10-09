@@ -16,6 +16,7 @@
  */
 package edu.biu.scapi.primitives.hash.cryptopp;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.hash.TargetCollisionResistantAbs;
 
 /**
@@ -68,9 +69,17 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	 * @param in input byte array
 	 * @param inOffset the offset within the byte array
 	 * @param inLen the length. The number of bytes to take after the offset
+	 * @throws UnInitializedException 
 	 * */
-	public void update(byte[] in, int inOffset, int inLen) {
-		
+	public void update(byte[] in, int inOffset, int inLen) throws UnInitializedException {
+		//check that the object is initialized
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		//check that the offset and length are correct
+		if ((inOffset > in.length) || (inOffset+inLen > in.length)){
+			throw new ArrayIndexOutOfBoundsException("input array too short");
+		}
 		//call the native function
 		updateHash(collHashPtr, in, inLen);
 	}
@@ -78,9 +87,17 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	/** 
 	 * @param out the output in byte array
 	 * @param outOffset the offset from which to take bytes from
+	 * @throws UnInitializedException 
 	 */
-	public void hashFinal(byte[] out, int outOffset) {
-		
+	public void hashFinal(byte[] out, int outOffset) throws UnInitializedException {
+		//check that the object is initialized
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		//check that the offset and length are correct
+		if ((outOffset > out.length) || (outOffset+getHashedMsgSize() > out.length)){
+			throw new ArrayIndexOutOfBoundsException("output array too short");
+		}
 		//call the native function final. There is no use of the offset in the native code and thus should be dealt before
 		//the call to the native function.
 		finalHash(collHashPtr, out);
