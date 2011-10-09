@@ -62,10 +62,10 @@ public final class EvaluationHashFunction extends PerfectUniversalAbs {
 		}
 		//check that the offset and length are correct
 		if ((inOffset > in.length) || (inOffset+getInputSize()> in.length)){
-			throw new ArrayIndexOutOfBoundsException("input array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOffset > out.length) || (outOffset+getOutputSize() > out.length)){
-			throw new ArrayIndexOutOfBoundsException("output array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		//call the native function compute.
 		computeFunction(evalHashPtr, in, inOffset, out, outOffset);
