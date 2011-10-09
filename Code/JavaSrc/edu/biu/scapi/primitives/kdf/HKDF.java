@@ -242,33 +242,26 @@ public final class HKDF implements KeyDerivationFunction {
 
 	public void generateKey(byte[] inKey, int inOff, int inLen, byte[] outKey,
 			int outOff, int outLen) throws UnInitializedException {
-		//check that the ocject is initialized
+		//check that the object is initialized
 		if (!isInitialized()){
 			throw new UnInitializedException();
 		}
 		
 		//check that the offset and length are correct
 		if ((inOff > inKey.length) || (inOff+inLen > inKey.length)){
-			throw new ArrayIndexOutOfBoundsException("input array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outKey.length) || (outOff+outLen > outKey.length)){
-			throw new ArrayIndexOutOfBoundsException("output array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		
-		//create a key out of the byte array and send it to the function generateKey(SecretKey key, int outLen, byte[] iv)
-		byte [] subKey = new byte[inLen];
-		for(int i=0; i<inLen; i++)
-			subKey[i] = inKey[inOff+i];
-		
 		//create a SecretKey object out of the byte array key.
-		SecretKey secretKey = new SecretKeySpec(subKey, "");
+		SecretKey secretKey = new SecretKeySpec(inKey, inOff, inLen, "");
 		
 		byte[] output = generateKey(secretKey, outLen).getEncoded();
 		
 		//copy the output key to outKey byte array
-		for(int i=0; i<outLen; i++){
-			outKey[outOff+i] = output[i];
-		}
+		System.arraycopy(output, 0, outKey, outOff, outLen);
 		
 	}
 
