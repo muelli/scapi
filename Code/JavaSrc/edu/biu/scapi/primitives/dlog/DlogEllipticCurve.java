@@ -3,6 +3,8 @@ package edu.biu.scapi.primitives.dlog;
 import java.io.IOException;
 import java.math.BigInteger;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
+
 /**
  * Marker interface. Every class that implements it is signed as elliptic curve
  * @author Moriya
@@ -32,6 +34,7 @@ public interface DlogEllipticCurve extends DlogGroup{
 	 * @param x
 	 * @param y
 	 * @return the created ECPoint (x,y)
+	 * @throws UnInitializedException 
 	 */
-	public ECElement getElement(BigInteger x, BigInteger y);
+	public ECElement getElement(BigInteger x, BigInteger y) throws UnInitializedException;
 }

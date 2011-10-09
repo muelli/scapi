@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+
 /**
  * This class manages the creation of NIST recommended elliptic curves.
  * We have a properties file which contains the parameters for the curves. 
@@ -33,10 +34,11 @@ public abstract class DlogGroupEC extends DlogGroupAbs{
 		//checks that the curveName is in the file 
 		if(!ecProperties.containsKey(curveName)) { 
 			throw new IllegalArgumentException("no such elliptic curve in the given file");
-		} 
-
-		doInit(ecProperties, curveName); // set the data and initialize the curve
+		}
+		
 		isInitialized = true; 
+		doInit(ecProperties, curveName); // set the data and initialize the curve
+		
 	}
 
 	protected abstract void doInit(Properties ecProperties, String curveName);

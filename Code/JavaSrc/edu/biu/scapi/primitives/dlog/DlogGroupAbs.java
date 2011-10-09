@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Vector;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 
 /**
@@ -21,33 +22,54 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	
 	/**
 	 * 
-	 * @return the generator of that Dlog group
+	 * @return true if the object was initialized. Usually this means that the function init was called
 	 */
-	public GroupElement getGenerator(){
+	public boolean isInitialized(){
+		return isInitialized;
+	}
+	
+	/**
+	 * 
+	 * @return the generator of that Dlog group
+	 * @throws UnInitializedException 
+	 */
+	public GroupElement getGenerator() throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return generator;
 	}
 	
 	/**
 	 * 
 	 * @return the GroupDesc of that Dlog group
+	 * @throws UnInitializedException 
 	 */
-	public GroupParams getGroupParams(){
+	public GroupParams getGroupParams() throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return groupParams;
 	}
 	
 	/**
 	 * 
 	 * @return the order of that Dlog group
+	 * @throws UnInitializedException 
 	 */
-	public BigInteger getOrder(){
+	public BigInteger getOrder() throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return groupParams.getQ();
 	}
 	
 	/**
 	 * Checks if the order is a prime number
 	 * @return true if the order is a prime number. false, otherwise.
+	 * @throws UnInitializedException 
 	 */
-	public boolean isPrimeOrder(){
+	public boolean isPrimeOrder() throws UnInitializedException{
 		
 		/* isProbablePrime is BigInteger function, which gets a certainty parameter.
 		 * We will test some values to decide which is appropriate to our demands.
@@ -61,8 +83,9 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * checks if the order is greater than 2^numBits
 	 * @param numBits
 	 * @return true if the order is greater than 2^numBits, false - otherwise.
+	 * @throws UnInitializedException 
 	 */
-	public boolean isOrderGreaterThan(int numBits){
+	public boolean isOrderGreaterThan(int numBits) throws UnInitializedException{
 		if (getOrder().compareTo(new BigInteger("2").pow(numBits)) > 0)
 			return true;
 		else return false;
@@ -76,9 +99,13 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * @param groupElements
 	 * @param exponentiations
 	 * @return the exponentiation result
+	 * @throws UnInitializedException 
 	 */
 	public GroupElement simultaneousMultipleExponentiations
-					(GroupElement[] groupElements, BigInteger[] exponentiations){
+					(GroupElement[] groupElements, BigInteger[] exponentiations) throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		/*
 		 * preComputation for the algorithm.
 		 */
@@ -148,9 +175,13 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * @param groupElement
 	 * @param exponent
 	 * @return the exponentiation result
+	 * @throws UnInitializedException 
 	 */
 	public GroupElement multExponentiationsWithSameBase
-					(GroupElement groupElement, int exponent){
+					(GroupElement groupElement, int exponent) throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		//extracts from the map the GroupElementsExponentiations object corresponding to the accepted base
 		GroupElementsExponentiations exponentiations = exponentiationsMap.get(groupElement);
 	
@@ -179,31 +210,47 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		 * The constructor creates a map structure in memory. 
 		 * Then calculates the exponentiations of order 1,2,4,8 for the given base and save them in the map.
 		 * @param base
+		 * @throws UnInitializedException 
+		 * @throws IllegalArgumentException 
 		 */
-		public GroupElementsExponentiations(GroupElement base){
+		public GroupElementsExponentiations(GroupElement base) {
 			this.base = base; 
 			//build new vactor of exponentiations
 			exponentiations = new Vector<GroupElement>();
 			exponentiations.add(0, base); //add the base - base^1
 			for (int i=1; i<4; i++){
-				GroupElement multI = exponentiate(new BigInteger("2"), exponentiations.get(i-1));
-				exponentiations.add(i, multI);
+				GroupElement multI;
+				try {
+					multI = exponentiate(new BigInteger("2"), exponentiations.get(i-1));
+					
+					exponentiations.add(i, multI);
+				} catch (UnInitializedException e) {
+					//the creation of GroupElementsExponentiations is done after we check that the object is initialized
+				}
 			}
 		}
 		
 		/**
 		 * Calculates the necessary additional exponentiations and fills the exponentiations vector with them.
 		 * @param size - the required exponent
+		 * @throws UnInitializedException 
+		 * @throws IllegalArgumentException 
 		 */
-		private void prepareExponentiations(int size){
+		private void prepareExponentiations(int size) {
 			//find the the closest power 2 exponent 
 			double log = Math.log10(size)/Math.log10(2); //log_2(size)
 			int index = (int) Math.floor(log); 
 			
 			/* calculates the necessary exponentiations and put them in the exponentiations vector */
 			for (int i=exponentiations.size(); i<=index; i++){
-				GroupElement multI = exponentiate(new BigInteger("2"), exponentiations.get(i-1));
-				exponentiations.add(i, multI);
+				GroupElement multI;
+				try {
+					multI = exponentiate(new BigInteger("2"), exponentiations.get(i-1));
+					
+					exponentiations.add(i, multI);
+				} catch (UnInitializedException e) {
+					//the creation of GroupElementsExponentiations is done after we check that the object is initialized
+				}	
 			}
 		}
 		
@@ -233,18 +280,16 @@ public abstract class DlogGroupAbs implements DlogGroup{
 			/* if size is not power 2, calculates the additional multiplications */
 			if ((double) index != log){
 				for (int i=(int) Math.pow(2, index); i<size; i++){
-					exponent = multiplyGroupElements(base, exponent);
+					try {
+						exponent = multiplyGroupElements(base, exponent);
+					} catch (UnInitializedException e) {
+						//the creation of GroupElementsExponentiations is done after we check that the object is initialized
+					}
 				}
 			}
 			return exponent;		
 		}
 	}
 	
-	/**
-	 * 
-	 * @return true if the object was initialized. Usually this means that the function init was called
-	 */
-	public boolean isInitialized(){
-		return isInitialized;
-	}
+	
 }
