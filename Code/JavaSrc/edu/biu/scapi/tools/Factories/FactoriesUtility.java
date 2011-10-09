@@ -11,6 +11,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 
 
+import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.generals.Logging;
 
 /* 
