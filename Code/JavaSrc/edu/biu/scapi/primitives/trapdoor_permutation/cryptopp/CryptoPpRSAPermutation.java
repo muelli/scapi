@@ -12,8 +12,10 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.RSAKeyGenParameterSpec;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.trapdoor_permutation.RSAPermutation;
 import edu.biu.scapi.primitives.trapdoor_permutation.TPElValidity;
 import edu.biu.scapi.primitives.trapdoor_permutation.TrapdoorPermutationAbs;
@@ -129,28 +131,28 @@ public final class CryptoPpRSAPermutation extends TrapdoorPermutationAbs impleme
 	/** 
 	 * Initializes this trapdoor permutation with numBits and public exponent
 	 * @param params
-	 * @throws IllegalAccessException 
+	 * @throws InvalidParameterSpecException 
 	 */
-	public void init(AlgorithmParameterSpec params) throws IllegalArgumentException  {
+	public void init(AlgorithmParameterSpec params) throws InvalidParameterSpecException  {
 		
-		if (params instanceof RSAKeyGenParameterSpec) {
-			
-			//call the parent init
-			super.init(params);
-		
-			//get the numBits and public exponent
-			int numBits = ((RSAKeyGenParameterSpec) params).getKeysize();
-			BigInteger pubExp = ((RSAKeyGenParameterSpec) params).getPublicExponent();
-
-			//init the native object 
-			tpPtr = initRSAWithNumBitsAndE(numBits, pubExp.toByteArray());
-			//set the mod
-			modN = new BigInteger(getRSAModulus(tpPtr));
-			
-			beInit = true;
-		} else {
-			throw new IllegalArgumentException("AlgorithmParameterSpec type doesn't match the trapdoor permutation type");
+		if (!(params instanceof RSAKeyGenParameterSpec)) {
+			throw new InvalidParameterSpecException("AlgorithmParameterSpec type doesn't match the trapdoor permutation type");
 		}
+		
+		//call the parent init
+		super.init(params);
+	
+		//get the numBits and public exponent
+		int numBits = ((RSAKeyGenParameterSpec) params).getKeysize();
+		BigInteger pubExp = ((RSAKeyGenParameterSpec) params).getPublicExponent();
+
+		//init the native object 
+		tpPtr = initRSAWithNumBitsAndE(numBits, pubExp.toByteArray());
+		//set the mod
+		modN = new BigInteger(getRSAModulus(tpPtr));
+		
+		beInit = true;
+		
 
 	}
 	
@@ -166,9 +168,14 @@ public final class CryptoPpRSAPermutation extends TrapdoorPermutationAbs impleme
 	 * Compute the operation of this trapdoor permutation on the TPElement that was accepted
 	 * @param tpEl - the input for the computation
 	 * @return - the result element
+	 * @throws UnInitializedException 
 	 * @throws - IllegalArgumentException
 	 */
-	public TPElement compute(TPElement tpEl) throws IllegalArgumentException{
+	public TPElement compute(TPElement tpEl) throws IllegalArgumentException, UnInitializedException{
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
+		
 		CryptoPpRSAElement returnEl = null;
 		
 		if (tpEl instanceof CryptoPpRSAElement)
@@ -192,10 +199,13 @@ public final class CryptoPpRSAPermutation extends TrapdoorPermutationAbs impleme
 	 * Invert the operation of this trapdoor permutation on the element that was accepted
 	 * @param tpEl - the input to invert
 	 * @return - the result 
+	 * @throws UnInitializedException 
 	 * @throws - IllegalArgumentException
 	 */
-	public TPElement invert(TPElement tpEl) throws IllegalArgumentException {
-		
+	public TPElement invert(TPElement tpEl) throws IllegalArgumentException, UnInitializedException {
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
 		//in case that the initialization was just with public key - can't do the invert and return null
 		if (privKey == null && pubKey!=null)
 			return null;
@@ -222,9 +232,14 @@ public final class CryptoPpRSAPermutation extends TrapdoorPermutationAbs impleme
 	 * Check if the given element is valid to RSA permutation
 	 * @param tpEl - the element to check
 	 * @return TPElValidity - enum number that indicate the validation of the element 
+	 * @throws UnInitializedException 
 	 * @throws - IllegalArgumentException
 	 */
-	public TPElValidity isElement(TPElement tpEl) throws IllegalArgumentException{
+	public TPElValidity isElement(TPElement tpEl) throws IllegalArgumentException, UnInitializedException{
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
+		
 		TPElValidity validity = null;
 		
 		if (tpEl instanceof CryptoPpRSAElement){
@@ -253,8 +268,12 @@ public final class CryptoPpRSAPermutation extends TrapdoorPermutationAbs impleme
 	/** 
 	 * create random CryptoPpRSAElement
 	 * @return TPElement - the random element 
+	 * @throws UnInitializedException 
 	 */
-	public TPElement getRandomTPElement() {
+	public TPElement getRandomTPElement() throws UnInitializedException {
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
 		return new CryptoPpRSAElement(modN);
 	}
 	
