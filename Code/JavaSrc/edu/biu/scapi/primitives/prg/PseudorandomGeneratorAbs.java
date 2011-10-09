@@ -8,6 +8,8 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.SecretKey;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
+
 /** 
  * @author LabTest
  */
@@ -51,17 +53,23 @@ public abstract class PseudorandomGeneratorAbs implements PseudorandomGenerator 
 	
 	/** 
 	 * @return the parameters of this prp
+	 * @throws UnInitializedException 
 	 */
-	public AlgorithmParameterSpec getParams() {
-		
+	public AlgorithmParameterSpec getParams() throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return params;
 	}
 
 	/** 
 	 * @return
+	 * @throws UnInitializedException 
 	 */
-	public SecretKey getSecretKey() {
-
+	public SecretKey getSecretKey() throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return secretKey;
 	}
 }
