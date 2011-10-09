@@ -61,7 +61,7 @@ public abstract class BcCollResHash extends TargetCollisionResistantAbs {
 		}
 		//check that the offset and length are correct
 		if ((inOffset > in.length) || (inOffset+inLen > in.length)){
-			throw new ArrayIndexOutOfBoundsException("input array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		//delegate the update request to the underlying digest
 		digest.update(in, inOffset, inLen);
@@ -80,7 +80,7 @@ public abstract class BcCollResHash extends TargetCollisionResistantAbs {
 		}
 		//check that the offset and length are correct
 		if ((outOffset > out.length) || (outOffset+getHashedMsgSize() > out.length)){
-			throw new ArrayIndexOutOfBoundsException("output array too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		//delegate the update request to the underlying digest by calling it's function doFinal. This function
 		//will update the out array.
