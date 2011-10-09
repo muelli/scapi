@@ -1,4 +1,5 @@
 package edu.biu.scapi.tools.Factories;
+import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
 /**
  * CollResFactory has a member of type FactoriesUtility to which it delegates the actual creation of the object. 
