@@ -10,7 +10,9 @@ import java.security.InvalidKeyException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.TPElement;
 
 /** 
@@ -45,25 +47,28 @@ public interface TrapdoorPermutation {
 	/** 
 	 * Initializes this trapdoor permutation auxiliary parameters
 	 * @param params
-	 * @throws IllegalArgumentException 
+	 * @throws InvalidParameterSpecException 
 	 */
-	public void init(AlgorithmParameterSpec params) throws IllegalArgumentException;
+	public void init(AlgorithmParameterSpec params) throws InvalidParameterSpecException;
 
 
 	/** 
 	 * @return the parameter spec of this trapdoor permutation
+	 * @throws UnInitializedException 
 	 */
-	public AlgorithmParameterSpec getParams();
+	public AlgorithmParameterSpec getParams() throws UnInitializedException;
 
 	/** 
 	 * @return the public key
+	 * @throws UnInitializedException 
 	 */
-	public PublicKey getPubKey();
+	public PublicKey getPubKey() throws UnInitializedException;
 	
 	/** 
 	 * @return mod(N)
+	 * @throws UnInitializedException 
 	 */
-	public BigInteger getModulus();
+	public BigInteger getModulus() throws UnInitializedException;
 
 	/** 
 	 * @return the algorithm name
@@ -75,16 +80,18 @@ public interface TrapdoorPermutation {
 	 * @param tpEl - the input for the computation
 	 * @return - the result 
 	 * @throws IllegalArgumentException 
+	 * @throws UnInitializedException 
 	 */
-	public TPElement compute(TPElement tpEl) throws IllegalArgumentException;
+	public TPElement compute(TPElement tpEl) throws IllegalArgumentException, UnInitializedException;
 
 	/** 
 	 * Invert the operation of this trapdoor permutation on the TPElement that was accepted
 	 * @param tpEl - the input to invert
 	 * @return - the result 
 	 * @throws IllegalArgumentException 
+	 * @throws UnInitializedException 
 	 */
-	public TPElement invert(TPElement tpEl) throws IllegalArgumentException;
+	public TPElement invert(TPElement tpEl) throws IllegalArgumentException, UnInitializedException;
 
 	/** 
 	 * Compute the hard core predicate of the given tpElement
@@ -106,14 +113,16 @@ public interface TrapdoorPermutation {
 	 * @param tpEl - the element to check
 	 * @return TPElValidity - enum number that indicate the validation of the element 
 	 * @throws IllegalArgumentException 
+	 * @throws UnInitializedException 
 	 */
-	public TPElValidity isElement(TPElement tpEl) throws IllegalArgumentException;
+	public TPElValidity isElement(TPElement tpEl) throws IllegalArgumentException, UnInitializedException;
 	
 	/** 
 	 * create random TPElement which is valid to this trapdoor permutation
 	 * @return TPElement - the random element 
+	 * @throws UnInitializedException 
 	 */
-	public TPElement getRandomTPElement();
+	public TPElement getRandomTPElement() throws UnInitializedException;
 	
 	/**
 	 * Check if the object is initialized.

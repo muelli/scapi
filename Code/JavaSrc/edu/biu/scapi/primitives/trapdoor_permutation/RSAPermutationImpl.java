@@ -14,9 +14,11 @@ import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.RSAKeyGenParameterSpec;
 import java.util.logging.Level;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.RSAElement;
 import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.TPElement;
@@ -87,36 +89,35 @@ public final class RSAPermutationImpl extends TrapdoorPermutationAbs implements 
 	 * @param publicKey - public key
 	 * @param privateKey - private key
 	 * @param params
-	 * @throws IllegalArgumentException 
+	 * @throws InvalidParameterSpecException 
 	 */
-	public void init(AlgorithmParameterSpec params) throws IllegalArgumentException {
+	public void init(AlgorithmParameterSpec params) throws InvalidParameterSpecException {
 		
 		
-		if(params instanceof RSAKeyGenParameterSpec)
-		{
-			try {
-				//call the parent init
-				super.init(params);
-				
-				/*generate public and private keys */
-				KeyPairGenerator kpr;
-				kpr = KeyPairGenerator.getInstance("RSA");
-				kpr.initialize(((RSAKeyGenParameterSpec) params).getKeysize());
-				KeyPair pair = kpr.generateKeyPair();
-				PublicKey publicKey = pair.getPublic();
-				PrivateKey privateKey = pair.getPrivate();
-				
-				//init the trapdoor permutation with this keys
-				init(publicKey, privateKey);
-				
-				beInit = true;
-			} catch (NoSuchAlgorithmException e) {
-				Logging.getLogger().log(Level.WARNING, e.toString());
-			} catch (InvalidKeyException e) {
-				Logging.getLogger().log(Level.WARNING, e.toString());
-			}
-		} else {
-			throw new IllegalArgumentException("AlgorithmParameterSpec type doesn't match the trapdoor permutation");
+		if(!(params instanceof RSAKeyGenParameterSpec)) {
+			throw new InvalidParameterSpecException("AlgorithmParameterSpec type doesn't match the trapdoor permutation type");
+		}
+	
+		try {
+			//call the parent init
+			super.init(params);
+			
+			/*generate public and private keys */
+			KeyPairGenerator kpr;
+			kpr = KeyPairGenerator.getInstance("RSA");
+			kpr.initialize(((RSAKeyGenParameterSpec) params).getKeysize());
+			KeyPair pair = kpr.generateKeyPair();
+			PublicKey publicKey = pair.getPublic();
+			PrivateKey privateKey = pair.getPrivate();
+			
+			//init the trapdoor permutation with this keys
+			init(publicKey, privateKey);
+			
+			beInit = true;
+		} catch (NoSuchAlgorithmException e) {
+			Logging.getLogger().log(Level.WARNING, e.toString());
+		} catch (InvalidKeyException e) {
+			Logging.getLogger().log(Level.WARNING, e.toString());
 		}
 	}
 	
@@ -131,10 +132,13 @@ public final class RSAPermutationImpl extends TrapdoorPermutationAbs implements 
 	 * Compute the operation of RSA permutation on the TPElement that was accepted
 	 * @param tpEl - the input for the computation
 	 * @return - the result TPElement
+	 * @throws UnInitializedException 
 	 * @throw IllegalArgumentException
 	 */
-	public TPElement compute(TPElement tpEl) throws IllegalArgumentException{
-		
+	public TPElement compute(TPElement tpEl) throws IllegalArgumentException, UnInitializedException{
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
 		RSAElement returnEl = null;
 		
 		if (tpEl instanceof RSAElement) {
@@ -159,9 +163,12 @@ public final class RSAPermutationImpl extends TrapdoorPermutationAbs implements 
 	 * @param tpEl - the input to invert
 	 * @return - the result 
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
-	public TPElement invert(TPElement tpEl)  throws IllegalArgumentException{
-		
+	public TPElement invert(TPElement tpEl)  throws IllegalArgumentException, UnInitializedException{
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
 		//in case that the initialization was just with public key - can't do the invert and return null
 		if (privKey == null && pubKey!=null)
 			return null;
@@ -190,7 +197,7 @@ public final class RSAPermutationImpl extends TrapdoorPermutationAbs implements 
 	 * @param input - The element to invert
 	 * @return BigInteger - the result
 	 */
-	public BigInteger doInvert(BigInteger input)
+	private BigInteger doInvert(BigInteger input)
     {
 		if (privKey instanceof RSAPrivateCrtKey) //invert with CRT parameters
         {
@@ -235,10 +242,13 @@ public final class RSAPermutationImpl extends TrapdoorPermutationAbs implements 
 	 * @param tpEl - the element to check
 	 * @return TPElValidity - enum number that indicate the validation of the element 
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
-	public TPElValidity isElement(TPElement tpEl) throws IllegalArgumentException{
+	public TPElValidity isElement(TPElement tpEl) throws IllegalArgumentException, UnInitializedException{
 		TPElValidity validity = null;
-		
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
 		if (tpEl instanceof RSAElement){
 			
 			BigInteger value = ((RSAElement)tpEl).getElement();
@@ -265,9 +275,12 @@ public final class RSAPermutationImpl extends TrapdoorPermutationAbs implements 
 	/** 
 	 * create random BcRSAElement 
 	 * @return TPElement - BcRSAElement
+	 * @throws UnInitializedException 
 	 */
-	public TPElement getRandomTPElement() {
-		
+	public TPElement getRandomTPElement() throws UnInitializedException {
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
 		return new RSAElement(modN);
 	}
 

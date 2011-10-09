@@ -8,7 +8,9 @@ import java.security.InvalidKeyException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.TPElement;
 
 /** 
@@ -34,6 +36,7 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 		pubKey = publicKey;
 		privKey = privateKey;
 		this.params = params;
+		beInit = true;
 	}
 
 	/** 
@@ -59,31 +62,43 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 	/** 
 	 * Initializes this trapdoor permutation auxiliary parameters
 	 * @param params
-	 * @throws IllegalAccessException 
+	 * @throws InvalidParameterSpecException 
 	 */
-	public void init(AlgorithmParameterSpec params) throws IllegalArgumentException {
+	public void init(AlgorithmParameterSpec params) throws InvalidParameterSpecException {
 		this.params = params; 
 	}
 
 	
 	/** 
 	 * @return the parameter spec of this trapdoor permutation
+	 * @throws UnInitializedException 
 	 */
-	public AlgorithmParameterSpec getParams() {
+	public AlgorithmParameterSpec getParams() throws UnInitializedException {
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
 		return params;
 	}
 
 	/** 
 	 * @return the public key
+	 * @throws UnInitializedException 
 	 */
-	public PublicKey getPubKey() {
+	public PublicKey getPubKey() throws UnInitializedException {
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
 		return pubKey;
 	}
 	
 	/** 
 	 * @return mod(N)
+	 * @throws UnInitializedException 
 	 */
-	public BigInteger getModulus(){
+	public BigInteger getModulus() throws UnInitializedException{
+		if (!IsInitialized()){
+			throw new UnInitializedException();
+		}
 		return modN;
 	}
 	
