@@ -7,9 +7,12 @@
 package edu.biu.scapi.primitives.prf;
 
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
+
+import edu.biu.scapi.exceptions.UnInitializedException;
 
 
 /** 
@@ -26,8 +29,9 @@ public interface PseudorandomFunction {
 	 * Initializes this prf with the secret key and the auxiliary parameters.
 	 * @param secretKey secret key
 	 * @param params algorithm parameters
+	 * @throws InvalidParameterSpecException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params);
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException;
 	
 	/**
 	 * 
@@ -37,25 +41,27 @@ public interface PseudorandomFunction {
 
 	/** 
 	 * @return the parameter spec of this prf
+	 * @throws UnInitializedException 
 	 */
-	public AlgorithmParameterSpec getParams();
+	public AlgorithmParameterSpec getParams() throws UnInitializedException;
 
 	
 	/** 
 	 * @return the secret key
+	 * @throws UnInitializedException 
 	 */
-	public SecretKey getSecretKey();
+	public SecretKey getSecretKey() throws UnInitializedException;
 
 
 	/** 
 	 * @return The algorithm name
 	 */
-	public String getAlgorithmName();
+	public String getAlgorithmName() ;
 
 	/** 
-	 * @return
+	 * @return 
 	 */
-	public int getBlockSize();
+	public int getBlockSize() ;
 
 	/** 
 	 * computeBlock : computes the function using the secret key. The user supplies the input byte array and the offset from 
@@ -67,8 +73,9 @@ public interface PseudorandomFunction {
 	 * @param outBytes output bytes. The resulted bytes of compute
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException;
+	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException, UnInitializedException;
 	
 	/**
 	 * 
@@ -84,8 +91,9 @@ public interface PseudorandomFunction {
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @param outLen the length of the output array
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException;
+	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException, UnInitializedException;
 	
 	/**
 	 * 
@@ -100,9 +108,10 @@ public interface PseudorandomFunction {
 	 * @param outBytes output bytes. The resulted bytes of compute.
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
 
-	public void computeBlock(byte[] inBytes, int inOffset, int inLen, byte[] outBytes, int outOffset) throws IllegalBlockSizeException;;
+	public void computeBlock(byte[] inBytes, int inOffset, int inLen, byte[] outBytes, int outOffset) throws IllegalBlockSizeException, UnInitializedException;;
 
 	
 }

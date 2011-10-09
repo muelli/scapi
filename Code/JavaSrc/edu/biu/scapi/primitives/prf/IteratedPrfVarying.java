@@ -4,16 +4,14 @@
 package edu.biu.scapi.primitives.prf;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
-import org.bouncycastle.crypto.macs.HMac;
 
+import edu.biu.scapi.exceptions.FactoriesException;
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
-import edu.biu.scapi.tools.Factories.BCFactory;
-import edu.biu.scapi.tools.Factories.FactoriesException;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
@@ -28,9 +26,9 @@ public class IteratedPrfVarying extends
 	 * The initialization of this prf is in the function init of PrfVaryingFromPrfVaryingInput.
 	 * @throws FactoriesException 
 	 */
-	public IteratedPrfVarying(String prfVaryingInputName) throws FactoriesException {
-		//get the requested prfVaryingInput from the factory. 
-		prfVaryingInputLength = (PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaryingInputName);	
+	public IteratedPrfVarying(String prfVaringInputName) throws FactoriesException {
+		//get the requested prfVaringInput from the factory. 
+		prfVaryingInputLength = (PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaringInputName);
 	}
 	
 	/**
@@ -103,10 +101,20 @@ public class IteratedPrfVarying extends
 	 * @param outBytes - output bytes. The resulted bytes of compute.
 	 * @param outOff - output offset in the outBytes array to take the result from
 	 * @param outLen - the length of the output array
+	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen, 
-			byte[] outBytes, int outOff, int outLen) {
-		
+			byte[] outBytes, int outOff, int outLen) throws UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		/* check that the offset and length are correct */
+		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+		}
+		if ((outOff > outBytes.length) || (outOff+outLen > outBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+		}
 		int prfLength = prfVaryingInputLength.getBlockSize();            //the output size of the prfVaryingInputLength
 		int rounds = (int) Math.ceil((float)outLen / (float)prfLength);  //the smallest integer for which rounds*)prfLength > outlen
 		byte[] intermediateOutBytes = new byte[prfLength];               //round result

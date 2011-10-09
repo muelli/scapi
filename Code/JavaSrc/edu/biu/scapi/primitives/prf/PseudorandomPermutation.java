@@ -7,6 +7,8 @@ package edu.biu.scapi.primitives.prf;
 
 import javax.crypto.IllegalBlockSizeException;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
+
 
 /** 
  * @author LabTest
@@ -20,8 +22,9 @@ public interface PseudorandomPermutation extends PseudorandomFunction {
 	 * @param outBytes output bytes. The resulted bytes of invert
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
-	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException;
+	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException, UnInitializedException;
 	
 	/** 
 	 * Inverts the permutation using the given key. Since PseudorandomPermutation can also have varying input and output length 
@@ -32,6 +35,7 @@ public interface PseudorandomPermutation extends PseudorandomFunction {
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @param len the length of the input and the output
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
-	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff, int len) throws IllegalBlockSizeException;
+	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff, int len) throws IllegalBlockSizeException, UnInitializedException;
 }

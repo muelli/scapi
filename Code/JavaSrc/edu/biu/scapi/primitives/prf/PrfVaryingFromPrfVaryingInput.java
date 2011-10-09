@@ -9,8 +9,12 @@
 package edu.biu.scapi.primitives.prf;
 
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
+
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
+
+import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
  * @author LabTest
@@ -49,10 +53,12 @@ public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLengt
 	/**
 	 * Initializes this PrfVaryingFromPrfVaryingInput with the secret key
 	 * @param secretKey the secrete key
+	 * @throws InvalidParameterSpecException 
 	 */
 	
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException {
 
+		isInitialized = true;
 		this.secretKey = secretKey;
 		this.params = params;
 		
@@ -60,8 +66,12 @@ public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLengt
 	
 	/** 
 	 * @return the parameters spec
+	 * @throws UnInitializedException 
 	 */
-	public AlgorithmParameterSpec getParams() {
+	public AlgorithmParameterSpec getParams() throws UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return params;
 	}
 
@@ -69,8 +79,12 @@ public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLengt
 
 	/**
 	 * @return - the secret key
+	 * @throws UnInitializedException 
 	 */
-	public SecretKey getSecretKey() {
+	public SecretKey getSecretKey() throws UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return secretKey;
 	}
 
@@ -83,11 +97,14 @@ public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLengt
 	 * @param outBytes output bytes. The resulted bytes of compute
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
 
 	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff) throws IllegalBlockSizeException {
-
+			int outOff) throws IllegalBlockSizeException, UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
 		throw new IllegalBlockSizeException("Input and output sizes are not specified");
 		
 	}
@@ -101,12 +118,15 @@ public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLengt
 	 * @param outBytes output bytes. The resulted bytes of compute.
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen,
 			byte[] outBytes, int outOff)
-			throws IllegalBlockSizeException {
-
-		throw new IllegalBlockSizeException("Input size is not specified");
+			throws IllegalBlockSizeException, UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		throw new IllegalBlockSizeException("Output size is not specified");
 		
 	}
 

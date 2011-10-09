@@ -8,7 +8,9 @@ package edu.biu.scapi.primitives.prf;
 
 import javax.crypto.IllegalBlockSizeException;
 
-import edu.biu.scapi.tools.Factories.FactoriesException;
+
+import edu.biu.scapi.exceptions.FactoriesException;
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
@@ -18,8 +20,9 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
 public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	
 	
+
 	public LubyRackoffPrpFromPrfVarying(String prfVaringIOLengthName) throws FactoriesException {
-		
+
 		//get the requested prpFixed from the factory. 
 		prfVaryingIOLength = (PrfVaryingIOLength) PrfFactory.getInstance().getObject(prfVaringIOLengthName);
 	}
@@ -62,8 +65,20 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @param outLen the length of the output array
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException {
+	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException, UnInitializedException {
+		//check that the object is initialised
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		/* check that the offset and length are correct */
+		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+		}
+		if ((outOff > outBytes.length) || (outOff+outLen > outBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+		}
 		
 		if (inLen!=outLen){
 			throw new IllegalBlockSizeException("Input and output must be of the same length");
@@ -147,10 +162,20 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 * @param outOff output offset in the outBytes array to take the result from
 	 * @param len the length of the input and the output
 	 * @throws IllegalBlockSizeException 
+	 * @throws UnInitializedException 
 	 */
 	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff, int len) throws IllegalBlockSizeException {
-
+			int outOff, int len) throws IllegalBlockSizeException, UnInitializedException {
+		if(!isInitialized()){
+			throw new UnInitializedException();
+		}
+		/* check that the offset and length are correct */
+		if ((inOff > inBytes.length) || (inOff+len > inBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+		}
+		if ((outOff > outBytes.length) || (outOff+len > outBytes.length)){
+			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+		}
 		//check that the input is of even length.
 		if(!(len % 2==0) ){//odd throw exception
 			throw new IllegalBlockSizeException("Length of input must be even");
@@ -213,7 +238,6 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 
 	
 	public String getAlgorithmName() {
-		
 		return "LUBY_RACKOFF_PRP_FROM_PRP_VARYING";
 	}
 
