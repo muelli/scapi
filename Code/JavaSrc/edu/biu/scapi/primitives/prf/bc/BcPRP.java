@@ -122,12 +122,12 @@ public abstract class BcPRP implements PrpFixed{
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+getBlockSize() > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outBytes.length) || (outOff+getBlockSize() > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		//if the bc block cipher is not already in encryption mode init the block cipher with forEncryption=true
 		if(forEncryption==false){
@@ -157,12 +157,12 @@ public abstract class BcPRP implements PrpFixed{
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOffset > inBytes.length) || (inOffset+inLen > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((inOffset > outBytes.length) || (inOffset+getBlockSize() > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		if(inLen==getBlockSize())
 			computeBlock(inBytes, inOffset, outBytes, outOffset);
@@ -215,12 +215,12 @@ public abstract class BcPRP implements PrpFixed{
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+len > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((inOff > outBytes.length) || (inOff+len > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		if (len==getBlockSize())
 			invertBlock(inBytes, inOff, outBytes, outOff);
@@ -246,12 +246,12 @@ public abstract class BcPRP implements PrpFixed{
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((inOff > outBytes.length) || (inOff+outLen > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		if (inLen==outLen && inLen==getBlockSize())
 			computeBlock(inBytes, inOff, outBytes, outOff);

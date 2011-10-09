@@ -140,12 +140,12 @@ public final class BcHMAC implements  Hmac {
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outBytes.length) || (outOff+outLen > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		//make sure the output size is correct
 		if(outLen==hMac.getMacSize())
@@ -174,12 +174,12 @@ public final class BcHMAC implements  Hmac {
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		/* check that the offset and length are correct */
+		// check that the offset and length are correct 
 		if ((inOffset > inBytes.length) || (inOffset+inLen > inBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("input buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOffset > outBytes.length) || (outOffset+getBlockSize() > outBytes.length)){
-			throw new ArrayIndexOutOfBoundsException("output buffer too short");
+			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		//pass the input bytes to update
 		hMac.update(inBytes, inOffset, inLen);
