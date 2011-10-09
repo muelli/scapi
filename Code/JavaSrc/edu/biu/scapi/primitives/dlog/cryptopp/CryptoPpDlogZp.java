@@ -2,6 +2,7 @@ package edu.biu.scapi.primitives.dlog.cryptopp;
 
 import java.math.BigInteger;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.DlogGroupAbs;
 import edu.biu.scapi.primitives.dlog.DlogZp;
 import edu.biu.scapi.primitives.dlog.GroupElement;
@@ -35,14 +36,25 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 		PointerToGroup = createDlogZp(groupParams.getP().toByteArray(), ((ZpElementCryptoPp) generator).getPointerToElement());
 		isInitialized = true;
 	}
-			
+		
+	/**
+	 * @return the type of the group - Zp*
+	 */
+	public String getGroupType(){
+		return "Zp*";
+	}
+	
 	/**
 	 * Check if the given element is member of that Dlog group
 	 * @param element 
 	 * @return true if the given element is member of that group. false, otherwise.
+	 * @throws UnInitializedException 
 	 * @throws IllegalArgumentException
 	 */
-	public boolean isMember(GroupElement element) {
+	public boolean isMember(GroupElement element) throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		//check if element is ZpElementCryptoPp
 		if (element instanceof ZpElementCryptoPp){
 			BigInteger elementVal = ((ZpElementCryptoPp) element).getElement();
@@ -57,18 +69,24 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	/**
 	 * Check if the given generator is indeed the generator of the group
 	 * @return true, is the generator is valid, false otherwise.
+	 * @throws UnInitializedException 
 	 */
-	public boolean isGenerator() {
-		
+	public boolean isGenerator() throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return validateZpGenerator(PointerToGroup);
 	}
 
 	/**
 	 * Check if the parameters of the group are correct.
 	 * @return true if valid, false otherwise.
+	 * @throws UnInitializedException 
 	 */
-	public boolean validateGroup() {
-		
+	public boolean validateGroup() throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return validateZpGroup(PointerToGroup);
 	}
 
@@ -77,8 +95,12 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException{
+	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException, UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		if (groupElement instanceof ZpElementCryptoPp){
 			//call to native inverse function
 			long invertVal = inverseElement(PointerToGroup, ((ZpElementCryptoPp) groupElement).getPointerToElement());
@@ -97,8 +119,12 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	 * @param base 
 	 * @return the result of the exponentiation
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement exponentiate(BigInteger exponent, GroupElement base) throws IllegalArgumentException{
+	public GroupElement exponentiate(BigInteger exponent, GroupElement base) throws IllegalArgumentException, UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		if (base instanceof ZpElementCryptoPp){
 			//call to native exponentiate function
 			long exponentiateVal = exponentiateElement(PointerToGroup, ((ZpElementCryptoPp) base).getPointerToElement(), exponent.toByteArray());
@@ -117,10 +143,13 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	 * @param groupElement2
 	 * @return the multiplication result
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
 	public GroupElement multiplyGroupElements(GroupElement groupElement1,
-			GroupElement groupElement2) throws IllegalArgumentException{
-		
+			GroupElement groupElement2) throws IllegalArgumentException, UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		if ((groupElement1 instanceof ZpElementCryptoPp) && (groupElement2 instanceof ZpElementCryptoPp)){
 			//call to native multiply function
 			long mulVal = multiplyElements(PointerToGroup, ((ZpElementCryptoPp) groupElement1).getPointerToElement(), 
@@ -137,16 +166,24 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	/**
 	 * Create a random member of that Dlog group
 	 * @return the random element
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement getRandomElement() {
+	public GroupElement getRandomElement() throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return new ZpElementCryptoPp(((ZpGroupParams) groupParams).getP());
 	}
 	
 	/**
 	 * Create a Zp element with the given parameter
 	 * @return the created element
+	 * @throws UnInitializedException 
 	 */
-	public ZpElement getElement(BigInteger x) {
+	public ZpElement getElement(BigInteger x) throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return new ZpElementCryptoPp(x, ((ZpGroupParams) groupParams).getP());
 	}
 	
