@@ -9,6 +9,7 @@ import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogECFp;
 import edu.biu.scapi.primitives.dlog.ECElement;
@@ -42,9 +43,9 @@ public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp{
 			if (!curveName.startsWith("P-")){
 				throw new IllegalArgumentException("curveName is not a curve over Fp field and doesn't match the DlogGroup type"); 
 			}
-			
-			doInit(ecProperties, curveName);  // set the data and initialize the curve
 			isInitialized = true; 
+			doInit(ecProperties, curveName);  // set the data and initialize the curve
+			
 			
 		} catch (IOException e) {
 			Logging.getLogger().log(Level.WARNING, "error while loading the NIST elliptic curves file");
@@ -74,22 +75,41 @@ public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp{
 		curve = new ECCurve.Fp(p, a, b);
 		
 		//create the generator
-		generator = new ECFpPointBc(x,y, this);	
+		try {
+			generator = new ECFpPointBc(x,y, this);
+		} catch (UnInitializedException e) {
+			//creation of the generator is done after initialization of the DlogGroup so this exception shouldn't occur
+		}	
+	}
+	
+	/**
+	 * @return the type of the group - ECFp
+	 */
+	public String getGroupType(){
+		return "elliptic curve over Fp";
 	}
 	
 	/**
 	 * Create a random member of that Dlog group
 	 * @return the random element
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement getRandomElement(){
+	public GroupElement getRandomElement() throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return new ECFpPointBc(this);
 	}
 	 
 	/**
 	 * Creates a point over Fp field. 
 	 * @return the created point
+	 * @throws UnInitializedException 
 	 */
-	public ECElement getElement(BigInteger x, BigInteger y){
+	public ECElement getElement(BigInteger x, BigInteger y) throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return new ECFpPointBc(x, y, this);
 	}
 	

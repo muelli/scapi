@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.DlogEllipticCurve;
 import edu.biu.scapi.primitives.dlog.DlogGroupEC;
 import edu.biu.scapi.primitives.dlog.GroupElement;
@@ -25,8 +26,12 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param x
 	 * @param y
 	 * @return ECPoint - the created point
+	 * @throws UnInitializedException 
 	 */
-	public ECPoint createPoint(BigInteger x, BigInteger y){
+	public ECPoint createPoint(BigInteger x, BigInteger y) throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return curve.createPoint(x, y, false);
 	}
 	
@@ -35,8 +40,12 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param element - 
 	 * @return true if the given element is member of that group. false, otherwise.
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
-	public boolean isMember(GroupElement element) throws IllegalArgumentException{
+	public boolean isMember(GroupElement element) throws IllegalArgumentException, UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		if (element instanceof ECPointBc)
 		{
 			ECPointBc point = (ECPointBc)element;
@@ -51,8 +60,12 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException{
+	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException, UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		//if the GroupElement doesn't match the DlogGroup, throws exception
 		if (groupElement instanceof ECPointBc){
 			//gets the ECPoint
@@ -76,9 +89,13 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param base 
 	 * @return the result of the exponentiation
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
 	public GroupElement exponentiate(BigInteger exponent, GroupElement base) 
-									 throws IllegalArgumentException{
+									 throws IllegalArgumentException, UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		//if the GroupElements don't match the DlogGroup, throws exception
 		if (base instanceof ECPointBc){
 			//gets the ECPoint
@@ -102,10 +119,14 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param groupElement2
 	 * @return the multiplication result
 	 * @throws IllegalArgumentException
+	 * @throws UnInitializedException 
 	 */
 	public GroupElement multiplyGroupElements(GroupElement groupElement1, 
 											  GroupElement groupElement2) 
-											  throws IllegalArgumentException{
+											  throws IllegalArgumentException, UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		//if the GroupElements don't match the DlogGroup, throws exception
 		if ((groupElement1 instanceof ECPointBc) && (groupElement2 instanceof ECPointBc)){
 			

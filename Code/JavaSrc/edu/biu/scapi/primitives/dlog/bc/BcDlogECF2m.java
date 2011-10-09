@@ -10,6 +10,7 @@ import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogECF2m;
 import edu.biu.scapi.primitives.dlog.ECElement;
@@ -47,9 +48,9 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
 			if (!curveName.startsWith("B-") && !curveName.startsWith("K-")){
 				throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match the DlogGroup type"); 
 			}
-			
-			doInit(ecProperties, curveName);  // set the data and initialize the curve
 			isInitialized = true; 
+			doInit(ecProperties, curveName);  // set the data and initialize the curve
+			
 			
 		} catch (IOException e) {
 			Logging.getLogger().log(Level.WARNING, "error while loading the NIST elliptic curves file");
@@ -62,6 +63,7 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
 	 * generator and the underlying curve
 	 * @param ecProperties - properties object contains the curve file data
 	 * @param curveName - the curve name as it called in the file
+	 * @throws UnInitializedException 
 	 */
 	protected void doInit(Properties ecProperties, String curveName) {
 		//get the curve parameters
@@ -108,23 +110,41 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
 		}
 		
 		//create the generator
-		generator = new ECF2mPointBc(x,y, this);	
+		try {
+			generator = new ECF2mPointBc(x,y, this);
+		} catch (UnInitializedException e) {
+			//creation of the generator is done after initialization of the DlogGroup so this exception shouldn't occur
+		}	
 	}
 	
+	/**
+	 * @return the type of the group - ECF2m
+	 */
+	public String getGroupType(){
+		return "elliptic curve over F2m";
+	}
 	
 	/**
 	 * Create a random member of that Dlog group
 	 * @return the random element
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement getRandomElement(){
+	public GroupElement getRandomElement() throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return new ECF2mPointBc(this);
 	}
 	
 	/**
 	 * create a point over F2m field with the given parameters
 	 * @return the created point
+	 * @throws UnInitializedException 
 	 */
-	public ECElement getElement(BigInteger x, BigInteger y){
+	public ECElement getElement(BigInteger x, BigInteger y) throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		return new ECF2mPointBc(x, y, this);
 	}
 	

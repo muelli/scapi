@@ -8,6 +8,7 @@ import org.bouncycastle.math.ec.ECFieldElement;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.ECFieldElement.Fp;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.groupParams.ECFpGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ECGroupParams;
@@ -25,8 +26,9 @@ public class ECFpPointBc extends ECPointBc{
 	 * @param x
 	 * @param y
 	 * @param curve - DlogGroup
+	 * @throws UnInitializedException 
 	 */
-	public ECFpPointBc(BigInteger x, BigInteger y, BcDlogECFp curve){
+	public ECFpPointBc(BigInteger x, BigInteger y, BcDlogECFp curve) throws UnInitializedException{
 		
 		//checks validity
 		if (!checkValidity(x, y, (ECFpGroupParams) curve.getGroupParams()))  //if not valid, throws exception
@@ -40,8 +42,9 @@ public class ECFpPointBc extends ECPointBc{
 	/**
 	 *  Constructor that gets DlogGroup and choose random point in the group
 	 * @param curve
+	 * @throws UnInitializedException 
 	 */
-	public ECFpPointBc(BcDlogECFp curve){
+	public ECFpPointBc(BcDlogECFp curve) throws UnInitializedException{
 		
 		ECFpGroupParams desc = (ECFpGroupParams)curve.getGroupParams();
 		
