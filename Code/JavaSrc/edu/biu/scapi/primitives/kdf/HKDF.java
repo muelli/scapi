@@ -11,9 +11,10 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import edu.biu.scapi.exceptions.FactoriesException;
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.prf.Hmac;
-import edu.biu.scapi.tools.Factories.FactoriesException;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 
@@ -87,9 +88,13 @@ public final class HKDF implements KeyDerivationFunction {
 	 *   OUTPUT the first L bits of K(1),…,K(t)
 	 *   
 	 *   @param iv - CTXInfo 
+	 * @throws UnInitializedException 
 	 * 
 	 */
-	public SecretKey generateKey(SecretKey key, int outLen, byte[] iv) {
+	public SecretKey generateKey(SecretKey key, int outLen, byte[] iv) throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		
 		int hmacLength = hmac.getBlockSize();                           //the size of the output of the hmac.
 		byte[] inBytes = key.getEncoded();                              //get the input key to work on
@@ -134,9 +139,10 @@ public final class HKDF implements KeyDerivationFunction {
 	 * @param hmacLength the size of the output of the hmac.
 	 * @param outBytes the result of the overall computation
 	 * @param intermediateOutBytes round result K(i) in the pseudocode
+	 * @throws UnInitializedException 
 	 */
 	private void nextRounds(int outLen, byte[] iv, int hmacLength,
-			byte[] outBytes, byte[] intermediateOutBytes) {
+			byte[] outBytes, byte[] intermediateOutBytes) throws UnInitializedException {
 		
 		int rounds = (int) Math.ceil((float)outLen/(float)hmacLength); //the smallest number so that  hmacLength * rounds >= outLen
 		
@@ -195,8 +201,9 @@ public final class HKDF implements KeyDerivationFunction {
 	 * @param intermediateOutBytes round result K(1) in the pseudocode
 	 * @param hmacLength the size of the output of the hmac.
 	 * @param outBytes the result of the overall computation
+	 * @throws UnInitializedException 
 	 */
-	private void firstRound(byte [] outBytes, byte[] iv, byte[] intermediateOutBytes, int hmacLength) {
+	private void firstRound(byte [] outBytes, byte[] iv, byte[] intermediateOutBytes, int hmacLength) throws UnInitializedException {
 		Integer one;
 		//round 1
 		byte[] firstRoundInput;//data for the creating K(1)
@@ -227,16 +234,41 @@ public final class HKDF implements KeyDerivationFunction {
 		System.arraycopy(intermediateOutBytes, 0,outBytes , 0, hmacLength);
 	}
 
-	public SecretKey generateKey(SecretKey key, int outLen) {
+	public SecretKey generateKey(SecretKey key, int outLen) throws UnInitializedException {
 
 		//there is no auxiliary information send an empty iv.
 		return generateKey(key, outLen, null);
 	}
 
 	public void generateKey(byte[] inKey, int inOff, int inLen, byte[] outKey,
-			int outOff, int outLen) {
-
+			int outOff, int outLen) throws UnInitializedException {
+		//check that the ocject is initialized
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		
+		//check that the offset and length are correct
+		if ((inOff > inKey.length) || (inOff+inLen > inKey.length)){
+			throw new ArrayIndexOutOfBoundsException("input array too short");
+		}
+		if ((outOff > outKey.length) || (outOff+outLen > outKey.length)){
+			throw new ArrayIndexOutOfBoundsException("output array too short");
+		}
+		
 		//create a key out of the byte array and send it to the function generateKey(SecretKey key, int outLen, byte[] iv)
+		byte [] subKey = new byte[inLen];
+		for(int i=0; i<inLen; i++)
+			subKey[i] = inKey[inOff+i];
+		
+		//create a SecretKey object out of the byte array key.
+		SecretKey secretKey = new SecretKeySpec(subKey, "");
+		
+		byte[] output = generateKey(secretKey, outLen).getEncoded();
+		
+		//copy the output key to outKey byte array
+		for(int i=0; i<outLen; i++){
+			outKey[outOff+i] = output[i];
+		}
 		
 	}
 

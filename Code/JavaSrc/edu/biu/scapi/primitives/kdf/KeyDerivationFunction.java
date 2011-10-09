@@ -9,6 +9,8 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.SecretKey;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
+
 /** 
   * @author LabTest
  */
@@ -18,10 +20,11 @@ public interface KeyDerivationFunction {
 	 * @param key
 	 * @param len
 	 * @return
+	 * @throws UnInitializedException 
 	 */
-	public SecretKey generateKey(SecretKey key, int outLen,  byte[] iv);
-	public SecretKey generateKey(SecretKey key, int outLen);
-	public void generateKey(byte[] inKey, int inOff, int inLen, byte[] outKey, int outOff, int outLen);
+	public SecretKey generateKey(SecretKey key, int outLen,  byte[] iv) throws UnInitializedException;
+	public SecretKey generateKey(SecretKey key, int outLen) throws UnInitializedException;
+	public void generateKey(byte[] inKey, int inOff, int inLen, byte[] outKey, int outOff, int outLen) throws UnInitializedException;
 	
 	/**
 	 * Initializes this krf with the secret key.
