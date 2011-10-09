@@ -6,6 +6,7 @@
  */
 package edu.biu.scapi.tools.Factories;
 
+import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.primitives.kdf.KeyDerivationFunction;
 
 
