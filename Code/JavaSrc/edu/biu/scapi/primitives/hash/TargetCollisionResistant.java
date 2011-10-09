@@ -8,6 +8,8 @@ package edu.biu.scapi.primitives.hash;
 
 import java.security.spec.AlgorithmParameterSpec;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
+
 /** 
  * @author LabTest
  */
@@ -46,13 +48,15 @@ public interface TargetCollisionResistant {
 	 * @param in input byte array
 	 * @param inOffset the offset within the byte array
 	 * @param inLen the length. The number of bytes to take after the offset
+	 * @throws UnInitializedException 
 	 * */
-	public void update(byte[] in, int inOffset, int inLen);
+	public void update(byte[] in, int inOffset, int inLen) throws UnInitializedException;
 
 	/** 
 	 * Completes the hash computation and puts the result in the out array.
 	 * @param out the output in byte array
 	 * @param outOffset the offset from which to take bytes from
+	 * @throws UnInitializedException 
 	 */
-	public void hashFinal(byte[] out, int outOffset);
+	public void hashFinal(byte[] out, int outOffset) throws UnInitializedException;
 }

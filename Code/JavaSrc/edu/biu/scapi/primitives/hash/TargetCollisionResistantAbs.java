@@ -12,9 +12,7 @@ public abstract class TargetCollisionResistantAbs implements
 		TargetCollisionResistant {
 	
 	protected AlgorithmParameterSpec params;
-	protected boolean isInitialized = true;//most target collision resistant hash functions do not need to call init
-										   //if a certain hash does need to pass some parameters in init, it must set this
-							               //flag to false in the constructor and to true in the init function.
+	protected boolean isInitialized = false;
 
 	/** 
 	 * Initializes this target collision resistant hash with the auxiliary parameters.
