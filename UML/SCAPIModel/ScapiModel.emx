@@ -5131,11 +5131,6 @@
                     <body>&lt;br>wrongKeyEncoding</body>
                   </ownedComment>
                 </ownedOperation>
-                <ownedOperation xmi:id="_xm3FR-z1EeC8av2_mh-J3A" name="wrongKeyType" visibility="public">
-                  <ownedComment xmi:id="_xm3FSOz1EeC8av2_mh-J3A" annotatedElement="_xm3FR-z1EeC8av2_mh-J3A">
-                    <body>&lt;br>wrongKeyType</body>
-                  </ownedComment>
-                </ownedOperation>
                 <ownedOperation xmi:id="_xm3FSez1EeC8av2_mh-J3A" name="unInited" visibility="public">
                   <ownedComment xmi:id="_xm3FSuz1EeC8av2_mh-J3A" annotatedElement="_xm3FSez1EeC8av2_mh-J3A">
                     <body>&lt;br>unInited</body>
@@ -5146,8 +5141,8 @@
                     <body>&lt;br>wrongOffset</body>
                   </ownedComment>
                 </ownedOperation>
-                <ownedOperation xmi:id="_xm3FTez1EeC8av2_mh-J3A" name="wrongAlgSpec" visibility="public"/>
                 <ownedOperation xmi:id="_xm3FTuz1EeC8av2_mh-J3A" name="wrongLength"/>
+                <ownedOperation xmi:id="_qCeQEPP_EeC8av2_mh-J3A" name="badCasting"/>
               </packagedElement>
               <packagedElement xmi:type="uml:Class" xmi:id="_xm3FT-z1EeC8av2_mh-J3A" name="PrgTest" clientDependency="_xm4Skez1EeC8av2_mh-J3A" isAbstract="true">
                 <ownedAttribute xmi:id="_xm3FUOz1EeC8av2_mh-J3A" name="testDataVector" visibility="package" type="_xm3FVez1EeC8av2_mh-J3A">
@@ -5249,12 +5244,11 @@
                     <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_xm3Fgez1EeC8av2_mh-J3A"/>
                   </ownedParameter>
                 </ownedOperation>
-                <ownedOperation xmi:id="_xm3Fguz1EeC8av2_mh-J3A" name="wrongKeyType" visibility="public"/>
-                <ownedOperation xmi:id="_xm3Fg-z1EeC8av2_mh-J3A" name="wrongKeySize" visibility="public"/>
                 <ownedOperation xmi:id="_xm3FhOz1EeC8av2_mh-J3A" name="wrongOffset" visibility="public"/>
                 <ownedOperation xmi:id="_xm3Fhez1EeC8av2_mh-J3A" name="wrongAlgSpec" visibility="public"/>
                 <ownedOperation xmi:id="_xm3Fhuz1EeC8av2_mh-J3A" name="unInited" visibility="public"/>
-                <ownedOperation xmi:id="_xm3Fh-z1EeC8av2_mh-J3A" name="wrongKeyEncoding" visibility="public"/>
+                <ownedOperation xmi:id="_x1SFEPP_EeC8av2_mh-J3A" name="badCasting"/>
+                <ownedOperation xmi:id="_zJ0PEPP_EeC8av2_mh-J3A" name="WrongKeyEncoding"/>
               </packagedElement>
               <packagedElement xmi:type="uml:Class" xmi:id="_xm3FiOz1EeC8av2_mh-J3A" name="DlogTest" isAbstract="true">
                 <ownedOperation xmi:id="_xm3Fiez1EeC8av2_mh-J3A" name="runTest" visibility="public"/>
@@ -5424,11 +5418,11 @@
                   </ownedParameter>
                 </ownedOperation>
                 <ownedOperation xmi:id="_xm3reOz1EeC8av2_mh-J3A" name="wrongKeyType" visibility="public"/>
-                <ownedOperation xmi:id="_xm3reez1EeC8av2_mh-J3A" name="wrongKeySize" visibility="public"/>
                 <ownedOperation xmi:id="_xm3reuz1EeC8av2_mh-J3A" name="wrongOffset" visibility="public"/>
                 <ownedOperation xmi:id="_xm3re-z1EeC8av2_mh-J3A" name="wrongAlgSpec" visibility="public"/>
                 <ownedOperation xmi:id="_xm3rfOz1EeC8av2_mh-J3A" name="unInited" visibility="public"/>
                 <ownedOperation xmi:id="_xm3rfez1EeC8av2_mh-J3A" name="wrongKeyEncoding" visibility="public"/>
+                <ownedOperation xmi:id="__j4jEPP_EeC8av2_mh-J3A" name="badCasting"/>
               </packagedElement>
               <packagedElement xmi:type="uml:Class" xmi:id="_xm3rfuz1EeC8av2_mh-J3A" name="KdfTest" clientDependency="_xm4Slez1EeC8av2_mh-J3A" isAbstract="true">
                 <ownedComment xmi:id="_xm3rf-z1EeC8av2_mh-J3A" annotatedElement="_xm3rfuz1EeC8av2_mh-J3A">
@@ -5573,19 +5567,9 @@
                     <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
                   </ownedParameter>
                 </ownedOperation>
-                <ownedOperation xmi:id="_xm3ryuz1EeC8av2_mh-J3A" name="wrongKeySize" visibility="public">
-                  <ownedComment xmi:id="_xm3ry-z1EeC8av2_mh-J3A" annotatedElement="_xm3ryuz1EeC8av2_mh-J3A">
-                    <body>&lt;br>wrongKeySize</body>
-                  </ownedComment>
-                </ownedOperation>
                 <ownedOperation xmi:id="_xm3rzOz1EeC8av2_mh-J3A" name="wrongKeyEncoding" visibility="public">
                   <ownedComment xmi:id="_xm3rzez1EeC8av2_mh-J3A" annotatedElement="_xm3rzOz1EeC8av2_mh-J3A">
                     <body>&lt;br>wrongKeyEncoding</body>
-                  </ownedComment>
-                </ownedOperation>
-                <ownedOperation xmi:id="_xm3rzuz1EeC8av2_mh-J3A" name="wrongKeyType" visibility="public">
-                  <ownedComment xmi:id="_xm3rz-z1EeC8av2_mh-J3A" annotatedElement="_xm3rzuz1EeC8av2_mh-J3A">
-                    <body>&lt;br>wrongKeyType</body>
                   </ownedComment>
                 </ownedOperation>
                 <ownedOperation xmi:id="_xm3r0Oz1EeC8av2_mh-J3A" name="unInited" visibility="public">
@@ -5598,8 +5582,8 @@
                     <body>&lt;br>wrongOffset</body>
                   </ownedComment>
                 </ownedOperation>
-                <ownedOperation xmi:id="_xm3r1Oz1EeC8av2_mh-J3A" name="wrongAlgSpec" visibility="public"/>
                 <ownedOperation xmi:id="_xm3r1ez1EeC8av2_mh-J3A" name="wrongLength"/>
+                <ownedOperation xmi:id="_XXfXoPP_EeC8av2_mh-J3A" name="badCasting"/>
               </packagedElement>
               <packagedElement xmi:type="uml:Class" xmi:id="_xm3r1uz1EeC8av2_mh-J3A" name="PrpTest" isAbstract="true">
                 <generalization xmi:id="_xm3r1-z1EeC8av2_mh-J3A" general="_xm3FBez1EeC8av2_mh-J3A"/>
@@ -5784,19 +5768,9 @@
                     <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_xm3sN-z1EeC8av2_mh-J3A"/>
                   </ownedParameter>
                 </ownedOperation>
-                <ownedOperation xmi:id="_xm3sOOz1EeC8av2_mh-J3A" name="wrongKeySize" visibility="public">
-                  <ownedComment xmi:id="_xm3sOez1EeC8av2_mh-J3A" annotatedElement="_xm3sOOz1EeC8av2_mh-J3A">
-                    <body>&lt;br>wrongKeySize</body>
-                  </ownedComment>
-                </ownedOperation>
                 <ownedOperation xmi:id="_xm3sOuz1EeC8av2_mh-J3A" name="wrongKeyEncoding" visibility="public">
                   <ownedComment xmi:id="_xm3sO-z1EeC8av2_mh-J3A" annotatedElement="_xm3sOuz1EeC8av2_mh-J3A">
                     <body>&lt;br>wrongKeyEncoding</body>
-                  </ownedComment>
-                </ownedOperation>
-                <ownedOperation xmi:id="_xm3sPOz1EeC8av2_mh-J3A" name="wrongKeyType" visibility="public">
-                  <ownedComment xmi:id="_xm3sPez1EeC8av2_mh-J3A" annotatedElement="_xm3sPOz1EeC8av2_mh-J3A">
-                    <body>&lt;br>wrongKeyType</body>
                   </ownedComment>
                 </ownedOperation>
                 <ownedOperation xmi:id="_xm3sPuz1EeC8av2_mh-J3A" name="unInited" visibility="public">
@@ -5809,7 +5783,6 @@
                     <body>&lt;br>wrongOffset</body>
                   </ownedComment>
                 </ownedOperation>
-                <ownedOperation xmi:id="_xm3sQuz1EeC8av2_mh-J3A" name="wrongAlgSpec" visibility="public"/>
               </packagedElement>
               <packagedElement xmi:type="uml:Class" xmi:id="_xm3sQ-z1EeC8av2_mh-J3A" name="RabinTest" isAbstract="true">
                 <generalization xmi:id="_xm3sROz1EeC8av2_mh-J3A" general="_xm3FjOz1EeC8av2_mh-J3A"/>
@@ -6014,6 +5987,7 @@
                   </ownedComment>
                 </ownedOperation>
                 <ownedOperation xmi:id="_xm3srOz1EeC8av2_mh-J3A" name="wrongLength"/>
+                <ownedOperation xmi:id="_I_YNIPQAEeC8av2_mh-J3A" name="unInited"/>
               </packagedElement>
               <packagedElement xmi:type="uml:Class" xmi:id="_xm3srez1EeC8av2_mh-J3A" name="CryptoPpRSATest">
                 <ownedComment xmi:id="_xm3sruz1EeC8av2_mh-J3A" annotatedElement="_xm3srez1EeC8av2_mh-J3A">
@@ -6106,7 +6080,6 @@
                 <ownedOperation xmi:id="_xm4Sg-z1EeC8av2_mh-J3A" name="exponentiateCompare" visibility="private"/>
                 <ownedOperation xmi:id="_xm4ShOz1EeC8av2_mh-J3A" name="InverseCompare" visibility="private"/>
                 <ownedOperation xmi:id="_xm4Shez1EeC8av2_mh-J3A" name="WrongArgumentType"/>
-                <ownedOperation xmi:id="_xm4Shuz1EeC8av2_mh-J3A" name="WrongAlgSpec"/>
                 <ownedOperation xmi:id="_xm4Sh-z1EeC8av2_mh-J3A" name="unInited"/>
               </packagedElement>
               <packagedElement xmi:type="uml:Class" xmi:id="_xm4SiOz1EeC8av2_mh-J3A" name="ZpCryptoPpTest">
@@ -6520,7 +6493,6 @@
   <Default:Documentation xmi:id="_xnQtCuz1EeC8av2_mh-J3A" base_Comment="_xm3FNez1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnQtC-z1EeC8av2_mh-J3A" base_Comment="_xm3FROz1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnQtDOz1EeC8av2_mh-J3A" base_Comment="_xm3FRuz1EeC8av2_mh-J3A"/>
-  <Default:Documentation xmi:id="_xnQtDez1EeC8av2_mh-J3A" base_Comment="_xm3FSOz1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnQtDuz1EeC8av2_mh-J3A" base_Comment="_xm3FSuz1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnRUEOz1EeC8av2_mh-J3A" base_Comment="_xm3FTOz1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnRUEez1EeC8av2_mh-J3A" base_Comment="_xm3FaOz1EeC8av2_mh-J3A"/>
@@ -6540,9 +6512,7 @@
   <Default:Documentation xmi:id="_xnRUH-z1EeC8av2_mh-J3A" base_Comment="_xm3rpuz1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnRUIOz1EeC8av2_mh-J3A" base_Comment="_xm3rtez1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnRUIez1EeC8av2_mh-J3A" base_Comment="_xm3ruOz1EeC8av2_mh-J3A"/>
-  <Default:Documentation xmi:id="_xnR7IOz1EeC8av2_mh-J3A" base_Comment="_xm3ry-z1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnR7Iez1EeC8av2_mh-J3A" base_Comment="_xm3rzez1EeC8av2_mh-J3A"/>
-  <Default:Documentation xmi:id="_xnR7Iuz1EeC8av2_mh-J3A" base_Comment="_xm3rz-z1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnR7I-z1EeC8av2_mh-J3A" base_Comment="_xm3r0ez1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnR7JOz1EeC8av2_mh-J3A" base_Comment="_xm3r0-z1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnR7Jez1EeC8av2_mh-J3A" base_Comment="_xm3r3-z1EeC8av2_mh-J3A"/>
@@ -6554,9 +6524,7 @@
   <Default:Documentation xmi:id="_xnR7K-z1EeC8av2_mh-J3A" base_Comment="_xm3sHOz1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnR7LOz1EeC8av2_mh-J3A" base_Comment="_xm3sJ-z1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnR7Lez1EeC8av2_mh-J3A" base_Comment="_xm3sKuz1EeC8av2_mh-J3A"/>
-  <Default:Documentation xmi:id="_xnR7Luz1EeC8av2_mh-J3A" base_Comment="_xm3sOez1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnR7L-z1EeC8av2_mh-J3A" base_Comment="_xm3sO-z1EeC8av2_mh-J3A"/>
-  <Default:Documentation xmi:id="_xnR7MOz1EeC8av2_mh-J3A" base_Comment="_xm3sPez1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnSiMOz1EeC8av2_mh-J3A" base_Comment="_xm3sP-z1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnSiMez1EeC8av2_mh-J3A" base_Comment="_xm3sQez1EeC8av2_mh-J3A"/>
   <Default:Documentation xmi:id="_xnSiMuz1EeC8av2_mh-J3A" base_Comment="_xm3sTez1EeC8av2_mh-J3A"/>
