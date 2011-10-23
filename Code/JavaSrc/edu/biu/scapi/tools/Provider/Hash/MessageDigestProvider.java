@@ -5,6 +5,7 @@ package edu.biu.scapi.tools.Provider.Hash;
 
 import java.security.MessageDigest;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.hash.CollisionResistantHash;
 import edu.biu.scapi.primitives.hash.bc.BcSHA1;
 import edu.biu.scapi.primitives.hash.bc.BcSHA224;
@@ -42,7 +43,12 @@ public abstract class MessageDigestProvider extends MessageDigest {
 
 		byte[] out = new byte[crHash.getHashedMsgSize()];
 		
-		crHash.hashFinal(out, 0);
+		try {
+			crHash.hashFinal(out, 0);
+		} catch (UnInitializedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return out;
 		
@@ -53,7 +59,12 @@ public abstract class MessageDigestProvider extends MessageDigest {
 	 */
 	public void engineUpdate(byte[] in, int inOffset, int inLen) {
 		
-		crHash.update(in, inOffset, inLen);
+		try {
+			crHash.update(in, inOffset, inLen);
+		} catch (UnInitializedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -63,7 +74,12 @@ public abstract class MessageDigestProvider extends MessageDigest {
 		
 		inputArray[0] = in;
 
-		crHash.update(inputArray, 0, inputArray.length);
+		try {
+			crHash.update(inputArray, 0, inputArray.length);
+		} catch (UnInitializedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -75,6 +91,7 @@ public abstract class MessageDigestProvider extends MessageDigest {
 		
 		super(crHash.getAlgorithmName());
 		this.crHash = crHash;
+		crHash.init(null);
 		
 	}
 	
