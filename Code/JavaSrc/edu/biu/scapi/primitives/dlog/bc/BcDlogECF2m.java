@@ -22,7 +22,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECF2mTrinomialBasis;
 
 /**
  * 
- * @author user
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
@@ -125,7 +125,7 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
 	}
 	
 	/**
-	 * Create a random member of that Dlog group
+	 * Creates a random member of this Dlog group
 	 * @return the random element
 	 * @throws UnInitializedException 
 	 */
@@ -137,7 +137,7 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
 	}
 	
 	/**
-	 * create a point over F2m field with the given parameters
+	 * Creates a point over F2m field with the given parameters
 	 * @return the created point
 	 * @throws UnInitializedException 
 	 */

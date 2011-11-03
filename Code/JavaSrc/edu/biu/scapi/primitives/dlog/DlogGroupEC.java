@@ -10,7 +10,7 @@ import java.util.Properties;
  * This class manages the creation of NIST recommended elliptic curves.
  * We have a properties file which contains the parameters for the curves. 
  * This class upload the file once, and construct a properties object from it.
- * @author Moriya
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public abstract class DlogGroupEC extends DlogGroupAbs{

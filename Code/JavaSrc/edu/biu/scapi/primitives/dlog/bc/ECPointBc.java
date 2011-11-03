@@ -9,7 +9,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECGroupParams;
 
 /**
  * This class is an adapter for BC point.
- * @author Moriya
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public abstract class ECPointBc implements ECElement{

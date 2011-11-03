@@ -6,22 +6,22 @@ import java.math.BigInteger;
 import edu.biu.scapi.exceptions.UnInitializedException;
 
 /**
- * Marker interface. Every class that implements it is signed as elliptic curve
- * @author Moriya
+ * Marker interface. Every class that implements it is signed as elliptic curve.
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public interface DlogEllipticCurve extends DlogGroup{
 
 	/**
-	 * Initializes the DlogGroup with one of NIST recommended elliptic curve
-	 * @param name - name of NIST curve to initialized
+	 * Sets this DlogGroup to be one of NIST recommended elliptic curve.
+	 * @param nistCurveName name of NIST curve to initialize
 	 * @throws IllegalAccessException
 	 */
 	public void init(String nistCurveName) throws IllegalAccessException;
 	
 	/**
-	 * Initializes the DlogGroup with elliptic curve other than NIST curves
-	 * @param fileName - name of the file where the curve parameters are written
+	 * Sets this DlogGroup to be an elliptic curve that is not one of NIST curves.
+	 * @param fileName - name of the file where the curve parameters are written; the file has to follow the format specified in the manual documentation.
 	 * @param curveName - name of the curve
 	 * @throws IllegalAccessException
 	 * @throws IOException 

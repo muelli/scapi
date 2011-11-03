@@ -27,7 +27,7 @@ public class ZpElementCryptoPp implements ZpElement{
 		//if the element is in the expected range, set it. else, throw exception
 		if ((x.compareTo(BigInteger.ZERO)>0) && (x.compareTo(p.add(BigInteger.ONE.negate()))<=0))
 			pointerToElement = getPointerToElement(x.toByteArray());
-		else throw new IllegalArgumentException("element out of range");
+		else throw new IllegalArgumentException("Cannot create Zp element. Requested value " + x + " is not in the range of this group.");
 		
 	}
 	

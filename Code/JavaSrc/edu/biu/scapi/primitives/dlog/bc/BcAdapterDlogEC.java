@@ -13,7 +13,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECGroupParams;
 
 /**
  * This class is the adapter to Bouncy Castle implementation of elliptic curves.
- * @author Moriya
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public abstract class BcAdapterDlogEC extends DlogGroupEC 

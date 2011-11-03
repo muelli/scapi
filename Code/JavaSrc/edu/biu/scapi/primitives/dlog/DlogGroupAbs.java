@@ -9,7 +9,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 
 /**
  * DlogGroupAbs is an abstract class that implements common functionality of the Dlog group.
- * @author Moriya
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public abstract class DlogGroupAbs implements DlogGroup{
@@ -177,7 +177,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * @return the exponentiation result
 	 * @throws UnInitializedException 
 	 */
-	public GroupElement multExponentiationsWithSameBase
+	public GroupElement exponentiateWithPreComputedValues
 					(GroupElement groupElement, int exponent) throws UnInitializedException{
 		if (!isInitialized()){
 			throw new UnInitializedException();

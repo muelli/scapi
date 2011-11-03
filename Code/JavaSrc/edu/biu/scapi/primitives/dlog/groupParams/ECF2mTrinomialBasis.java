@@ -5,7 +5,7 @@ import java.math.BigInteger;
 /**
  * Elliptic curve over F2m can be constructed with two basis types, trinomial type or pentanomial type.
  * This class manage the trinomial basis.
- * @author Moriya
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public class ECF2mTrinomialBasis extends ECF2mGroupParams{

@@ -3,8 +3,8 @@ package edu.biu.scapi.primitives.dlog.groupParams;
 import java.math.BigInteger;
 
 /**
- * Koblitz curve is consist of an underline curve and additional parameters - h,n
- * @author Moriya
+ * Koblitz curve consists of an underlying curve and additional parameters - h,n
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public class ECF2mKoblitz extends ECF2mGroupParams{
@@ -25,7 +25,7 @@ public class ECF2mKoblitz extends ECF2mGroupParams{
 	}
 	
 	/**
-	 * @return k1 of the underline curve
+	 * @return k1 of the underlying curve
 	 */
 	public int getK1(){
 		int k1 = 0;
@@ -39,7 +39,7 @@ public class ECF2mKoblitz extends ECF2mGroupParams{
 	}
 	
 	/**
-	 * @return k2 of the underline curve
+	 * @return k2 of the underlying curve
 	 */
 	public int getK2(){
 		int k2 = 0;
@@ -53,7 +53,7 @@ public class ECF2mKoblitz extends ECF2mGroupParams{
 	}
 	
 	/**
-	 * @return k3 of the underline curve
+	 * @return k3 of the underlying curve
 	 */
 	public int getK3(){
 		int k3 = 0;

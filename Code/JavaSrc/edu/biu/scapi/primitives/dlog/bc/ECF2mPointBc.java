@@ -19,7 +19,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 
 /**
  * This class is an adapter for ECPoint.F2m of BC
- * @author Moriya
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public class ECF2mPointBc extends ECPointBc{
@@ -44,7 +44,7 @@ public class ECF2mPointBc extends ECPointBc{
 	}
 	
 	/**
-	 *  Constructor that gets DlogGroup and choose random point in the group
+	 *  Constructor that gets DlogGroup and chooses a random point in the group
 	 * @param curve
 	 * @throws UnInitializedException 
 	 */

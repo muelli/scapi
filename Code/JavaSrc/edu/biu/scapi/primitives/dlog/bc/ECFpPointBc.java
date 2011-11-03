@@ -15,7 +15,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECGroupParams;
 
 /**
  * This class is an adapter for ECPoint.Fp of BC
- * @author Moriya
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public class ECFpPointBc extends ECPointBc{

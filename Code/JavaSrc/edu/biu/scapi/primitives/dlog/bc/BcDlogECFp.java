@@ -18,7 +18,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECFpGroupParams;
 
 /**
  * 
- * @author Moriya
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
  *
  */
 public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp{
