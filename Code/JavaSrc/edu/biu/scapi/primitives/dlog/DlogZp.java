@@ -7,7 +7,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.ZpGroupParams;
 
 /**
  * Marker interface. Every class that implements it is signed as Zp*
- * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public interface DlogZp extends DlogGroup{
