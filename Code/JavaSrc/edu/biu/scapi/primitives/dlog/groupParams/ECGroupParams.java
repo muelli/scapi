@@ -9,7 +9,7 @@ public abstract class ECGroupParams extends GroupParams{
 	protected BigInteger xG;
 	protected BigInteger yG;
 	
-	/**
+	/*
 	 * 
 	 * @return coefficient a
 	 */
@@ -17,7 +17,7 @@ public abstract class ECGroupParams extends GroupParams{
 		return a;
 	}
 	
-	/**
+	/*
 	 * 
 	 * @return coefficient b
 	 */
@@ -25,7 +25,7 @@ public abstract class ECGroupParams extends GroupParams{
 		return b;
 	}
 	
-	/**
+	/*
 	 * 
 	 * @return the x value of the generator point
 	 */
@@ -33,7 +33,7 @@ public abstract class ECGroupParams extends GroupParams{
 		return xG;
 	}
 	
-	/**
+	/*
 	 * 
 	 * @return the y value of the generator point
 	 */
