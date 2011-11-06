@@ -17,6 +17,10 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECF2mKoblitz;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mPentanomialBasis;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mTrinomialBasis;
 
+/**This class implements a Dlog group over F2m utilizing Miracl++'s implementation.<p>
+ * It uses JNI technology to call Miracl's native code.
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
+ */
 public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 
 	private native void initF2mCurve(long mip, int m, int k1, int k2, int k3, byte[] a, byte[] b);
@@ -27,7 +31,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	private native boolean isF2mMember(long mip, long point);
 	
 	/**
-	 * Initialize the DlogGroup with one of NIST recommended elliptic curve
+	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
 	 * @param curveName - name of NIST curve to initialized
 	 * @throws IllegalAccessException
 	 */
@@ -118,7 +122,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	}
 	
 	/**
-	 * Calculate the inverse of the given GroupElement
+	 * Calculates the inverse of the given GroupElement
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
@@ -141,7 +145,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	}
 	
 	/**
-	 * Multiply two GroupElements
+	 * Multiplies two GroupElements
 	 * @param groupElement1
 	 * @param groupElement2
 	 * @return the multiplication result
@@ -169,7 +173,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	}
 	
 	/**
-	 * Calculate the exponentiate of the given GroupElement
+	 * Calculates the exponentiate of the given GroupElement
 	 * @param exponent
 	 * @param base 
 	 * @return the result of the exponentiation
@@ -194,7 +198,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	}
 	
 	/**
-	 * Create a random member of that Dlog group
+	 * Creates a random member of this Dlog group
 	 * @return the random element
 	 * @throws UnInitializedException 
 	 */
@@ -206,7 +210,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	}
 	
 	/**
-	 * Create a point in the F2m field with the given parameters 
+	 * Creates a point in the F2m field with the given parameters 
 	 * @return the random element
 	 * @throws UnInitializedException 
 	 */
@@ -218,7 +222,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	}
 	
 	/**
-	 * Check if the given element is member of that Dlog group
+	 * Check if the given element is member of this Dlog group
 	 * @param element - 
 	 * @return true if the given element is member of that group. false, otherwise.
 	 * @throws UnInitializedException 
