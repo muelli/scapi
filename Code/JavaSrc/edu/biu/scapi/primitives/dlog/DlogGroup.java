@@ -15,7 +15,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 * In cryptography, we are interested in groups for which the discrete logarithm problem (Dlog for short) is assumed to be hard.<p> 
 * The two most common classes are the group Zp* for a large p, and some Elliptic curve groups.
 * 
-* @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
+* @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
 
  *
  */
@@ -90,8 +90,10 @@ public interface DlogGroup {
 	public boolean isOrderGreaterThan(int numBits) throws UnInitializedException;
 	
 	/**
-	 * Checks if the given generator is indeed the generator of the group
-	 * @return <code>true<code> is the generator is valid; <code>false<code> otherwise.
+	 * Checks if the element set as the generator is indeed the generator of this group.
+	 * The generator is set upon calling the init function of this group. <p>
+	 * Therefore, if init hasn't been called this function throws an UnInitializedException.
+	 * @return <code>true<code> if the generator is valid; <code>false<code> otherwise.
 	 * @throws UnInitializedException
 	 */
 	public boolean isGenerator() throws UnInitializedException;
@@ -152,7 +154,7 @@ public interface DlogGroup {
 	public GroupElement simultaneousMultipleExponentiations(GroupElement[] groupElements, BigInteger[] exponentiations) throws UnInitializedException;
 	
 	/**
-	 * Compute the product of several exponentiations of the same base
+	 * Computes the product of several exponentiations of the same base
 	 * and distinct exponents. 
 	 * An optimization is used to compute it more quickly by keeping in memory 
 	 * the result of h1, h2, h4,h8,... and using it in the calculation.<p>
