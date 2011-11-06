@@ -16,9 +16,12 @@ public class ECF2mPointMiracl implements ECElement{
 
 	private native long createF2mPoint(long mip, byte[] x, byte[] y, boolean[] validity);
 	private native long createRandomF2mPoint(long mip, int m, boolean[] validity);
+	private native byte[] getXValueF2mPoint(long mip, long point);
+	private native byte[] getYValueF2mPoint(long mip, long point);
 	private native void deletePointF2m(long p);
 	
 	private long point = 0;
+	private long mip = 0;
 	
 	/**
 	 * Constructor that accepts x,y values of a point. 
@@ -29,10 +32,11 @@ public class ECF2mPointMiracl implements ECElement{
 	 */
 	public ECF2mPointMiracl(BigInteger x, BigInteger y, MiraclDlogECF2m curve){
 		
+		mip = curve.getMip();
 		boolean validity[] = new boolean[1];
 
 		//creates a point in the field with the given parameters
-		point = createF2mPoint(curve.getMip(), x.toByteArray(), y.toByteArray(), validity);
+		point = createF2mPoint(mip, x.toByteArray(), y.toByteArray(), validity);
 		
 		//if the creation failed - throws exception
 		if (validity[0]==false){
@@ -48,11 +52,12 @@ public class ECF2mPointMiracl implements ECElement{
 	 */
 	public ECF2mPointMiracl(MiraclDlogECF2m curve) throws UnInitializedException{
 	
+		mip = curve.getMip();
+		
 		boolean validity[] = new boolean[1];
 		
 		//call for native function that creates random point in the field.
-		point = createRandomF2mPoint(((MiraclAdapterDlogEC) curve).getMip(), 
-							((ECF2mGroupParams)curve.getGroupParams()).getM(), validity);
+		point = createRandomF2mPoint(mip, ((ECF2mGroupParams)curve.getGroupParams()).getM(), validity);
 		
 		//if the algorithm for random element failed - throws exception
 		if(validity[0]==false){
@@ -75,8 +80,16 @@ public class ECF2mPointMiracl implements ECElement{
 	 * 
 	 * @return the pointer to the point
 	 */
-	public long getPoint(){
+	long getPoint(){
 		return point;
+	}
+	
+	public BigInteger getX(){
+		return new BigInteger(getXValueF2mPoint(mip, point));
+	}
+	
+	public BigInteger getY(){
+		return new BigInteger(getYValueF2mPoint(mip, point));
 	}
 	
 	/**

@@ -18,8 +18,11 @@ public class ECFpPointMiracl implements ECElement{
 	private native long createFpPoint(long mip, byte[] x, byte[] y, boolean[] validity);
 	private native long createRandomFpPoint(long mip, byte[] p, boolean[] validity);
 	private native void deletePointFp(long p);
+	private native byte[] getXValueFpPoint(long mip, long point);
+	private native byte[] getYValueFpPoint(long mip, long point);
 	
 	private long point = 0;
+	private long mip = 0;
 	
 	/**
 	 * Constructor that accepts x,y values of a point. 
@@ -29,10 +32,12 @@ public class ECFpPointMiracl implements ECElement{
 	 * @param curve - DlogGroup
 	 */
 	public ECFpPointMiracl(BigInteger x, BigInteger y, MiraclDlogECFp curve){
+		mip = curve.getMip();
+		
 		boolean validity[] = new boolean[1];
 		
 		//call for a native function that creates an element in the field
-		point = createFpPoint(curve.getMip(), x.toByteArray(), y.toByteArray(), validity);
+		point = createFpPoint(mip, x.toByteArray(), y.toByteArray(), validity);
 		
 		//if the creation failed - throws exception
 		if (validity[0]==false){
@@ -47,11 +52,12 @@ public class ECFpPointMiracl implements ECElement{
 	 * @throws UnInitializedException 
 	 */
 	public ECFpPointMiracl(MiraclDlogECFp curve) throws UnInitializedException{
+		mip = curve.getMip();
 		
 		boolean validity[] = new boolean[1];
 		
 		//call for native function that creates random point in the field.
-		point = createRandomFpPoint(((MiraclAdapterDlogEC) curve).getMip(), 
+		point = createRandomFpPoint(mip, 
 							((ECFpGroupParams)curve.getGroupParams()).getP().toByteArray(), validity);
 		
 		//if the algorithm for random element failed - throws exception
@@ -75,8 +81,18 @@ public class ECFpPointMiracl implements ECElement{
 	 * 
 	 * @return the pointer to the point
 	 */
-	public long getPoint(){
+	long getPoint(){
 		return point;
+	}
+	
+	public BigInteger getX(){
+		return new BigInteger(getXValueFpPoint(mip, point));
+		
+	}
+	
+	public BigInteger getY(){
+		return new BigInteger(getYValueFpPoint(mip, point));
+		
 	}
 	
 	/**
