@@ -55,6 +55,8 @@ JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpD
 JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpDlogZp_validateZpGenerator
   (JNIEnv *, jobject, jlong);
 
+JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpDlogZp_validateZpElement
+  (JNIEnv *, jobject, jlong group, jlong element);
 /*
  * Class:     edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpDlogZp
  * Method:    deleteDlogZp

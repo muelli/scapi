@@ -121,12 +121,20 @@ JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpD
 	 
 	  res = ((DL_GroupParameters_GFP*) group)->ValidateElement(3, g, 0);
 
-	  if (g.Compare(1))
-		  res = false;
-	  ModularArithmetic ma(p); //create ModularArithmetic object with the modulus
-	  Integer v = ma.Exponentiate(g, q);
-	  if(v != Integer::One())
-		  res = false;
+	  return res;
+}
+
+JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_CryptoPpDlogZp_validateZpElement
+  (JNIEnv *, jobject, jlong group, jlong element){
+	  Integer e;
+	  bool res = false;
+	  
+	  e = *(Integer*)element;
+	 
+	  res = ((DL_GroupParameters_GFP*) group)->ValidateElement(3, e, 0);
+
+	  if (e.Compare(1)==0)
+		  res = true;
 
 	  return res;
 }
