@@ -10,7 +10,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECFpGroupParams;
 
 /**
  * This class is an adapter for Fp points of miracl
- * @author Moriya
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public class ECFpPointMiracl implements ECElement{
@@ -47,7 +47,7 @@ public class ECFpPointMiracl implements ECElement{
 	}
 	
 	/**
-	 *  Constructor that gets DlogGroup and choose random point in the group
+	 *  Constructor that gets DlogGroup and chooses a random point in the group
 	 * @param curve
 	 * @throws UnInitializedException 
 	 */
@@ -68,8 +68,8 @@ public class ECFpPointMiracl implements ECElement{
 	}
 	
 	/**
-	 * Constructor that gets pointer to element and set it.
-	 * Only our inner functions uses this constructor to set an element. 
+	 * Constructor that gets pointer to element and sets it.
+	 * Only our inner functions use this constructor to set an element. 
 	 * The ptr is a result of our DlogGroup functions, such as multiply.
 	 * @param ptr - pointer to native point
 	 */
