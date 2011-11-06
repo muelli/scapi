@@ -3,9 +3,9 @@ package edu.biu.scapi.primitives.dlog.groupParams;
 import java.math.BigInteger;
 
 /**
- * Elliptic curve over F2m can be constructed with two basis types, trinomial type or pentanomial type.
- * This class manage the pentanomial basis.
- * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
+ * Elliptic curves over F2m can be constructed with two basis types, trinomial type or pentanomial type.
+ * This class manages the pentanomial basis.
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public class ECF2mPentanomialBasis extends ECF2mGroupParams{
