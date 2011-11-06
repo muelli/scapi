@@ -9,7 +9,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 
 /**
  * DlogGroupAbs is an abstract class that implements common functionality of the Dlog group.
- * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public abstract class DlogGroupAbs implements DlogGroup{
@@ -21,7 +21,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	private HashMap<GroupElement, GroupElementsExponentiations> exponentiationsMap = new HashMap<GroupElement, GroupElementsExponentiations>();
 	
 	/**
-	 * 
+	 * Checks if this object has been initialized.
 	 * @return true if the object was initialized. Usually this means that the function init was called
 	 */
 	public boolean isInitialized(){
@@ -29,8 +29,8 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	}
 	
 	/**
-	 * 
-	 * @return the generator of that Dlog group
+	 * If this group has been initialized then it returns the group's generator. Otherwise throws exception.
+	 * @return the generator of this Dlog group
 	 * @throws UnInitializedException 
 	 */
 	public GroupElement getGenerator() throws UnInitializedException{
@@ -41,8 +41,8 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	}
 	
 	/**
-	 * 
-	 * @return the GroupDesc of that Dlog group
+	 * GroupParams are the parameters of the group that define the actual group. That is, different parameters will create a different group. 
+	 * @return the GroupDesc of this Dlog group
 	 * @throws UnInitializedException 
 	 */
 	public GroupParams getGroupParams() throws UnInitializedException{
@@ -53,8 +53,8 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	}
 	
 	/**
-	 * 
-	 * @return the order of that Dlog group
+	 * If this group has been initialized then it returns the group's order. Otherwise throws exception.
+	 * @return the order of this Dlog group
 	 * @throws UnInitializedException 
 	 */
 	public BigInteger getOrder() throws UnInitializedException{
@@ -80,7 +80,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	}
 
 	/**
-	 * checks if the order is greater than 2^numBits
+	 * Checks if the order is greater than 2^numBits
 	 * @param numBits
 	 * @return true if the order is greater than 2^numBits, false - otherwise.
 	 * @throws UnInitializedException 
@@ -91,7 +91,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		else return false;
 	}
 	
-	/**
+	/*
 	 * Computes the product of several exponentiations with distinct bases 
 	 * and distinct exponents. 
 	 * Instead of computing each part separately, an optimization is used to 
@@ -166,12 +166,13 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		return a;
 		
 	}
-	
-	/**
+	/*
 	 * Computes the product of several exponentiations of the same base
 	 * and distinct exponents. 
 	 * An optimization is used to compute it more quickly by keeping in memory 
-	 * the result of h1, h2, h4,h8,... and using it in the calculation.  
+	 * the result of h1, h2, h4,h8,... and using it in the calculation.<p>
+	 * Note that if we want a one-time exponentiation of h it is preferable to use the basic exponentiation function 
+	 * since there is no point to keep anything in memory if we have no intention to use it. 
 	 * @param groupElement
 	 * @param exponent
 	 * @return the exponentiation result
