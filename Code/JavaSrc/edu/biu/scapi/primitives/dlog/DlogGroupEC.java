@@ -5,12 +5,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
+
 
 /**
  * This class manages the creation of NIST recommended elliptic curves.
  * We have a properties file which contains the parameters for the curves. 
  * This class upload the file once, and construct a properties object from it.
- * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public abstract class DlogGroupEC extends DlogGroupAbs{
@@ -19,7 +21,7 @@ public abstract class DlogGroupEC extends DlogGroupAbs{
 	protected String PROPERTIES_FILES_PATH = System.getProperty("java.class.path").toString().split(";")[0]+"\\propertiesFiles\\NISTEC.properties";
 	
 	/**
-	 * Initialize the DlogGroup with a curve which does not comply with NIST recommended elliptic curves.
+	 * Initializes this DlogGroup with a curve which does not comply with NIST recommended elliptic curves.
 	 * @param fileName - name of the elliptic curves file
 	 * @param curveName - name of NIST curve to initialized
 	 * @throws IllegalAccessException
@@ -65,8 +67,8 @@ public abstract class DlogGroupEC extends DlogGroupAbs{
 		return ecProperties;
 	}
 	
-	/**
-	 * Checks that the order, generator and groupParams are valid or not.
+	/*
+	 * Checks parameters of this group to see if they conform to the type this group is supposed to be. 
 	 * There are two ways to set those parameters. One way is to load them from NIST file, so the parameters are correct. 
 	 * The second way is to get the parameters from the user in the init function. In that way, that is the user responsibility to check the validity of the parameters.
 	 * In both ways, the parameters we set should be correct. Therefore, currently the function validateGroup does not operate the validity check and always return true.
@@ -77,13 +79,17 @@ public abstract class DlogGroupEC extends DlogGroupAbs{
 		return true;
 	}
 
-	/**
-	 * Checks if the given generator is indeed the generator of the group
-	 * There are two ways to set the generator. One way is to load it from NIST file, so the generator is correct. 
-	 * The second way is to get the generator values from the user in the init function. In that way, that is the user responsibility to check the validity of the parameters.
-	 * In both ways, the generator we set should be correct. Therefore, currently the function isGenerator does not operate the validity check and always return true.
+	
+	/*
+	 * Checks if the element set as the generator is indeed the generator of this group.
+	 * The generator is set upon calling the init function of this group. <p>
+	 * Therefore, if init hasn't been called this function throws an UnInitializedException.
+	 * For Elliptic curves there are two ways to set the generator. One way is to load it from NIST file, so the generator is correct. 
+	 * The second way is to get the generator values from the user in the init function. In that way, it is the user's responsibility to check the validity of the parameters.
+	 * In both ways, the generator we set must be correct. However, currently the function isGenerator does not operate the validity check and always returns true.
 	 * Maybe in the future we will add the validity checks.
-	 * @return true.
+	 * @return <code>true<code> is the generator is valid; <code>false<code> otherwise.
+	 * @throws UnInitializedException
 	 */
 	public boolean isGenerator(){
 		return true;
