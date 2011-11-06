@@ -25,6 +25,21 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
 
 /*
  * Class:     edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl
+ * Method:    getXValue
+ * Signature: (J)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl_getXValueF2mPoint
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl
+ * Method:    getYValue
+ * Signature: (J)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl_getYValueF2mPoint
+  (JNIEnv *, jobject, jlong, jlong);
+/*
+ * Class:     edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl
  * Method:    deletePointF2m
  * Signature: (J)V
  */

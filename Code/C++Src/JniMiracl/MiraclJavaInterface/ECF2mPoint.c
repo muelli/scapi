@@ -66,11 +66,52 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
 	   return (jlong)point; // return the point
 }
 
+/* function getXValue : This function return the x coordinate of the given point
+ * param m			  : pointer to mip
+ * param point		  : pointer to the point
+ * return			  : the x coordinate of the given point
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl_getXValueF2mPoint
+  (JNIEnv *env, jobject obj, jlong m, jlong point){
+	  /* convert the accepted parameters to MIRACL parameters*/
+	  miracl* mip = (miracl*)m;
+
+	  big x, y;
+	  x= mirvar(mip, 0);
+	  y= mirvar(mip, 0);
+
+	  //get x, y values of the point
+	  epoint2_get(mip, (epoint*)point, x, y);
+
+	  //return the bytes of x
+	  return miraclBigToJbyteArray(env, mip, x);
+}
+
+/* function getYValue : This function return the y coordinate of the given point
+ * param m			  : pointer to mip
+ * param point		  : pointer to the point
+ * return			  : the y coordinate of the given point
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl_getYValueF2mPoint
+  (JNIEnv * env, jobject obj, jlong m, jlong point){
+	  /* convert the accepted parameters to MIRACL parameters*/
+	  miracl* mip = (miracl*)m;
+
+	  big x, y;
+	  x= mirvar(mip, 0);
+	  y= mirvar(mip, 0);
+
+	  //get x, y values of the point
+	  epoint2_get(mip, (epoint*)point, x, y);
+
+	  //retur nthe bytes of x
+	  return miraclBigToJbyteArray(env, mip, y);
+}
 
 /* function deletePointFp : This function deletes point of elliptic curve over Fp
  * param p				  : pointer to elliptic curve point
  */
 JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECPointMiracl_deletePointF2m
-  (JNIEnv *env, jobject obj, jlong p){
+  (JNIEnv *env, jobject obj, jlong m, jlong p){
 	  epoint_free((epoint*)p);
 }
