@@ -12,7 +12,7 @@ public abstract class MiraclAdapterDlogEC extends DlogGroupEC
 
 	protected long mip = 0; ///MIRACL pointer
 
-	/**
+	/*
 	 * 
 	 * @return mip - miracl pointer
 	 */
