@@ -21,6 +21,7 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	private native void deleteDlogZp(long group);
 	private native boolean validateZpGroup(long group);
 	private native boolean validateZpGenerator(long group);
+	private native boolean validateZpElement(long group, long element);
 	
 	/**
 	 * Initialize the CryptoPP implementation of Dlog over Zp* with the given groupParams
@@ -56,14 +57,16 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 			throw new UnInitializedException();
 		}
 		//check if element is ZpElementCryptoPp
-		if (element instanceof ZpElementCryptoPp){
-			BigInteger elementVal = ((ZpElementCryptoPp) element).getElement();
-			BigInteger p = ((ZpGroupParams) groupParams).getP();
-			//check if the element is in the appropriate range
-			if ((elementVal.compareTo(BigInteger.ZERO)>0) && (elementVal.compareTo(p.add(BigInteger.ONE.negate()))<=0))
-				return true;
+		if (!(element instanceof ZpElementCryptoPp)){
+			throw new IllegalArgumentException("element type doesn't match the group type");
 		}
-		return false;
+		/*BigInteger elementVal = ((ZpElement) element).getElementValue();
+		BigInteger q = ((ZpGroupParams) groupParams).getQ();
+		//check if the element is in the appropriate range
+		if ((elementVal.compareTo(BigInteger.ZERO)>0) && (elementVal.compareTo(q)<0))
+			return true;*/
+		return validateZpElement(PointerToGroup, ((ZpElementCryptoPp) element).getPointerToElement());
+		
 	}
 
 	/**
