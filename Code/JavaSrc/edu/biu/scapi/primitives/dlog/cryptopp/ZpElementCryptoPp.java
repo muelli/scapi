@@ -6,7 +6,12 @@ import java.util.logging.Level;
 
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.ZpElement;
-
+/**
+ * This class is an adapter class of Crypto++ to a ZpElement in SCAPI.<p>
+ * It holds a pointer to a Zp element in Crypto++. It implements all the functionality of a Zp element.  
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
+ *
+ */
 public class ZpElementCryptoPp implements ZpElement{
 
 	private long pointerToElement;
@@ -17,7 +22,7 @@ public class ZpElementCryptoPp implements ZpElement{
 		
 	/**
 	 * This constructor accepts x value and DlogGroup.
-	 * If x is valid, sets it. else, throws exception 
+	 * If x is valid, sets it; else, throws exception 
 	 * @param x
 	 * @param zp
 	 * @throws IllegalArgumentException
@@ -67,7 +72,7 @@ public class ZpElementCryptoPp implements ZpElement{
 			Logging.getLogger().log(Level.WARNING, "couldn't find a random element");
 	}
 	
-	/**
+	/*
 	 * Constructor that gets pointer to element and set it.
 	 * Only our inner functions uses this constructor to set an element. 
 	 * The long value is a pointer which excepted by our native functions.
@@ -92,7 +97,7 @@ public class ZpElementCryptoPp implements ZpElement{
 		return new BigInteger(getElement(pointerToElement));
 	}
 	
-	/**
+	/*
 	 * delete the related Dlog element object
 	 */
 	protected void finalize() throws Throwable {
