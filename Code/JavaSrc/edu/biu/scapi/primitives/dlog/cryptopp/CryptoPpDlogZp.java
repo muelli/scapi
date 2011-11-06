@@ -9,6 +9,10 @@ import edu.biu.scapi.primitives.dlog.GroupElement;
 import edu.biu.scapi.primitives.dlog.ZpElement;
 import edu.biu.scapi.primitives.dlog.groupParams.ZpGroupParams;
 
+/**This class implements a Dlog group over Zp* utilizing Crypto++'s implementation.<p>
+ * It uses JNI technology to call Crypto++'s native code.
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
+ */
 public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 
 	private long PointerToGroup = 0; //pointer to the native group object
@@ -24,7 +28,7 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	private native boolean validateZpElement(long group, long element);
 	
 	/**
-	 * Initialize the CryptoPP implementation of Dlog over Zp* with the given groupParams
+	 * Initializes the CryptoPP implementation of Dlog over Zp* with the given groupParams
 	 * @param groupParams - contains the group parameters
 	 */
 	public void init(ZpGroupParams groupParams){
@@ -46,7 +50,7 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	}
 	
 	/**
-	 * Check if the given element is member of that Dlog group
+	 * Check if the given element is member of this Dlog group
 	 * @param element 
 	 * @return true if the given element is member of that group. false, otherwise.
 	 * @throws UnInitializedException 
@@ -70,7 +74,7 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	}
 
 	/**
-	 * Check if the given generator is indeed the generator of the group
+	 * Checks if the given generator is indeed the generator of the group
 	 * @return true, is the generator is valid, false otherwise.
 	 * @throws UnInitializedException 
 	 */
@@ -82,7 +86,7 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	}
 
 	/**
-	 * Check if the parameters of the group are correct.
+	 * Checks if the parameters of the group are correct.
 	 * @return true if valid, false otherwise.
 	 * @throws UnInitializedException 
 	 */
@@ -94,7 +98,7 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	}
 
 	/**
-	 * Calculate the inverse of the given GroupElement
+	 * Calculates the inverse of the given GroupElement
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
@@ -117,7 +121,7 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	}
 
 	/**
-	 * Calculate the exponentiate of the given GroupElement
+	 * Raises the base GroupElement to the exponent. The result is another GroupElement.
 	 * @param exponent
 	 * @param base 
 	 * @return the result of the exponentiation
@@ -141,7 +145,7 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	}
 
 	/**
-	 * Multiply two GroupElements
+	 * Multiplies two GroupElements
 	 * @param groupElement1
 	 * @param groupElement2
 	 * @return the multiplication result
@@ -167,7 +171,7 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	}
 
 	/**
-	 * Create a random member of that Dlog group
+	 * Creates a random member of this Dlog group
 	 * @return the random element
 	 * @throws UnInitializedException 
 	 */
@@ -179,7 +183,7 @@ public class CryptoPpDlogZp extends DlogGroupAbs implements DlogZp{
 	}
 	
 	/**
-	 * Create a Zp element with the given parameter
+	 * Creates a Zp element with the given parameter
 	 * @return the created element
 	 * @throws UnInitializedException 
 	 */
