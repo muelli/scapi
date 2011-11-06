@@ -1,7 +1,11 @@
 package edu.biu.scapi.primitives.dlog.groupParams;
 
 import java.math.BigInteger;
-
+/**
+ * This class holds the parameters of a Dlog group over Zp*.
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
+ *
+ */
 public class ZpGroupParams extends GroupParams{
 
 	private BigInteger p; //modulus
