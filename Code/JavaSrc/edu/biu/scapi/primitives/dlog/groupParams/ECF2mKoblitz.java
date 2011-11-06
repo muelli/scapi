@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 /**
  * Koblitz curve consists of an underlying curve and additional parameters - h,n
- * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public class ECF2mKoblitz extends ECF2mGroupParams{
