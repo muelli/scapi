@@ -21,14 +21,14 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECF2mPentanomialBasis;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mTrinomialBasis;
 
 /**
- * 
- * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
+ * This class implements an Elliptic curve Dlog group over F2m utilizing Bouncy Castle's implementation. 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
 
 	/**
-	 * Initialize the DlogGroup with one of NIST recommended elliptic curve
+	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
 	 * @param curveName - name of NIST curve to initialized
 	 * @throws IllegalAccessException
 	 */
@@ -46,7 +46,7 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
 			
 			//check that the given curve is in the field that matches the group
 			if (!curveName.startsWith("B-") && !curveName.startsWith("K-")){
-				throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match the DlogGroup type"); 
+				throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match this DlogGroup type"); 
 			}
 			isInitialized = true; 
 			doInit(ecProperties, curveName);  // set the data and initialize the curve
@@ -58,7 +58,7 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
 	}
 	
 	
-	/**
+	/*
 	 * Extracts the parameters of the curve from the properties object and initialize the groupParams, 
 	 * generator and the underlying curve
 	 * @param ecProperties - properties object contains the curve file data
