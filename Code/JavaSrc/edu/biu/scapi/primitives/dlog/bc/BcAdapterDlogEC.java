@@ -11,9 +11,9 @@ import edu.biu.scapi.primitives.dlog.DlogGroupEC;
 import edu.biu.scapi.primitives.dlog.GroupElement;
 import edu.biu.scapi.primitives.dlog.groupParams.ECGroupParams;
 
-/**
+/*
  * This class is the adapter to Bouncy Castle implementation of elliptic curves.
- * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public abstract class BcAdapterDlogEC extends DlogGroupEC 
@@ -21,8 +21,8 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 
 	protected ECCurve curve; // BC elliptic curve
 	
-	/**
-	 * Creates a ECPoint from the given x,y
+	/*
+	 * Creates an ECPoint from the given x,y
 	 * @param x
 	 * @param y
 	 * @return ECPoint - the created point
@@ -35,10 +35,10 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 		return curve.createPoint(x, y, false);
 	}
 	
-	/**
-	 * Checks if the given element is member of that Dlog group
+	/*
+	 * Checks if the given element is a member of this Dlog group
 	 * @param element - 
-	 * @return true if the given element is member of that group. false, otherwise.
+	 * @return true if the given element is member of this group; false, otherwise.
 	 * @throws IllegalArgumentException
 	 * @throws UnInitializedException 
 	 */
@@ -55,7 +55,7 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 		
 	}
 	
-	/**
+	/*
 	 * Calculates the inverse of the given GroupElement
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
@@ -83,7 +83,7 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 	}
 
-	/**
+	/*
 	 * Calculates the exponentiate of the given GroupElement
 	 * @param exponent
 	 * @param base 
@@ -113,7 +113,7 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 	}
 	
-	/**
+	/*
 	 * Multiplies two GroupElements
 	 * @param groupElement1
 	 * @param groupElement2
@@ -147,7 +147,7 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	}
 	
 	/*
-	 * each of the concrete classes implements this function.
+	 * Each of the concrete classes implements this function.
 	 * BcDlogECFp creates an ECPoint.Fp
 	 * BcDlogECF2m creates an ECPoint.F2m
 	 */
