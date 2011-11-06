@@ -19,7 +19,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 
 /**
  * This class is an adapter for ECPoint.F2m of BC
- * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public class ECF2mPointBc extends ECPointBc{
@@ -120,9 +120,9 @@ public class ECF2mPointBc extends ECPointBc{
 		}
 	}
 
-	/**
-	 * Constructor that gets an element and set it.
-	 * Only our inner functions uses this constructor to set an element. 
+	/*
+	 * Constructor that gets an element and sets it.
+	 * Only our inner functions use this constructor to set an element. 
 	 * The ECPoint is a result of our DlogGroup functions, such as multiply.
 	 * @param point
 	 */
@@ -130,8 +130,8 @@ public class ECF2mPointBc extends ECPointBc{
 		this.point = point;
 	}
 	
-	/**
-	 * Checks if the x,y values are constitute a valid point in the given DlogGroup.
+	/*
+	 * Checks if the x,y values constitute a valid point in the given DlogGroup.
 	 */
 	boolean checkValidity(BigInteger x, BigInteger y, ECGroupParams params) {
 		//the GroupParams that matches this class is ECF2mGroupParams
