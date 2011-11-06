@@ -2,7 +2,11 @@ package edu.biu.scapi.primitives.dlog.groupParams;
 
 
 import java.math.BigInteger;
-
+/**
+ * This class holds the parameters of an Elliptic curve over Zp.
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
+ *
+ */
 public class ECFpGroupParams extends ECGroupParams{
 
 	private BigInteger p; //modulus 
