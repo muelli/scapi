@@ -18,14 +18,14 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECFpGroupParams;
 
 /**
  * 
- * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moryia Farbstein)
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp{
 	
 	
 	/**
-	 * Initialize the DlogGroup with one of NIST recommended elliptic curve
+	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
 	 * @param curveName - name of NIST curve to initialized
 	 * @throws IllegalAccessException
 	 */
@@ -90,7 +90,7 @@ public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp{
 	}
 	
 	/**
-	 * Create a random member of that Dlog group
+	 * Create a random member of this Dlog group
 	 * @return the random element
 	 * @throws UnInitializedException 
 	 */
