@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.PerfectUniversalHash;
+package edu.biu.scapi.primitives.perfectUniversalHash;
 
 import javax.crypto.SecretKey;
 
