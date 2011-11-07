@@ -57,7 +57,7 @@ public class Logging {
 	
 	/**
 	 * return the static Logger.
-	 * @return
+	 * @return Logger
 	 */
 	public static Logger getLogger(){
 		
