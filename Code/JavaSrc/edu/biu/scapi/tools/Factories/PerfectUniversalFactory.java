@@ -8,7 +8,7 @@ package edu.biu.scapi.tools.Factories;
 
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.primitives.PerfectUniversalHash.PerfectUniversalHash;
+import edu.biu.scapi.primitives.perfectUniversalHash.PerfectUniversalHash;
 
 /** 
  * @author LabTest
@@ -34,7 +34,7 @@ public final class PerfectUniversalFactory {
 	/** 
 	 * @param provider the required provider name
 	 * @param algName the required algorithm name
-	 * @return an object of type PerfectUniversalHash class that was determined by the algName + provider
+	 * @return an object of type perfectUniversalHash class that was determined by the algName + provider
 	 * @throws FactoriesException 
 	 */
 	public Object getObject(String algName, String provider) throws FactoriesException {
@@ -45,7 +45,7 @@ public final class PerfectUniversalFactory {
 	/** 
 	 * 
 	 * @param algName the required algorithm name
-	 * @return an object of type PerfectUniversalHash class that was determined by the algName + the default provider for that algorithm.
+	 * @return an object of type perfectUniversalHash class that was determined by the algName + the default provider for that algorithm.
 	 * @throws FactoriesException 
 	 */public Object getObject(String algName) throws FactoriesException {
 		
