@@ -77,8 +77,7 @@ public abstract class BcPRG extends PseudorandomGeneratorAbs {
 	 * @param outlen - length
 	 * @throws UnInitializedException 
 	 */
-	public void getPRGBytes(byte[] outBytes, int outOffset,
-			int outLen) throws UnInitializedException {
+	public void getPRGBytes(byte[] outBytes, int outOffset,	int outLen) throws UnInitializedException {
 		if (!isInitialized()){
 			throw new UnInitializedException();
 		}
