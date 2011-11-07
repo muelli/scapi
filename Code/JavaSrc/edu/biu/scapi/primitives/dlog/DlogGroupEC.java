@@ -8,7 +8,7 @@ import java.util.Properties;
 import edu.biu.scapi.exceptions.UnInitializedException;
 
 
-/**
+/*
  * This class manages the creation of NIST recommended elliptic curves.
  * We have a properties file which contains the parameters for the curves. 
  * This class upload the file once, and construct a properties object from it.
@@ -20,7 +20,7 @@ public abstract class DlogGroupEC extends DlogGroupAbs{
 	private  Properties nistProperties; // properties object to hold nist parameters
 	protected String PROPERTIES_FILES_PATH = System.getProperty("java.class.path").toString().split(";")[0]+"\\propertiesFiles\\NISTEC.properties";
 	
-	/**
+	/*
 	 * Initializes this DlogGroup with a curve which does not comply with NIST recommended elliptic curves.
 	 * @param fileName - name of the elliptic curves file
 	 * @param curveName - name of NIST curve to initialized
