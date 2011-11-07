@@ -24,6 +24,14 @@ public abstract class TargetCollisionResistantAbs implements
 		this.params = params;
 	}
 	
+	/** 
+	 * Initializes this target collision resistant hash. It does not require parameters.
+	 */
+	public void init() {
+		
+		isInitialized = true;
+	}
+	
 	/**
 	 * 
 	 * @return the flag isInitialized

@@ -22,6 +22,11 @@ public interface TargetCollisionResistant {
 	 */
 	public void init(AlgorithmParameterSpec params);
 	
+	/** 
+	 * Initializes this target collision resistant hash. Does not require parameters
+	 */
+	public void init();
+	
 	/**
 	 * 
 	 * @return true if the object was initialized. Usually this means that the function init was called
