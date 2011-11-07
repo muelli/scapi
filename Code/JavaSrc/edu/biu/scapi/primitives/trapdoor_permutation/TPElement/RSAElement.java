@@ -1,4 +1,4 @@
-package edu.biu.scapi.primitives.trapdoor_permutation.TPElement;
+package edu.biu.scapi.primitives.trapdoorPermutation.TPElement;
 
 import java.math.BigInteger;
 import java.util.Random;

@@ -1,4 +1,4 @@
-package edu.biu.scapi.primitives.trapdoor_permutation;
+package edu.biu.scapi.primitives.trapdoorPermutation;
 
 /**
  * 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.trapdoor_permutation;
+package edu.biu.scapi.primitives.trapdoorPermutation;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -11,7 +11,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.TPElement;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.TPElement;
 
 /** 
  * @author user

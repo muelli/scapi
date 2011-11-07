@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.trapdoor_permutation.cryptopp;
+package edu.biu.scapi.primitives.trapdoorPermutation.cryptopp;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -11,14 +11,14 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.primitives.trapdoor_permutation.RabinKeyGenParameterSpec;
-import edu.biu.scapi.primitives.trapdoor_permutation.RabinPermutation;
-import edu.biu.scapi.primitives.trapdoor_permutation.RabinPrivateKey;
-import edu.biu.scapi.primitives.trapdoor_permutation.RabinPublicKey;
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElValidity;
-import edu.biu.scapi.primitives.trapdoor_permutation.TrapdoorPermutationAbs;
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.TPElement;
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.cryptopp.CryptoPpRabinElement;
+import edu.biu.scapi.primitives.trapdoorPermutation.RabinKeyGenParameterSpec;
+import edu.biu.scapi.primitives.trapdoorPermutation.RabinPermutation;
+import edu.biu.scapi.primitives.trapdoorPermutation.RabinPrivateKey;
+import edu.biu.scapi.primitives.trapdoorPermutation.RabinPublicKey;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElValidity;
+import edu.biu.scapi.primitives.trapdoorPermutation.TrapdoorPermutationAbs;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.TPElement;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.cryptopp.CryptoPpRabinElement;
 
 /** 
  * 

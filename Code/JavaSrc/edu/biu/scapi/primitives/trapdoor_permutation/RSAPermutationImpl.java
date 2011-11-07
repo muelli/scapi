@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.trapdoor_permutation;
+package edu.biu.scapi.primitives.trapdoorPermutation;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -20,8 +20,8 @@ import java.util.logging.Level;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.RSAElement;
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.TPElement;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.RSAElement;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.TPElement;
 
 
 public final class RSAPermutationImpl extends TrapdoorPermutationAbs implements RSAPermutation {

@@ -3,7 +3,7 @@
  * yet is hard to invert unless given special additional information, called the "trapdoor". 
  * The public key is essentially the function description and the private key is the trapdoor.
  */
-package edu.biu.scapi.primitives.trapdoor_permutation;
+package edu.biu.scapi.primitives.trapdoorPermutation;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -13,7 +13,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.TPElement;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.TPElement;
 
 /** 
  * @author LabTest

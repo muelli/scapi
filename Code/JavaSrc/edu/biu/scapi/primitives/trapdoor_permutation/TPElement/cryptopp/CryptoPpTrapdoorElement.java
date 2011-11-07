@@ -1,8 +1,8 @@
-package edu.biu.scapi.primitives.trapdoor_permutation.TPElement.cryptopp;
+package edu.biu.scapi.primitives.trapdoorPermutation.TPElement.cryptopp;
 
 import java.math.BigInteger;
 
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.TPElement;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.TPElement;
 
 /** 
  * @author LabTest

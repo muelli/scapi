@@ -1,4 +1,4 @@
-package edu.biu.scapi.primitives.trapdoor_permutation.TPElement.cryptopp;
+package edu.biu.scapi.primitives.trapdoorPermutation.TPElement.cryptopp;
 
 import java.math.BigInteger;
 /** 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.biu.scapi.primitives.trapdoor_permutation.cryptopp;
+package edu.biu.scapi.primitives.trapdoorPermutation.cryptopp;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -16,11 +16,11 @@ import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.RSAKeyGenParameterSpec;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.primitives.trapdoor_permutation.RSAPermutation;
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElValidity;
-import edu.biu.scapi.primitives.trapdoor_permutation.TrapdoorPermutationAbs;
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.TPElement;
-import edu.biu.scapi.primitives.trapdoor_permutation.TPElement.cryptopp.CryptoPpRSAElement;
+import edu.biu.scapi.primitives.trapdoorPermutation.RSAPermutation;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElValidity;
+import edu.biu.scapi.primitives.trapdoorPermutation.TrapdoorPermutationAbs;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.TPElement;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.cryptopp.CryptoPpRSAElement;
 
 /** 
  */
