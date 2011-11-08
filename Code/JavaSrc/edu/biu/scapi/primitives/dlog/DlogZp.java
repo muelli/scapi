@@ -24,5 +24,5 @@ public interface DlogZp extends DlogGroup{
 	 * @return the created element
 	 * @throws UnInitializedException 
 	 */
-	public ZpElement getElement (BigInteger x) throws UnInitializedException;
+	public ZpElement getElement (BigInteger x, Boolean bCheckMembership) throws UnInitializedException;
 }
