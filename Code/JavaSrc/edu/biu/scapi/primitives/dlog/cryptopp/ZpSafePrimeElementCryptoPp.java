@@ -6,13 +6,14 @@ import java.util.logging.Level;
 
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.ZpElement;
+
 /**
  * This class is an adapter class of Crypto++ to a ZpElement in SCAPI.<p>
  * It holds a pointer to a Zp element in Crypto++. It implements all the functionality of a Zp element.  
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public class ZpElementCryptoPp implements ZpElement{
+public class ZpSafePrimeElementCryptoPp implements ZpElement{
 
 	private long pointerToElement;
 	
@@ -27,19 +28,22 @@ public class ZpElementCryptoPp implements ZpElement{
 	 * @param zp
 	 * @throws IllegalArgumentException
 	 */
-	public ZpElementCryptoPp(BigInteger x, BigInteger p) throws IllegalArgumentException{
-		BigInteger q = p.subtract(BigInteger.ONE).divide(new BigInteger("2"));
-		//if the element is in the expected range, set it. else, throw exception
-		if ((x.compareTo(BigInteger.ZERO)>0) && (x.compareTo(p.subtract(BigInteger.ONE))<=0))
-			if ((x.modPow(q, p)).compareTo(BigInteger.ONE)==0){
-				pointerToElement = getPointerToElement(x.toByteArray());
-			}
-		else throw new IllegalArgumentException("Cannot create Zp element. Requested value " + x + " is not in the range of this group.");
-		
+	public ZpSafePrimeElementCryptoPp(BigInteger x, BigInteger p, Boolean bCheckMembership) throws IllegalArgumentException{
+		if(bCheckMembership){
+			BigInteger q = p.subtract(BigInteger.ONE).divide(new BigInteger("2"));
+			//if the element is in the expected range, set it. else, throw exception
+			if ((x.compareTo(BigInteger.ZERO)>0) && (x.compareTo(p.subtract(BigInteger.ONE))<=0))
+				if ((x.modPow(q, p)).compareTo(BigInteger.ONE)==0){
+					pointerToElement = getPointerToElement(x.toByteArray());
+				}
+			else throw new IllegalArgumentException("Cannot create Zp element. Requested value " + x + " is not in the range of this group.");
+		} else {
+			pointerToElement = getPointerToElement(x.toByteArray());
+		}
 	}
 	
 	/**
-	 * Constructor that gets DlogGroup and choose random element with order q.
+	 * Constructor that gets DlogGroup and chooses random element with order q.
 	 * The algorithm is: 
 	 * input: modulus p of length len.
      *  BigInteger x;
@@ -51,16 +55,16 @@ public class ZpElementCryptoPp implements ZpElement{
 	 * @param zp - dlogGroup
 	 * @throws IllegalArgumentException
 	 */
-	public ZpElementCryptoPp(BigInteger p)throws IllegalArgumentException{
+	public ZpSafePrimeElementCryptoPp(BigInteger p)throws IllegalArgumentException{
 		
 		int len = p.bitLength(); //get the security parameter for the algorithm
 		Random generator = new Random();
 		BigInteger element = null;
-		//find an element in the range [1, ..., p-1]
+		//find a number in the range [1, ..., p-1]
 		for(int i=0; i<(2*len); i++){
-			element = new BigInteger(len, generator); //get an element
-			element = element.add(new BigInteger("1"));  //element in the range [1, ..., p-1]
-			//if the element is in the range, calculate its power and set it as the element. 
+			element = new BigInteger(len, generator); //get a number between 0 to 2^p
+			element = element.add(new BigInteger("1"));  //number in the range [1, ..., 2^p-1]
+			//if the number is in the range, calculate its power to get a number in the subgroup and set the power as the element. 
 			if (element.compareTo(p)<0){
 				element = element.pow(2).mod(p);
 				pointerToElement = getPointerToElement(element.toByteArray());
@@ -78,11 +82,11 @@ public class ZpElementCryptoPp implements ZpElement{
 	 * The long value is a pointer which excepted by our native functions.
 	 * @param ptr
 	 */
-	ZpElementCryptoPp(long ptr){
+	ZpSafePrimeElementCryptoPp(long ptr){
 		pointerToElement = ptr;
 	}
 	
-	/**
+	/*
 	 * return the pointer to the element
 	 * @return
 	 */
