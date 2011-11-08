@@ -18,7 +18,7 @@ using namespace CryptoPP;
  * param privExp			: private exponent (d)
  * return jlong				: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNED
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNED
   (JNIEnv *env, jobject, jbyteArray modulus, jbyteArray pubExp, jbyteArray privExp) {
 	  
 	  Integer n, e, d;
@@ -46,7 +46,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryp
  * param privExp			: private exponent (d)
  * return jlong				: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryptopp_CryptoPpRSAPermutation_initRSAWithCrt
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithCrt
   (JNIEnv *env , jobject, jbyteArray modulus, jbyteArray pubExp, jbyteArray privExp, jbyteArray prime1, 
   jbyteArray prime2, jbyteArray primeExponent1, jbyteArray primeExponent2, jbyteArray crt) {
 
@@ -80,7 +80,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryp
  * param pubExp						: pubic exponent (e)
  * return jlong						: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNumBitsAndE
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNumBitsAndE
   (JNIEnv *env, jobject, jint numBits, jbyteArray pubExp) {
 	  //Random Number Generator
 	  AutoSeededRandomPool rng;
@@ -105,7 +105,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryp
  * param pubExp				: pubic exponent (e)
  * return jlong				: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNE
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNE
   (JNIEnv *env, jobject, jbyteArray modulus, jbyteArray pubExp) {
 	  Integer n, e;
 	  Utils utils;
@@ -128,7 +128,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryp
  * param ptr	        : The pointer to the RSA object 
  * return			    : The name of the trapdoor permutation.
  */
-JNIEXPORT jstring JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryptopp_CryptoPpRSAPermutation_loadRSAName
+JNIEXPORT jstring JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_loadRSAName
   (JNIEnv *env, jobject, jlong tpPtr) {
 	  //get the RSA algorithm name
 	  string ls =((RSA *) tpPtr) -> StaticAlgorithmName();
@@ -142,7 +142,7 @@ JNIEXPORT jstring JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cr
  * param tpPtr				: The pointer to the trapdoor permutation object 
  * return jbyteArray		:the modulus as byte array
  */
-JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryptopp_CryptoPpRSAPermutation_getRSAModulus
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_getRSAModulus
   (JNIEnv *env, jobject, jlong tpPtr) {
 	  Utils utils;
 	  
@@ -160,7 +160,7 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation
  * param value				  : The element to check
  * return boolean			  : true if valid, false if not
  */
-JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryptopp_CryptoPpRSAPermutation_checkRSAValidity
+JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_checkRSAValidity
   (JNIEnv *env, jobject, jlong value, jlong tpPtr) {
 	  Utils utils;
 	  Integer iValue, iMod;
@@ -183,7 +183,7 @@ JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_c
  * param tpPtr				: The pointer to the RSA object 
  * param element			: The element for the computation
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryptopp_CryptoPpRSAPermutation_computeRSA
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_computeRSA
   (JNIEnv *env, jobject, jlong tpPtr, jlong element) {
 	  
 	  Utils utils;
@@ -203,7 +203,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryp
  * param tpPtr	        : The pointer to the RSA object 
  * param element		: The element to invert
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryptopp_CryptoPpRSAPermutation_invertRSA
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_invertRSA
   (JNIEnv *env, jobject, jlong tpPtr, jlong element) {
 	  // Random Number Generator
 	  AutoSeededRandomPool rng;
@@ -222,7 +222,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryp
 /*
  * Delete the native object
  */
-JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_trapdoor_1permutation_cryptopp_CryptoPpTrapdoorPermutation_deleteRSA
+JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpTrapdoorPermutation_deleteRSA
 	(JNIEnv *, jobject, jlong tpPtr) {
 		delete((RSAFunction*) tpPtr);
 }
