@@ -7,7 +7,7 @@
  * param element			: byte array
  * return			       : A pointer Integer represent the byteArray.
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryptoPp_getPointerToElement
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpSafePrimeElementCryptoPp_getPointerToElement
   (JNIEnv *env, jobject, jbyteArray element){
 	  Utils utils;
 
@@ -22,7 +22,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCry
  * param element	   : pointer to Integer
  * return			   : byteArray represent the Integer
  */
-JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryptoPp_getElement
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpSafePrimeElementCryptoPp_getElement
   (JNIEnv *env, jobject, jlong element){
 	  Utils utils;
 
@@ -33,7 +33,7 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpEleme
 /* function deleteElement : This function gets pointer to Integer and delete it
  * param element	   : pointer to Integer
  */
-JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryptoPp_deleteElement
+JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpSafePrimeElementCryptoPp_deleteElement
   (JNIEnv *, jobject, jlong elPtr){
 	   //free the allocated memory
 	  delete((void*) elPtr);

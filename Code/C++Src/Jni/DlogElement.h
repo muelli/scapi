@@ -2,17 +2,17 @@
 #include <jni.h>
 /* Header for class edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryptoPp */
 
-#ifndef _Included_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryptoPp
-#define _Included_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryptoPp
+#ifndef _Included_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementSafePrimeCryptoPp
+#define _Included_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementSafePrimeCryptoPp
 #ifdef __cplusplus
 extern "C" {
 #endif
 /*
- * Class:     edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryptoPp
+ * Class:     edu_biu_scapi_primitives_dlog_cryptopp_ZpElementSafePrimeCryptoPp
  * Method:    getPointerToElement
  * Signature: ([B)J
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryptoPp_getPointerToElement
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpSafePrimeElementCryptoPp_getPointerToElement
   (JNIEnv *, jobject, jbyteArray);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCry
  * Method:    deleteElement
  * Signature: (J)J
  */
-JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryptoPp_deleteElement
+JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpSafePrimeElementCryptoPp_deleteElement
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryp
  * Method:    getElement
  * Signature: (J)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpElementCryptoPp_getElement
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_cryptopp_ZpSafePrimeElementCryptoPp_getElement
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
