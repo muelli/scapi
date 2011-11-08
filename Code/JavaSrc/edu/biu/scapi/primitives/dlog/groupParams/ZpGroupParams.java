@@ -21,15 +21,7 @@ public class ZpGroupParams extends GroupParams{
 		
 		this.xG = xG;
 		
-		/* check if p is valid argument */
-		if (p.isProbablePrime(8)){//if p is a prime number
-			//calculate q
-			BigInteger r = p.subtract(BigInteger.ONE).divide(new BigInteger("2"));
-			if (r.isProbablePrime(8)) //if q is a prime number
-				this.p = p; //set p
-			//if p or q are not primes, throw exception
-			else throw new IllegalArgumentException("q = (p-1)/2 must be prime");
-		} else throw new IllegalArgumentException("p must be prime");
+		this.p = p;
 	}
 	
 	/**
