@@ -6,8 +6,8 @@
 
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclAdapterDlogEC_createMip
   (JNIEnv *env, jobject obj){
-	  miracl* mip = mirsys(50, 0);
-
+	 // miracl* mip = mirsys(50, 0);
+	  miracl* mip = mirsys(400, 16);
 	  return (jlong)mip; //return the pointer
 }
 
@@ -119,13 +119,13 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp
 	  /* convert the accepted parameters to MIRACL parameters*/
 	  miracl* mip = (miracl*)m;
 	  big exp = byteArrayToMiraclBig(env, mip, exponent);
-
+	  
 	  //init the result point
 	  p2 = epoint_init(mip);
 
 	   /* The exponentiate operation is converted to multiplication because miracl treat EC as additive group */
 	  ecurve_mult(mip, exp, (epoint*)point, p2);
-	
+	  
 	  return (jlong)p2; //return the result
 }
 
@@ -148,7 +148,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2
 	 
 	   /* The exponentiate operation is converted to multiplication because miracl treat EC as additive group */
 	  ecurve2_mult(mip, exp, (epoint*)point, p2);
-
+	  
 	  return (jlong)p2; //return the result
 }
 
