@@ -72,8 +72,9 @@ public class ECF2mPointMiracl implements ECElement{
 	 * The ptr is a result of our DlogGroup functions, such as multiply.
 	 * @param ptr - pointer to native point
 	 */
-	ECF2mPointMiracl(long ptr){
+	ECF2mPointMiracl(long ptr, long mip){
 		this.point = ptr;
+		this.mip = mip;
 	}
 	
 	/**

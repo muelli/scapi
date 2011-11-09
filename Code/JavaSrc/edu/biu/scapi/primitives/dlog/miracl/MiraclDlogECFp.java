@@ -100,9 +100,9 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp{
 			
 			long point = ((ECFpPointMiracl)groupElement).getPoint();
 			//call to native inverse function
-			long result = invertFpPoint(getMip(), point);
+			long result = invertFpPoint(mip, point);
 			//build a ECFpPointMiracl element from the result value
-			return new ECFpPointMiracl(result);	
+			return new ECFpPointMiracl(result, mip);	
 		}
 		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 	}
@@ -128,9 +128,9 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp{
 			long point2 = ((ECFpPointMiracl)groupElement2).getPoint();
 			
 			//call to native multiply function
-			long result = multiplyFpPoints(getMip(), point1, point2);
+			long result = multiplyFpPoints(mip, point1, point2);
 			//build a ECFpPointMiracl element from the result value
-			return new ECFpPointMiracl(result);
+			return new ECFpPointMiracl(result, mip);
 		}
 		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 	}
@@ -153,9 +153,9 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp{
 			
 			long point = ((ECFpPointMiracl)base).getPoint();
 			//call to native exponentiate function
-			long result = exponentiateFpPoint(getMip(), point, exponent.toByteArray());
+			long result = exponentiateFpPoint(mip, point, exponent.toByteArray());
 			//build a ECFpPointMiracl element from the result value
-			return new ECFpPointMiracl(result);
+			return new ECFpPointMiracl(result, mip);
 		}
 		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 	}
@@ -200,7 +200,7 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp{
 		if(element instanceof ECFpPointMiracl){
 		
 			//call for a native function that checks if the element is a point in this curve
-			member = isFpMember(getMip(), ((ECFpPointMiracl) element).getPoint());
+			member = isFpMember(mip, ((ECFpPointMiracl) element).getPoint());
 			
 		} else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		return member;

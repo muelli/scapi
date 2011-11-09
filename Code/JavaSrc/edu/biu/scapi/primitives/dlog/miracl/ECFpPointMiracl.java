@@ -73,8 +73,9 @@ public class ECFpPointMiracl implements ECElement{
 	 * The ptr is a result of our DlogGroup functions, such as multiply.
 	 * @param ptr - pointer to native point
 	 */
-	ECFpPointMiracl(long ptr){
+	ECFpPointMiracl(long ptr, long mip){
 		this.point = ptr;
+		this.mip = mip;
 	}
 	
 	/**
@@ -86,6 +87,7 @@ public class ECFpPointMiracl implements ECElement{
 	}
 	
 	public BigInteger getX(){
+		
 		return new BigInteger(getXValueFpPoint(mip, point));
 		
 	}

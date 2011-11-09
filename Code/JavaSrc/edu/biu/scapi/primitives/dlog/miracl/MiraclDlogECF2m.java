@@ -137,9 +137,9 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 			
 			long point = ((ECF2mPointMiracl)groupElement).getPoint();
 			//call to native inverse function
-			long result = invertF2mPoint(getMip(), point);
+			long result = invertF2mPoint(mip, point);
 			//build a ECF2mPointMiracl element from the result value
-			return new ECF2mPointMiracl(result);	
+			return new ECF2mPointMiracl(result, mip);	
 		}
 		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 	}
@@ -165,9 +165,9 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 			long point2 = ((ECF2mPointMiracl)groupElement2).getPoint();
 			
 			//call to native multiply function
-			long result = multiplyF2mPoints(getMip(), point1, point2);
+			long result = multiplyF2mPoints(mip, point1, point2);
 			//build a ECF2mPointMiracl element from the result value
-			return new ECF2mPointMiracl(result);
+			return new ECF2mPointMiracl(result, mip);
 		}
 		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 	}
@@ -190,9 +190,9 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 			
 			long point = ((ECF2mPointMiracl)base).getPoint();
 			//call to native exponentiate function
-			long result = exponentiateF2mPoint(getMip(), point, exponent.toByteArray());
+			long result = exponentiateF2mPoint(mip, point, exponent.toByteArray());
 			//build a ECF2mPointMiracl element from the result value
-			return new ECF2mPointMiracl(result);
+			return new ECF2mPointMiracl(result, mip);
 		}
 		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 	}
@@ -235,7 +235,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 		boolean member = false;
 		if(element instanceof ECF2mPointMiracl){
 			//call for native function that checks is the element is a point of this curve
-			member = isF2mMember(getMip(), ((ECF2mPointMiracl) element).getPoint());
+			member = isF2mMember(mip, ((ECF2mPointMiracl) element).getPoint());
 			
 		} else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		
