@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-
 
 /*
  * This class manages the creation of NIST recommended elliptic curves.
@@ -24,7 +22,7 @@ public abstract class DlogGroupEC extends DlogGroupAbs{
 	 * Initializes this DlogGroup with a curve which does not comply with NIST recommended elliptic curves.
 	 * @param fileName - name of the elliptic curves file
 	 * @param curveName - name of NIST curve to initialized
-	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
 	 * @throws IOException - in case there is a problem with the given file
 	 */
 	public void init(String fileName, String curveName) throws IllegalArgumentException, IOException{
