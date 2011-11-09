@@ -1,4 +1,4 @@
-﻿Build started 06/11/2011 12:53:45.
+﻿Build started 09/11/2011 14:07:04.
      1>Project "C:\Users\user\Documents\Visual Studio 2010\Projects\MiraclJavaInterface\MiraclJavaInterface\MiraclJavaInterface.vcxproj" on node 2 (rebuild target(s)).
      1>_PrepareForClean:
          Deleting file "Release\MiraclJavaInterface.lastbuildstate".
@@ -59,4 +59,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.31
+Time Elapsed 00:00:02.42
