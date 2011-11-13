@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "TPElement.h"
 #include "Utils.h"
-#include <iostream>;
-#include "Integer.h";
+#include <iostream>
+#include "Integer.h"
 #include "osrng.h"
 
 using namespace std;
