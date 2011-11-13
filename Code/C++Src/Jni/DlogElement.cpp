@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DlogElement.h"
 #include "Utils.h"
-#include "Integer.h";
+#include "Integer.h"
 
 /* function getPointerToElement : This function gets an element as byte array, turn it to Integer and return pointer to it
  * param element			: byte array
