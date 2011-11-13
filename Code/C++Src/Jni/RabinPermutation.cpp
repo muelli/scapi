@@ -4,7 +4,7 @@
 #include "cryptlib.h"
 #include "Utils.h"
 #include "osrng.h"
-#include <iostream>;
+#include <iostream>
 
 using namespace std;
 using namespace CryptoPP;
