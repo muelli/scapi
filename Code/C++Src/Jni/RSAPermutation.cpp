@@ -5,7 +5,7 @@
 #include "Utils.h"
 #include "osrng.h"
 #include "rabin.h"
-#include <iostream>;
+#include <iostream>
 
 using namespace std;
 using namespace CryptoPP;
