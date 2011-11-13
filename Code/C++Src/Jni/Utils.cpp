@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Utils.h"
-#include "Integer.h";
-#include <iostream>;
-#include <queue.h>;
+#include "Integer.h"
+#include <iostream>
+#include <queue.h>
 
 using namespace std;
 
