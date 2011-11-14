@@ -12,11 +12,12 @@ public class ZpGroupParams extends GroupParams{
 	private BigInteger xG; //generator value
 	
 	/**
-	 * constructor that checks if the given modulus is valid (e.g. if p=2q+1 and q,p are primes).
-	 * @param p
-	 * @throws IllegalArgumentException
+	 * constructor that sets the order, generator and modulus
+	 * @param q - order of the group
+	 * @param xG - generator of the group
+	 * @param p - modulus of the group
 	 */
-	public ZpGroupParams(BigInteger q, BigInteger xG, BigInteger p) throws IllegalArgumentException{
+	public ZpGroupParams(BigInteger q, BigInteger xG, BigInteger p) {
 		this.q = q;
 		
 		this.xG = xG;
@@ -25,12 +26,17 @@ public class ZpGroupParams extends GroupParams{
 	}
 	
 	/**
+	 * Returns the prime modulus of the group
 	 * @return p
 	 */
 	public BigInteger getP(){
 		return p;
 	}
 	
+	/**
+	 * Returns the generator of the group
+	 * @return xG - the generator value
+	 */
 	public BigInteger getXg(){
 		return xG;
 	}

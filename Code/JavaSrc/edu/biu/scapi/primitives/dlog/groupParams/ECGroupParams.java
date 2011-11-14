@@ -2,15 +2,20 @@ package edu.biu.scapi.primitives.dlog.groupParams;
 
 import java.math.BigInteger;
 
+/*
+ * This class holds the parameters of an elliptic curves Dlog group.
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
+ *
+ */
 public abstract class ECGroupParams extends GroupParams{
-	//the coefficients of the elliptic curves
-	protected BigInteger a;
-	protected BigInteger b;
-	protected BigInteger xG;
-	protected BigInteger yG;
+	
+	protected BigInteger a; //coefficient a of the elliptic curve equation
+	protected BigInteger b; //coefficient b of the elliptic curve equation
+	protected BigInteger xG; //x coordinate of the generator point
+	protected BigInteger yG; //y coordinate of the generator point
 	
 	/*
-	 * 
+	 * Returns coefficient a of the elliptic curves equation
 	 * @return coefficient a
 	 */
 	public BigInteger getA(){
@@ -18,7 +23,7 @@ public abstract class ECGroupParams extends GroupParams{
 	}
 	
 	/*
-	 * 
+	 * Returns coefficient b of the elliptic curves equation
 	 * @return coefficient b
 	 */
 	public BigInteger getB(){
@@ -26,7 +31,7 @@ public abstract class ECGroupParams extends GroupParams{
 	}
 	
 	/*
-	 * 
+	 * Returns the x coordinate of the generator point
 	 * @return the x value of the generator point
 	 */
 	public BigInteger getXg(){
@@ -34,7 +39,7 @@ public abstract class ECGroupParams extends GroupParams{
 	}
 	
 	/*
-	 * 
+	 * Returns the y coordinate of the generator point
 	 * @return the y value of the generator point
 	 */
 	public BigInteger getYg(){
