@@ -35,8 +35,8 @@ public class ZpSafePrimeElementCryptoPp implements ZpElement{
 			if ((x.compareTo(BigInteger.ZERO)>0) && (x.compareTo(p.subtract(BigInteger.ONE))<=0)){
 				if ((x.modPow(q, p)).compareTo(BigInteger.ONE)==0){
 					pointerToElement = getPointerToElement(x.toByteArray());
-				}
-			}
+				} else throw new IllegalArgumentException("Cannot create Zp element. Requested value " + x + " is not in the range of this group.");
+			} 
 			else throw new IllegalArgumentException("Cannot create Zp element. Requested value " + x + " is not in the range of this group.");
 		} else {
 			pointerToElement = getPointerToElement(x.toByteArray());
