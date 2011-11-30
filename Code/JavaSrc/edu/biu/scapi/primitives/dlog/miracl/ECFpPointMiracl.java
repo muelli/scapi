@@ -17,6 +17,7 @@ public class ECFpPointMiracl implements ECElement{
 
 	private native long createFpPoint(long mip, byte[] x, byte[] y, boolean[] validity);
 	private native long createRandomFpPoint(long mip, byte[] p, boolean[] validity);
+	private native boolean checkInfinityFp(long point);
 	private native void deletePointFp(long p);
 	private native byte[] getXValueFpPoint(long mip, long point);
 	private native byte[] getYValueFpPoint(long mip, long point);
@@ -78,6 +79,10 @@ public class ECFpPointMiracl implements ECElement{
 		this.mip = mip;
 	}
 	
+	public boolean isInfinity(){
+		return checkInfinityFp(point);
+	}
+	
 	/**
 	 * 
 	 * @return the pointer to the point
@@ -87,12 +92,21 @@ public class ECFpPointMiracl implements ECElement{
 	}
 	
 	public BigInteger getX(){
+		//in case of infinity, there is no coordinates and returns null
+		if (isInfinity()){
+			return null;
+		}
 		
 		return new BigInteger(getXValueFpPoint(mip, point));
 		
 	}
 	
 	public BigInteger getY(){
+		//in case of infinity, there is no coordinates and returns null
+		if (isInfinity()){
+			return null;
+		}
+		
 		return new BigInteger(getYValueFpPoint(mip, point));
 		
 	}

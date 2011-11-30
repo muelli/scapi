@@ -26,6 +26,7 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp{
 	private native long invertFpPoint(long mip, long p);
 	private native boolean validateFpGenerator(long mip, long generator, byte[] x, byte[] y);
 	private native boolean isFpMember(long mip, long point);
+	private native long createInfinityFpPoint(long mip);
 	
 	public void init(String curveName) throws IllegalArgumentException{
 		
@@ -96,15 +97,21 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp{
 			throw new UnInitializedException();
 		}
 		//if the GroupElement doesn't match the DlogGroup, throw exception
-		if (groupElement instanceof ECFpPointMiracl){
-			
-			long point = ((ECFpPointMiracl)groupElement).getPoint();
-			//call to native inverse function
-			long result = invertFpPoint(mip, point);
-			//build a ECFpPointMiracl element from the result value
-			return new ECFpPointMiracl(result, mip);	
+		if (!(groupElement instanceof ECFpPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
-		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		
+		//the inverse of infinity point is infinity
+		if (((ECFpPointMiracl)groupElement).isInfinity()){
+			return groupElement;
+		}
+		
+		long point = ((ECFpPointMiracl)groupElement).getPoint();
+		//call to native inverse function
+		long result = invertFpPoint(mip, point);
+		//build a ECFpPointMiracl element from the result value
+		return new ECFpPointMiracl(result, mip);	
+		
 	}
 	
 	/**
@@ -122,17 +129,29 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp{
 			throw new UnInitializedException();
 		}
 		//if the GroupElements don't match the DlogGroup, throw exception
-		if ((groupElement1 instanceof ECFpPointMiracl) && (groupElement2 instanceof ECFpPointMiracl)){
-			
-			long point1 = ((ECFpPointMiracl)groupElement1).getPoint();
-			long point2 = ((ECFpPointMiracl)groupElement2).getPoint();
-			
-			//call to native multiply function
-			long result = multiplyFpPoints(mip, point1, point2);
-			//build a ECFpPointMiracl element from the result value
-			return new ECFpPointMiracl(result, mip);
+		if (!(groupElement1 instanceof ECFpPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
-		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		if (!(groupElement2 instanceof ECFpPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		}
+		
+		//if one of the points is the infinity point, the second one is the multiplication result
+		if (((ECFpPointMiracl)groupElement1).isInfinity()){
+			return groupElement2;
+		}
+		if (((ECFpPointMiracl)groupElement2).isInfinity()){
+			return groupElement1;
+		}
+		
+		long point1 = ((ECFpPointMiracl)groupElement1).getPoint();
+		long point2 = ((ECFpPointMiracl)groupElement2).getPoint();
+		
+		//call to native multiply function
+		long result = multiplyFpPoints(mip, point1, point2);
+		//build a ECFpPointMiracl element from the result value
+		return new ECFpPointMiracl(result, mip);
+		
 	}
 	
 	/**
@@ -149,15 +168,21 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp{
 			throw new UnInitializedException();
 		}
 		//if the GroupElements don't match the DlogGroup, throw exception
-		if (base instanceof ECFpPointMiracl){
-			
-			long point = ((ECFpPointMiracl)base).getPoint();
-			//call to native exponentiate function
-			long result = exponentiateFpPoint(mip, point, exponent.toByteArray());
-			//build a ECFpPointMiracl element from the result value
-			return new ECFpPointMiracl(result, mip);
+		if (!(base instanceof ECFpPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
-		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		
+		//infinity remains the same after any exponentiate
+		if (((ECFpPointMiracl) base).isInfinity()){
+			return base;
+		}
+		
+		long point = ((ECFpPointMiracl)base).getPoint();
+		//call to native exponentiate function
+		long result = exponentiateFpPoint(mip, point, exponent.toByteArray());
+		//build a ECFpPointMiracl element from the result value
+		return new ECFpPointMiracl(result, mip);
+		
 	}
 	
 	/**
@@ -197,15 +222,25 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp{
 		}
 		boolean member = false;
 		//checks that the element is the correct object
-		if(element instanceof ECFpPointMiracl){
+		if(!(element instanceof ECFpPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		}
 		
-			//call for a native function that checks if the element is a point in this curve
-			member = isFpMember(mip, ((ECFpPointMiracl) element).getPoint());
-			
-		} else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		//infinity point is a valid member
+		if (((ECFpPointMiracl) element).isInfinity()){
+			return true;
+		}
+		
+		//call for a native function that checks if the element is a point in this curve
+		member = isFpMember(mip, ((ECFpPointMiracl) element).getPoint());	
+		
 		return member;
 	}
 	
+	public ECElement getInfinity(){
+		long infinity = createInfinityFpPoint(mip);
+		return new ECFpPointMiracl(infinity, mip);
+	}
 	
 	//upload MIRACL library
 	static {

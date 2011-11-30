@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
@@ -12,6 +13,7 @@ import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogECF2m;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.GroupElement;
+import edu.biu.scapi.primitives.dlog.bc.ECPointBc;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mKoblitz;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mPentanomialBasis;
@@ -29,6 +31,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	private native long invertF2mPoint(long mip, long p);
 	private native boolean validateF2mGenerator(long mip, long generator, byte[] x, byte[] y);
 	private native boolean isF2mMember(long mip, long point);
+	private native long createInfinityF2mPoint(long mip);
 	
 	/**
 	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
@@ -133,15 +136,21 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 			throw new UnInitializedException();
 		}
 		//if the GroupElement doesn't match the DlogGroup, throw exception
-		if (groupElement instanceof ECF2mPointMiracl){
-			
-			long point = ((ECF2mPointMiracl)groupElement).getPoint();
-			//call to native inverse function
-			long result = invertF2mPoint(mip, point);
-			//build a ECF2mPointMiracl element from the result value
-			return new ECF2mPointMiracl(result, mip);	
+		if (!(groupElement instanceof ECF2mPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
-		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		
+		//the inverse of infinity point is infinity
+		if (((ECF2mPointMiracl)groupElement).isInfinity()){
+			return groupElement;
+		}
+		
+		long point = ((ECF2mPointMiracl)groupElement).getPoint();
+		//call to native inverse function
+		long result = invertF2mPoint(mip, point);
+		//build a ECF2mPointMiracl element from the result value
+		return new ECF2mPointMiracl(result, mip);	
+		
 	}
 	
 	/**
@@ -159,17 +168,29 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 			throw new UnInitializedException();
 		}
 		//if the GroupElements don't match the DlogGroup, throw exception
-		if ((groupElement1 instanceof ECF2mPointMiracl) && (groupElement2 instanceof ECF2mPointMiracl)){
-			
-			long point1 = ((ECF2mPointMiracl)groupElement1).getPoint();
-			long point2 = ((ECF2mPointMiracl)groupElement2).getPoint();
-			
-			//call to native multiply function
-			long result = multiplyF2mPoints(mip, point1, point2);
-			//build a ECF2mPointMiracl element from the result value
-			return new ECF2mPointMiracl(result, mip);
+		if (!(groupElement1 instanceof ECF2mPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
-		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		if (!(groupElement2 instanceof ECF2mPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		}
+		
+		//if one of the points is the infinity point, the second one is the multiplication result
+		if (((ECF2mPointMiracl)groupElement1).isInfinity()){
+			return groupElement2;
+		}
+		if (((ECF2mPointMiracl)groupElement2).isInfinity()){
+			return groupElement1;
+		}
+		
+		long point1 = ((ECF2mPointMiracl)groupElement1).getPoint();
+		long point2 = ((ECF2mPointMiracl)groupElement2).getPoint();
+		
+		//call to native multiply function
+		long result = multiplyF2mPoints(mip, point1, point2);
+		//build a ECF2mPointMiracl element from the result value
+		return new ECF2mPointMiracl(result, mip);
+		
 	}
 	
 	/**
@@ -186,15 +207,21 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 			throw new UnInitializedException();
 		}
 		//if the GroupElements don't match the DlogGroup, throw exception
-		if (base instanceof ECF2mPointMiracl){
-			
-			long point = ((ECF2mPointMiracl)base).getPoint();
-			//call to native exponentiate function
-			long result = exponentiateF2mPoint(mip, point, exponent.toByteArray());
-			//build a ECF2mPointMiracl element from the result value
-			return new ECF2mPointMiracl(result, mip);
+		if (!(base instanceof ECF2mPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
-		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		
+		//infinity remains the same after any exponentiate
+		if (((ECF2mPointMiracl) base).isInfinity()){
+			return base;
+		}
+		
+		long point = ((ECF2mPointMiracl)base).getPoint();
+		//call to native exponentiate function
+		long result = exponentiateF2mPoint(mip, point, exponent.toByteArray());
+		//build a ECF2mPointMiracl element from the result value
+		return new ECF2mPointMiracl(result, mip);
+		
 	}
 	
 	/**
@@ -233,13 +260,24 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 			throw new UnInitializedException();
 		}
 		boolean member = false;
-		if(element instanceof ECF2mPointMiracl){
-			//call for native function that checks is the element is a point of this curve
-			member = isF2mMember(mip, ((ECF2mPointMiracl) element).getPoint());
-			
-		} else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		if(!(element instanceof ECF2mPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		}
 		
+		//infinity point is a valid member
+		if (((ECF2mPointMiracl) element).isInfinity()){
+			return true;
+		}
+		
+		//call for native function that checks is the element is a point of this curve
+		member = isF2mMember(mip, ((ECF2mPointMiracl) element).getPoint());
+			
 		return member;
+	}
+	
+	public ECElement getInfinity(){
+		long infinity = createInfinityF2mPoint(mip);
+		return new ECF2mPointMiracl(infinity, mip);
 	}
 	
 	//upload MIRACL library

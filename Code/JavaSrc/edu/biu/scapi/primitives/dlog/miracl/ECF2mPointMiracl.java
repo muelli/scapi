@@ -16,12 +16,14 @@ public class ECF2mPointMiracl implements ECElement{
 
 	private native long createF2mPoint(long mip, byte[] x, byte[] y, boolean[] validity);
 	private native long createRandomF2mPoint(long mip, int m, boolean[] validity);
+	private native boolean checkInfinityF2m(long point);
 	private native byte[] getXValueF2mPoint(long mip, long point);
 	private native byte[] getYValueF2mPoint(long mip, long point);
 	private native void deletePointF2m(long p);
 	
 	private long point = 0;
 	private long mip = 0;
+	
 	
 	/**
 	 * Constructor that accepts x,y values of a point. 
@@ -77,6 +79,7 @@ public class ECF2mPointMiracl implements ECElement{
 		this.mip = mip;
 	}
 	
+	
 	/**
 	 * 
 	 * @return the pointer to the point
@@ -85,11 +88,25 @@ public class ECF2mPointMiracl implements ECElement{
 		return point;
 	}
 	
+	public boolean isInfinity(){
+		return checkInfinityF2m(point);
+	}
+	
 	public BigInteger getX(){
+		//in case of infinity, there is no coordinates and returns null
+		if (isInfinity()){
+			return null;
+		}
+		
 		return new BigInteger(getXValueF2mPoint(mip, point));
 	}
 	
 	public BigInteger getY(){
+		//in case of infinity, there is no coordinates and returns null
+		if (isInfinity()){
+			return null;
+		}
+		
 		return new BigInteger(getYValueF2mPoint(mip, point));
 	}
 	
