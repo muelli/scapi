@@ -46,12 +46,19 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 		if (!isInitialized()){
 			throw new UnInitializedException();
 		}
-		if (element instanceof ECPointBc)
-		{
-			ECPointBc point = (ECPointBc)element;
-			//checks the validity of the point
-			return point.checkValidity(point.getPoint().getX().toBigInteger(), point.getPoint().getY().toBigInteger(), (ECGroupParams)groupParams);
-		} else throw new IllegalArgumentException("element type doesn't match the group type");
+		if (!(element instanceof ECPointBc)){
+			throw new IllegalArgumentException("element type doesn't match the group type");
+		}
+		
+		//infinity point is a valid member
+		if (((ECPointBc) element).isInfinity()){
+			return true;
+		}
+		
+		ECPointBc point = (ECPointBc)element;
+		//checks the validity of the point
+		return point.checkValidity(point.getPoint().getX().toBigInteger(), point.getPoint().getY().toBigInteger(), (ECGroupParams)groupParams);
+		
 		
 	}
 	
@@ -67,20 +74,27 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 			throw new UnInitializedException();
 		}
 		//if the GroupElement doesn't match the DlogGroup, throws exception
-		if (groupElement instanceof ECPointBc){
-			//gets the ECPoint
-			ECPoint point1 = ((ECPointBc)groupElement).getPoint();
-			
-			/* 
-			 * BC treats EC as additive group while we treat that as multiplicative group. 
-			 * Therefore, invert point is negate.
-			 */
-			ECPoint result = point1.negate();
-			
-			//creates GroupElement from the result
-			return createPoint(result);
+		if (!(groupElement instanceof ECPointBc)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
-		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		
+		//the inverse of infinity point is infinity
+		if (((ECPointBc) groupElement).isInfinity()){
+			return groupElement;
+		}
+		
+		//gets the ECPoint
+		ECPoint point1 = ((ECPointBc)groupElement).getPoint();
+		
+		/* 
+		 * BC treats EC as additive group while we treat that as multiplicative group. 
+		 * Therefore, invert point is negate.
+		 */
+		ECPoint result = point1.negate();
+		
+		//creates GroupElement from the result
+		return createPoint(result);
+		
 	}
 
 	/*
@@ -97,20 +111,27 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 			throw new UnInitializedException();
 		}
 		//if the GroupElements don't match the DlogGroup, throws exception
-		if (base instanceof ECPointBc){
-			//gets the ECPoint
-			ECPoint point = ((ECPointBc)base).getPoint();
-			
-			/* 
-			 * BC treats EC as additive group while we treat that as multiplicative group. 
-			 * Therefore, exponentiate point is multiply.
-			 */
-			ECPoint result = point.multiply(exponent);
-			
-			//creates GroupElement from the result
-			return createPoint(result);
+		if (!(base instanceof ECPointBc)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
-		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		
+		//infinity remains the same after any exponentiate
+		if (((ECPointBc) base).isInfinity()){
+			return base;
+		}
+		
+		//gets the ECPoint
+		ECPoint point = ((ECPointBc)base).getPoint();
+		
+		/* 
+		 * BC treats EC as additive group while we treat that as multiplicative group. 
+		 * Therefore, exponentiate point is multiply.
+		 */
+		ECPoint result = point.multiply(exponent);
+		
+		//creates GroupElement from the result
+		return createPoint(result);
+		
 	}
 	
 	/*
@@ -128,22 +149,34 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 			throw new UnInitializedException();
 		}
 		//if the GroupElements don't match the DlogGroup, throws exception
-		if ((groupElement1 instanceof ECPointBc) && (groupElement2 instanceof ECPointBc)){
-			
-			//gets the ECPoints
-			ECPoint point1 = ((ECPointBc)groupElement1).getPoint();
-			ECPoint point2 = ((ECPointBc)groupElement2).getPoint();
-			
-			/* 
-			 * BC treats EC as additive group while we treat that as multiplicative group. 
-			 * Therefore, multiply point is add.
-			 */
-			ECPoint result = point1.add(point2);
-			
-			//creates GroupElement from the result
-			return createPoint(result);
+		if (!(groupElement1 instanceof ECPointBc)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
-		else throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		if (!(groupElement2 instanceof ECPointBc)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		}
+			
+		//if one of the points is the infinity point, the second one is the multiplication result
+		if (((ECPointBc) groupElement1).isInfinity()){
+			return groupElement2;
+		}
+		if (((ECPointBc) groupElement2).isInfinity()){
+			return groupElement1;
+		}
+	
+		//gets the ECPoints
+		ECPoint point1 = ((ECPointBc)groupElement1).getPoint();
+		ECPoint point2 = ((ECPointBc)groupElement2).getPoint();
+		
+		/* 
+		 * BC treats EC as additive group while we treat that as multiplicative group. 
+		 * Therefore, multiply point is add.
+		 */
+		ECPoint result = point1.add(point2);
+		
+		//creates GroupElement from the result
+		return createPoint(result);
+		
 	}
 	
 	/*

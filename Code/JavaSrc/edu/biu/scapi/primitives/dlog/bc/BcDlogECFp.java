@@ -120,4 +120,12 @@ public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp{
 		return new ECFpPointBc(result);
 	}
 	
+	/**
+	 * Creates ECPoint.Fp with infinity values
+	 */
+	public ECElement getInfinity(){
+		ECPoint infinity = curve.getInfinity();
+		return new ECF2mPointBc(infinity);
+	}
+	
 }

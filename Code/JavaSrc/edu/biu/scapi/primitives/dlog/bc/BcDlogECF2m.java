@@ -154,5 +154,13 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
 	protected GroupElement createPoint(ECPoint result) {
 		return new ECF2mPointBc(result);
 	}
+	
+	/**
+	 * Creates ECPoint.F2m with infinity values
+	 */
+	public ECElement getInfinity(){
+		ECPoint infinity = curve.getInfinity();
+		return new ECF2mPointBc(infinity);
+	}
 
 }
