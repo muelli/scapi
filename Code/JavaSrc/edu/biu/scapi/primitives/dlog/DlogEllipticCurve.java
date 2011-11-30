@@ -36,4 +36,10 @@ public interface DlogEllipticCurve extends DlogGroup{
 	 * @throws UnInitializedException 
 	 */
 	public ECElement getElement(BigInteger x, BigInteger y) throws UnInitializedException;
+	
+	/**
+	 * 
+	 * @return the infinity point of this dlog group
+	 */
+	public ECElement getInfinity();
 }
