@@ -1,13 +1,8 @@
-/**
- * 
- */
 package edu.biu.scapi.primitives.prf;
 
 import java.util.logging.Level;
 
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.SecretKey;
-
 
 import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.UnInitializedException;
@@ -15,91 +10,81 @@ import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
- * @author LabTest
+ * This class is one implementation of pseudorandom function with varying IO, based on any prf with varying input length. <p>
+ * The implementation is based on several calles to the prf-based and concatenation of the results.
  * 
- 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
 public class IteratedPrfVarying extends
 		PrfVaryingFromPrfVaryingInput {
+	
 	/** 
+	 * Constructor that accepts the name of the underlying prfVaryingInputLength.
 	 * @param prfVaryingInputName  the prf to use. 
-	 * The initialization of this prf is in the function init of PrfVaryingFromPrfVaryingInput.
 	 * @throws FactoriesException 
 	 */
 	public IteratedPrfVarying(String prfVaringInputName) throws FactoriesException {
+		/*
+		 * The initialization of this prf is in the function init of PrfVaryingFromPrfVaryingInput.
+		 */
 		//get the requested prfVaringInput from the factory. 
 		prfVaryingInputLength = (PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaringInputName);
 	}
 	
 	/**
-	 * 
-	 * @param prfVaryingInput the underlying prf varying. MUST be initialized.
+	 * Constructor that accepts the underlying PrfVaryingInputLength.
+	 * @param prfVaryingInput the underlying prf varying. MUST be initialized, and there is no need to call init.
 	 */
 	public IteratedPrfVarying(PrfVaryingInputLength prfVaryingInput) {
 		
-		//first check that the hmac is initialized.
+		//first checks that the prf is initialized.
 		if(prfVaryingInput.isInitialized()){
-			//assign the prf varying input.
+			//assigns the prf varying input.
 			prfVaryingInputLength = prfVaryingInput;
 		}
-		else{//the user must pass an initialized object, otherwise throw an exception
+		else{//the user must pass an initialized object, otherwise throws an exception
 			throw new IllegalStateException("The input variable must be initialized");
 		}
-		
 	}
-	
-	
-	public void init(SecretKey secretKey) {
-
-		prfVaryingInputLength.init(secretKey);
-		
-	}
-	
-	public boolean isInitialized() {
-
-		//if the hmac is initialized then the HKDF is initialized as well.
-		return prfVaryingInputLength.isInitialized(); 
-	}
-	
 
 	/** 
 	 * @return the algorithm name - SC_PRF_VARY_INOUT.
 	 */
 	public String getAlgorithmName() {
 		
-		return "SC_PRF_VARY_INOUT";
+		return "ITERATED_PRF_VARY_INOUT";
 	}
 
 	/** 
 	 * Not relevant - the input and the output do not have a fixed size.
-	 * @return
+	 * @throws IllegalStateException
 	 */
 	public int getBlockSize() {
 		
-		return 0;
+		throw new IllegalStateException("prp varying has no fixed block size");
 	}
 
 
 	
 	/**
+	 * Computes the iterated permutation. <p>
 	 * 
-	 * 
-	 * Pseudocode:
+	 * The algorithm pseudocode is:
 	 * 
 	 * outlen = outBytes.length
 	 *	x = inBytes
 	 *	----------------
-	 *	Let m be the smallest integer for which L*m > outlen, where L is the output length of HMAC. 
+	 *	Let m be the smallest integer for which L*m > outlen, where L is the output length of the PrfVaryingInputLength. 
 	 *	FOR i = 1 to m 
-	 *	compute Yi = HMAC(k,(x,outlen,i)) [key=k, data=(x,outlen,i)] 
+	 *	compute Yi = PrfVaryingInputLength(k,(x,outlen,i)) [key=k, data=(x,outlen,i)] 
 	 *	return the first outlen bits of Y1,…,Ym  
 	 * 
-	 * This function is necessary since this Prf has variable input and output length.
+	 * This function is necessary since this prf has variable input and output length.
 	 * @param inBytes - input bytes to compute
 	 * @param inLen - the length of the input array
 	 * @param inOff - input offset in the inBytes array
 	 * @param outBytes - output bytes. The resulted bytes of compute.
-	 * @param outOff - output offset in the outBytes array to take the result from
+	 * @param outOff - output offset in the outBytes array to put the result from
 	 * @param outLen - the length of the output array
 	 * @throws UnInitializedException 
 	 */
@@ -108,7 +93,7 @@ public class IteratedPrfVarying extends
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		// check that the offset and length are correct 
+		// checks that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
@@ -116,15 +101,15 @@ public class IteratedPrfVarying extends
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		int prfLength = prfVaryingInputLength.getBlockSize();            //the output size of the prfVaryingInputLength
-		int rounds = (int) Math.ceil((float)outLen / (float)prfLength);  //the smallest integer for which rounds*)prfLength > outlen
+		int rounds = (int) Math.ceil((float)outLen / (float)prfLength);  //the smallest integer for which rounds * prfLength > outlen
 		byte[] intermediateOutBytes = new byte[prfLength];               //round result
 		byte[] currentInBytes = new byte[inLen+2];                       //the data for the prf 
 		
 		Integer outLenByte = new Integer(outLen);
 		
-		//copy the x (inSize) to the input of the prf in the beginning
+		//copies the x (inBytes) to the input of the prf in the beginning
 		System.arraycopy(inBytes, 0, currentInBytes, 0, inLen);
-		//copy the outLen to the input of the prf after the x
+		//copies the outLen to the input of the prf after the x
 		currentInBytes[inLen] = outLenByte.byteValue();
 		
 		Integer round;
@@ -133,10 +118,10 @@ public class IteratedPrfVarying extends
 			
 			round = new Integer(i);
 			
-			//copy the i to the input of the prf
+			//copies the i to the input of the prf
 			currentInBytes[inLen+1] = round.byteValue();
 			
-			//operate the computeBlock of the prf to get the round output
+			//operates the computeBlock of the prf to get the round output
 			try {
 				prfVaryingInputLength.computeBlock(currentInBytes, 0, currentInBytes.length, intermediateOutBytes, 0);
 			} catch (IllegalBlockSizeException e) {
@@ -144,10 +129,10 @@ public class IteratedPrfVarying extends
 			}
 			
 			
-			if (i==rounds) { //copy the round result to the output byte array
-				//in case of the last round - copy only the number of bytes left to match outLen
+			if (i==rounds) { //copies the round result to the output byte array
+				//in case of the last round - copies only the number of bytes left to match outLen
 				System.arraycopy(intermediateOutBytes, 0, outBytes, (i - 1)*prfLength, outLen-((i-1)*prfLength));
-			} else { //in other cases - copy all the result bytes
+			} else { //in other cases - copies all the result bytes
 				System.arraycopy(intermediateOutBytes, 0, outBytes, (i-1)*prfLength, prfLength);
 			}
 		}
