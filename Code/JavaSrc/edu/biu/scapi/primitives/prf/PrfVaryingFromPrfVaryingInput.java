@@ -80,7 +80,7 @@ public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLengt
 
 
 	/** 
-	 * Since both Input and output variables are varying this function should not be call. Throws an exception.
+	 * Since both input and output variables are varying this function should not be call. Throws an exception.
 	 * 
 	 * @throws IllegalBlockSizeException 
 	 * @throws UnInitializedException 
