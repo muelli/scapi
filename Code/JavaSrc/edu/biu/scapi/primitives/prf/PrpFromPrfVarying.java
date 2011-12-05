@@ -101,7 +101,7 @@ public abstract class PrpFromPrfVarying implements PrpVaryingIOLength {
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		
-		//if input and output lengths are equal, call the computeBlock which takes just one length argument
+		//if the input and output lengths are equal, call the computeBlock which takes just one length argument
 		if (inLen == outLen){
 			computeBlock(inBytes, inOff, inLen, outBytes, outOff);
 		}
