@@ -1,9 +1,3 @@
-/**
- * The class LubyRackoffPrpFromPrfVarying is one implementation that has a varying input and output length. LubyRackoffPrpFromPrfVarying is a 
- * pseudorandom permutation with varying input/output lengths, based on any PRF with a variable input/output length 
- * (as long as input length = output length). We take the interpretation that there is essentially a different random permutation
- * for every input/output length.
- */
 package edu.biu.scapi.primitives.prf;
 
 import javax.crypto.IllegalBlockSizeException;
@@ -14,38 +8,46 @@ import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
- * @author LabTest
+ * The class LubyRackoffPrpFromPrfVarying is one implementation that has a varying input and output length. 
+ * LubyRackoffPrpFromPrfVarying is a pseudorandom permutation with varying input/output lengths, based on any PRF with a variable input/output length 
+ * (as long as input length = output length). We take the interpretation that there is essentially a different random permutation
+ * for every input/output length.
+ * 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  * 
  */
 public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	
-	
-
+	/**
+	 * Constructor that accepts a name of a prfVaryingIOLength to be the underlying prf.
+	 * @param prfVaringIOLengthName the underlying prf name
+	 * @throws FactoriesException
+	 */
 	public LubyRackoffPrpFromPrfVarying(String prfVaringIOLengthName) throws FactoriesException {
 
-		//get the requested prpFixed from the factory. 
+		//gets the requested prpVarying from the factory. 
 		prfVaryingIOLength = (PrfVaryingIOLength) PrfFactory.getInstance().getObject(prfVaringIOLengthName);
 	}
 	
-	
 	/**
-	 * 
-	 * @param prfFixed the underlying prf fixed. MUST be initialized.
+	 * Constructor that accepts a prfVaryingIOLength to be the underlying prf.
+	 * @param prfVaryingIOLength the underlying prf varying. MUST be initialized.
 	 */
 	public LubyRackoffPrpFromPrfVarying(PrfVaryingIOLength prfVaryingIOLength){
 		
-		//first check that the prp fixed is initialized.
+		//first checks that the prp fixed is initialized.
 		if(prfVaryingIOLength.isInitialized()){
-			//assign the prf fixed input.
+			//assigns the prf varying input.
 			this.prfVaryingIOLength = prfVaryingIOLength;
 		}
-		else{//the user must pass an initialized object, otherwise throw an exception
+		else{//the user must pass an initialized object, otherwise throws an exception
 			throw new IllegalStateException("The input variable must be initialized");
 		}
 		
 	}
 	/** 
-	 * pseudocode: 
+	 * Computes the LubyRackoff permutation.
+	 * the algorithm pseudocode is: 
 	 * Input :
 	 *		 x = inBytes – should  be of even length                                                      
 	 *		-----------------
@@ -54,37 +56,32 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 *		Let R0 be the second |x|/2 bits of x 
 	 *		For i = 1 to 4 
 	 *		SET Li = Ri-1 
-     *		compute Ri = Li-1 | PRF_VARY_INOUT(k,(Ri-1,i),L)  
+     *		compute Ri = Li-1 ^ PRF_VARY_INOUT(k,(Ri-1,i),L)  
 	 *		[key=k, data=(Ri-1,i),  outlen = L] 
 	 *		return (L4,R4) 
 	 *
 	 * @param inBytes input bytes to compute
-	 * @param inLen the length of the input array
 	 * @param inOff input offset in the inBytes array
+	 * @param inLen the length of the input array and the output array. Since this is a prp, the input and output lengths should be equal.
 	 * @param outBytes output bytes. The resulted bytes of compute
-	 * @param outOff output offset in the outBytes array to take the result from
-	 * @param outLen the length of the output array
+	 * @param outOff output offset in the outBytes array to put the result from
 	 * @throws IllegalBlockSizeException 
 	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException, UnInitializedException {
-		//check that the object is initialized
+	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff) throws IllegalBlockSizeException, UnInitializedException {
+		//checks that the object is initialized
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		// check that the offset and length are correct 
+		// checks that the offsets and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
-		if ((outOff > outBytes.length) || (outOff+outLen > outBytes.length)){
+		if ((outOff > outBytes.length) || (outOff+inLen > outBytes.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		
-		if (inLen!=outLen){
-			throw new IllegalBlockSizeException("Input and output must be of the same length");
-		}
-		
-		//check that the input is of even length.
+		//checks that the input is of even length.
 		if(!(inLen % 2==0) ){//odd throw exception
 			throw new IllegalBlockSizeException("Length of input must be even");
 		}
@@ -92,9 +89,9 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 		int sideSize = inLen/2;//L in the pseudo code
 		byte[] tmpReference;
 		byte[] leftCurrent = new byte[sideSize];
-		byte[] rightCurrent = new byte[sideSize+1];//keep space for the index. Size of L+1. 
+		byte[] rightCurrent = new byte[sideSize+1];//keeps space for the index. Size of L+1. 
 		byte[] leftNext = new byte[sideSize];
-		byte[] rightNext = new byte[sideSize+1];//keep space for the index. Size of L+1.
+		byte[] rightNext = new byte[sideSize+1];//keeps space for the index. Size of L+1.
 		
 			
 		//Let left_current be the first half bits of the input
@@ -111,12 +108,12 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 			//put the index in the last position of Ri-1
 			rightCurrent[sideSize] = new Integer(i).byteValue();
 			
-			//do PRF_VARY_INOUT(k,(Ri-1,i),L) of the pseudocode
-			//put the result in the rightNext array. Later we will XOr it with leftCurrent. Note that the result size is not the entire
+			//does PRF_VARY_INOUT(k,(Ri-1,i),L) of the pseudocode
+			//puts the result in the rightNext array. Later we will XOr it with leftCurrent. Note that the result size is not the entire
 			//rightNext array. It is one byte less. The remaining byte will contain the index for the next iteration.
 			prfVaryingIOLength.computeBlock(rightCurrent, 0, rightCurrent.length, rightNext, 0, sideSize);
 			
-			//do Ri = Li-1 ^ PRF_VARY_INOUT(k,(Ri-1,i),L)  
+			//does Ri = Li-1 ^ PRF_VARY_INOUT(k,(Ri-1,i),L)  
 			//XOR rightNext (which is the resulting prf computation by now) with leftCurrent.
 			for(int j=0;j<sideSize;j++){
 				
@@ -124,7 +121,7 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 			}
 			
 			
-			//switch between the current and the next for the next round.
+			//switches between the current and the next for the next round.
 			//Note that it is much more readable and straightforward to copy the next arrays into the current arrays.
 			//However why copy if we can switch between them and avoid the performance increase by copying. We can not just use assignment 
 			//Since both current and next will point to the same memory block and thus changing one will change the other.
@@ -138,7 +135,7 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 			
 		}
 		
-		//copy the result to the out array.
+		//copies the result to the out array.
 		System.arraycopy(leftCurrent, 0, outBytes, outOff, inLen/2);
 		System.arraycopy(rightCurrent, 0, outBytes, outOff+inLen/2, inLen/2);
 		
@@ -146,7 +143,8 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	}
 
 	/** 
-	 * Inverts the permutation using the given key. Since LubyRackoff permutation can also have varying input and output length 
+	 * Inverts LubyRackoff permutation using the given key. <p>
+	 * Since LubyRackoff permutation can also have varying input and output length 
 	 * (although the input and the output should be the same length), the common parameter <code>len<code> of the input and the output is needed.
 	 * LubyRackoff has a feistel structure and thus invert is possible even though the underlying prf is not invertible.
 	 * The pseudocode for inverting such a structure is the following
@@ -159,7 +157,7 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 * @param inBytes input bytes to invert.
 	 * @param inOff input offset in the inBytes array
 	 * @param outBytes output bytes. The resulted bytes of invert
-	 * @param outOff output offset in the outBytes array to take the result from
+	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param len the length of the input and the output
 	 * @throws IllegalBlockSizeException 
 	 * @throws UnInitializedException 
@@ -169,14 +167,14 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		// check that the offset and length are correct 
+		// checks that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+len > inBytes.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outBytes.length) || (outOff+len > outBytes.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
-		//check that the input is of even length.
+		//checks that the input is of even length.
 		if(!(len % 2==0) ){//odd throw exception
 			throw new IllegalBlockSizeException("Length of input must be even");
 		}
@@ -184,9 +182,9 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 		int sideSize = len/2;//L in the pseudo code
 		byte[] tmpReference;
 		byte[] leftCurrent = new byte[sideSize];
-		byte[] rightCurrent = new byte[sideSize+1];//keep space for the index. Size of L+1. 
+		byte[] rightCurrent = new byte[sideSize+1];//keeps space for the index. Size of L+1. 
 		byte[] leftNext = new byte[sideSize];
-		byte[] rightNext = new byte[sideSize+1];//keep space for the index. Size of L+1.
+		byte[] rightNext = new byte[sideSize+1];//keeps space for the index. Size of L+1.
 		
 			
 		//Let leftNext be the first half bits of the input
@@ -200,23 +198,22 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 			//Ri-1 = Li
 			System.arraycopy(leftNext, 0, rightCurrent, 0, sideSize);
 			
-			//complete Ri-1 = Ri-1|i 
+			//completes Ri-1 = Ri-1|i 
 			rightCurrent[sideSize] = new Integer(i).byteValue();
 			
-			//do PRF_VARY_INOUT(k,(Ri-1,i),L) of the pseudocode
-			//put the result in the leftCurrent array. Later we will XOr it with rightNext. Note that the result size is not the entire
-			//leftCurrent array. 
+			//does PRF_VARY_INOUT(k,(Ri-1,i),L) of the pseudocode
+			//puts the result in the leftCurrent array. Later we will XOr it with rightNext. 
 			prfVaryingIOLength.computeBlock(rightCurrent, 0, rightCurrent.length, leftCurrent, 0, sideSize);
 			
-			//do Ri = L0 ^ PRF_VARY_INOUT(k,(Ri-1,i),L)  
-			//XOR rightNext (which is the resulting prf computation by now) with leftCurrent.
+			//does Li-1 = Ri ^ PRF_VARY_INOUT(k,(Ri-1,i),L)  
+			//XOR leftCurrent (which is the resulting prf computation by now) with rightNext.
 			for(int j=0;j<sideSize;j++){
 				
 				leftCurrent[j] = (byte) (leftCurrent[j] ^ rightNext[j]); 
 			}
 			
 			
-			//switch between the current and the next for the next round.
+			//switches between the current and the next for the next round.
 			//Note that it is much more readable and straightforward to copy the next arrays into the current arrays.
 			//However why copy if we can switch between them and avoid the performance increase by copying. We can not just use assignment 
 			//Since both current and next will point to the same memory block and thus changing one will change the other.
@@ -230,20 +227,25 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 			
 		}
 		
-		//copy the result to the out array.
+		//copies the result to the out array.
 		System.arraycopy(leftNext, 0, outBytes, outOff, sideSize);
 		System.arraycopy(rightNext, 0, outBytes, outOff+sideSize, sideSize);
 		
 	}
 
-	
+	/**
+	 * @return LubyRackoff algorithm name
+	 */
 	public String getAlgorithmName() {
 		return "LUBY_RACKOFF_PRP_FROM_PRP_VARYING";
 	}
 
-	
+	/**
+	 * This object has varying input/output lengths, so this function shouldn't be called.
+	 * @throws IllegalStateException
+	 */
 	public int getBlockSize() {
-		return 0;
+		throw new IllegalStateException("prp varying has no fixed block size");
 	}
 
 
