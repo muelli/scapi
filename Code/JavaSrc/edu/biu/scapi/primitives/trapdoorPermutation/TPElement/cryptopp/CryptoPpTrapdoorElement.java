@@ -44,6 +44,6 @@ public abstract class CryptoPpTrapdoorElement implements TPElement{
 	}
 	
 	 static {
-	        System.loadLibrary("JavaInterface");
+	        System.loadLibrary("CryptoPPJavaInterface");
 	 }
 }
