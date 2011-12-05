@@ -114,6 +114,6 @@ public class ZpSafePrimeElementCryptoPp implements ZpElement{
 	}
 	
 	 static {
-	        System.loadLibrary("JavaInterface");
+	        System.loadLibrary("CryptoPPJavaInterface");
 	 }
 }

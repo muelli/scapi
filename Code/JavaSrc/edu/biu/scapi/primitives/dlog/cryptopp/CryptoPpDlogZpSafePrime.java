@@ -255,7 +255,7 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	
 	//upload CryptoPP library
 	 static {
-	        System.loadLibrary("JavaInterface");
+	        System.loadLibrary("CryptoPPJavaInterface");
 	 }
 
 }
