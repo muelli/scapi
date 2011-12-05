@@ -128,7 +128,7 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	 static {
 		 
 		 //load the crypto++ jni dll
-		 System.loadLibrary("JavaInterface");
+		 System.loadLibrary("CryptoPPJavaInterface");
 	 }
 
 }
