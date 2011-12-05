@@ -277,7 +277,7 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 	}
 	
 	 static {
-	        System.loadLibrary("JavaInterface");
+	        System.loadLibrary("CryptoPPJavaInterface");
 	 }
 	
 }

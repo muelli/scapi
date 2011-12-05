@@ -289,7 +289,7 @@ public final class CryptoPpRSAPermutation extends TrapdoorPermutationAbs impleme
 	}
 	
 	 static {
-	        System.loadLibrary("JavaInterface");
+	        System.loadLibrary("CryptoPPJavaInterface");
 	 }
 	
 	
