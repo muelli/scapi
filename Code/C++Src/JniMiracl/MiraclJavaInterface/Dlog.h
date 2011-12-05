@@ -112,6 +112,21 @@ JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogE
 JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_isF2mMember
   (JNIEnv *, jobject, jlong, jlong);
 
+/*
+ * Class:     edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp
+ * Method:    createInfinityFpPoint
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_createInfinityFpPoint
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m
+ * Method:    createInfinityF2mPoint
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_createInfinityF2mPoint
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

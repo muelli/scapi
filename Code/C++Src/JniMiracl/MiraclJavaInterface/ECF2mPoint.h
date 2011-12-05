@@ -25,6 +25,14 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
 
 /*
  * Class:     edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl
+ * Method:    checkInfinityF2m
+ * Signature: (JJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl_checkInfinityF2m
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl
  * Method:    getXValue
  * Signature: (J)[B
  */

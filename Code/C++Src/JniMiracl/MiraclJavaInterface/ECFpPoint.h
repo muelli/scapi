@@ -24,6 +24,13 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
   (JNIEnv *, jobject, jlong, jbyteArray, jbooleanArray);
 
 /*
+ * Class:     edu_biu_scapi_primitives_dlog_miracl_ECFpPointMiracl
+ * Method:    checkInfinityFp
+ * Signature: (JJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMiracl_checkInfinityFp
+  (JNIEnv *, jobject, jlong);
+/*
  * Class:     edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl
  * Method:    getXValue
  * Signature: (J)[B

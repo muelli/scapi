@@ -307,7 +307,45 @@ JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogE
 	  return member;
 }
 
+/* function createInfinityFpPoint	: This function creates the infinity point in Fp
+ * param m							: miracl pointer
+ * return							: true if the point is on the curve, false otherwise 
+ */
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_createInfinityFpPoint
+  (JNIEnv *env, jobject obj, jlong m){
+	  /* convert the accepted parameters to MIRACL parameters*/
+	  miracl* mip = (miracl*)m;
 
+	  //create a point with the coordinates 0,0 which is the infinity point in miracl implementation
+	  big x,y;
+	  epoint* p = epoint_init(mip);
+	  x = mirvar(mip, 0);
+	  y = mirvar(mip, 0);
+	  epoint_set(mip, x, y, 0, (epoint*)p);
+
+	  return (jlong) p;
+
+}
+
+/* function createInfinityF2mPoint	: This function creates the infinity point in F2m
+ * param m							: miracl pointer
+ * return							: true if the point is on the curve, false otherwise 
+ */
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_createInfinityF2mPoint
+  (JNIEnv *env, jobject obj, jlong m){
+	  /* convert the accepted parameters to MIRACL parameters*/
+	  miracl* mip = (miracl*)m;
+
+	  //create a point with the coordinates 0,0 which is the infinity point in miracl implementation
+	  big x,y;
+	  epoint* p = epoint_init(mip);
+	  x = mirvar(mip, 0);
+	  y = mirvar(mip, 0);
+	  epoint2_set(mip, x, y, 0, (epoint*)p);
+
+	  return (jlong) p;
+
+}
 
 
 

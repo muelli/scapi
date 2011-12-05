@@ -66,6 +66,18 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
 	   return (jlong)point; // return the point
 }
 
+/* function checkInfinityF2m : This function checks if this point is the infinity
+ * param point					: point to check
+ * return						: true if this point is fthe infinity, false otherwise
+ */
+
+JNIEXPORT jboolean JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl_checkInfinityF2m
+  (JNIEnv *env, jobject obj, jlong point){
+
+	  return point_at_infinity((epoint*)point);
+
+}
+
 /* function getXValue : This function return the x coordinate of the given point
  * param m			  : pointer to mip
  * param point		  : pointer to the point
