@@ -6,30 +6,29 @@ import java.math.BigInteger;
 /**
  * Concrete class of RabinPublicKey
  *
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
-public class RabinPublicKeyImpl extends RabinKeyImpl implements RabinPublicKey {
+public class ScRabinPublicKey extends ScRabinKey implements RabinPublicKey {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	private BigInteger quadraticResidueModPrime1 = null; //r
 	private BigInteger quadraticResidueModPrime2 = null; //s
 
 	/**
-	 * Constructor that accept the public key
-	 * @param mod
+	 * Constructor that accepts the public key parameters and sets them.
+	 * @param mod modulus
 	 * @param r - quadratic residue mod prime1
 	 * @param s - quadratic residue mod prime2
 	 */
-	public RabinPublicKeyImpl (BigInteger mod, BigInteger r, BigInteger s) {
+	public ScRabinPublicKey (BigInteger mod, BigInteger r, BigInteger s) {
 		modulus = mod;
 		quadraticResidueModPrime1 = r;
 		quadraticResidueModPrime2 = s;
 	}
 
 	/**
-	 * @return the algorithm name
+	 * @return the algorithm name - Rabin
 	 */
 	public String getAlgorithm() {
 		
