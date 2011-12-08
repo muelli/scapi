@@ -6,8 +6,9 @@ import java.security.PublicKey;
 
 
 /**
- * Interface for Rabin public key
- *
+ * Interface for Rabin public key.
+ * 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
 public interface RabinPublicKey  extends RabinKey, PublicKey, Key {
 	
