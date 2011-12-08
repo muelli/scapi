@@ -6,8 +6,9 @@ import java.math.BigInteger;
 /**
  * Concrete class of RabinKey
  *
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
-public abstract class RabinKeyImpl implements RabinKey{
+public abstract class ScRabinKey implements RabinKey{
 
 	protected BigInteger modulus = null;
 	
