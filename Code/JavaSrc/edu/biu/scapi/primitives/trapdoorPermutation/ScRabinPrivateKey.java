@@ -6,26 +6,25 @@ import java.math.BigInteger;
 /**
  * Concrete class of RabinPrivateKey
  *
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
-public class RabinPrivateKeyImpl extends RabinKeyImpl implements RabinPrivateKey {
+public class ScRabinPrivateKey extends ScRabinKey implements RabinPrivateKey {
 
-	private BigInteger prime1 = null; 		//p
-	private BigInteger prime2 = null; 		//q
+	private BigInteger prime1 = null; 		//p, such that p*q=n
+	private BigInteger prime2 = null; 		//q, such that p*q=n
 	private BigInteger inversePModQ = null; //u
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Constructor that accept the private key
-	 * @param mod
+	 * Constructor that accepts the private key parameters and sets them.
+	 * @param mod modulus
 	 * @param p - prime1
 	 * @param q - prime2
 	 * @param u - inverse of prime1 mod prime2
 	 */
-	public RabinPrivateKeyImpl (BigInteger mod, BigInteger p, BigInteger q, BigInteger u) {
+	public ScRabinPrivateKey (BigInteger mod, BigInteger p, BigInteger q, BigInteger u) {
 		modulus = mod;
 		prime1  = p;
 		prime2 = q; 
@@ -33,7 +32,7 @@ public class RabinPrivateKeyImpl extends RabinKeyImpl implements RabinPrivateKey
 	}
 	
 	/**
-	 * @return the algorithm name
+	 * @return the algorithm name - Rabin
 	 */
 	public String getAlgorithm() {
 		
@@ -56,23 +55,14 @@ public class RabinPrivateKeyImpl extends RabinKeyImpl implements RabinPrivateKey
 		return null;
 	}
 
-	/**
-	 * @return BigInteger - prime1 (p)
-	 */
 	public BigInteger getPrime1() {
 		return prime1;
 	}
 
-	/**
-	 * @return BigInteger - prime2 (q)
-	 */
 	public BigInteger getPrime2() {
 		return prime2;
 	}
 
-	/**
-	 * @return BigInteger - inversePModQ (u)
-	 */
 	public BigInteger getInversePModQ() {
 		return inversePModQ;
 	}
