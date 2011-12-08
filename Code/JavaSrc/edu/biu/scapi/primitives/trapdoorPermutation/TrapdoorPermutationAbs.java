@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.biu.scapi.primitives.trapdoorPermutation;
 
 import java.math.BigInteger;
@@ -11,68 +8,53 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.TPElement;
 
 /** 
- * @author user
+ * This class implements some common functionality of trapdoor permutation.
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
 public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 	
 	protected AlgorithmParameterSpec params = null;    //algorithm parameters
 	protected PrivateKey privKey = null;               //private key
 	protected PublicKey pubKey = null;                 //public key
-	protected BigInteger modN = null;
-	protected boolean beInit = false;
+	protected BigInteger modN = null;				   //modulus
+	protected boolean isInitialized = false;		   // indicates if this object is initialized or not. Set to false until init is called
 
-	/** 
-	 * Initializes this trapdoor permutation with the keys and the auxiliary parameters
-	 * @param publicKey - public key
-	 * @param privateKey - private key
-	 * @param params
-	 * @throws IllegalAccessException 
-	 */
+	
 	public void init(PublicKey publicKey, PrivateKey privateKey,
-			AlgorithmParameterSpec params) throws IllegalAccessException {
+			AlgorithmParameterSpec params) {
+		//sets the class members with the parameters
 		pubKey = publicKey;
 		privKey = privateKey;
 		this.params = params;
-		beInit = true;
+		isInitialized = true; // mark this object as initialized
 	}
 
-	/** 
-	 * Initializes this trapdoor permutation with the keys
-	 * @param publicKey - public key
-	 * @param privateKey - private key
-	 * @throws InvalidKeyException 
-	 */
 	public void init(PublicKey publicKey, PrivateKey privateKey) throws InvalidKeyException {
+		//sets the class members with the keys
 		pubKey = publicKey;
 		privKey = privateKey;
+		isInitialized = true; // mark this object as initialized
 	}
 
-	/** 
-	 * Initializes this trapdoor permutation just with the public key
-	 * @param publicKey - public key
-	 * @throws InvalidKeyException 
-	 */
 	public void init(PublicKey publicKey) throws InvalidKeyException {
+		//sets the class member with the public key
 		pubKey = publicKey;
+		isInitialized = true; // mark this object as initialized
 	}
 	
-	/** 
-	 * Initializes this trapdoor permutation auxiliary parameters
-	 * @param params
-	 * @throws InvalidParameterSpecException 
-	 */
 	public void init(AlgorithmParameterSpec params) throws InvalidParameterSpecException {
+		//sets the class member with the params
 		this.params = params; 
+		isInitialized = true; // mark this object as initialized
+	}
+	
+
+	public boolean IsInitialized() {
+		return isInitialized;
 	}
 
-	
-	/** 
-	 * @return the parameter spec of this trapdoor permutation
-	 * @throws UnInitializedException 
-	 */
 	public AlgorithmParameterSpec getParams() throws UnInitializedException {
 		if (!IsInitialized()){
 			throw new UnInitializedException();
@@ -80,10 +62,6 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 		return params;
 	}
 
-	/** 
-	 * @return the public key
-	 * @throws UnInitializedException 
-	 */
 	public PublicKey getPubKey() throws UnInitializedException {
 		if (!IsInitialized()){
 			throw new UnInitializedException();
@@ -91,10 +69,6 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 		return pubKey;
 	}
 	
-	/** 
-	 * @return mod(N)
-	 * @throws UnInitializedException 
-	 */
 	public BigInteger getModulus() throws UnInitializedException{
 		if (!IsInitialized()){
 			throw new UnInitializedException();
@@ -104,59 +78,52 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 	
 	
 	/** 
-	 * Compute the hard core predicate of the given tpElement.
-	 * One possible implementation of this function is to return the least significant bit of the element. 
-	 * We use this implementation both in RSA permutation and in Rabin permutation. 
-	 * Thus, We implement it in TrapdoorPermutationAbs and let deriving classes override it as needed. 
-	 * @param tpEl 
-	 * @return byte - in java, the smallest types are boolean and byte. we chose to return a byte since many 
-	 * times we need to concatenate the result of various predicates and it will be easier with a byte 
-	 * than with a boolean.
+	 * Compute the hard core predicate of the given tpElement, by return the least significant bit of the element. 
+	 *
+	 * @param tpEl the element to compute the hard core predicate on
+	 * @return byte the hard core predicate. In java, the smallest types are boolean and byte. 
+	 * We chose to return a byte since many times we need to concatenate the result of various predicates 
+	 * and it will be easier with a byte than with a boolean.
 	 */
 	public byte hardCorePredicate(TPElement tpEl) {
-		//get the element value as byte array
+		/*
+		 *  We use this implementation both in RSA permutation and in Rabin permutation. 
+		 * Thus, We implement it in TrapdoorPermutationAbs and let derived classes override it if needed. 
+		 */
+		//gets the element value as byte array
 		BigInteger elementValue = tpEl.getElement();
 		byte[] bytesValue = elementValue.toByteArray();
 		
-		//return the least significant bit (byte, as we said above)
+		//returns the least significant bit (byte, as we said above)
 		return bytesValue[bytesValue.length - 1];
 	}
 
 	/** 
-	 * Compute the hard core function of the given tpElement.
-	 * One possible implementation of this function is to return the log (N) least significant bits of 
-	 * the element. We use this implementation both in RSA permutation and in Rabin permutation. 
-	 * Thus, We implement it in TrapdoorPermutationAbs and let deriving classes override it as needed. 
-	 * @param tpEl -
+	 * Computes the hard core function of the given tpElement, by return the log (N) least significant bits of 
+	 * the element. 
+	 * @param tpEl the element to compute the hard core function on
 	 * @return byte[] - log (N) least significant bits
 	 */
 	public byte[] hardCoreFunction(TPElement tpEl) {
-		//get the element value as byte array
+		/*
+		 * We use this implementation both in RSA permutation and in Rabin permutation. 
+		 * Thus, We implement it in TrapdoorPermutationAbs and let derived classes override it if needed. 
+		 */
+		//gets the element value as byte array
 		BigInteger elementValue = tpEl.getElement();
-		byte[] bytesValue = elementValue.toByteArray();
+		byte[] elementBytesValue = elementValue.toByteArray();
 		
 		//the number of bytes to get the log (N) least significant bits
 		double logBits = (modN.bitCount()/2);  //log N bits
-		int logBytes = (int) Math.ceil(logBits/8); //log N bytes
+		int logBytes = (int) Math.ceil(logBits/8); //log N bites in bytes
 		
-		//return the min(mod(N),bytesValue.length) least significant bits
-		int size = Math.min(logBytes, bytesValue.length);
-		byte[] LSBytes = new byte[size];
-		//copy the bytes to the output array
-		for (int i=size-1; i>=0; i--)
-			LSBytes[i] = bytesValue[i];
-		return LSBytes;
+		//if the element length is less than log(N), the return byte[] should be all the element bytes
+		int size = Math.min(logBytes, elementBytesValue.length);
+		byte[] leastSignificantBytes = new byte[size];
+		//copies the bytes to the output array
+		System.arraycopy(elementBytesValue, elementBytesValue.length-size, leastSignificantBytes, 0, size);
+		return leastSignificantBytes;
 	
 	}
-	
-	/**
-	 * Check if the object is initialized.
-	 * @return true if initialized, false if not
-	 */
-	public boolean IsInitialized() {
-		return beInit;
-	}
-	
-	
 
 }
