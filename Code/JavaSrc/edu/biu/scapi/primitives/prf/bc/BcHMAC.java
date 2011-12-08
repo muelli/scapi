@@ -162,7 +162,7 @@ public final class BcHMAC implements  Hmac {
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		//the checks of the offsets and lengths is done in the conputeBlock (inBytes, inOff, inLen, outBytes, outOff)
+		//the checks of the offsets and lengths are done in the conputeBlock (inBytes, inOff, inLen, outBytes, outOff)
 		//make sure the output size is correct
 		if(outLen==hMac.getMacSize())
 			computeBlock(inBytes, inOff, inLen, outBytes, outOff);

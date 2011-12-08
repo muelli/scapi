@@ -201,7 +201,7 @@ public abstract class BcPRP implements PrpFixed{
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		//the checks on the offset and length is done in the computeBlock(inBytes, inOff, outBytes, outOff)
+		//the checks on the offset and length are done in the computeBlock(inBytes, inOff, outBytes, outOff)
 		if (inLen==outLen && inLen==getBlockSize()) //checks that the lengths are the same as the block size
 			computeBlock(inBytes, inOff, outBytes, outOff);
 		else 
@@ -265,7 +265,7 @@ public abstract class BcPRP implements PrpFixed{
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		//the checks of the offset and lengths is done in the invertBlock(inBytes, inOff, outBytes, outOff)
+		//the checks of the offset and lengths are done in the invertBlock(inBytes, inOff, outBytes, outOff)
 		if (len==getBlockSize()) //checks that the length is the same asthe block size
 			invertBlock(inBytes, inOff, outBytes, outOff);
 		else 
