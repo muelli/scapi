@@ -20,7 +20,7 @@ using namespace CryptoPP;
  * param u					: inverse of p mod (q)
  * return jlong				: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinAll
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinPublicPrivate
   (JNIEnv *env, jobject, jbyteArray mod, jbyteArray r, jbyteArray s, jbyteArray p , jbyteArray q, jbyteArray u) {
 	  Utils utils;
 	  Integer modN, m_r, m_s, m_p, m_q, m_u;
@@ -51,7 +51,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
  * param s					: quadratic residue mod prime 2
  * return jlong				: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinNRS
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinPublic
   (JNIEnv *env, jobject, jbyteArray n, jbyteArray r, jbyteArray s) {
 	  Utils utils;
 	  Integer m_n, m_r, m_s;
@@ -76,7 +76,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
  * param numBits				: Number of bits
   * return jlong				: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinKeySize
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinRandomly
   (JNIEnv * env, jobject, jint numBits) {
 	  //Random Number Generator
 	  AutoSeededRandomPool rng;

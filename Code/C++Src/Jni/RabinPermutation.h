@@ -12,7 +12,7 @@ extern "C" {
  * Method:    initRabinAll
  * Signature: ([B[B[B[B[B[B)J
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinAll
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinPublicPrivate
   (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
  * Method:    initRabinNRS
  * Signature: ([B[B[B)J
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinNRS
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinPublic
   (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
  * Method:    initRabinKeySize
  * Signature: (I)J
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinKeySize
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinRandomly
   (JNIEnv *, jobject, jint);
 
 /*

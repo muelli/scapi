@@ -12,7 +12,7 @@ using namespace std;
  * param element					: The Integer
  * return jlong						: The pointer
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_TPElement_cryptopp_CryptoPpTrapdoorElement_getPointerToElement
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpTrapdoorElement_getPointerToElement
   (JNIEnv *env, jobject, jbyteArray element) {
 	  Utils utils;
 
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_TPElem
  * param element					: The Integer
  * return jlong						: The pointer
  */
-JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_TPElement_cryptopp_CryptoPpTrapdoorElement_getElement
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpTrapdoorElement_getElement
   (JNIEnv *env, jobject, jlong pElement) {
 	  Utils utils;
 
@@ -40,7 +40,7 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_T
  * function deleteElement		: This function accept a pointer to Integer and free the allocated memory for that Integer
  * param elPtr					: The pointer
  */
-JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_TPElement_cryptopp_CryptoPpTrapdoorElement_deleteElement
+JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpTrapdoorElement_deleteElement
   (JNIEnv *env, jobject , jlong elPtr) {
 
 	  //free the allocated memory
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_TPEleme
  * param modN								: mod (N)
  * return jlong								: pointer to the random element
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_TPElement_cryptopp_CryptoPpRSAElement_getPointerToRandomRSAElement
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAElement_getPointerToRandomRSAElement
   (JNIEnv *env, jobject, jbyteArray modN) {
 	  
 	   //Random Number Generator
@@ -75,7 +75,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_TPElem
  * param modN								: mod (N)
  * return jlong								: pointer to the random element
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_TPElement_cryptopp_CryptoPpRabinElement_getPointerToRandomRabinElement
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinElement_getPointerToRandomRabinElement
   (JNIEnv *env, jobject, jbyteArray modN) {
 	  
 	   //Random Number Generator

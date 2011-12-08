@@ -18,7 +18,7 @@ using namespace CryptoPP;
  * param privExp			: private exponent (d)
  * return jlong				: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNED
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithPublicPrivate
   (JNIEnv *env, jobject, jbyteArray modulus, jbyteArray pubExp, jbyteArray privExp) {
 	  
 	  Integer n, e, d;
@@ -46,7 +46,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
  * param privExp			: private exponent (d)
  * return jlong				: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithCrt
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAPublicPrivateCrt
   (JNIEnv *env , jobject, jbyteArray modulus, jbyteArray pubExp, jbyteArray privExp, jbyteArray prime1, 
   jbyteArray prime2, jbyteArray primeExponent1, jbyteArray primeExponent2, jbyteArray crt) {
 
@@ -80,7 +80,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
  * param pubExp						: pubic exponent (e)
  * return jlong						: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNumBitsAndE
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSARandomly
   (JNIEnv *env, jobject, jint numBits, jbyteArray pubExp) {
 	  //Random Number Generator
 	  AutoSeededRandomPool rng;
@@ -105,7 +105,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
  * param pubExp				: pubic exponent (e)
  * return jlong				: pointer to the native object
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNE
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAPublic
   (JNIEnv *env, jobject, jbyteArray modulus, jbyteArray pubExp) {
 	  Integer n, e;
 	  Utils utils;

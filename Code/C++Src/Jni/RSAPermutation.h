@@ -12,7 +12,7 @@ extern "C" {
  * Method:    initRSAWithNED
  * Signature: ([B[B[B)J
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNED
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAPublicPrivate
   (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
  * Method:    initRSAWithCrt
  * Signature: ([B[B[B[B[B[B[B[B)J
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithCrt
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAPublicPrivateCrt
   (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
  * Method:    initRSAWithNE
  * Signature: ([B[B)J
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNE
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAPublic
   (JNIEnv *, jobject, jbyteArray, jbyteArray);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
  * Method:    initRSAWithNumBitsAndE
  * Signature: (I[B)J
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSAWithNumBitsAndE
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRSAPermutation_initRSARandomly
   (JNIEnv *, jobject, jint, jbyteArray);
 
 /*
