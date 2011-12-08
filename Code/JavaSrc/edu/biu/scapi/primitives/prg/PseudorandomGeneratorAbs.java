@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.biu.scapi.primitives.prg;
 
 import java.security.spec.AlgorithmParameterSpec;
@@ -11,50 +8,37 @@ import javax.crypto.SecretKey;
 import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
- * @author LabTest
+ * This class implements some common functionality of PRG.
+ * 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
 public abstract class PseudorandomGeneratorAbs implements PseudorandomGenerator {
 	
-	protected SecretKey secretKey = null;//secrete key
-	protected AlgorithmParameterSpec params = null;//algorithm parameters
-	protected boolean isInitialized = false;//until isInitialized() is called set to false.
+	protected SecretKey secretKey = null;			//secret key
+	protected AlgorithmParameterSpec params = null; //algorithm parameters
+	protected boolean isInitialized = false;		//until init is called set to false.
 
-	/** 
-	 * Initializes this prg with the secret key
-	 * @param secretKey - the secrete key
-	 */
 	public void init(SecretKey secretKey) {
 
 		//init the key. Further initialization should be implemented in the derived concrete class.
-		isInitialized = true;
 		this.secretKey = secretKey;
+		//marks this object as initialized
+		isInitialized = true;
 	}
 
-	/** 
-	 * Initializes this prg with the secret key and the auxiliary parameters
-	 * @param secretKey
-	 * @param params
-	 */
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
 
 		//init the parameters. Further initialization should be implemented in the derived concrete class.
-		isInitialized = true;
 		this.secretKey = secretKey;
 		this.params = params;
+		//marks this object as initialized
+		isInitialized = true;
 	}
 
-	/**
-	 * 
-	 * @return true if the object was initialized by calling the function init.
-	 */
 	public boolean isInitialized(){
 		return isInitialized;
 	}
 	
-	/** 
-	 * @return the parameters of this prp
-	 * @throws UnInitializedException 
-	 */
 	public AlgorithmParameterSpec getParams() throws UnInitializedException {
 		if (!isInitialized()){
 			throw new UnInitializedException();
@@ -62,10 +46,6 @@ public abstract class PseudorandomGeneratorAbs implements PseudorandomGenerator 
 		return params;
 	}
 
-	/** 
-	 * @return
-	 * @throws UnInitializedException 
-	 */
 	public SecretKey getSecretKey() throws UnInitializedException {
 		if (!isInitialized()){
 			throw new UnInitializedException();
