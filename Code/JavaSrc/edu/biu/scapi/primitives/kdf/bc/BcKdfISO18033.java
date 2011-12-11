@@ -1,6 +1,3 @@
-/**
- * 
- */
 package edu.biu.scapi.primitives.kdf.bc;
 
 import java.security.spec.AlgorithmParameterSpec;
@@ -20,122 +17,118 @@ import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
 import edu.biu.scapi.primitives.kdf.KeyDerivationFunction;
 import edu.biu.scapi.tools.Factories.BCFactory;
 
-/** 
- * @author LabTest
-*/
+/**
+ * concrete class of KDF for ISO18033. This class wraps the implementation of bouncy castle.
+ * 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
+ *
+ */
 public class BcKdfISO18033 implements KeyDerivationFunction {
 
-	BaseKDFBytesGenerator bcKdfGenerator;
-	boolean isInitialized = false;
+	BaseKDFBytesGenerator bcKdfGenerator; // the adaptee kdf of BC
 	
 	/**
-	 * create the related bc kdf
-	 * @throws ClassNotFoundException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 * @throws FactoriesException 
+	 * creates the related bc kdf. Retrieve the related digest out of the given hash name.
+	 * @throws FactoriesException in case of error while creating the object
 	 */
-	public BcKdfISO18033(String hash) throws InstantiationException, IllegalAccessException, ClassNotFoundException, FactoriesException {
+	public BcKdfISO18033(String hash) throws FactoriesException {
 		
-		//pass a digest to the KDF.
+		//creates a digest through the factory and passes it to the KDF
 		bcKdfGenerator = new KDF1BytesGenerator(BCFactory.getInstance().getDigest(hash));
 		
 	}
 	
 	/**
-	 * create the related bc kdf. Retrieve the related Digest out of the hash name 
+	 * creates the related bc kdf, with the given hash
 	 * @param hash - the underlying collision resistant hash
-	 * @throws FactoriesException 
+	 * @throws FactoriesException in case of error while creating the object
 	 */
 	public BcKdfISO18033(TargetCollisionResistant hash) throws FactoriesException {
-		//first check that the hmac is initialized.
+		//first checks that the hmac is initialized.
 		if(hash.isInitialized()){
-			//pass a digest to the KDF.
+			//creates a digest of the given hash type through the factory and passes it to the KDF
 			bcKdfGenerator = new KDF1BytesGenerator(BCFactory.getInstance().getDigest(hash.getAlgorithmName()));
 		}
-		else{//the user must pass an initialized object, otherwise throw an exception
+		else{//the user must pass an initialized object, otherwise throws an exception
 			throw new IllegalStateException("argumrnt hmac must be initialized");
 		}
 	}
 	
 	/**
-	 * Should not be called. There is not key for this class.
+	 * BcKdfISO18033 is initialized by the constructor. The underlying type is a digest that doesn't need a key.
+	 * Therefore this function souldn't be called. Throws exception.
 	 */
 	public void init(SecretKey secretKey) {
-		isInitialized = true;
-		
+		throw new UnsupportedOperationException("BcKdfISO18033 doesn't need initialization");	
 	}
 
-
 	/**
-	 * Should not be called. There is not key for this class.
+	 * BcKdfISO18033 is initialized by the constructor. The underlying type is a digest that doesn't need a key.
+	 * Therefore this function souldn't be called. Throws exception.
 	 */
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
-		isInitialized = true;
-		
+		throw new UnsupportedOperationException("BcKdfISO18033 doesn't need initialization");	
 	}
 
-
 	/**
-	 * 
+	 * BcKdfISO18033 is initialized by the constructor. Therefore, always return true.
 	 */
 	public boolean isInitialized() {
-		
-		return isInitialized;
+		return true;
 	}
 	
-	public SecretKey generateKey(SecretKey key, int len) throws UnInitializedException {
-		
-		return generateKey(key, len, null);
+	public SecretKey generateKey(SecretKey seedForGeneration, int len) throws UnInitializedException {
+		//calls the generateKey with iv=null
+		return generateKey(seedForGeneration, len, null);
 	}
 
-	/**
-	 * @throws UnInitializedException 
-	 * 
-	 */
-	public SecretKey generateKey(SecretKey key, int outLen, byte[] iv) throws UnInitializedException {
+	public SecretKey generateKey(SecretKey seedForGeneration, int outLen, byte[] iv) throws UnInitializedException {
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
 		byte[] generatedKey = new byte[outLen];//generated key bytes
 		
-		//generate the related derivation parameter for bc
-		bcKdfGenerator.init(generateParameters(key.getEncoded(), iv));
+		//generates the related derivation parameter for bc with the seed and iv
+		bcKdfGenerator.init(generateParameters(seedForGeneration.getEncoded(), iv));
 		
-		//generate the actual key bytes
+		//generates the actual key bytes
 		bcKdfGenerator.generateBytes(generatedKey, 0, outLen);
 		
-		//convert to key
+		//converts to secret key
 		return new SecretKeySpec(generatedKey, "KDF");
 	}
 
 
-	/**
-	 * @throws UnInitializedException 
-	 * 
-	 */
-	public void generateKey(byte[] inKey, int inOff, int inLen, byte[] outKey,
+	public void generateKey(byte[] seedForGeneration, int inOff, int inLen, byte[] outKey,
 			 int outOff,int outLen) throws UnInitializedException {
+		//calls the generateKey with iv=null
+		generateKey(seedForGeneration, inOff, inLen, outKey, outOff, outLen, null);
+		
+	}
+	
+	public void generateKey(byte[] seedForGeneration, int inOff, int inLen, byte[] outKey,
+			 int outOff,int outLen, byte[] iv) throws UnInitializedException {
 		if(!isInitialized()){
 			throw new UnInitializedException();
 		}
-		//check that the offset and length are correct
-		if ((inOff > inKey.length) || (inOff+inLen > inKey.length)){
+		//checks that the offset and length are correct
+		if ((inOff > seedForGeneration.length) || (inOff+inLen > seedForGeneration.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
 		if ((outOff > outKey.length) || (outOff+outLen > outKey.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		
-		bcKdfGenerator.init(generateParameters(inKey,null));
+		//generates the related derivation parameter for bc with the seed and iv
+		bcKdfGenerator.init(generateParameters(seedForGeneration,iv));
 		
+		//generates the actual key bytes and puts it in the output array
 		bcKdfGenerator.generateBytes(outKey, outOff, outLen);
 		
 	}
 	
 	/**
-	 * 
-	 * Generate the bc related parameters of type DerivationParameters
+	 * Generates the bc related parameters of type DerivationParameters
 	 * @param shared the input key 
 	 * @param iv
 	 */
@@ -145,7 +138,7 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 			
 			return new ISO18033KDFParameters(shared);
 		}
-		else{ //iv is provided. Pass to the KDFParameters
+		else{ //iv is provided. Passes to the KDFParameters
 			return new KDFParameters(shared, iv);
 		}
 		
