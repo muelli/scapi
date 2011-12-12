@@ -74,7 +74,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		/* isProbablePrime is BigInteger function, which gets a certainty parameter.
 		 * We will test some values to decide which is appropriate to our demands.
 		 */
-		if (getOrder().isProbablePrime(8))
+		if (getOrder().isProbablePrime(40))
 			return true;
 		else return false;
 	}
