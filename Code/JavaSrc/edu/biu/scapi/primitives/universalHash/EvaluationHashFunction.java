@@ -19,7 +19,9 @@ public final class EvaluationHashFunction extends UniversalHashAbs {
 	//creates the native object and initializes it with the secret key
 	private native long initHash(byte[] key, long keyOffset);
 	//computes the evaluation hash function
+	//we don't send the input offset because we always send the padded array which the offset is always 0 
 	private native void computeFunction(long evalHashPtr, byte[] in, byte[] out, int outOffset);
+	
 	
 	
 	public void init(SecretKey secretKey) {
