@@ -39,13 +39,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\Documents and Settings\LabTest\My Documents\Visual Studio 2010\Projects\gf2x\Debug;C:\Documents and Settings\LabTest\My Documents\Visual Studio 2010\Projects\ntl\Debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\meital\IBM\SDP\jdk\include;C:\Documents and Settings\LabTest\My Documents\Visual Studio 2010\Projects\WinNTL-5_5_2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\development\SDK\Code\C++Src\JniNtl\NTLJavaInterface;C:\Documents and Settings\LabTest\My Documents\Visual Studio 2010\Projects\gf2x\Debug;C:\Documents and Settings\LabTest\My Documents\Visual Studio 2010\Projects\ntl\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\IBM\SDP\jdk\include;C:\Users\user\Downloads\WinNTL-5_5_2\WinNTL-5_5_2\include;C:\Documents and Settings\LabTest\My Documents\Visual Studio 2010\Projects\WinNTL-5_5_2\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>C:\Documents and Settings\LabTest\My Documents\Visual Studio 2010\Projects\gf2x\Release;C:\Documents and Settings\LabTest\My Documents\Visual Studio 2010\Projects\ntl\Release;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\meital\IBM\SDP\jdk\include;C:\Documents and Settings\LabTest\My Documents\Visual Studio 2010\Projects\WinNTL-5_5_2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\development\SDK\Code\C++Src\JniNtl;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\user\Downloads\WinNTL-5_5_2\WinNTL-5_5_2\include;C:\Program Files %28x86%29\IBM\SDP\jdk\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

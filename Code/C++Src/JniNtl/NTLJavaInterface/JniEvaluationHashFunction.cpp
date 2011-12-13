@@ -2,7 +2,7 @@
 #include "JniEvaluationHashFunction.h"
 #include "EvaluationHashFunction.h"
 
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_PerfectUniversalHash_EvaluationHashFunction_initHash
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_universalHash_EvaluationHashFunction_initHash
   (JNIEnv *env, jobject, jbyteArray key, jlong offset){
 
 
@@ -28,8 +28,8 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_PerfectUniversalHash_Evalu
 }
 
 
-JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_PerfectUniversalHash_EvaluationHashFunction_computeFunction
-  (JNIEnv *env, jobject, jlong evalHashObjectPtr , jbyteArray in, jint inOffset, jbyteArray out, jint outOffset){
+JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_universalHash_EvaluationHashFunction_computeFunction
+  (JNIEnv *env, jobject, jlong evalHashObjectPtr , jbyteArray in, jbyteArray out, jint outOffset){
 
 	  //cast the EvaluationHashFunction object
 	  EvaluationHashFunction* evalHashPtr = (EvaluationHashFunction *)evalHashObjectPtr;
@@ -42,7 +42,7 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_PerfectUniversalHash_Evalua
 	  carrOut = env->GetByteArrayElements(out, 0);
 
 	  //compute the function
-	  evalHashPtr->computeFunction((unsigned char *)carrIn, inOffset, env->GetArrayLength(in), (unsigned char *)carrOut, outOffset);
+	  evalHashPtr->computeFunction((unsigned char *)carrIn, 0, env->GetArrayLength(in), (unsigned char *)carrOut, outOffset);
 
 	  //before releasing the c++ output array copy it to the java out array
 	  //put the result of the final computation in the output array passed from java
