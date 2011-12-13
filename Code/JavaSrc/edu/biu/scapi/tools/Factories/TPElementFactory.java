@@ -3,7 +3,7 @@ package edu.biu.scapi.tools.Factories;
 import java.math.BigInteger;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.primitives.trapdoorPermutation.TPElement.TPElement;
+import edu.biu.scapi.primitives.trapdoorPermutation.TPElement;
 
 public class TPElementFactory {
 
