@@ -1,7 +1,4 @@
-/**
- * 
- */
-package edu.biu.scapi.primitives.perfectUniversalHash;
+package edu.biu.scapi.primitives.universalHash;
 
 import java.security.spec.AlgorithmParameterSpec;
 
@@ -10,54 +7,44 @@ import javax.crypto.SecretKey;
 import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
-  * @author LabTest
+ * This class implements some common functionality of perfect universal hash.
+ * 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public abstract class PerfectUniversalAbs implements PerfectUniversalHash {
+public abstract class UniversalHashAbs implements UniversalHash {
 	protected AlgorithmParameterSpec params = null;
 	protected SecretKey secretKey = null;
+	protected boolean isInitialized = false; //until init is called set to false
+
 	
-	protected boolean isInitialized = false;
-
-	/**
-	 * Initialize this perfect universal hash with the auxiliary parameters 
-	 * @param params
-	 */
 	public void init(SecretKey secretKey) {
-
-		isInitialized = true;
+		//sets the key
 		this.secretKey = secretKey;
+		isInitialized = true; //marks this object as initialized
 	}
 	
-	/** 
-	 * Initializes this PerfectUniversalHash with the secret key and the auxiliary parameters.
-	 * @param secretKey secret key
-	 * @param params algorithm parameters
-	 */
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params){
-		
-		isInitialized = true;
+		//sets the parameters
 		this.params = params;
 		this.secretKey = secretKey;
+		isInitialized = true; //marks this object as initialized
 	}
 
-
-	/**
-	 * 
-	 * @return the flag isInitialized
-	 */
 	public boolean isInitialized(){
 		return isInitialized;
 	}
 	
-	/** 
-	 * @return the parameter spec of this perfect universal hash
-	 * @throws UnInitializedException 
-	 */
 	public AlgorithmParameterSpec getParams() throws UnInitializedException {
 		if (!isInitialized()){
 			throw new UnInitializedException();
 		}
 		return params;
-		
+	}
+	
+	public SecretKey getSecretKey() throws UnInitializedException {
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		return secretKey;
 	}
 }
