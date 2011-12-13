@@ -8,14 +8,14 @@ package edu.biu.scapi.tools.Factories;
 
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.primitives.perfectUniversalHash.PerfectUniversalHash;
+import edu.biu.scapi.primitives.universalHash.UniversalHash;
 
 /** 
  * @author LabTest
  */
-public final class PerfectUniversalFactory {
+public final class UniversalHashFactory {
 	private FactoriesUtility factoriesUtility;
-	private static PerfectUniversalFactory instance = new PerfectUniversalFactory();
+	private static UniversalHashFactory instance = new UniversalHashFactory();
 
 	
 	/**
@@ -24,10 +24,10 @@ public final class PerfectUniversalFactory {
 	 * of FactoriesUtility.
 	 * 
 	 */
-	private PerfectUniversalFactory() {
+	private UniversalHashFactory() {
 
 		//create an instance of FactoriesUtility with the predefined file names.
-		factoriesUtility = new FactoriesUtility("PerfectUniversalDefault.properties", "PerfectUniversal.properties");
+		factoriesUtility = new FactoriesUtility("UniversalHashDefault.properties", "UniversalHash.properties");
 		
 	}
 	
@@ -37,9 +37,9 @@ public final class PerfectUniversalFactory {
 	 * @return an object of type perfectUniversalHash class that was determined by the algName + provider
 	 * @throws FactoriesException 
 	 */
-	public Object getObject(String algName, String provider) throws FactoriesException {
+	public UniversalHash getObject(String algName, String provider) throws FactoriesException {
 		
-		return (PerfectUniversalHash) factoriesUtility.getObject(algName, provider);
+		return (UniversalHash) factoriesUtility.getObject(algName, provider);
 	}
 
 	/** 
@@ -47,15 +47,15 @@ public final class PerfectUniversalFactory {
 	 * @param algName the required algorithm name
 	 * @return an object of type perfectUniversalHash class that was determined by the algName + the default provider for that algorithm.
 	 * @throws FactoriesException 
-	 */public Object getObject(String algName) throws FactoriesException {
+	 */public UniversalHash getObject(String algName) throws FactoriesException {
 		
-		return (PerfectUniversalHash) factoriesUtility.getObject(algName);
+		return (UniversalHash) factoriesUtility.getObject(algName);
 	}
 
 	/** 
 	 * @return the singleton instance.
 	 */
-	public static PerfectUniversalFactory getInstance() {
+	public static UniversalHashFactory getInstance() {
 		return instance;
 	}
 }
