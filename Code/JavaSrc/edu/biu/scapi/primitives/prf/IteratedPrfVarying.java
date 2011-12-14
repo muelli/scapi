@@ -108,7 +108,7 @@ public class IteratedPrfVarying extends
 		Integer outLenByte = new Integer(outLen);
 		
 		//copies the x (inBytes) to the input of the prf in the beginning
-		System.arraycopy(inBytes, 0, currentInBytes, 0, inLen);
+		System.arraycopy(inBytes, inOff, currentInBytes, 0, inLen);
 		//copies the outLen to the input of the prf after the x
 		currentInBytes[inLen] = outLenByte.byteValue();
 		
@@ -131,9 +131,9 @@ public class IteratedPrfVarying extends
 			
 			if (i==rounds) { //copies the round result to the output byte array
 				//in case of the last round - copies only the number of bytes left to match outLen
-				System.arraycopy(intermediateOutBytes, 0, outBytes, (i - 1)*prfLength, outLen-((i-1)*prfLength));
+				System.arraycopy(intermediateOutBytes, 0, outBytes, outOff+(i - 1)*prfLength, outLen-((i-1)*prfLength));
 			} else { //in other cases - copies all the result bytes
-				System.arraycopy(intermediateOutBytes, 0, outBytes, (i-1)*prfLength, prfLength);
+				System.arraycopy(intermediateOutBytes, 0, outBytes, outOff+(i-1)*prfLength, prfLength);
 			}
 		}
 	}
