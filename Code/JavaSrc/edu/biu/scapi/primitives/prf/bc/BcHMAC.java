@@ -13,7 +13,7 @@ import org.bouncycastle.crypto.macs.HMac;
 
 import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.primitives.hash.CollisionResistantHash;
+import edu.biu.scapi.primitives.hash.CryptographicHash;
 import edu.biu.scapi.primitives.prf.Hmac;
 import edu.biu.scapi.tools.Factories.BCFactory;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
@@ -51,7 +51,7 @@ public final class BcHMAC implements  Hmac {
 	 * @throws FactoriesException, IllegalStateException 
 	 */
 
-	public BcHMAC(CollisionResistantHash hash) throws FactoriesException, IllegalStateException {
+	public BcHMAC(CryptographicHash hash) throws FactoriesException, IllegalStateException {
 	
 		//first check that the hmac is initialized.
 		if(hash.isInitialized()){
