@@ -13,7 +13,7 @@ import org.bouncycastle.crypto.params.KDFParameters;
 
 import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
+import edu.biu.scapi.primitives.hash.CryptographicHash;
 import edu.biu.scapi.primitives.kdf.KeyDerivationFunction;
 import edu.biu.scapi.tools.Factories.BCFactory;
 
@@ -43,7 +43,7 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 	 * @param hash - the underlying collision resistant hash
 	 * @throws FactoriesException in case of error while creating the object
 	 */
-	public BcKdfISO18033(TargetCollisionResistant hash) throws FactoriesException {
+	public BcKdfISO18033(CryptographicHash hash) throws FactoriesException {
 		//first checks that the hmac is initialized.
 		if(hash.isInitialized()){
 			//creates a digest of the given hash type through the factory and passes it to the KDF
