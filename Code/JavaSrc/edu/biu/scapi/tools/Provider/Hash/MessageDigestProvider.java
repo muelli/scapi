@@ -6,7 +6,7 @@ package edu.biu.scapi.tools.Provider.Hash;
 import java.security.MessageDigest;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.primitives.hash.CollisionResistantHash;
+import edu.biu.scapi.primitives.hash.CryptographicHash;
 import edu.biu.scapi.primitives.hash.bc.BcSHA1;
 import edu.biu.scapi.primitives.hash.bc.BcSHA224;
 import edu.biu.scapi.primitives.hash.bc.BcSHA256;
@@ -20,7 +20,7 @@ import edu.biu.scapi.primitives.hash.bc.BcSHA512;
  */
 public abstract class MessageDigestProvider extends MessageDigest {
 	
-	private CollisionResistantHash crHash;//the underlying collision resistant hash
+	private CryptographicHash crHash;//the underlying collision resistant hash
 
 	/** 
 	 * 
@@ -87,11 +87,10 @@ public abstract class MessageDigestProvider extends MessageDigest {
 	 * 
 	 * @param crHash
 	 */
-	public MessageDigestProvider(CollisionResistantHash crHash) {
+	public MessageDigestProvider(CryptographicHash crHash) {
 		
 		super(crHash.getAlgorithmName());
 		this.crHash = crHash;
-		crHash.init(null);
 		
 	}
 	
