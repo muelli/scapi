@@ -1,7 +1,7 @@
 package edu.biu.scapi.primitives.prf.bc;
 
+import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.SecretKey;
 
@@ -28,12 +28,13 @@ public final class BcAES extends BcPRP implements AES{
 	/**
 	 * initializes this AES with secret key.
 	 * @param secretKey the secret key
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) {
+	public void init(SecretKey secretKey) throws InvalidKeyException {
 		int len = secretKey.getEncoded().length;
 		//AES key size should be 128/192/256 bits long
 		if(len!=16 && len!=24 && len!=32){
-			throw new IllegalArgumentException("AES key size should be 128/192/256 bits long");
+			throw new InvalidKeyException("AES key size should be 128/192/256 bits long");
 		}
 		super.init(secretKey);
 	}
@@ -42,12 +43,13 @@ public final class BcAES extends BcPRP implements AES{
 	 * initializes this AES with secret key and auxiliary parameters.
 	 * @param secretKey the secret key
 	 * @param params algorithm parameters
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException{
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException {
 		int len = secretKey.getEncoded().length;
 		//AES key size should be 128/192/256 bits long
 		if(len!=16 || len!=24 || len!=32){
-			throw new IllegalArgumentException("AES key size should be 128/192/256 bits long");
+			throw new InvalidKeyException("AES key size should be 128/192/256 bits long");
 		}
 		super.init(secretKey, params);
 	}

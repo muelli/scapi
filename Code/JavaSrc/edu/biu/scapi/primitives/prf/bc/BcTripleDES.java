@@ -1,7 +1,7 @@
 package edu.biu.scapi.primitives.prf.bc;
 
+import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.SecretKey;
 
@@ -27,21 +27,22 @@ public final class BcTripleDES extends BcPRP implements TripleDES{
 	/**
 	 * initializes this Triple-DES with secret key.
 	 * @param secretKey the secret key
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) {
+	public void init(SecretKey secretKey) throws InvalidKeyException {
 		int len = secretKey.getEncoded().length;
 		//TripleDes key size should be 128/192 bits 
 		if(len!=16 && len!=24){
-			throw new IllegalArgumentException("TripleDes key size should be 128/192 bits long");
+			throw new InvalidKeyException("TripleDes key size should be 128/192 bits long");
 		}
 		super.init(secretKey);
 	}
 	
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException{
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException {
 		int len = secretKey.getEncoded().length;
 		//TripleDes key size should be 128/192 bits 
 		if(len!=16 || len!=24){
-			throw new IllegalArgumentException("TripleDes key size should be 128/192 bits long");
+			throw new InvalidKeyException("TripleDes key size should be 128/192 bits long");
 		}
 		super.init(secretKey, params);
 	}

@@ -1,5 +1,6 @@
 package edu.biu.scapi.primitives.prf.bc;
 
+import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
@@ -47,8 +48,9 @@ public abstract class BcPRP implements PrpFixed{
 	/** 
 	 * Initializes this prp with the given secret key.
 	 * @param secretKey secret key
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) {
+	public void init(SecretKey secretKey) throws InvalidKeyException {
 		
 		/*
 		 * Creates the relevant bc parameters to pass when inverting or computing.
@@ -74,8 +76,9 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param secretKey secret key
 	 * @param params algorithm parameters
 	 * @throws InvalidParameterSpecException 
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException {
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException  {
 		/*
 		 * Creates the relevant bc parameters to pass when inverting or computing.
 		 */
