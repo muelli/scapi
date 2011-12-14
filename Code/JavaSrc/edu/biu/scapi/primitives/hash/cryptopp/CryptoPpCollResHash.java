@@ -1,44 +1,44 @@
+package edu.biu.scapi.primitives.hash.cryptopp;
+
+import edu.biu.scapi.exceptions.UnInitializedException;
+import edu.biu.scapi.primitives.hash.CryptographicHash;
+
 /**
- * Project: scapi.
- * Package: edu.biu.scapi.primitives.hash.cryptopp.
- * File: CryptoPpCollResHash.java.
- * Creation date Apr 12, 2011
- * Created by LabTest
- *
- *
- * 
- * A general adapter class of hash for Crypto++. 
+ * A general adapter class of hash for Crypto++. <p>
  * This class implements all the functionality by passing requests to the adaptee c++ abstract class HashTransformation of crypto++ using the JNI dll. 
  * A concrete hash function such as SHA1 represented by the class CryptoPpSHA1 only passes the name of the hash in the constructor 
  * to this base class. 
  * Since the underlying library is written in a native language we use the JNI architecture.
+ * 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  *
  */
-package edu.biu.scapi.primitives.hash.cryptopp;
+public abstract class CryptoPpCollResHash implements CryptographicHash {
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.primitives.hash.TargetCollisionResistantAbs;
-
-/**
- * @author LabTest
- * 
- */
-public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
-
-	protected long collHashPtr;
+	protected long collHashPtr; //pointer to the native hash object
 	
 	//native functions. These functions are implemented in a c++ dll using JNI that we load. For secure coding always
 	//declare native functions as private and wrap them by a java function.
 	
-	private native long createHash(String hashName);//creates a hash and returns the pointer. This pointer will be passed to all
-													//the other functions so the created hash object will be used. This is due to
-													//the lack of OOD of JNI and thus the created pointer must be passed each time.
+	//creates a hash and returns the pointer. This pointer will be passed to all the other functions 
+	//so the created hash object will be used. This is due to the lack of OOD of JNI and thus the 
+	//created pointer must be passed each time.
+	private native long createHash(String hashName);
 	
-	private native String algName(long ptr);//returns crypto++ name of the hash
-	private native void updateHash(long ptr, byte[] input, long len); //updates the hash
-	private native void finalHash(long ptr, byte[] output);//finishes the hash computation
+	//returns crypto++ name of the hash
+	private native String algName(long ptr);
+	
+	//updates the message to the hash
+	private native void updateHash(long ptr, byte[] input, long len);
+	
+	//finishes the hash computation
+	private native void finalHash(long ptr, byte[] output);
+	
+	//returns the size of the hashed msg
 	private native int getDigestSize(long ptr);
-	private native void deleteHash(long ptr);//deletes the created pointer.
+	
+	//deletes the created pointer.
+	private native void deleteHash(long ptr);
 	
 	
 	/**
@@ -49,18 +49,22 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	public CryptoPpCollResHash(String hashName) {
 		
 		
-		//instantiate a hash object in crypto++. Remember to delete it using the finalize method.
+		//instantiates a hash object in crypto++. Remember to delete it using the finalize method.
 		//we keep a pointer to the created hash object in c++.
 		collHashPtr = createHash(hashName);
 		
 	}
 	
+	public boolean isInitialized(){
+		return true;
+	} 
+	
 	/**
-	 * The algorithm name taken from Crypto++
+	 * @return the algorithm name taken from Crypto++
 	 */
 	public String getAlgorithmName() {
 		
-		//get the algorithm name as crypto++ call it
+		//gets the algorithm name as crypto++ call it
 		return algName(collHashPtr);
 	}
 	
@@ -69,38 +73,62 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	 * @param in input byte array
 	 * @param inOffset the offset within the byte array
 	 * @param inLen the length. The number of bytes to take after the offset
-	 * @throws UnInitializedException 
+	 * @throws UnInitializedException if this object is not initialized
 	 * */
 	public void update(byte[] in, int inOffset, int inLen) throws UnInitializedException {
-		//check that the object is initialized
+		//checks that the object is initialized
 		if (!isInitialized()){
 			throw new UnInitializedException();
 		}
-		//check that the offset and length are correct
-		if ((inOffset > in.length) || (inOffset+inLen > in.length)){
+		//checks that the offset and length are correct
+		if ((inOffset > in.length) || (inOffset+inLen > in.length) || (inOffset<0)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
 		}
-		//call the native function
-		updateHash(collHashPtr, in, inLen);
+		
+		//the dll function does the update from offset 0.
+		//if the given offset is greater than 0, copies the relevant bytes to a new array and send it to the dll function.
+		if (inOffset>0){
+			byte[] input = new byte[inLen];
+			System.arraycopy(in, inOffset, input, 0, inLen);
+			//calls the native function
+			updateHash(collHashPtr, input, inLen);
+		}else {
+		
+			//if the offset is 0 - calls the native function with the given array
+			updateHash(collHashPtr, in, inLen);
+		}
 	}
 
 	/** 
+	 * Completes the hash computation and puts the result in the out array.
 	 * @param out the output in byte array
-	 * @param outOffset the offset from which to take bytes from
-	 * @throws UnInitializedException 
+	 * @param outOffset the offset which to put the result bytes from
+	 * @throws UnInitializedException if this object is not initialized
 	 */
 	public void hashFinal(byte[] out, int outOffset) throws UnInitializedException {
-		//check that the object is initialized
+		//checks that the object is initialized
 		if (!isInitialized()){
 			throw new UnInitializedException();
 		}
-		//check that the offset and length are correct
-		if ((outOffset > out.length) || (outOffset+getHashedMsgSize() > out.length)){
+		//checks that the offset and length are correct
+		if ((outOffset > out.length) || (outOffset+getHashedMsgSize() > out.length) || (outOffset<0)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
-		//call the native function final. There is no use of the offset in the native code and thus should be dealt before
-		//the call to the native function.
-		finalHash(collHashPtr, out);
+		
+		//if the offset is greater than 0 - puts the result in a new array and copies it to the out array starting at the outOffset
+		if (outOffset>0){
+			int length = getDigestSize(collHashPtr);
+			byte[] tempOut = new byte[length];
+			//calls the native function finalHash with the temp array
+			finalHash(collHashPtr, tempOut);
+			//copies the hash result to the out array in the right place
+			System.arraycopy(tempOut, 0, out, outOffset, length);
+			
+		}else{
+			//calls the native function final. 
+			finalHash(collHashPtr, out);
+		}
+		
 
 	}
 
@@ -109,7 +137,7 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	 */
 	public int getHashedMsgSize() {
 		
-		//call the native function
+		//calls the native function
 		return getDigestSize(collHashPtr);
 	}
 	
@@ -119,7 +147,7 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	 */
 	protected void finalize() throws Throwable {
 		
-		//delete from the dll the dynamic allocation of the hash.
+		//deletes from the dll the dynamic allocation of the hash.
 		deleteHash(collHashPtr);
 		
 		super.finalize();
@@ -127,7 +155,7 @@ public abstract class CryptoPpCollResHash extends TargetCollisionResistantAbs {
 	
 	 static {
 		 
-		 //load the crypto++ jni dll
+		 //loads the crypto++ jni dll
 		 System.loadLibrary("CryptoPPJavaInterface");
 	 }
 
