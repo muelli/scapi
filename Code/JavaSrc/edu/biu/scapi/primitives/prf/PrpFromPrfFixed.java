@@ -1,5 +1,6 @@
 package edu.biu.scapi.primitives.prf;
 
+import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
@@ -20,8 +21,9 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 	/**
 	 * Initialized this PrpFromPrfFixed with a secretKey
 	 * @param secretKey the secret key
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) {
+	public void init(SecretKey secretKey) throws InvalidKeyException {
 		//initializes the underlying prf with the secret key
 		prfFixed.init(secretKey);
 		
@@ -32,8 +34,9 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 	 * @param secretKey the secret key
 	 * @param params the auxiliary parameters
 	 * @throws InvalidParameterSpecException 
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException {
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException, InvalidKeyException {
 		//initializes the underlying prf with the secret key and params
 		prfFixed.init(secretKey, params);
 		

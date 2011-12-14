@@ -1,5 +1,6 @@
 package edu.biu.scapi.primitives.prf;
 
+import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
@@ -20,8 +21,9 @@ public abstract class PrpFromPrfVarying implements PrpVaryingIOLength {
 	/**
 	 * Initializes this PrpFromPrfVarying with secret key
 	 * @param secretKey the secret key
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) {
+	public void init(SecretKey secretKey) throws InvalidKeyException {
 		//initializes the underlying prf with the given secret key
 		prfVaryingIOLength.init(secretKey);
 		
@@ -31,10 +33,11 @@ public abstract class PrpFromPrfVarying implements PrpVaryingIOLength {
 	 * Initializes this PrpFromPrfVarying with the secret key and the auxiliary parameters
 	 * @param secretKey the secret key
 	 * @param params the auxiliary parameters
+	 * @throws InvalidKeyException 
 	 * @throws InvalidParameterSpecException 
 	 */
 	
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException {
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidParameterSpecException {
 		//initializes the underlying prf with the given secret key and params
 		prfVaryingIOLength.init(secretKey, params);	
 	}

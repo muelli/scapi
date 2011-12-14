@@ -1,5 +1,6 @@
 package edu.biu.scapi.primitives.prf;
 
+import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
@@ -23,16 +24,18 @@ public interface PseudorandomFunction {
 	/**
 	 * Initializes this prf with the secret key.
 	 * @param secretKey the secrete key
+	 * @throws InvalidKeyException 
 	 *  */
-	public void init(SecretKey secretKey);
+	public void init(SecretKey secretKey) throws InvalidKeyException;
 
 	/** 
 	 * Initializes this prf with the secret key and the auxiliary parameters.
 	 * @param secretKey secret key
 	 * @param params algorithm parameters
 	 * @throws InvalidParameterSpecException 
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException;
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException, InvalidKeyException;
 	
 	/**
 	 * An object trying to use an instance of prf needs to check if it has already been initialized.
