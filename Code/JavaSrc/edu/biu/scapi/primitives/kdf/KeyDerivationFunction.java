@@ -1,5 +1,6 @@
 package edu.biu.scapi.primitives.kdf;
 
+import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.SecretKey;
@@ -18,15 +19,17 @@ public interface KeyDerivationFunction {
 	/**
 	 * Initializes this kdf with the secret key. The initialization is for the underlying object the KDF used.
 	 * @param secretKey the secret key
+	 * @throws InvalidKeyException 
 	 *  */
-	public void init(SecretKey secretKey);
+	public void init(SecretKey secretKey) throws InvalidKeyException;
 
 	/** 
 	 * Initializes this kdf with the secret key and the auxiliary parameters. The initialization is for the underlying object the KDF used.
 	 * @param secretKey secret key
 	 * @param params algorithm parameters
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params);
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException;
 	
 	/**
 	 * An object trying to use an instance of kdf needs to check if it has already been initialized.

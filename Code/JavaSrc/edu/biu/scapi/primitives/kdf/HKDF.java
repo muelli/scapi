@@ -1,5 +1,6 @@
 package edu.biu.scapi.primitives.kdf;
 
+import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.logging.Level;
 
@@ -52,13 +53,13 @@ public final class HKDF implements KeyDerivationFunction {
 	}
 	
 	
-	public void init(SecretKey secretKey) {
+	public void init(SecretKey secretKey) throws InvalidKeyException {
 		//init the underlying hmac
 		hmac.init(secretKey);
 		
 	}
 
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException {
 		// there are no params. ignore the params and sends to the other init function
 		init(secretKey);
 		
@@ -108,7 +109,12 @@ public final class HKDF implements KeyDerivationFunction {
 		
 		
 		//init the hmac with the new key. From now on this is the key for all the rounds.
-		hmac.init(new SecretKeySpec(roundKey, "HKDF"));
+		try {
+			hmac.init(new SecretKeySpec(roundKey, "HKDF"));
+		} catch (InvalidKeyException e) {
+			//shoudln't happen since the key is the output of compute block and its length is ok
+			Logging.getLogger().log(Level.WARNING, e.toString());
+		}
 		
 		//calculates the first round
 		//K(1) = HMAC(PRK,(CTXinfo,1)) [key=PRK, data=(CTXinfo,1)]
