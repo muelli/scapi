@@ -1,45 +1,26 @@
-/**
- * A cryptographic hash function is a deterministic procedure that takes an arbitrary block of data and returns a fixed-size bit string, 
- * the (cryptographic) hash value. There are two main levels of security that we will consider here: 
- * target collision resistance (meaning that given x it is hard to find y such that H(y)=H(x)) and collision resistant for which we also 
- * have an interface. 
- */
 package edu.biu.scapi.primitives.hash;
-
-import java.security.spec.AlgorithmParameterSpec;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
 
-/** 
- * @author LabTest
+/**
+ * General interface for CryptographicHash. Every concrete class should implement this interface. <p>
+ * 
+ * A cryptographic hash function is a deterministic procedure that takes an arbitrary block of data and returns a fixed-size bit string, 
+ * the (cryptographic) hash value. 
+ * 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public interface TargetCollisionResistant {
-	
-	
-	/** 
-	 * Initializes this target collision resistant hash with the auxiliary parameters
-	 * @param params
-	 */
-	public void init(AlgorithmParameterSpec params);
-	
-	/** 
-	 * Initializes this target collision resistant hash. Does not require parameters
-	 */
-	public void init();
+public interface CryptographicHash {
 	
 	/**
-	 * 
-	 * @return true if the object was initialized. Usually this means that the function init was called
+	 * An object trying to use an instance of CryptographicHash needs to check if it has already been initialized.
+	 * Usually this means that the function init was called, CryptographicHash has no init function so it always return true.
+	 * @return true if the object was initialized. 
 	 */
 	public boolean isInitialized();
 
 	/** 
-	 * @return the parameter spec of this target collision resistant hash
-	 */
-	public AlgorithmParameterSpec getParams();
-
-	/** 
-	 * @return The algorithm name
+	 * @return The algorithm name. For example - SHA1
 	 */
 	public String getAlgorithmName();
 
@@ -53,15 +34,15 @@ public interface TargetCollisionResistant {
 	 * @param in input byte array
 	 * @param inOffset the offset within the byte array
 	 * @param inLen the length. The number of bytes to take after the offset
-	 * @throws UnInitializedException 
+	 * @throws UnInitializedException if this object is not initialized
 	 * */
 	public void update(byte[] in, int inOffset, int inLen) throws UnInitializedException;
 
 	/** 
 	 * Completes the hash computation and puts the result in the out array.
 	 * @param out the output in byte array
-	 * @param outOffset the offset from which to take bytes from
-	 * @throws UnInitializedException 
+	 * @param outOffset the offset which to put the result bytes from
+	 * @throws UnInitializedException if this object is not initialized
 	 */
 	public void hashFinal(byte[] out, int outOffset) throws UnInitializedException;
 }
