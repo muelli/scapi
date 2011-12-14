@@ -1,6 +1,6 @@
 package edu.biu.scapi.tools.Factories;
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.primitives.hash.TargetCollisionResistant;
+import edu.biu.scapi.primitives.hash.CryptographicHash;
 /**
  * CollResFactory has a member of type FactoriesUtility to which it delegates the actual creation of the object. 
  * This ensures proper code re-use.The 
@@ -32,9 +32,9 @@ public final class CollResFactory {
 	 * @return an object of type TargetCollisionResistant class that was determined by the algName + provider
 	 * @throws FactoriesException 
 	 */
-	public TargetCollisionResistant getObject(String algName, String provider) throws FactoriesException {
+	public CryptographicHash getObject(String algName, String provider) throws FactoriesException {
 		
-		return (TargetCollisionResistant) factoriesUtility.getObject(provider, algName);
+		return (CryptographicHash) factoriesUtility.getObject(provider, algName);
 	}
 
 	/** 
@@ -43,9 +43,9 @@ public final class CollResFactory {
 	 * @return an object of type TargetCollisionResistant class that was determined by the algName + the default provider for that algorithm
 	 * @throws FactoriesException 
 	 */
-	public TargetCollisionResistant getObject(String algName) throws FactoriesException {
+	public CryptographicHash getObject(String algName) throws FactoriesException {
 		
-		return (TargetCollisionResistant) factoriesUtility.getObject(algName);
+		return (CryptographicHash) factoriesUtility.getObject(algName);
 	}
 
 	/** 
