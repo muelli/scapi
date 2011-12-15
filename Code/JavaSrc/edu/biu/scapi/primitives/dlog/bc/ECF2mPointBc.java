@@ -1,7 +1,7 @@
 package edu.biu.scapi.primitives.dlog.bc;
 
 import java.math.BigInteger;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.logging.Level;
 
 import org.bouncycastle.math.ec.ECFieldElement;
@@ -65,7 +65,7 @@ public class ECF2mPointBc extends ECPointBc{
 			else
 				getBasis(desc, k);
 			
-			Random random = new Random();
+			SecureRandom random = new SecureRandom();
 			BigInteger x = null;
 			
 			/*find a point in the group */

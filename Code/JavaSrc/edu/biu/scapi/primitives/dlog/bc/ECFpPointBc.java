@@ -1,7 +1,7 @@
 package edu.biu.scapi.primitives.dlog.bc;
 
 import java.math.BigInteger;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.logging.Level;
 
 import org.bouncycastle.math.ec.ECFieldElement;
@@ -53,7 +53,7 @@ public class ECFpPointBc extends ECPointBc{
 		 */
 		BigInteger p = desc.getP(); //get the prime modulus
 		int len = 2*(p.bitLength()); //get the security parameter for the algorithm
-		Random generator = new Random();
+		SecureRandom generator = new SecureRandom();
 		BigInteger x = null;
 		
 		/*find a point in the group*/
