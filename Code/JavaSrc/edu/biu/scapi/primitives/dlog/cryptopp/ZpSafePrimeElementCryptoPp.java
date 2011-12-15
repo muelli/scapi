@@ -1,7 +1,7 @@
 package edu.biu.scapi.primitives.dlog.cryptopp;
 
 import java.math.BigInteger;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.logging.Level;
 
 import edu.biu.scapi.generals.Logging;
@@ -59,7 +59,7 @@ public class ZpSafePrimeElementCryptoPp implements ZpElement{
 	public ZpSafePrimeElementCryptoPp(BigInteger p)throws IllegalArgumentException{
 		
 		int len = p.bitLength(); //get the security parameter for the algorithm
-		Random generator = new Random();
+		SecureRandom generator = new SecureRandom();
 		BigInteger element = null;
 		//find a number in the range [1, ..., p-1]
 		for(int i=0; i<(2*len); i++){
