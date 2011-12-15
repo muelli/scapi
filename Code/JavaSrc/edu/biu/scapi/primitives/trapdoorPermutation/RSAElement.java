@@ -1,7 +1,7 @@
 package edu.biu.scapi.primitives.trapdoorPermutation;
 
 import java.math.BigInteger;
-import java.util.Random;
+import java.security.SecureRandom;
 
 
 /**
@@ -23,7 +23,7 @@ public final class RSAElement implements TPElement{
 		 * samples a number between 1 to n-1
 		 */
 		
-		Random generator = new Random();
+		SecureRandom generator = new SecureRandom();
 		
 		BigInteger randNumber = null;
 		do {
