@@ -48,10 +48,11 @@ public final class BcHMAC implements  Hmac {
 	 * This constructor gets a SCAPI collision resistant hash to be the underlying hash and retrieves the name of the hash in
 	 * order to create the related digest for the BC Hmac this class uses.
 	 * @param hash - the underlying collision resistant hash 
-	 * @throws FactoriesException, IllegalStateException 
+	 * @throws FactoriesException
+	 * @throws UnInitializedException if the given hash is not initialized
 	 */
 
-	public BcHMAC(CryptographicHash hash) throws FactoriesException, IllegalStateException {
+	public BcHMAC(CryptographicHash hash) throws FactoriesException, UnInitializedException {
 	
 		//first check that the hmac is initialized.
 		if(hash.isInitialized()){
@@ -59,7 +60,7 @@ public final class BcHMAC implements  Hmac {
 			hMac = new HMac(BCFactory.getInstance().getDigest(hash.getAlgorithmName()));
 		}
 		else{//the user must pass an initialized object, otherwise throw an exception
-			throw new IllegalStateException("argument hash must be initialized");
+			throw new UnInitializedException("argument hash must be initialized");
 		}
 	}
 	
