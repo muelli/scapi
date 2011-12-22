@@ -32,8 +32,9 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	/**
 	 * Constructor that accepts a prfVaryingIOLength to be the underlying prf.
 	 * @param prfVaryingIOLength the underlying prf varying. MUST be initialized.
+	 * @throws UnInitializedException if the given prfVaryingIOLength is not initialized
 	 */
-	public LubyRackoffPrpFromPrfVarying(PrfVaryingIOLength prfVaryingIOLength){
+	public LubyRackoffPrpFromPrfVarying(PrfVaryingIOLength prfVaryingIOLength) throws UnInitializedException{
 		
 		//first checks that the prp fixed is initialized.
 		if(prfVaryingIOLength.isInitialized()){
@@ -41,7 +42,7 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 			this.prfVaryingIOLength = prfVaryingIOLength;
 		}
 		else{//the user must pass an initialized object, otherwise throws an exception
-			throw new IllegalStateException("The input variable must be initialized");
+			throw new UnInitializedException("The input variable must be initialized");
 		}
 		
 	}
