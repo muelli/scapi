@@ -42,15 +42,16 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 	 * creates the related bc kdf, with the given hash
 	 * @param hash - the underlying collision resistant hash
 	 * @throws FactoriesException in case of error while creating the object
+	 * @throws UnInitializedException if the given hash is not initialized
 	 */
-	public BcKdfISO18033(CryptographicHash hash) throws FactoriesException {
+	public BcKdfISO18033(CryptographicHash hash) throws FactoriesException, UnInitializedException {
 		//first checks that the hmac is initialized.
 		if(hash.isInitialized()){
 			//creates a digest of the given hash type through the factory and passes it to the KDF
 			bcKdfGenerator = new KDF1BytesGenerator(BCFactory.getInstance().getDigest(hash.getAlgorithmName()));
 		}
 		else{//the user must pass an initialized object, otherwise throws an exception
-			throw new IllegalStateException("argumrnt hmac must be initialized");
+			throw new UnInitializedException("The input variable must be initialized");
 		}
 	}
 	
