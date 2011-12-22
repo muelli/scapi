@@ -34,8 +34,9 @@ public class IteratedPrfVarying extends
 	/**
 	 * Constructor that accepts the underlying PrfVaryingInputLength.
 	 * @param prfVaryingInput the underlying prf varying. MUST be initialized, and there is no need to call init.
+	 * @throws UnInitializedException if the given prfVaryingInput is not initialized
 	 */
-	public IteratedPrfVarying(PrfVaryingInputLength prfVaryingInput) {
+	public IteratedPrfVarying(PrfVaryingInputLength prfVaryingInput) throws UnInitializedException {
 		
 		//first checks that the prf is initialized.
 		if(prfVaryingInput.isInitialized()){
@@ -43,7 +44,7 @@ public class IteratedPrfVarying extends
 			prfVaryingInputLength = prfVaryingInput;
 		}
 		else{//the user must pass an initialized object, otherwise throws an exception
-			throw new IllegalStateException("The input variable must be initialized");
+			throw new UnInitializedException("The input variable must be initialized");
 		}
 	}
 
