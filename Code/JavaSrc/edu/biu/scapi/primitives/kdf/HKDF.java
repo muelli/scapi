@@ -39,15 +39,16 @@ public final class HKDF implements KeyDerivationFunction {
 	 * Constructor that accepts an HMAC to be the underlying object.
 	 * The given Hmac MUST be initialized.
 	 * @param hmac the underlying hmac. 
+	 * @throws UnInitializedException if the given Hmac is not initialized
 	 */
-	public HKDF(Hmac hmac){
+	public HKDF(Hmac hmac) throws UnInitializedException{
 		
 		//first checks that the hmac is initialized.
 		if(hmac.isInitialized()){
 			this.hmac = hmac;
 		}
 		else{//the user must pass an initialized object, otherwise throw an exception
-			throw new IllegalStateException("argumrnt hmac must be initialized");
+			throw new UnInitializedException("The input variable must be initialized");
 		}
 			
 	}
