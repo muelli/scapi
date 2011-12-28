@@ -166,4 +166,19 @@ public interface DlogGroup {
 	 * @throws UnInitializedException 
 	 */
 	public GroupElement exponentiateWithPreComputedValues(GroupElement groupElement, int exponent) throws UnInitializedException;
+	
+	/**
+	 * Converts a byte array to a GroupElement.
+	 * @param binaryString the byte array to convert
+	 * @return the created group Element
+	 */
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString);
+	
+	/**
+	 * Convert a GroupElement to a byte array.
+	 * @param groupElement the element to convert
+	 * @return the created byte array
+	 */
+	public byte[] convertGroupElementToByteArray(GroupElement groupElement);
+	
 }
