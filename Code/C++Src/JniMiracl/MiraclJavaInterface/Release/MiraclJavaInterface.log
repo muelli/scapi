@@ -1,5 +1,5 @@
-﻿Build started 09/11/2011 14:07:04.
-     1>Project "C:\Users\user\Documents\Visual Studio 2010\Projects\MiraclJavaInterface\MiraclJavaInterface\MiraclJavaInterface.vcxproj" on node 2 (rebuild target(s)).
+﻿Build started 26/12/2011 12:30:14.
+     1>Project "C:\development\SDK\Code\C++Src\JniMiracl\MiraclJavaInterface\MiraclJavaInterface.vcxproj" on node 2 (rebuild target(s)).
      1>_PrepareForClean:
          Deleting file "Release\MiraclJavaInterface.lastbuildstate".
        InitializeBuildStatus:
@@ -14,13 +14,13 @@
          MiraclJavaInterface.c
          Utils.c
        Link:
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user\Documents\Visual Studio 2010\Projects\MiraclJavaInterface\Release\MiraclJavaInterface.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Release\MiraclJavaInterface.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\user\Documents\Visual Studio 2010\Projects\MiraclJavaInterface\Release\MiraclJavaInterface.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user\Documents\Visual Studio 2010\Projects\MiraclJavaInterface\Release\MiraclJavaInterface.lib" /MACHINE:X86 /DLL Release\Dlog.obj
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\development\SDK\Code\C++Src\JniMiracl\Release\MiraclJavaInterface.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Release\MiraclJavaInterface.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\development\SDK\Code\C++Src\JniMiracl\Release\MiraclJavaInterface.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\development\SDK\Code\C++Src\JniMiracl\Release\MiraclJavaInterface.lib" /MACHINE:X86 /DLL Release\Dlog.obj
          Release\ECF2mPoint.obj
          Release\ECFpPoint.obj
          Release\MiraclJavaInterface.obj
          Release\stdafx.obj
          Release\Utils.obj
-            Creating library C:\Users\user\Documents\Visual Studio 2010\Projects\MiraclJavaInterface\Release\MiraclJavaInterface.lib and object C:\Users\user\Documents\Visual Studio 2010\Projects\MiraclJavaInterface\Release\MiraclJavaInterface.exp
+            Creating library C:\development\SDK\Code\C++Src\JniMiracl\Release\MiraclJavaInterface.lib and object C:\development\SDK\Code\C++Src\JniMiracl\Release\MiraclJavaInterface.exp
          Generating code
      1>c:\program files (x86)\miracl\miracl\miracl\source\mrarth1.c(505): warning C4731: 'mr_sdiv' : frame pointer register 'ebp' modified by inline assembly code
      1>c:\program files (x86)\miracl\miracl\miracl\source\mrarth1.c(512): warning C4731: 'mr_sdiv' : frame pointer register 'ebp' modified by inline assembly code
@@ -49,14 +49,14 @@
      1>c:\program files (x86)\miracl\miracl\miracl\source\mrmonty.c(460): warning C4731: 'redc' : frame pointer register 'ebp' modified by inline assembly code
      1>c:\program files (x86)\miracl\miracl\miracl\source\mrmonty.c(463): warning C4731: 'redc' : frame pointer register 'ebp' modified by inline assembly code
          Finished generating code
-         MiraclJavaInterface.vcxproj -> C:\Users\user\Documents\Visual Studio 2010\Projects\MiraclJavaInterface\Release\MiraclJavaInterface.dll
+         MiraclJavaInterface.vcxproj -> C:\development\SDK\Code\C++Src\JniMiracl\Release\MiraclJavaInterface.dll
        Manifest:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\user\Documents\Visual Studio 2010\Projects\MiraclJavaInterface\Release\MiraclJavaInterface.dll;#2" /manifest Release\MiraclJavaInterface.dll.intermediate.manifest
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\development\SDK\Code\C++Src\JniMiracl\Release\MiraclJavaInterface.dll;#2" /manifest Release\MiraclJavaInterface.dll.intermediate.manifest
        FinalizeBuildStatus:
          Deleting file "Release\MiraclJavaInterface.unsuccessfulbuild".
          Touching "Release\MiraclJavaInterface.lastbuildstate".
-     1>Done Building Project "C:\Users\user\Documents\Visual Studio 2010\Projects\MiraclJavaInterface\MiraclJavaInterface\MiraclJavaInterface.vcxproj" (rebuild target(s)).
+     1>Done Building Project "C:\development\SDK\Code\C++Src\JniMiracl\MiraclJavaInterface\MiraclJavaInterface.vcxproj" (rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:02.42
+Time Elapsed 00:00:02.27

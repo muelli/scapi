@@ -30,6 +30,30 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
 	  return (jlong) p; // return the point
 }
 
+/* function createF2mPointFromX : This function creates a point of elliptic curve over F2m according to the accepted values
+ * param m						: pointer to mip
+ * param xVal					: x value of the point
+ * param validity				: indicates if the point is valid for the current curve or not
+ * return						: A pointer to the created point.
+ */
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl_createF2mPointFromX
+  (JNIEnv *env, jobject obj, jlong m, jbyteArray xVal, jbooleanArray validity){
+	  /* convert the accepted parameters to MIRACL parameters*/
+	  miracl* mip = (miracl*)m;
+	  jboolean* valid = (*env)->GetBooleanArrayElements(env, validity, 0);
+	  
+	   /* create the point with x,y values */
+	  epoint* p = epoint_init(mip);
+	  big x = byteArrayToMiraclBig(env, mip, xVal);
+
+	  valid[0] = epoint2_set(mip, x, x, 1, p);
+
+	  /* release the array */
+	  (*env)->ReleaseBooleanArrayElements(env, validity, valid, 0);
+	  
+	  return (jlong) p; // return the point
+}
+
 /* function createRandomF2mPoint : This function creates a random point of elliptic curve over F2m
  * param m						: pointer to mip
  * param pVal					: field's prime 

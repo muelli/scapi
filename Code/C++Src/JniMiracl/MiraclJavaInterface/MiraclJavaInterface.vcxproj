@@ -40,7 +40,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Users\user\Downloads\miracl\include;C:\Program Files %28x86%29\IBM\SDP\jdk\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\user\Documents\Visual Studio 2010\Projects\miraclLib\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\development\SDK\Code\C++Src\JniMiracl\MiraclJavaInterface\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
