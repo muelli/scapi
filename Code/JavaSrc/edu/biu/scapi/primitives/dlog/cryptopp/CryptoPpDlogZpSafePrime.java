@@ -243,6 +243,36 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	}
 	
 	/**
+	 * Converts a byte array to a ZpSafePrimeElementCryptoPp element.
+	 * @param binaryString the byte array to convert
+	 * @return the created group Element
+	 */
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString){
+		if (binaryString.length >= ((ZpGroupParams) groupParams).getP().bitLength()){
+			throw new IllegalArgumentException("String is too long. It has to be of length less than p");
+		}
+		try{
+			BigInteger elValue = new BigInteger(binaryString);
+			GroupElement element= new ZpSafePrimeElementCryptoPp(elValue, ((ZpGroupParams) groupParams).getP(), true);
+			return element;
+		} catch(IllegalArgumentException e){
+			throw new IllegalArgumentException("The given string is not a valid Zp safe prime element");
+		}
+	}
+	
+	/**
+	 * Convert a ZpSafePrimeElementCryptoPp to a byte array.
+	 * @param groupElement the element to convert
+	 * @return the created byte array
+	 */
+	public byte[] convertGroupElementToByteArray(GroupElement groupElement){
+		if (!(groupElement instanceof ZpSafePrimeElementCryptoPp)){
+			throw new IllegalArgumentException("element type doesn't match the group type");
+		}
+		return ((ZpElement) groupElement).getElementValue().toByteArray();
+	}
+	
+	/**
 	 * deletes the related Dlog group object
 	 */
 	protected void finalize() throws Throwable {
