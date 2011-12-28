@@ -120,6 +120,71 @@ public class ECF2mPointBc extends ECPointBc{
 		}
 	}
 
+	/**
+	 * Constructor that accepts x value of a point, calculates its corresponding y value and create a point with these values. 
+	 * @param x the x coordinate of the point
+	 * @param curve - elliptic curve dlog group over F2m
+	 * @throws UnInitializedException if the given curve is not initialized
+	 */
+	ECF2mPointBc(BigInteger x, BcDlogECF2m curve) throws UnInitializedException{
+		try{
+			ECF2mGroupParams params = (ECF2mGroupParams)curve.getGroupParams();
+			
+			int m = params.getM(); //get the field size
+			/* get curve parameters */
+			int[] k = new int[3];
+			
+			if (params instanceof ECF2mKoblitz)
+				getBasis(((ECF2mKoblitz) params).getCurve(), k);
+			else
+				getBasis(params, k);
+			
+			SecureRandom random = new SecureRandom();
+			/*calculates y value corresponding to x value */
+			ECFieldElement.F2m xElement = new ECFieldElement.F2m(m, k[0], k[1], k[2], x);
+			ECFieldElement.F2m aElement = new ECFieldElement.F2m(m, k[0], k[1], k[2], params.getA());
+			ECFieldElement.F2m bElement = new ECFieldElement.F2m(m, k[0], k[1], k[2], params.getB());
+			//computes x^3
+			ECFieldElement.F2m x3 = (F2m) xElement.square().multiply(xElement);
+			//computes ax^2
+			ECFieldElement.F2m ax2 = (F2m) aElement.multiply(xElement.square());
+			//computes f(x) = x^3+ax^2+b
+			ECFieldElement.F2m fx = (F2m) x3.add(ax2).add(bElement);
+			//computes 4(x^3+ax^2+b)
+			ECFieldElement.F2m fx4 = (F2m) fx.multiply(new ECFieldElement.F2m(m, k[0], k[1], k[2], new BigInteger("4")));
+			//computes x^2-4f(x)
+			ECFieldElement.F2m delta = (F2m) xElement.square().add(fx4.negate());
+			ECFieldElement.F2m yVal = null;
+			ECFieldElement.F2m two = new ECFieldElement.F2m(m, k[0], k[1], k[2], new BigInteger("2"));
+			
+			//if the delta is 0 - there is 1 solution to the equation
+			if (delta.toBigInteger().compareTo(BigInteger.ZERO) == 0){  
+				//compute y value = -x/2
+				yVal = (F2m) xElement.negate().divide(two);
+			} 
+			//if the delta is greater than 0 - there are 2 solutions to the equation and we choose one of them to be the y value
+			if (delta.toBigInteger().compareTo(BigInteger.ZERO) > 0){  
+				Boolean coin = random.nextBoolean();
+				if (coin==true){
+					//compute y value = (-x+sqrt(f(x)))/2
+					yVal = (F2m) xElement.negate().add(fx4.sqrt()).divide(two);
+				} else yVal = (F2m) xElement.negate().add(fx4.sqrt().negate()).divide(two);
+			} 
+			
+			if (yVal!=null){ // if there is a square root, create a point
+				BigInteger y = yVal.toBigInteger();
+				//create the point
+				point = ((BcAdapterDlogEC)curve).createPoint(x, y);
+			} else {
+				throw new IllegalArgumentException("the given x has no corresponding y in the current curve");
+			}
+		}catch (RuntimeException e){
+			if (e.getMessage().equals("Not implemented")){
+				throw new RuntimeException("Create an ECF2mPointBC element will be available as soon as BC implements the sqrt function in ECFieldElement.F2m");
+			}
+		}
+	}
+	
 	/*
 	 * Constructor that gets an element and sets it.
 	 * Only our inner functions use this constructor to set an element. 
@@ -189,5 +254,16 @@ public class ECF2mPointBc extends ECPointBc{
 			k[1] = ((ECF2mPentanomialBasis)params).getK2();
 			k[2] = ((ECF2mPentanomialBasis)params).getK3();
 		}
+	}
+	
+	public boolean equals(Object elementToCompare){
+		if (!(elementToCompare instanceof ECF2mPointBc)){
+			throw new IllegalArgumentException("element type doesn't match the group type");
+		}
+		ECF2mPointBc element = (ECF2mPointBc) elementToCompare;
+		if ((element.getX().compareTo(getX()) ==0) && (element.getY().compareTo(getY()) == 0)){
+			return true;
+		}
+		return false;
 	}
 }

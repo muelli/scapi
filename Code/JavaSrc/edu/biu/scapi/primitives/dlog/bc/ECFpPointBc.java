@@ -28,7 +28,7 @@ public class ECFpPointBc extends ECPointBc{
 	 * @param curve - DlogGroup
 	 * @throws UnInitializedException 
 	 */
-	public ECFpPointBc(BigInteger x, BigInteger y, BcDlogECFp curve) throws UnInitializedException{
+	public ECFpPointBc(BigInteger x, BigInteger y, BcDlogECFp curve) throws UnInitializedException {
 		
 		//checks validity
 		if (!checkValidity(x, y, (ECFpGroupParams) curve.getGroupParams()))  //if not valid, throws exception
@@ -83,6 +83,33 @@ public class ECFpPointBc extends ECPointBc{
 			Logging.getLogger().log(Level.WARNING, "couldn't find a random element");
 	}
 	
+	/**
+	 * Constructor that accepts x value of a point, calculates its corresponding y value and create a point with these values. 
+	 * @param x the x coordinate of the point
+	 * @param curve - elliptic curve dlog group over Fp
+	 * @throws UnInitializedException if the given curve is not initialized
+	 */
+	ECFpPointBc(BigInteger x, BcDlogECFp curve) throws UnInitializedException{
+		
+		BigInteger p = ((ECFpGroupParams) curve.getGroupParams()).getP();
+		ECFieldElement.Fp xElement = new ECFieldElement.Fp(p, x);
+		ECFieldElement.Fp aElement = new ECFieldElement.Fp(p, ((ECGroupParams) curve.getGroupParams()).getA());
+		ECFieldElement.Fp bElement = new ECFieldElement.Fp(p, ((ECGroupParams) curve.getGroupParams()).getB());
+		//computes x^3
+		ECFieldElement.Fp x3 = (Fp) xElement.square().multiply(xElement);
+		//computes x^3+ax+b
+		ECFieldElement.Fp result = (Fp) x3.add(aElement.multiply(xElement)).add(bElement);
+		//computes sqrt(x^3+ax+b)
+		ECFieldElement.Fp yVal = (Fp) result.sqrt();
+		if (yVal!=null){ // if there is a square root, creates a point
+			BigInteger y = yVal.toBigInteger();
+			//creates the point
+			point = ((BcAdapterDlogEC)curve).createPoint(x, y);
+		}else{
+			throw new IllegalArgumentException("the given x has no corresponding y in the current curve");
+		}
+	}
+	
 	/*
 	 * Constructor that gets an element and sets it.
 	 * Only our inner functions use this constructor to set an element. 
@@ -121,5 +148,16 @@ public class ECFpPointBc extends ECPointBc{
 			else return false;
 			//if the GroupParams is not ECFpGroupParams throw exception
 		} else throw new IllegalArgumentException("groupParams doesn't match the GroupElement");
+	}
+	
+	public boolean equals(Object elementToCompare){
+		if (!(elementToCompare instanceof ECFpPointBc)){
+			throw new IllegalArgumentException("element type doesn't match the group type");
+		}
+		ECFpPointBc element = (ECFpPointBc) elementToCompare;
+		if ((element.getX().compareTo(getX()) == 0) && (element.getY().compareTo(getY()) == 0)){
+			return true;
+		}
+		return false;
 	}
 }
