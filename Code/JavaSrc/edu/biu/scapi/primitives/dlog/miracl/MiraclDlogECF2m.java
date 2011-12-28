@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
@@ -13,7 +12,6 @@ import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogECF2m;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.GroupElement;
-import edu.biu.scapi.primitives.dlog.bc.ECPointBc;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mKoblitz;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mPentanomialBasis;
@@ -278,6 +276,40 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
 	public ECElement getInfinity(){
 		long infinity = createInfinityF2mPoint(mip);
 		return new ECF2mPointMiracl(infinity, mip);
+	}
+	
+	/**
+	 * Converts a byte array to a ECF2mPointMiracl.
+	 * @param binaryString the byte array to convert
+	 * @return the created group Element
+	 */
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString){
+		if (binaryString.length >= ((ECF2mGroupParams) groupParams).getM()){
+			throw new IllegalArgumentException("String is too long. It has to be of length less than log p");
+		}
+		BigInteger  x = new BigInteger(binaryString);
+		GroupElement point = null;
+		try {
+			point = new ECF2mPointMiracl(x, this);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("The given string is not a valid point to this curve");
+		} catch (UnInitializedException e) {
+			// shouldn't occur since this dlog is initialized
+			Logging.getLogger().log(Level.WARNING, "this object is not initialized");
+		}
+		return point;
+	}
+	
+	/**
+	 * Convert a ECF2mPointMiracl to a byte array.
+	 * @param groupElement the element to convert
+	 * @return the created byte array
+	 */
+	public byte[] convertGroupElementToByteArray(GroupElement groupElement){
+		if (!(groupElement instanceof ECF2mPointMiracl)){
+			throw new IllegalArgumentException("element type doesn't match the group type");
+		}
+		return ((ECElement) groupElement).getX().toByteArray();
 	}
 	
 	//upload MIRACL library
