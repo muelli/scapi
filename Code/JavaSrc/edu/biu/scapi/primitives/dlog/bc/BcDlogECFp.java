@@ -125,7 +125,41 @@ public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp{
 	 */
 	public ECElement getInfinity(){
 		ECPoint infinity = curve.getInfinity();
-		return new ECF2mPointBc(infinity);
+		return new ECFpPointBc(infinity);
+	}
+	
+	/**
+	 * Converts a byte array to an ECFpPointBc.
+	 * @param binaryString the byte array to convert
+	 * @return the created group Element
+	 */
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString){
+		if (binaryString.length >= ((ECFpGroupParams) groupParams).getP().bitLength()){
+			throw new IllegalArgumentException("String is too long. It has to be of length less than log p");
+		}
+		BigInteger  x = new BigInteger(binaryString);
+		GroupElement point = null;
+		try {
+			point = new ECFpPointBc(x, this);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("The given string is not a valid point to this curve");
+		} catch (UnInitializedException e) {
+			// shouldn't occur since this dlog is initialized
+			Logging.getLogger().log(Level.WARNING, "this object is not initialized");
+		}
+		return point;
+	}
+	
+	/**
+	 * Convert a ECFpPointBc to a byte array.
+	 * @param groupElement the element to convert
+	 * @return the created byte array
+	 */
+	public byte[] convertGroupElementToByteArray(GroupElement groupElement){
+		if (!(groupElement instanceof ECFpPointBc)){
+			throw new IllegalArgumentException("element type doesn't match the group type");
+		}
+		return ((ECElement) groupElement).getX().toByteArray();
 	}
 	
 }
