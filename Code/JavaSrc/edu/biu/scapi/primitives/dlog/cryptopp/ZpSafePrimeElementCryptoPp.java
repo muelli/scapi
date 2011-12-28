@@ -102,6 +102,22 @@ public class ZpSafePrimeElementCryptoPp implements ZpElement{
 		return new BigInteger(getElement(pointerToElement));
 	}
 	
+	/**
+	 * Checks if the given GroupElement is equal to this groupElement.
+	 * @param elementToCompare
+	 * @return true if the given element is equal to this element. false, otherwise.
+	 */
+	public boolean equals(Object elementToCompare){
+		if (!(elementToCompare instanceof ZpSafePrimeElementCryptoPp)){
+			throw new IllegalArgumentException("element type doesn't match the group type");
+		}
+		ZpSafePrimeElementCryptoPp element = (ZpSafePrimeElementCryptoPp) elementToCompare;
+		if (element.getElementValue().compareTo(getElementValue()) == 0){
+			return true;
+		}
+		return false;
+	}
+	
 	/*
 	 * delete the related Dlog element object
 	 */
