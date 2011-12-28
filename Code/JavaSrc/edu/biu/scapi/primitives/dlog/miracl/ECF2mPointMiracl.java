@@ -15,6 +15,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 public class ECF2mPointMiracl implements ECElement{
 
 	private native long createF2mPoint(long mip, byte[] x, byte[] y, boolean[] validity);
+	private native long createF2mPointFromX(long mip, byte[] x, boolean[] validity);
 	private native long createRandomF2mPoint(long mip, int m, boolean[] validity);
 	private native boolean checkInfinityF2m(long point);
 	private native byte[] getXValueF2mPoint(long mip, long point);
@@ -69,6 +70,27 @@ public class ECF2mPointMiracl implements ECElement{
 	}
 	
 	/**
+	 * Constructor that gets a x coordinates , calculates its corresponding y and set the point with these arguments
+	 * @param x the x coordinate
+	 * @param curve
+	 * @throws UnInitializedException 
+	 */
+	ECF2mPointMiracl(BigInteger x, MiraclDlogECF2m curve) throws UnInitializedException{
+		mip = curve.getMip();
+		
+		boolean validity[] = new boolean[1];
+		
+		//call for native function that creates random point in the field.
+		point = createF2mPointFromX(mip, x.toByteArray(), validity);
+		
+		//if the algorithm for random element failed - throws exception
+		if(validity[0]==false){
+			point = 0;
+			throw new IllegalArgumentException("the given x has no corresponding y in the current curve");
+		}
+	}
+	
+	/**
 	 * Constructor that gets pointer to element and sets it.
 	 * Only our inner functions use this constructor to set an element. 
 	 * The ptr is a result of our DlogGroup functions, such as multiply.
@@ -108,6 +130,17 @@ public class ECF2mPointMiracl implements ECElement{
 		}
 		
 		return new BigInteger(getYValueF2mPoint(mip, point));
+	}
+	
+	public boolean equals(Object elementToCompare){
+		if (!(elementToCompare instanceof ECF2mPointMiracl)){
+			throw new IllegalArgumentException("element type doesn't match the group type");
+		}
+		ECF2mPointMiracl element = (ECF2mPointMiracl) elementToCompare;
+		if ((element.getX().compareTo(getX()) ==0) && (element.getY().compareTo(getY()) == 0)){
+			return true;
+		}
+		return false;
 	}
 	
 	/**
