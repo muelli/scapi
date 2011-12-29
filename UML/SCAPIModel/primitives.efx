@@ -12663,12 +12663,15 @@
           </contents>
         </eAnnotations>
         <packagedElement xmi:type="uml:Class" xmi:id="_OiYZl-2VEeC8av2_mh-J3A" name="BcHMAC" clientDependency="_OiYZm-2VEeC8av2_mh-J3A">
+          <generalization xmi:id="_m6vmUC7oEeGfsvvHaRh43Q">
+            <general xmi:type="uml:Class" href="nonInteractiveMidCrypto.efx#_HuoIkC7oEeGfsvvHaRh43Q?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/Authentication/MacAbs?"/>
+          </generalization>
           <ownedAttribute xmi:id="_OiYZmO2VEeC8av2_mh-J3A" name="hMac" visibility="private" type="_OiYZru2VEeC8av2_mh-J3A" aggregation="composite" association="_OiY_a-2VEeC8av2_mh-J3A">
             <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OiYZme2VEeC8av2_mh-J3A" value="1"/>
             <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OiYZmu2VEeC8av2_mh-J3A" value="1"/>
           </ownedAttribute>
           <interfaceRealization xmi:id="_OiYZm-2VEeC8av2_mh-J3A" supplier="_OiY_kO2VEeC8av2_mh-J3A" client="_OiYZl-2VEeC8av2_mh-J3A" contract="_OiY_kO2VEeC8av2_mh-J3A"/>
-          <ownedOperation xmi:id="_OiYZnO2VEeC8av2_mh-J3A" name="BcHMAC">
+          <ownedOperation xmi:id="_OiYZnO2VEeC8av2_mh-J3A" name="BcHMAC" raisedException="_Un1HwBBsEeGxN9Vmjgn4hg">
             <ownedParameter xmi:id="_OiYZne2VEeC8av2_mh-J3A" name="name">
               <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
             </ownedParameter>
@@ -12929,6 +12932,9 @@
         <generalization xmi:id="_OiY_ke2VEeC8av2_mh-J3A" general="_OiY_hu2VEeC8av2_mh-J3A"/>
         <generalization xmi:id="_1IAS0O2YEeC8av2_mh-J3A">
           <general xmi:type="uml:Interface" href="nonInteractiveMidCrypto.efx#_AXigguz1EeC8av2_mh-J3A?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/Authentication/Mac?"/>
+        </generalization>
+        <generalization xmi:id="_4hLOsA9xEeGQNfe5Nj9rlQ">
+          <general xmi:type="uml:Interface" href="nonInteractiveMidCrypto.efx#_sNJ4UA9xEeGQNfe5Nj9rlQ?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/Authentication/UniqueTagMac?"/>
         </generalization>
       </packagedElement>
       <packagedElement xmi:type="uml:Interface" xmi:id="_OiY_ku2VEeC8av2_mh-J3A" name="TripleDES">
@@ -27491,6 +27497,37 @@
       <packagedElement xmi:type="uml:Realization" xmi:id="_U_atMO2VEeC8av2_mh-J3A" supplier="_U_aGwu2VEeC8av2_mh-J3A" client="_U_aHAe2VEeC8av2_mh-J3A"/>
       <packagedElement xmi:type="uml:Usage" xmi:id="_vCsBwO2VEeC8av2_mh-J3A" supplier="_U_Wcy-2VEeC8av2_mh-J3A" client="_U_WcYO2VEeC8av2_mh-J3A"/>
       <packagedElement xmi:type="uml:Usage" xmi:id="_C_P20O2WEeC8av2_mh-J3A" supplier="_U_atKO2VEeC8av2_mh-J3A" client="_U_WcYO2VEeC8av2_mh-J3A"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_RnqiYBBsEeGxN9Vmjgn4hg" name="exceptions">
+      <eAnnotations xmi:id="_RnwpABBsEeGxN9Vmjgn4hg" source="uml2.diagrams" references="_RnwpARBsEeGxN9Vmjgn4hg">
+        <contents xmi:type="notation:Diagram" xmi:id="_RnwpARBsEeGxN9Vmjgn4hg" type="Freeform" name="Main">
+          <children xmi:id="_Un7OYBBsEeGxN9Vmjgn4hg" element="_Un1HwBBsEeGxN9Vmjgn4hg">
+            <children xmi:id="_Un7OYxBsEeGxN9Vmjgn4hg" type="ImageCompartment">
+              <layoutConstraint xmi:type="notation:Size" xmi:id="_Un7OZBBsEeGxN9Vmjgn4hg" width="1320" height="1320"/>
+            </children>
+            <children xmi:id="_Un7OZRBsEeGxN9Vmjgn4hg" type="Stereotype"/>
+            <children xmi:id="_UoBVABBsEeGxN9Vmjgn4hg" type="Name"/>
+            <children xmi:id="_UoBVARBsEeGxN9Vmjgn4hg" type="Parent"/>
+            <children xmi:id="_UoBVAhBsEeGxN9Vmjgn4hg" type="AttributeCompartment">
+              <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_UoBVAxBsEeGxN9Vmjgn4hg" showTitle="true"/>
+            </children>
+            <children xmi:id="_UoBVBBBsEeGxN9Vmjgn4hg" type="OperationCompartment">
+              <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_UoBVBRBsEeGxN9Vmjgn4hg" showTitle="true"/>
+            </children>
+            <children xmi:id="_UoBVBhBsEeGxN9Vmjgn4hg" visible="false" type="SignalCompartment">
+              <styles xmi:type="umlnotation:UMLListCompartmentStyle" xmi:id="_UoBVBxBsEeGxN9Vmjgn4hg"/>
+            </children>
+            <children xmi:id="_UoBVCBBsEeGxN9Vmjgn4hg" visible="false" type="StructureCompartment">
+              <styles xmi:type="umlnotation:UMLShapeCompartmentStyle" xmi:id="_UoBVCRBsEeGxN9Vmjgn4hg"/>
+            </children>
+            <styles xmi:type="umlnotation:UMLShapeStyle" xmi:id="_Un7OYRBsEeGxN9Vmjgn4hg" showListStereotype="Text" showListVisibility="Text" showStereotype="Label"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Un7OYhBsEeGxN9Vmjgn4hg" x="6879" y="4471"/>
+          </children>
+          <styles xmi:type="umlnotation:UMLDiagramStyle" xmi:id="_RnwpAhBsEeGxN9Vmjgn4hg"/>
+          <element xsi:nil="true"/>
+        </contents>
+      </eAnnotations>
+      <packagedElement xmi:type="uml:Class" xmi:id="_Un1HwBBsEeGxN9Vmjgn4hg" name="UnInitializedException"/>
     </packagedElement>
   </uml:Package>
   <Default:Documentation xmi:id="_Oj_h0O2VEeC8av2_mh-J3A" base_Comment="_OjS-2-2VEeC8av2_mh-J3A"/>

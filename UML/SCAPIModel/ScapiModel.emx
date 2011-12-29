@@ -438,6 +438,11 @@
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_wm5RgAaNEeCnt4IVKKjkMA" name="SecretKey"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_i7iXIBfYEeC20cbJ9z5wpw" name="Object"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_vkVeAEpJEeCUacdpb3mCOA" name="Vector&lt;String>"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_2KN5MA-DEeGQNfe5Nj9rlQ" name="Byte"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_iBKOcBBuEeGxN9Vmjgn4hg" name="Byte{8}"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_xsXzQBwYEeGTw4hkcAf3bA" name="Random"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_THdWsCC-EeGgp9a0aLX5Ug" name="SecureRandom"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_H-GX4C78EeGfsvvHaRh43Q" name="long"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Package" xmi:id="_gNQrwP3pEd-nt4IVKKjkMA" name="edu">
       <eAnnotations xmi:id="_gOmIgP3pEd-nt4IVKKjkMA" source="uml2.diagrams"/>
