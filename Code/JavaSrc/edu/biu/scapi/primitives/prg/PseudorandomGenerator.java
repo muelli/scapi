@@ -42,12 +42,6 @@ public interface PseudorandomGenerator {
 	public AlgorithmParameterSpec getParams() throws UnInitializedException;
 
 	/** 
-	 * @return the secret key of this PRG
-	 * @throws UnInitializedException if this object is not initialized
-	 */
-	public SecretKey getSecretKey() throws UnInitializedException;
-	
-	/** 
 	 * @return the algorithm name. For example - RC4
 	 */
 	public String getAlgorithmName();

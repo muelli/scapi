@@ -46,10 +46,4 @@ public abstract class PseudorandomGeneratorAbs implements PseudorandomGenerator 
 		return params;
 	}
 
-	public SecretKey getSecretKey() throws UnInitializedException {
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
-		return secretKey;
-	}
 }
