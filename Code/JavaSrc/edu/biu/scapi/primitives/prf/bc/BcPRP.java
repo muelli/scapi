@@ -107,13 +107,6 @@ public abstract class BcPRP implements PrpFixed{
 		}
 		return params;
 	}
-
-	public SecretKey getSecretKey() throws UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
-		}
-		return secretKey;
-	}
 	
 	/**
 	 * @return the name of the underlying blockCipher
