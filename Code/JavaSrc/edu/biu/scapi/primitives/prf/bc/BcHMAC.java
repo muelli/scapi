@@ -1,7 +1,6 @@
 package edu.biu.scapi.primitives.prf.bc;
 
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
@@ -68,9 +67,8 @@ public final class BcHMAC implements  Hmac {
 	 * Initializes this hmac with the secret key and the auxiliary parameters
 	 * @param secretKey secret key 
 	 * @param params algorithm parameter
-	 * @throws InvalidParameterSpecException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException {
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params)  {
 		//no auxiliary parameters for HMAC. Passes the key
 		init(secretKey);
 	}
@@ -105,13 +103,6 @@ public final class BcHMAC implements  Hmac {
 			throw new UnInitializedException();
 		}
 		return params;
-	}
-
-	public SecretKey getSecretKey() throws UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
-		}
-		return secretKey;
 	}
 	
 	/** 
