@@ -59,11 +59,6 @@ public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLengt
 		return prfVaryingInputLength.getParams();
 	}
 
-	public SecretKey getSecretKey() throws UnInitializedException {
-		
-		return prfVaryingInputLength.getSecretKey();
-	}
-
 	/** 
 	 * Since both input and output variables are varying this function should not be call. Throws an exception.
 	 * 

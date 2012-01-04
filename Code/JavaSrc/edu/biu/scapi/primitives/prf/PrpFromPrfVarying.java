@@ -52,11 +52,6 @@ public abstract class PrpFromPrfVarying implements PrpVaryingIOLength {
 		return prfVaryingIOLength.getParams();
 	}
 
-	public SecretKey getSecretKey() throws UnInitializedException {
-		// return the secret key of the underlying prf
-		return prfVaryingIOLength.getSecretKey();
-	}
-
 	/** 
 	 * This function is suitable for block ciphers where the input/output length is known in advance.
 	 * In this case, both input and output variables are varying so this function should not be called. Throws an exception.

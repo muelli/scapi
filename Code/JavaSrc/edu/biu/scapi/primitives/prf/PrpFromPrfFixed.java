@@ -52,12 +52,6 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 		return prfFixed.getParams();
 	}
 
-	public SecretKey getSecretKey() throws UnInitializedException{
-		// return the secret key of the underlying prf
-		return prfFixed.getSecretKey();
-	}
-
-	
 	/** 
 	 * Computes the function using the secret key. <p>
 	 * 

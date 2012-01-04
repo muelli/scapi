@@ -49,14 +49,6 @@ public interface PseudorandomFunction {
 	 */
 	public AlgorithmParameterSpec getParams() throws UnInitializedException;
 
-	
-	/** 
-	 * @return the secret key
-	 * @throws UnInitializedException 
-	 */
-	public SecretKey getSecretKey() throws UnInitializedException;
-
-
 	/** 
 	 * @return The algorithm name
 	 */
