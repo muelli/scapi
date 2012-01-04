@@ -41,10 +41,4 @@ public abstract class UniversalHashAbs implements UniversalHash {
 		return params;
 	}
 	
-	public SecretKey getSecretKey() throws UnInitializedException {
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
-		return secretKey;
-	}
 }

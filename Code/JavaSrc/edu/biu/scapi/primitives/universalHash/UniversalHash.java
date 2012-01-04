@@ -49,12 +49,6 @@ public interface UniversalHash {
 	public AlgorithmParameterSpec getParams() throws UnInitializedException;
 	
 	/** 
-	 * @return the secret key of this perfect universal hash
-	 * @throws UnInitializedException if this object is not initialized
-	 */
-	public SecretKey getSecretKey() throws UnInitializedException;
-
-	/** 
 	 * @return the algorithm name
 	 */
 	public String getAlgorithmName();
