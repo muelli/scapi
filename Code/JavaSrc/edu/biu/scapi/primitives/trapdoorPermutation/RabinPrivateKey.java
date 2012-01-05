@@ -1,7 +1,6 @@
 package edu.biu.scapi.primitives.trapdoorPermutation;
 
 import java.math.BigInteger;
-import java.security.Key;
 import java.security.PrivateKey;
 
 
@@ -10,7 +9,7 @@ import java.security.PrivateKey;
  *
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
-public interface RabinPrivateKey extends RabinKey, PrivateKey, Key {
+public interface RabinPrivateKey extends RabinKey, PrivateKey{
 
 	/**
 	 * Returns prime1 (p), such that p*q=n

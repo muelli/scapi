@@ -1,7 +1,6 @@
 package edu.biu.scapi.primitives.trapdoorPermutation;
 
 import java.math.BigInteger;
-import java.security.Key;
 import java.security.PublicKey;
 
 
@@ -10,7 +9,7 @@ import java.security.PublicKey;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
-public interface RabinPublicKey  extends RabinKey, PublicKey, Key {
+public interface RabinPublicKey  extends RabinKey, PublicKey{
 	
 	/**
 	 * @return BigInteger - QuadraticResidueModPrime1 (r)
