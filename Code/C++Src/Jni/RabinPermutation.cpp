@@ -122,6 +122,40 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_c
 }
 
 /*
+ * function getQuadraticResidueModPrime1		: This function return the quadratic residue mod prime1 of the current Rabin permutation
+ * param tpPtr									: The pointer to the trapdoor permutation object 
+ * return jbyteArray							: The modulus as byte array
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_getQuadraticResidueModPrime1
+  (JNIEnv *env, jobject, jlong tpPtr){
+	  Utils utils;
+	  Integer r;
+
+	  //get the value from the tp
+	  r = ((InvertibleRabinFunction *) tpPtr) ->  GetQuadraticResidueModPrime1();
+
+	  //convert the value to jbyteArray and return it
+	  return utils.CryptoPPIntegerTojbyteArray(env, r);
+}
+
+/*
+ * function getQuadraticResidueModPrime2		: This function return the quadratic residue mod prime2 of the current Rabin permutation
+ * param tpPtr									: The pointer to the trapdoor permutation object 
+ * return jbyteArray							: The modulus as byte array
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_getQuadraticResidueModPrime2
+  (JNIEnv *env, jobject, jlong tpPtr){
+	  Utils utils;
+	  Integer s;
+
+	  //get ghe value from the tp
+	  s = ((InvertibleRabinFunction *) tpPtr) ->  GetQuadraticResidueModPrime2();
+
+	  //convert the value to jbyteArray and return it
+	  return utils.CryptoPPIntegerTojbyteArray(env, s);
+}
+
+/*
  * function checkRabinValidity	  : This function check if the element is valid for this Rabin permutation 
  *								    (if the number if between 1 to mod(N))
  * param tpPtr					  : The pointer to the trapdoor permutation object 
