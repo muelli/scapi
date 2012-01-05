@@ -2,6 +2,8 @@ package edu.biu.scapi.primitives.trapdoorPermutation.cryptopp;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
@@ -9,10 +11,14 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.RSAKeyGenParameterSpec;
+import java.security.spec.RSAPublicKeySpec;
+import java.util.logging.Level;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
+import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.trapdoorPermutation.RSAPermutation;
 import edu.biu.scapi.primitives.trapdoorPermutation.TPElValidity;
 import edu.biu.scapi.primitives.trapdoorPermutation.TPElement;
@@ -160,6 +166,16 @@ public final class CryptoPpRSAPermutation extends TrapdoorPermutationAbs impleme
 		tpPtr = initRSARandomly(numBits, pubExp.toByteArray());
 		//sets the mod
 		modN = new BigInteger(getRSAModulus(tpPtr));
+		RSAPublicKeySpec spec = new RSAPublicKeySpec(modN, pubExp);
+		try {
+			pubKey = KeyFactory.getInstance("RSA").generatePublic(spec);
+		} catch (InvalidKeySpecException e) {
+			// sholdn't occur since spec is of type RSAPublicKeySpec
+			Logging.getLogger().log(Level.WARNING, e.toString());
+		} catch (NoSuchAlgorithmException e) {
+			// sholdn't occur since the algorithm is RSA
+			Logging.getLogger().log(Level.WARNING, e.toString());
+		}
 		
 		//calls the parent init
 		super.init(params);

@@ -12,6 +12,7 @@ import edu.biu.scapi.primitives.trapdoorPermutation.RabinKeyGenParameterSpec;
 import edu.biu.scapi.primitives.trapdoorPermutation.RabinPermutation;
 import edu.biu.scapi.primitives.trapdoorPermutation.RabinPrivateKey;
 import edu.biu.scapi.primitives.trapdoorPermutation.RabinPublicKey;
+import edu.biu.scapi.primitives.trapdoorPermutation.ScRabinPublicKey;
 import edu.biu.scapi.primitives.trapdoorPermutation.TPElValidity;
 import edu.biu.scapi.primitives.trapdoorPermutation.TPElement;
 import edu.biu.scapi.primitives.trapdoorPermutation.TrapdoorPermutationAbs;
@@ -39,6 +40,10 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 	private native String loadRabinName(long ptr);
 	//returns the modulus
 	private native byte[] getRabinModulus(long ptr);
+	//returns the QuadraticResidueModPrime1 (r)
+	private native byte[]getQuadraticResidueModPrime1(long ptr);
+	//returns the QuadraticResidueModPrime1 (s)
+	private native byte[]getQuadraticResidueModPrime2(long ptr);
 	//checks if the given element value is valid for this Rabin permutation
 	private native boolean checkRabinValidity(long value, long tpPtr);
 	
@@ -152,6 +157,10 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 		
 		//sets the modN
 		modN = new BigInteger(getRabinModulus(tpPtr));
+		BigInteger r = new BigInteger(getQuadraticResidueModPrime1(tpPtr));
+		BigInteger s = new BigInteger(getQuadraticResidueModPrime2(tpPtr));
+		
+		pubKey = new ScRabinPublicKey(modN, r, s);
 		
 		//calls the parent init
 		super.init(params);
