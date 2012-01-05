@@ -10,6 +10,7 @@ import java.math.BigInteger;
  */
 public abstract class ScRabinKey implements RabinKey{
 
+	private static final long serialVersionUID = 1L;
 	protected BigInteger modulus = null;
 	
 	/**
