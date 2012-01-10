@@ -55,7 +55,7 @@ public interface PseudorandomFunction {
 	public String getAlgorithmName() ;
 
 	/** 
-	 * @return the input block size in bits
+	 * @return the input block size in bytes
 	 */
 	public int getBlockSize() ;
 
