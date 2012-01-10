@@ -116,7 +116,7 @@ public abstract class BcPRP implements PrpFixed{
 	}
 
 	/**  
-	 * @return the block size of the underlying blockCipher.
+	 * @return the block size of the underlying blockCipher in bytes.
 	 */
 	public int getBlockSize(){
 		
