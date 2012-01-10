@@ -11688,7 +11688,7 @@
             <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
           </ownedParameter>
         </ownedOperation>
-        <ownedOperation xmi:id="_OiXxrO2VEeC8av2_mh-J3A" name="computetBlock">
+        <ownedOperation xmi:id="_OiXxrO2VEeC8av2_mh-J3A" name="computeBlock">
           <ownedParameter xmi:id="_OiXxre2VEeC8av2_mh-J3A" name="inBytes">
             <type xmi:type="uml:Class" href="pathmap://ROSE_LIBRARIES/RoseJavaDatatypes.emx#_Q6BuuAddEdm1Sa24K-Ukow?RoseJavaDatatypes/java/lang/Byte?"/>
             <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OiXxru2VEeC8av2_mh-J3A" value="*"/>
@@ -11727,7 +11727,7 @@
             <type xmi:type="uml:PrimitiveType" href="platform:/resource/SCAPIModel_meital_22_8_11/ScapiModel_meital_22_8_11.emx#_dWbBhv3pEd-nt4IVKKjkMA"/>
           </ownedParameter>
         </ownedOperation>
-        <ownedOperation xmi:id="_OiXxv-2VEeC8av2_mh-J3A" name="computetBlock">
+        <ownedOperation xmi:id="_OiXxv-2VEeC8av2_mh-J3A" name="computeBlock">
           <ownedParameter xmi:id="_OiXxwO2VEeC8av2_mh-J3A" name="inBytes">
             <type xmi:type="uml:Class" href="pathmap://ROSE_LIBRARIES/RoseJavaDatatypes.emx#_Q6BuuAddEdm1Sa24K-Ukow?RoseJavaDatatypes/java/lang/Byte?"/>
             <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OiXxwe2VEeC8av2_mh-J3A" value="*"/>
@@ -12707,7 +12707,7 @@
               <type xmi:type="uml:PrimitiveType" href="platform:/resource/SCAPIModel_meital_22_8_11/ScapiModel_meital_22_8_11.emx#_dWbBlP3pEd-nt4IVKKjkMA"/>
             </ownedParameter>
           </ownedOperation>
-          <ownedOperation xmi:id="_OiYZrO2VEeC8av2_mh-J3A" name="getAlgorithmName">
+          <ownedOperation xmi:id="_OiYZrO2VEeC8av2_mh-J3A" name="getUnderlyingAlgorithmName">
             <ownedParameter xmi:id="_OiYZre2VEeC8av2_mh-J3A" name="Parameter1" direction="return">
               <type xmi:type="uml:Class" href="pathmap://ROSE_LIBRARIES/RoseJavaDatatypes.emx#_Q6H0UgddEdm1Sa24K-Ukow?RoseJavaDatatypes/java/lang/String?"/>
             </ownedParameter>
@@ -12935,6 +12935,12 @@
         </generalization>
         <generalization xmi:id="_4hLOsA9xEeGQNfe5Nj9rlQ">
           <general xmi:type="uml:Interface" href="nonInteractiveMidCrypto.efx#_sNJ4UA9xEeGQNfe5Nj9rlQ?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/Authentication/UniqueTagMac?"/>
+        </generalization>
+        <generalization xmi:id="_9CgpMDewEeGG0sdbzZXJ5g">
+          <general xmi:type="uml:Interface" href="nonInteractiveMidCrypto.efx#_QD9QgP1_EeC3LaZ29dRdLQ?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/SecurityLevel/MacSecLevel/ComputationalMac?"/>
+        </generalization>
+        <generalization xmi:id="_9xhrUDewEeGG0sdbzZXJ5g">
+          <general xmi:type="uml:Interface" href="nonInteractiveMidCrypto.efx#_8KfOUDerEeGG0sdbzZXJ5g?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/SecurityLevel/MacSecLevel/UnlimitedTimes?"/>
         </generalization>
       </packagedElement>
       <packagedElement xmi:type="uml:Interface" xmi:id="_OiY_ku2VEeC8av2_mh-J3A" name="TripleDES">
