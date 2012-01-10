@@ -1,14 +1,14 @@
 
 package edu.biu.scapi.tools.Translation;
 
+import java.security.Key;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.KeySpec;
-import java.security.spec.RSAPrivateKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.RC5ParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -46,8 +46,17 @@ public final class BCParametersTranslator {
 	 * @param key the KeySpec to translate to CipherParameters of BC
 	 * @param param The additional AlgorithmParametersSpec to transform including the key to relevant CipherParameter
 	 */
-	public CipherParameters translateParameter(KeySpec key, AlgorithmParameterSpec param) {
-		
+	public CipherParameters translateParameter(Key key, AlgorithmParameterSpec param) {
+	/*
+	 * Note - because the translation of a Key to KeySpec is different in each algorithm (some have KeyFactory, some doesn't),
+	 * the translation must be specific to the algorithm of the key.
+	 * So, although the reasonable parameter to this function is KeySpec, we decided to get a Key instead.
+	 * This way the classes that call this function don't need to behave differently in each key type.
+	 * In the current implementation, there is no difference between getting KeySpec and Key, 
+	 * because the current keys we translate are SecretKey that have just the encoded byte array and RSA key that has get functions in the RSAKey interface.
+	 * Id we will need to translate other keys that require translation to KeySpec, we will add it specifically.
+	 * 
+	 */
 		//if one of the arguments is null than pass to one of the other 2 translateParameter functions
 		if(key==null){
 			return translateParameter(param);
@@ -76,23 +85,32 @@ public final class BCParametersTranslator {
 	 * @return KeyParameter this is used in may of the bc BlockCipher and bc StreamCipher.
 	 *         AssymetricKeyParameter for trapdoor permutation and asymmetric encryption
 	 */
-	public CipherParameters translateParameter(KeySpec key) {
-		
-		if (key instanceof SecretKeySpec){
+	public CipherParameters translateParameter(Key key) {
+	/*
+	 * Note - because the translation of a Key to KeySpec is different in each algorithm (some have KeyFactory, some doesn't),
+	 * the translation must be specific to the algorithm of the key.
+	 * So, although the reasonable parameter to this function is KeySpec, we decided to get a Key instead.
+	 * This way the classes that call this function don't need to behave differently in each key type.
+	 * In the current implementation, there is no difference between getting KeySpec and Key, 
+	 * because the current keys we translate are SecretKey that have just the encoded byte array and RSA key that has get functions in the RSAKey interface.
+	 * Id we will need to translate other keys that require translation to KeySpec, we will add it specifically.
+	 * 
+	 */
+		if (key instanceof SecretKey){
 			
 			//return the related KeyParameter of BC 
-			return new KeyParameter(((SecretKeySpec)key).getEncoded()); 
+			return new KeyParameter(key.getEncoded()); 
 		}
-		else if(key instanceof RSAPrivateKeySpec){
+		else if(key instanceof RSAPrivateKey){
 			
 			//cast the rsa key
-			RSAPrivateKeySpec rsaKey = (RSAPrivateKeySpec)key;
+			RSAPrivateKey rsaKey = (RSAPrivateKey)key;
 			return new RSAKeyParameters(true, rsaKey.getModulus(), rsaKey.getPrivateExponent());
 		}
-		else if(key instanceof RSAPublicKeySpec){
+		else if(key instanceof RSAPublicKey){
 			
 			//cast the rsa key
-			RSAPublicKeySpec rsaKey = (RSAPublicKeySpec)key;
+			RSAPublicKey rsaKey = (RSAPublicKey)key;
 			return new RSAKeyParameters(false, rsaKey.getModulus(), rsaKey.getPublicExponent());
 		}
 		
