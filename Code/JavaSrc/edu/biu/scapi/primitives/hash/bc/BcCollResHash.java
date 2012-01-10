@@ -44,7 +44,7 @@ public abstract class BcCollResHash implements CryptographicHash {
 	}
 
 	/**
-	 * @return the size of the hashed message as returned from BC
+	 * @return the size of the hashed message in bytes
 	 */
 	public int getHashedMsgSize() {
 		
