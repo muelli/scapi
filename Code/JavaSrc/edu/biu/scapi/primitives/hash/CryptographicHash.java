@@ -25,7 +25,7 @@ public interface CryptographicHash {
 	public String getAlgorithmName();
 
 	/** 
-	 * @return the size of the hashed massage
+	 * @return the size of the hashed massage in bytes
 	 */
 	public int getHashedMsgSize();
 
