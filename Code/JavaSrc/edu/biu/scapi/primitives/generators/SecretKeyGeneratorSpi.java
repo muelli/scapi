@@ -5,15 +5,12 @@ import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
-import java.util.logging.Level;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.KeyGeneratorSpi;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
 
 /**
  * General class for generating secret keys.
@@ -70,7 +67,8 @@ public class SecretKeyGeneratorSpi extends KeyGeneratorSpi{
 	 * @param rnd secure random
 	 * @throws InvalidParameterException if the keySize is not greater than zero
 	 */
-	protected void engineInit(int keySize, SecureRandom rnd) {
+	public void engineInit(int keySize, SecureRandom rnd) {
+	//Note - we changed the visibility of this function from protected to public in order to be able to call it from our project classes
 		//key size should be greater than 0
 		if (keySize <= 0){
 			throw new InvalidParameterException("key size must be greatr than 0");
@@ -86,7 +84,8 @@ public class SecretKeyGeneratorSpi extends KeyGeneratorSpi{
 	 * Generates secretKey according to the parameters given in the init functions.
 	 * @return SecretKey the generated key
 	 */
-	protected SecretKey engineGenerateKey() {
+	public SecretKey engineGenerateKey() {
+	//Note - we changed the visibility of this function from protected to public in order to be able to call it from our project classes
 		/*
 		 * if the given algorithm is known algorithm
 		 * and there is a keyGenerator for this algorithm in the providers - 
@@ -113,8 +112,8 @@ public class SecretKeyGeneratorSpi extends KeyGeneratorSpi{
 				throw new IllegalStateException("SecretKeyGeneratorSpi must be initialized before used");
 			}
 			//if the key size is zero or less - throw exception
-			if (keySize <= 0){
-				throw new IllegalStateException("key size must be greatr than 0");
+			if (keySize < 0){
+				throw new NegativeArraySizeException("key size must be greatr than 0");
 			}
 			//creates a byte array of size keySize
 			byte[] genBytes = new byte[keySize];
