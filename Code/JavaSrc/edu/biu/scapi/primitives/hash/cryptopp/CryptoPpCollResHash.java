@@ -133,7 +133,7 @@ public abstract class CryptoPpCollResHash implements CryptographicHash {
 	}
 
 	/** 
-	 * @return the size of the hashed massage from crypto++
+	 * @return the size of the hashed massage in bytes
 	 */
 	public int getHashedMsgSize() {
 		
