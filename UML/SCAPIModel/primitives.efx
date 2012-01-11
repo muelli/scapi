@@ -12663,12 +12663,14 @@
           </contents>
         </eAnnotations>
         <packagedElement xmi:type="uml:Class" xmi:id="_OiYZl-2VEeC8av2_mh-J3A" name="BcHMAC" clientDependency="_OiYZm-2VEeC8av2_mh-J3A">
-          <generalization xmi:id="_m6vmUC7oEeGfsvvHaRh43Q">
-            <general xmi:type="uml:Class" href="nonInteractiveMidCrypto.efx#_HuoIkC7oEeGfsvvHaRh43Q?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/Authentication/MacAbs?"/>
-          </generalization>
           <ownedAttribute xmi:id="_OiYZmO2VEeC8av2_mh-J3A" name="hMac" visibility="private" type="_OiYZru2VEeC8av2_mh-J3A" aggregation="composite" association="_OiY_a-2VEeC8av2_mh-J3A">
             <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OiYZme2VEeC8av2_mh-J3A" value="1"/>
             <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OiYZmu2VEeC8av2_mh-J3A" value="1"/>
+          </ownedAttribute>
+          <ownedAttribute xmi:id="_eis8sDtyEeGCRuxbPbtjJg" name="secretKeyGeneratorUtil" visibility="private" aggregation="composite" association="_eirHgDtyEeGCRuxbPbtjJg">
+            <type xmi:type="uml:Class" href="nonInteractiveMidCrypto.efx#_HuoIkC7oEeGfsvvHaRh43Q?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/Authentication/SecretKeyGeneratorUtil?"/>
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ei370DtyEeGCRuxbPbtjJg" value="1"/>
+            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ei0RcDtyEeGCRuxbPbtjJg" value="1"/>
           </ownedAttribute>
           <interfaceRealization xmi:id="_OiYZm-2VEeC8av2_mh-J3A" supplier="_OiY_kO2VEeC8av2_mh-J3A" client="_OiYZl-2VEeC8av2_mh-J3A" contract="_OiY_kO2VEeC8av2_mh-J3A"/>
           <ownedOperation xmi:id="_OiYZnO2VEeC8av2_mh-J3A" name="BcHMAC" raisedException="_Un1HwBBsEeGxN9Vmjgn4hg">
@@ -12707,9 +12709,23 @@
               <type xmi:type="uml:PrimitiveType" href="platform:/resource/SCAPIModel_meital_22_8_11/ScapiModel_meital_22_8_11.emx#_dWbBlP3pEd-nt4IVKKjkMA"/>
             </ownedParameter>
           </ownedOperation>
-          <ownedOperation xmi:id="_OiYZrO2VEeC8av2_mh-J3A" name="getUnderlyingAlgorithmName">
-            <ownedParameter xmi:id="_OiYZre2VEeC8av2_mh-J3A" name="Parameter1" direction="return">
-              <type xmi:type="uml:Class" href="pathmap://ROSE_LIBRARIES/RoseJavaDatatypes.emx#_Q6H0UgddEdm1Sa24K-Ukow?RoseJavaDatatypes/java/lang/String?"/>
+          <ownedOperation xmi:id="_hp2sIDt4EeGCRuxbPbtjJg" name="generateKey">
+            <ownedParameter xmi:id="_hp2sITt4EeGCRuxbPbtjJg" name="keySize">
+              <type xmi:type="uml:Class" href="nonInteractiveMidCrypto.efx#_WB1W8CDbEeGgp9a0aLX5Ug?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/Keys/SymKeyGenParameterSpec?"/>
+            </ownedParameter>
+            <ownedParameter xmi:id="_hp2sIjt4EeGCRuxbPbtjJg" name="Parameter1" direction="return">
+              <type xmi:type="uml:Interface" href="nonInteractiveMidCrypto.efx#_9oHbQB6DEeGaU9XciHvmcg?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/Keys/SecretKey?"/>
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="_hp3TMDt4EeGCRuxbPbtjJg" name="generateKey">
+            <ownedParameter xmi:id="_hp3TMTt4EeGCRuxbPbtjJg" name="keySize">
+              <type xmi:type="uml:Class" href="nonInteractiveMidCrypto.efx#_WB1W8CDbEeGgp9a0aLX5Ug?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/Keys/SymKeyGenParameterSpec?"/>
+            </ownedParameter>
+            <ownedParameter xmi:id="_hp3TMjt4EeGCRuxbPbtjJg" name="random">
+              <type xmi:type="uml:PrimitiveType" href="ScapiModel.emx#_THdWsCC-EeGgp9a0aLX5Ug?SCAPI%20Model/PrimitiveTypes/SecureRandom?"/>
+            </ownedParameter>
+            <ownedParameter xmi:id="_hp3TMzt4EeGCRuxbPbtjJg" name="Parameter1" direction="return">
+              <type xmi:type="uml:Interface" href="nonInteractiveMidCrypto.efx#_9oHbQB6DEeGaU9XciHvmcg?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto/Keys/SecretKey?"/>
             </ownedParameter>
           </ownedOperation>
         </packagedElement>
@@ -12902,6 +12918,12 @@
           <ownedEnd xmi:id="_OiY_fe2VEeC8av2_mh-J3A" name="" visibility="private" type="_OiYZru2VEeC8av2_mh-J3A" association="_OiY_fO2VEeC8av2_mh-J3A">
             <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OiY_fu2VEeC8av2_mh-J3A" value="1"/>
             <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OiY_f-2VEeC8av2_mh-J3A" value="1"/>
+          </ownedEnd>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Association" xmi:id="_eirHgDtyEeGCRuxbPbtjJg" memberEnd="_eis8sDtyEeGCRuxbPbtjJg _ei5J8DtyEeGCRuxbPbtjJg">
+          <ownedEnd xmi:id="_ei5J8DtyEeGCRuxbPbtjJg" name="" visibility="private" type="_OiYZl-2VEeC8av2_mh-J3A" association="_eirHgDtyEeGCRuxbPbtjJg">
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ei5xATtyEeGCRuxbPbtjJg" value="1"/>
+            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ei5xADtyEeGCRuxbPbtjJg" value="1"/>
           </ownedEnd>
         </packagedElement>
       </packagedElement>
