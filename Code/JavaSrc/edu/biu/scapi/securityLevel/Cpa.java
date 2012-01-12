@@ -6,6 +6,6 @@ package edu.biu.scapi.securityLevel;
  *
  */
 
-public interface Cpa extends EncSecLevel {
+public interface Cpa extends Eav {
 
 }
