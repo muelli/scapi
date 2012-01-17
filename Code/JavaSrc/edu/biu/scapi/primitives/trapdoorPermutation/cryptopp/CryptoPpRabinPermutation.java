@@ -215,7 +215,7 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 			throw new UnInitializedException();
 		}
 		//in case that the initialization was with public key and no private key - can't do the invert and returns null
-		if (privKey == null && pubKey!=null)
+		if ((privKey == null && pubKey!=null) && (params == null) )
 			return null;
 		
 		if (!(tpEl instanceof CryptoPpRabinElement)){
