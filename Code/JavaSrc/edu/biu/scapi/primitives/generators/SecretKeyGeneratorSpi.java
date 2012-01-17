@@ -20,7 +20,9 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class SecretKeyGeneratorSpi extends KeyGeneratorSpi{
 
-	private String algorithmName = null; 	//the algorithm name of the required key
+	private String algorithmName = ""; 	//the algorithm name of the required key.
+										//initializes to empty string instead of null so if it won't set to other name 
+										//the search for this algorithm will cause exception of type "NoSuchAlgorithm" and not "NullPointer"
 	private int keySize = 0; 				//the required key size
 	private SecureRandom random = null;		//source of randomness
 	private boolean isInitialized = false;
