@@ -19,6 +19,12 @@ public interface DlogZp extends DlogGroup{
 	public void init(ZpGroupParams groupParams);
 	
 	/**
+	 * Initialize the CryptoPP implementation of Dlog over Zp* with random elements
+	 * @param groupParams
+	 */
+	public void init(int numBits);
+	
+	/**
 	 * Creates an element with the given x value 
 	 * @param x
 	 * @return the created element
