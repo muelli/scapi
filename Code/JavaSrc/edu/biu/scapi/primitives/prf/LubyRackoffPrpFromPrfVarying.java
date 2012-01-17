@@ -238,7 +238,7 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 * @return LubyRackoff algorithm name
 	 */
 	public String getAlgorithmName() {
-		return "LUBY_RACKOFF_PRP_FROM_PRP_VARYING";
+		return "LUBY_RACKOFF_PRP_FROM_PRF_VARYING";
 	}
 
 	/**
