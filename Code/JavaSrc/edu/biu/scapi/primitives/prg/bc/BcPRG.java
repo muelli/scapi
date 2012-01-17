@@ -37,7 +37,7 @@ public abstract class BcPRG extends PseudorandomGeneratorAbs {
 	public void init(SecretKey secretKey) {
 		
 		//gets the BC keyParameter relevant to the secretKey
-		bcParams = BCParametersTranslator.getInstance().translateParameter((SecretKeySpec)secretKey);
+		bcParams = BCParametersTranslator.getInstance().translateParameter(secretKey);
 		
 		//initializes the underlying stream cipher. Note that the first argument is irrelevant and thus does not matter is true or false.
 		bcStreamCipher.init(false, bcParams);
@@ -49,7 +49,7 @@ public abstract class BcPRG extends PseudorandomGeneratorAbs {
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
 		
 		//sends the parameters converted to bc.
-		bcParams = BCParametersTranslator.getInstance().translateParameter((SecretKeySpec)secretKey, params);
+		bcParams = BCParametersTranslator.getInstance().translateParameter(secretKey, params);
 		
 		//initializes the underlying stream cipher. Note that the first argument is irrelevant and thus does not matter is true or false.
 		bcStreamCipher.init(false, bcParams);
