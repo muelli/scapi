@@ -3,7 +3,6 @@ package edu.biu.scapi.primitives.prf.bc;
 import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
-
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -58,15 +57,16 @@ public abstract class BcPRP implements PrpFixed{
 		
 		//init parameters
 		this.secretKey = secretKey;
-		
+
 		//get the parameters converted to bc.
-		bcParams = BCParametersTranslator.getInstance().translateParameter((SecretKeySpec)secretKey);
-		
+		bcParams = BCParametersTranslator.getInstance().translateParameter(secretKey);
+			
 		//at the beginning forEncryption is set to true. Init the BC block cipher.
 		bcBlockCipher.init(forEncryption, bcParams);
-		
+			
 		isInitialized = true; //marks this object as initialized
 			
+		
 	}
 	
 	
@@ -88,7 +88,7 @@ public abstract class BcPRP implements PrpFixed{
 		this.params = params;
 		
 		//send the parameters converted to bc.
-		bcParams = BCParametersTranslator.getInstance().translateParameter((SecretKeySpec)secretKey, params);
+		bcParams = BCParametersTranslator.getInstance().translateParameter(secretKey, params);
 		
 		//at the beginning forEncryption is set to true. Init the BC block cipher.
 		bcBlockCipher.init(forEncryption, bcParams);
