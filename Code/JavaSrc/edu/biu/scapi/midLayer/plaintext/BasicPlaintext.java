@@ -8,10 +8,10 @@ package edu.biu.scapi.midLayer.plaintext;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Yael Ejgenberg)
  *
  */
-public class BasicPlainText implements Plaintext {
+public class BasicPlaintext implements Plaintext {
 	private byte[] text = null;
 	
-	public BasicPlainText (byte[] text) {
+	public BasicPlaintext (byte[] text) {
 		this.text = text;
 	}
 	
