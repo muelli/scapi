@@ -1,31 +1,47 @@
 package edu.biu.scapi.midLayer.symmetricCrypto.encryption;
 
+import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
+import edu.biu.scapi.midLayer.ciphertext.SymmetricCiphertext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
+import edu.biu.scapi.securityLevel.Eav;
+import edu.biu.scapi.securityLevel.Indistinguishable;
 
 /**
+ * This is the main interface for the Symmetric Encryption family. 
+ * The symmetric encryption family of classes implements three main functionalities that correspond to the cryptographer’s language 
+ * in which an encryption scheme is composed of three algorithms:
+ * 	1.	Generation of the key.
+ *	2.	Encryption of the plaintext.
+ *	3.	Decryption of the ciphertext.
+ * 
+ * Any symmetric encryption scheme belongs by default at least to the Eavsdropper Security Level and to the Indistinguishable Security Level.
+ *   
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Yael Ejgenberg)
  *
  */
-public interface SymmetricEnc {
+public interface SymmetricEnc extends Eav, Indistinguishable{
 
-	public void init(SecretKey secretKey);
-	public void init(SecretKey secretKey, SecureRandom random);
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params);
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params, SecureRandom random);
+	public void init(SecretKey secretKey) throws InvalidKeyException;
+	public void init(SecretKey secretKey, SecureRandom random) throws InvalidKeyException;
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidParameterSpecException;
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidParameterSpecException;
 	public boolean isInitialized();
-	public AlgorithmParameterSpec getParams();
+	public AlgorithmParameterSpec getParams() throws UnInitializedException;
 	public String getAlgorithmName();
-	public SecretKey generateKey(AlgorithmParameterSpec keySize );
-	public SecretKey generateKey(AlgorithmParameterSpec keySize, SecureRandom random );
-	public Ciphertext encrypt(Plaintext plaintext);
-	public Ciphertext encrypt(Plaintext plaintext, byte[] iv);
-	public Plaintext decrypt(Ciphertext ciphertext);
+	public SecretKey generateKey(AlgorithmParameterSpec keySize ) throws InvalidParameterSpecException;
+	public SecretKey generateKey(AlgorithmParameterSpec keySize, SecureRandom random ) throws InvalidParameterSpecException;
+	public SymmetricCiphertext encrypt(Plaintext plaintext) throws UnInitializedException;
+	public SymmetricCiphertext encrypt(Plaintext plaintext, byte[] iv)throws UnInitializedException, IllegalBlockSizeException;
+	public Plaintext decrypt(Ciphertext ciphertext) throws UnInitializedException;
 	
 	
 }
