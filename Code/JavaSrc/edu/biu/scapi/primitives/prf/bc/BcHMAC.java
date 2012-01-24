@@ -5,7 +5,6 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.macs.HMac;
