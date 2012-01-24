@@ -14,7 +14,7 @@ using namespace CryptoPP;
  * param hashName	   : The name of the hash we wish to create
  * return			   : A pointer to the created hash.
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash_createHash
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpHash_createHash
   (JNIEnv *env, jobject, jstring hashName){
 
 	HashTransformation *hashPtr = NULL;
@@ -44,7 +44,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpColl
  * param hashPtr	: The actual hash object pointer to get the name from
  * return			: The name of the passed hash algorithm
  */
-JNIEXPORT jstring JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash_algName
+JNIEXPORT jstring JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpHash_algName
 (JNIEnv *env, jobject, jlong hashPtr){
 
 	//cast to HashTransformation wich is the base class of all hash function. 
@@ -61,7 +61,7 @@ JNIEXPORT jstring JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCo
  * param data		   : the byte array to translate to c++ and update the hash
  * param len		   : the length of the byte array
  */
-JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash_updateHash
+JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpHash_updateHash
 (JNIEnv *env, jobject, jlong hashPtr, jbyteArray data, jlong len){
 
 	//declare a byte array in c++
@@ -83,7 +83,7 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollR
  * param input		   : the byte array to put the result in
  * param size		   : the length of the byte array. This will be different for different hash functions
  */
-JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash_finalHash
+JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpHash_finalHash
 (JNIEnv *env, jobject, jlong hashPtr, jbyteArray output){
 
 	HashTransformation *localHashPtr = (HashTransformation *)hashPtr;
@@ -104,7 +104,7 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollR
 }
 
 
-JNIEXPORT jint JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash_getDigestSize
+JNIEXPORT jint JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpHash_getDigestSize
   (JNIEnv *, jobject, jlong hashPtr){
 
 	  HashTransformation *localHashPtr = (HashTransformation *)hashPtr;
@@ -117,6 +117,6 @@ JNIEXPORT jint JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollR
  *						 memory allocation will not be deleted by the JVM.
  * param hashPtr	   : The actual hash object pointer 
  */
-JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpCollResHash_deleteHash
+JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_hash_cryptopp_CryptoPpHash_deleteHash
 (JNIEnv *, jobject, jlong hashPtr){
 }
