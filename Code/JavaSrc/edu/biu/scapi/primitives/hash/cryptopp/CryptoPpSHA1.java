@@ -7,7 +7,7 @@ import edu.biu.scapi.primitives.hash.SHA1;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public final class CryptoPpSHA1 extends CryptoPpCollResHash implements SHA1 {
+public final class CryptoPpSHA1 extends CryptoPpHash implements SHA1 {
 
 	/**
 	 * Passes the hash name to the super class which does the hash computation

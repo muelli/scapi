@@ -7,7 +7,7 @@ import edu.biu.scapi.primitives.hash.SHA256;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public final class CryptoPpSHA256 extends CryptoPpCollResHash implements SHA256 {
+public final class CryptoPpSHA256 extends CryptoPpHash implements SHA256 {
 
 	/**
 	 * Passes the hash name to the super class which does the hash computation

@@ -7,7 +7,7 @@ import edu.biu.scapi.primitives.hash.SHA384;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public final class CryptoPpSHA384 extends CryptoPpCollResHash implements SHA384 {
+public final class CryptoPpSHA384 extends CryptoPpHash implements SHA384 {
 
 	/**
 	 * Passes the hash name to the super class which does the hash computation

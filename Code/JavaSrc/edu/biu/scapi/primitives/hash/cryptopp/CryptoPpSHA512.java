@@ -7,7 +7,7 @@ import edu.biu.scapi.primitives.hash.SHA512;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public final class CryptoPpSHA512 extends CryptoPpCollResHash implements SHA512 {
+public final class CryptoPpSHA512 extends CryptoPpHash implements SHA512 {
 
 	/**
 	 * Passes the hash name to the super class which does the hash computation

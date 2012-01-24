@@ -7,7 +7,7 @@ import edu.biu.scapi.primitives.hash.SHA224;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public final class CryptoPpSHA224 extends CryptoPpCollResHash implements SHA224 {
+public final class CryptoPpSHA224 extends CryptoPpHash implements SHA224 {
 
 	
 	/**
