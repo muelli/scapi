@@ -3,7 +3,6 @@ package edu.biu.scapi.primitives.prg.bc;
 import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.StreamCipher;
