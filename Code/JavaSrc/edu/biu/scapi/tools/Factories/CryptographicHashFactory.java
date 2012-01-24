@@ -9,9 +9,9 @@ import edu.biu.scapi.primitives.hash.CryptographicHash;
  * 
 *  @author LabTest
  */
-public final class CollResFactory {
+public final class CryptographicHashFactory {
 	private FactoriesUtility factoriesUtility;
-	private static CollResFactory instance = new CollResFactory();
+	private static CryptographicHashFactory instance = new CryptographicHashFactory();
 
 	/**
 	 * Private constructor since this class is of the singleton pattern. 
@@ -19,10 +19,10 @@ public final class CollResFactory {
 	 * of FactoriesUtility.
 	 * 
 	 */
-	private CollResFactory() {
+	private CryptographicHashFactory() {
 	
 		//create an instance of FactoriesUtility with the predefined file names.
-		factoriesUtility = new FactoriesUtility("CollResDefault.properties", "CollRes.properties");
+		factoriesUtility = new FactoriesUtility("CryptographicHashDefault.properties", "CryptographicHash.properties");
 		
 	}
 	
@@ -51,7 +51,7 @@ public final class CollResFactory {
 	/** 
 	 * @return the singleton instance.
 	 */
-	public static CollResFactory getInstance() {
+	public static CryptographicHashFactory getInstance() {
 		return instance;
 
 	}
