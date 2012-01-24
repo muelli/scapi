@@ -17,14 +17,14 @@ import edu.biu.scapi.primitives.hash.CryptographicHash;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  * 
  */
-public abstract class BcCollResHash implements CryptographicHash {
+public abstract class BcHash implements CryptographicHash {
 	private Digest digest; //the underlying digest
 	
 	 /**
 	  * Sets the underlying digest
 	  * @param digest the underlying digest of BC
 	  */
-	public BcCollResHash(Digest digest) {
+	public BcHash(Digest digest) {
 	
 		//sets the underlying bc digest
 		this.digest = digest;
