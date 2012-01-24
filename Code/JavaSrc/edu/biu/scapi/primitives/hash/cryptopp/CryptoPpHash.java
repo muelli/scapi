@@ -13,7 +13,7 @@ import edu.biu.scapi.primitives.hash.CryptographicHash;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  *
  */
-public abstract class CryptoPpCollResHash implements CryptographicHash {
+public abstract class CryptoPpHash implements CryptographicHash {
 
 	protected long collHashPtr; //pointer to the native hash object
 	
@@ -46,7 +46,7 @@ public abstract class CryptoPpCollResHash implements CryptographicHash {
 	 * @param hashName - the name of the hash. This will be passed to the jni dll function createHash so it will know
 	 * 					 which hash to create.
 	 */
-	public CryptoPpCollResHash(String hashName) {
+	public CryptoPpHash(String hashName) {
 		
 		
 		//instantiates a hash object in crypto++. Remember to delete it using the finalize method.
