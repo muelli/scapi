@@ -9,7 +9,7 @@ import edu.biu.scapi.primitives.hash.SHA256;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public final class BcSHA256 extends BcCollResHash implements SHA256 {
+public final class BcSHA256 extends BcHash implements SHA256 {
 
 	/** 
 	 * Passes the digest SHA256 of BC to the super class which does the hash computation. 

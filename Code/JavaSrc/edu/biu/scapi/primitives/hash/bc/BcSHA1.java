@@ -9,7 +9,7 @@ import edu.biu.scapi.primitives.hash.SHA1;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public final class BcSHA1 extends BcCollResHash implements SHA1 {
+public final class BcSHA1 extends BcHash implements SHA1 {
 	/** 
 	 * Passes the digest SHA1 of BC to the super class which does the hash computation. 
 	 */

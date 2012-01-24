@@ -9,7 +9,7 @@ import edu.biu.scapi.primitives.hash.SHA512;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public final class BcSHA512 extends BcCollResHash implements SHA512 {
+public final class BcSHA512 extends BcHash implements SHA512 {
 
 	/**
 	 * Passes the digest SHA512 of BC to the super class which does the hash computation. 

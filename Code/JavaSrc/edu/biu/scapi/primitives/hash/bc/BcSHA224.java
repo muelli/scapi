@@ -9,7 +9,7 @@ import edu.biu.scapi.primitives.hash.SHA224;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public final class BcSHA224 extends BcCollResHash implements SHA224 {
+public final class BcSHA224 extends BcHash implements SHA224 {
 
 	/** 
 	 * Passes the digest SHA224 of BC to the super class which does the hash computation. 
