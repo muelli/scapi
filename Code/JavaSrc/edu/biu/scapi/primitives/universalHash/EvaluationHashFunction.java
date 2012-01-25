@@ -1,5 +1,7 @@
 package edu.biu.scapi.primitives.universalHash;
 
+import java.security.spec.AlgorithmParameterSpec;
+
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
@@ -32,6 +34,11 @@ public final class EvaluationHashFunction extends UniversalHashAbs {
 		
 		//sets the key
 		super.init(secretKey);
+	}
+	
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
+
+		init(secretKey);
 	}
 	
 	/**
