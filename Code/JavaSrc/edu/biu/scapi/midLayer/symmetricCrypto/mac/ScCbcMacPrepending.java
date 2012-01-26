@@ -162,9 +162,10 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * Generates a secret key to initialize this mac object.
 	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits
 	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
 	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public SecretKey generateKey(AlgorithmParameterSpec keySize) {
+	public SecretKey generateKey(AlgorithmParameterSpec keySize) throws InvalidParameterSpecException {
 		// call the generateKey function that gets a random with the default secureRandom
 		return generateKey(keySize, random);
 	}
@@ -173,12 +174,13 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * Generates a secret key to initialize this mac object.
 	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits
 	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
 	 * @throws UnInitializedException if this object is not initialized
 	 */
 	public SecretKey generateKey(AlgorithmParameterSpec keySize,
-			SecureRandom rnd) {
+			SecureRandom rnd) throws InvalidParameterSpecException {
 		if(!(keySize instanceof SymKeyGenParameterSpec)){
-			throw new IllegalArgumentException("keySize should be instance of SymKeyGenParameterSpec");
+			throw new InvalidParameterSpecException("keySize should be instance of SymKeyGenParameterSpec");
 		}
 
 		// generates key according to the given key size, this algorithm name and random

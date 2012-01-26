@@ -83,16 +83,18 @@ public interface Mac {
 	 * @param keySize algorithmParameterSpec contains the required secret key size in bits 
 	 * @return the generated secret key
 	 * @throws UnInitializedException if this object is not initialized
+	 * @throws InvalidParameterSpecException 
 	 */
-	public SecretKey generateKey(AlgorithmParameterSpec keyParams) throws UnInitializedException;
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams) throws UnInitializedException, InvalidParameterSpecException;
 	
 	/**
 	 * Generates a secret key to initialize this mac object.
 	 * @param keySize algorithmParameterSpec contains the required secret key size in bits 
 	 * @return the generated secret key
 	 * @throws UnInitializedException if this object is not initialized
+	 * @throws InvalidParameterSpecException 
 	 */
-	public SecretKey generateKey(AlgorithmParameterSpec keyParams, SecureRandom rnd) throws UnInitializedException;
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams, SecureRandom rnd) throws UnInitializedException, InvalidParameterSpecException;
 	
 	/**
 	 * Computes the mac operation on the given msg and return the calculated tag
