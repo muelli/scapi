@@ -2,6 +2,7 @@ package edu.biu.scapi.primitives.prf.bc;
 
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
@@ -227,9 +228,10 @@ public final class BcHMAC implements Hmac {
 	 * Generates a secret key to initialize this mac object.
 	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits 
 	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
 	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public SecretKey generateKey(AlgorithmParameterSpec keySize){
+	public SecretKey generateKey(AlgorithmParameterSpec keySize) throws InvalidParameterSpecException{
 		//call the generateKey function that gets a random with the default secureRandom
 		return generateKey(keySize, random);
 	}
@@ -238,11 +240,12 @@ public final class BcHMAC implements Hmac {
 	 * Generates a secret key to initialize this mac object.
 	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits 
 	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
 	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public SecretKey generateKey(AlgorithmParameterSpec keySize, SecureRandom rnd){
+	public SecretKey generateKey(AlgorithmParameterSpec keySize, SecureRandom rnd) throws InvalidParameterSpecException{
 		if(!(keySize instanceof SymKeyGenParameterSpec)){
-			throw new IllegalArgumentException("keySize should be instance of SymKeyGenParameterSpec");
+			throw new InvalidParameterSpecException("keySize should be instance of SymKeyGenParameterSpec");
 		}
 		
 		//generates key according to the given key size, this algorithm name and random
