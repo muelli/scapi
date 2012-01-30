@@ -8,12 +8,13 @@ import edu.biu.scapi.primitives.dlog.DlogZpSafePrime;
 import edu.biu.scapi.primitives.dlog.GroupElement;
 import edu.biu.scapi.primitives.dlog.ZpElement;
 import edu.biu.scapi.primitives.dlog.groupParams.ZpGroupParams;
+import edu.biu.scapi.securityLevel.DDH;
 
 /**This class implements a Dlog group over Zp* utilizing Crypto++'s implementation.<p>
  * It uses JNI technology to call Crypto++'s native code.
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
-public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafePrime{
+public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafePrime, DDH{
 
 	private long pointerToGroup = 0; //pointer to the native group object
 	
