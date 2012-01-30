@@ -16,12 +16,13 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mKoblitz;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mPentanomialBasis;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mTrinomialBasis;
+import edu.biu.scapi.securityLevel.DDH;
 
 /**This class implements a Dlog group over F2m utilizing Miracl++'s implementation.<p>
  * It uses JNI technology to call Miracl's native code.
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
-public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m{
+public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, DDH{
 
 	private native void initF2mCurve(long mip, int m, int k1, int k2, int k3, byte[] a, byte[] b);
 	private native long multiplyF2mPoints(long mip, long p1, long p2);

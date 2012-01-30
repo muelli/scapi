@@ -13,12 +13,13 @@ import edu.biu.scapi.primitives.dlog.DlogECFp;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.GroupElement;
 import edu.biu.scapi.primitives.dlog.groupParams.ECFpGroupParams;
+import edu.biu.scapi.securityLevel.DDH;
 
 /**This class implements an Elliptic curve Dlog group over Zp utilizing Miracl's implementation.<p>
  * It uses JNI technology to call Miracl's native code.
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
-public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp{
+public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH{
 
 	private native void initFpCurve(long mip, byte[] p, byte[] a,byte[] b);
 	private native long multiplyFpPoints(long mip, long p1, long p2);
