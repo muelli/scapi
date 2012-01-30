@@ -1,0 +1,42 @@
+﻿Build started 11/05/2011 11:35:14.
+     1>Project "C:\Users\user\Downloads\cryptopp561\cryptest.vcxproj" on node 3 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Win32\cryptest\Debug\cryptest.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oi /Oy- /D _DEBUG /D _CONSOLE /D WIN32 /D _VC80_UPGRADE=0x0710 /D _MBCS /Gm- /EHsc /MTd /GS /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Win32\cryptest\Debug\\" /Fd"Win32\cryptest\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt adhoc.cpp bench.cpp bench2.cpp datatest.cpp dlltest.cpp fipsalgt.cpp regtest.cpp test.cpp validat1.cpp validat2.cpp validat3.cpp /Zm400  
+         adhoc.cpp
+         bench.cpp
+         bench2.cpp
+         datatest.cpp
+         dlltest.cpp
+         fipsalgt.cpp
+         regtest.cpp
+         test.cpp
+         validat1.cpp
+         validat2.cpp
+         validat3.cpp
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Win32\Output\Debug\cryptest.exe" /NOLOGO odbc32.lib odbccp32.lib Ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Win32\cryptest\Debug\cryptest.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\user\Downloads\cryptopp561\Win32\Output\Debug\cryptest.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"Win32\Output\Debug\cryptest.lib" /MACHINE:X86 Win32\cryptest\Debug\adhoc.obj
+         Win32\cryptest\Debug\bench.obj
+         Win32\cryptest\Debug\bench2.obj
+         Win32\cryptest\Debug\datatest.obj
+         Win32\cryptest\Debug\dlltest.obj
+         Win32\cryptest\Debug\fipsalgt.obj
+         Win32\cryptest\Debug\regtest.obj
+         Win32\cryptest\Debug\test.obj
+         Win32\cryptest\Debug\validat1.obj
+         Win32\cryptest\Debug\validat2.obj
+         Win32\cryptest\Debug\validat3.obj
+         C:\Users\user\Downloads\cryptopp561\Win32\Output\Debug\cryptlib.lib
+         cryptest.vcxproj -> C:\Users\user\Downloads\cryptopp561\Win32\Output\Debug\cryptest.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"Win32\Output\Debug\cryptest.exe;#1" /manifest Win32\cryptest\Debug\cryptest.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Win32\cryptest\Debug\cryptest.unsuccessfulbuild".
+         Touching "Win32\cryptest\Debug\cryptest.lastbuildstate".
+     1>Done Building Project "C:\Users\user\Downloads\cryptopp561\cryptest.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:16.00
