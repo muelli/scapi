@@ -15,13 +15,14 @@ import edu.biu.scapi.primitives.dlog.DlogECFp;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.GroupElement;
 import edu.biu.scapi.primitives.dlog.groupParams.ECFpGroupParams;
+import edu.biu.scapi.securityLevel.DDH;
 
 /**
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp{
+public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp, DDH{
 	
 	
 	/**

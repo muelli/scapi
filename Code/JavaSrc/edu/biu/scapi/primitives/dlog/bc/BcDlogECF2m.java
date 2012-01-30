@@ -19,13 +19,14 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mKoblitz;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mPentanomialBasis;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mTrinomialBasis;
+import edu.biu.scapi.securityLevel.DDH;
 
 /**
  * This class implements an Elliptic curve Dlog group over F2m utilizing Bouncy Castle's implementation. 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m{
+public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m, DDH{
 
 	/**
 	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
