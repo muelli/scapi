@@ -64,7 +64,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
  * return						: A pointer to the created point.
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMiracl_createRandomFpPoint
-  (JNIEnv *env, jobject obj, jlong m, jbyteArray pVal, jbooleanArray validity){
+  (JNIEnv *env, jobject obj, jlong m, jbyteArray pVal, jint seed, jbooleanArray validity){
 	   /* convert the accepted parameters to MIRACL parameters*/
 	   miracl* mip = (miracl*)m;
 	   big p = byteArrayToMiraclBig(env, mip, pVal);
@@ -77,14 +77,16 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
 	   /* choose randomly x,y values*/
 	   int len = 2*((*env)->GetArrayLength(env, pVal));
 	   big x = mirvar(mip, 0);
-	   
+
+	   irand(mip, seed); //set seed to generate random numbers
+
 	   for(i=0; i<len; i++){
-		   irand(mip, i);
+		   
 		   bigrand(mip, p, x); //get a random number in the field
 		   if (epoint_x(mip, x)==1){ //test if the x value is valid
 			   //set the point with the chosen x, miracl choose y value according to this x
 			   valid[0] = epoint_set(mip, x, x,1 ,point);
-			   i=len; //stop the loop
+			   break; //stop the loop
 		   }
 	   }
 	   

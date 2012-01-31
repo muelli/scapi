@@ -3,6 +3,7 @@
 #include <jni.h>
 #include "Utils.h"
 #include "miracl.h"
+#include "math.h"
 
 /* function createF2mPoint : This function creates a point of elliptic curve over F2m according to the accepted values
  * param m				  : pointer to mip
@@ -61,7 +62,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
  * return						: A pointer to the created point.
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl_createRandomF2mPoint
-	(JNIEnv *env, jobject obj, jlong m, jint mod, jbooleanArray validity){
+	(JNIEnv *env, jobject obj, jlong m, jint mod, jint seed, jbooleanArray validity){
 	   /* convert the accepted parameters to MIRACL parameters*/
 	   miracl* mip = (miracl*)m;
 	   jboolean* valid = (*env)->GetBooleanArrayElements(env, validity, 0);
@@ -69,18 +70,20 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
 
 	   //create the point
 	   epoint* point = epoint_init(mip);
-
+	   
 	   /* choose randomly x,y values*/
 	   int len = 2*mod;
-	   big bigMod = mirvar(mip, 2^mod);
+	   big bigMod = mirvar(mip, 0);
 	   big x = mirvar(mip, 0);
+
+	   expb2(mip, mod, bigMod); //gets 2^mod
+	   irand(mip, seed); //set seed to generate random numbers
 	   for(i=0; i<len; i++){
-		   irand(mip, i);
 		   bigrand(mip, bigMod, x); //get a random number in the field
 		   if (epoint2_set(mip, x, x,1 ,point)==1){
 			   //set the point with tthe chosen x, miracl choose y value according to this x
 			   valid[0] = 1;
-			   i=len; //stop the loop
+			   break; //stop the loop
 		   }
 	   }
 	   

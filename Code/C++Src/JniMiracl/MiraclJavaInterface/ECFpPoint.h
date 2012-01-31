@@ -29,7 +29,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
  * Signature: (J[B)J
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMiracl_createRandomFpPoint
-  (JNIEnv *, jobject, jlong, jbyteArray, jbooleanArray);
+  (JNIEnv *, jobject, jlong, jbyteArray, jint, jbooleanArray);
 
 /*
  * Class:     edu_biu_scapi_primitives_dlog_miracl_ECFpPointMiracl

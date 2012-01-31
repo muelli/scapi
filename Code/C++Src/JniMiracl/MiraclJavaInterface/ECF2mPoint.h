@@ -30,7 +30,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
  * Signature: (JI)J
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl_createRandomF2mPoint
-  (JNIEnv *, jobject, jlong, jint, jbooleanArray);
+  (JNIEnv *, jobject, jlong, jint, jint, jbooleanArray);
 
 /*
  * Class:     edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMiracl
