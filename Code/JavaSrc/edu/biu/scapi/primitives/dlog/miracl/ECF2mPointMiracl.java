@@ -1,6 +1,7 @@
 package edu.biu.scapi.primitives.dlog.miracl;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.logging.Level;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
@@ -16,7 +17,7 @@ public class ECF2mPointMiracl implements ECElement{
 
 	private native long createF2mPoint(long mip, byte[] x, byte[] y, boolean[] validity);
 	private native long createF2mPointFromX(long mip, byte[] x, boolean[] validity);
-	private native long createRandomF2mPoint(long mip, int m, boolean[] validity);
+	private native long createRandomF2mPoint(long mip, int m, int seed, boolean[] validity);
 	private native boolean checkInfinityF2m(long point);
 	private native byte[] getXValueF2mPoint(long mip, long point);
 	private native byte[] getYValueF2mPoint(long mip, long point);
@@ -59,8 +60,11 @@ public class ECF2mPointMiracl implements ECElement{
 		
 		boolean validity[] = new boolean[1];
 		
+		//generates a seed to initiate the random number generator of miracl
+		int seed = new BigInteger(new SecureRandom().generateSeed(20)).intValue();
+		
 		//call for native function that creates random point in the field.
-		point = createRandomF2mPoint(mip, ((ECF2mGroupParams)curve.getGroupParams()).getM(), validity);
+		point = createRandomF2mPoint(mip, ((ECF2mGroupParams)curve.getGroupParams()).getM(), seed, validity);
 		
 		//if the algorithm for random element failed - throws exception
 		if(validity[0]==false){
