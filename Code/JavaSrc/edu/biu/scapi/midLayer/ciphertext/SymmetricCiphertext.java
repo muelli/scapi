@@ -1,19 +1,21 @@
-package edu.biu.scapi.midLayer.ciphertext;
 /**
- * This class holds the basic data of a symmetric cipher-text.
+ * 
+ */
+package edu.biu.scapi.midLayer.ciphertext;
+
+/**
+ * General interface for any symmetric ciphertext.
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Yael Ejgenberg)
  *
  */
-public class SymmetricCiphertext implements Ciphertext {
-
-	private byte[] cipher = null;
+public interface SymmetricCiphertext extends Ciphertext {
+	/**
+	 * @return the byte array representation of the ciphertext.
+	 */
+	public byte[] getBytes();
 	
-	public SymmetricCiphertext(byte[] cipher){
-		this.cipher = cipher;
-	}
-	
-	public byte[] getCipher() {
-		return this.cipher;
-	}
-	
+	/**
+	 * @return the length of the byte array representation of the ciphertext.
+	 */
+	public int getLength();
 }
