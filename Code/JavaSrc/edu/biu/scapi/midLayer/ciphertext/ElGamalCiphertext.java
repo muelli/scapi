@@ -11,23 +11,33 @@ import edu.biu.scapi.primitives.dlog.GroupElement;
  *
  */
 public class ElGamalCiphertext implements Ciphertext {
-	private GroupElement cipher1 = null;
-	private GroupElement cipher2 = null;
+	//First part of the ciphertext.
+	private GroupElement cipher1;
+	//Second part of the ciphertext.
+	private GroupElement cipher2;
 	
 	/**
 	 * Create an instance of this container class 
-	 * @param c1
-	 * @param c2
+	 * @param c1 the first part of the cihertext
+	 * @param c2 the second part of the ciphertext
 	 */
 	public ElGamalCiphertext(GroupElement c1, GroupElement c2){
 		this.cipher1 = c1;
 		this.cipher2 = c2;
 	}
 	
+	/**
+	 * 
+	 * @return the first part of the ciphertext
+	 */
 	public GroupElement getC1(){
 		return cipher1;
 	}
 	
+	/**
+	 * 
+	 * @return the second part of the ciphertext
+	 */
 	public GroupElement getC2(){
 		return cipher2;
 	}
