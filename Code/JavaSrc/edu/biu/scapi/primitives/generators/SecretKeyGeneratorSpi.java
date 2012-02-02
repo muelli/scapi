@@ -73,7 +73,7 @@ public class SecretKeyGeneratorSpi extends KeyGeneratorSpi{
 	//Note - we changed the visibility of this function from protected to public in order to be able to call it from our project classes
 		//key size should be greater than 0
 		if (keySize <= 0){
-			throw new InvalidParameterException("key size must be greatr than 0");
+			throw new InvalidParameterException("key size must be greater than 0");
 		}
 		//sets the parameters
 		this.keySize = keySize;
@@ -115,7 +115,7 @@ public class SecretKeyGeneratorSpi extends KeyGeneratorSpi{
 			}
 			//if the key size is zero or less - throw exception
 			if (keySize < 0){
-				throw new NegativeArraySizeException("key size must be greatr than 0");
+				throw new NegativeArraySizeException("key size must be greater than 0");
 			}
 			//creates a byte array of size keySize
 			byte[] genBytes = new byte[keySize];
