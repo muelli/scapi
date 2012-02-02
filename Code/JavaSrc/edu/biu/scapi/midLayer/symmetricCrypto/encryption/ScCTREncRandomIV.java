@@ -1,34 +1,18 @@
 package edu.biu.scapi.midLayer.symmetricCrypto.encryption;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.SecureRandom;
-import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
-import java.util.ArrayList;
 
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
-import org.bouncycastle.util.encoders.Hex;
-
+import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.UnInitializedException;
+import edu.biu.scapi.midLayer.ciphertext.BasicSymCiphertext;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
 import edu.biu.scapi.midLayer.ciphertext.IVCiphertext;
-import edu.biu.scapi.midLayer.ciphertext.SymmetricCiphertext;
 import edu.biu.scapi.midLayer.plaintext.BasicPlaintext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
-import edu.biu.scapi.midLayer.symmetricCrypto.keys.SymKeyGenParameterSpec;
 import edu.biu.scapi.primitives.prf.PseudorandomPermutation;
-import edu.biu.scapi.primitives.prf.bc.BcAES;
-import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /**
  * This class performs the randomized Counter Mode encryption and decryption.
@@ -38,15 +22,26 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
  */
 public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 
+	/**
+	 * By passing a specific Pseudorandom permutation we are setting the type of encryption scheme.<p>
+	 * This constructor gets the name of a Pseudorandom permutation and is responsible for creating a corresponding instance.<p>
+	 * The init function must be called subsequently in order to work properly with this encryption object.
+	 * @param prp the name of a specific Pseudorandom permutation, for example "AES".
+	 */
+	public ScCTREncRandomIV(String prpName) throws FactoriesException {
+		super(prpName);
+	}
 
 	/**
 	 * The Pseudorandom Permutation passed to the constructor of this class determines the type of encryption that will be performed.
 	 * For ex: if the PRP is TripleDes, the after constructing this object we hole a CTR-TripleDes encryption scheme.
 	 * @param prp
+	 * @throws UnInitializedException 
 	 */
-	public ScCTREncRandomIV(PseudorandomPermutation prp){
+	public ScCTREncRandomIV(PseudorandomPermutation prp) throws UnInitializedException{
 		super(prp);
 	}
+	
 	/** This function returns a string that is the result of concatenating "CTRwith" with the name of the underlying PRP. 
 	 *  For example: "CTRwithAES"
 	 * @see edu.biu.scapi.midLayer.symmetricCrypto.encryption.SymmetricEnc#getAlgorithmName()
@@ -83,7 +78,7 @@ public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 		//Now we know that this ciphertext is of type IVCiphertext. View it like that.
 		IVCiphertext ivCipher = (IVCiphertext) ciphertext; 
 		
-		int cipherLengthInBytes = ivCipher.getCipher().length;
+		int cipherLengthInBytes = ivCipher.getLength();
 		
 		//Prepare a buffer where to store the plaintext. It has to be of the same length as the cipher.
 		byte[] plaintext = new byte[cipherLengthInBytes];
@@ -102,10 +97,11 @@ public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 			System.out.print(ctr[i] + " ");
 		}
 		
-		//for each block in ciphertext do:
+		//First, process all full blocks. 
+		//If the length of the input is not a multiple of block size, we will take care of the last part of it not here, but in the next step
 		boolean isFullBlock = true;
 		for(int i = 0; i < numOfBlocksInCipher; i++){
-			ctr = processBlock(ivCipher.getCipher(), cipherOffset, ctr, plaintext, plaintextOffset, isFullBlock);
+			ctr = processBlock(ivCipher.getBytes(), cipherOffset, ctr, plaintext, plaintextOffset, isFullBlock);
 			cipherOffset += blockSize; 
 			plaintextOffset += blockSize;
 		}
@@ -116,7 +112,7 @@ public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 		//Process the remaining bytes not as a full block.
 		if(remainder > 0){
 			isFullBlock = false;
-			ctr = processBlock(ivCipher.getCipher(), cipherOffset, ctr, plaintext, plaintextOffset, isFullBlock);
+			ctr = processBlock(ivCipher.getBytes(), cipherOffset, ctr, plaintext, plaintextOffset, isFullBlock);
 		}
 
 		return new BasicPlaintext(plaintext);
@@ -173,7 +169,7 @@ public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 			ctr = processBlock(plaintext, plaintextOffset, ctr, cipher, cipherOffset, isFullBlock);
 		}
 
-		return new IVCiphertext(cipher, iv);
+		return new IVCiphertext(new BasicSymCiphertext(cipher), iv);
 	}
 
 
