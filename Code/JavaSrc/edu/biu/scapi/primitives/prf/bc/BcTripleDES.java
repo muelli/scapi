@@ -41,7 +41,7 @@ public final class BcTripleDES extends BcPRP implements TripleDES{
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException {
 		int len = secretKey.getEncoded().length;
 		//TripleDes key size should be 128/192 bits 
-		if(len!=16 || len!=24){
+		if(len!=16 && len!=24){
 			throw new InvalidKeyException("TripleDes key size should be 128/192 bits long");
 		}
 		super.init(secretKey, params);
