@@ -48,7 +48,7 @@ public final class BcAES extends BcPRP implements AES{
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException {
 		int len = secretKey.getEncoded().length;
 		//AES key size should be 128/192/256 bits long
-		if(len!=16 || len!=24 || len!=32){
+		if(len!=16 && len!=24 && len!=32){
 			throw new InvalidKeyException("AES key size should be 128/192/256 bits long");
 		}
 		super.init(secretKey, params);
