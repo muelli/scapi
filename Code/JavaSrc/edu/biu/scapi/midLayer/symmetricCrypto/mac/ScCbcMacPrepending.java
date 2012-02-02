@@ -27,14 +27,14 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
  */
 public class ScCbcMacPrepending implements CbcMac {
 
-	private PrpFixed prp = null; 		// the underlying prp
-	private SecureRandom random = new SecureRandom(); 	// source of randomness used in key generation
-	private int expectedMsgLength = 0; 					// the length of the msg, as given in the startMac function
-	private int actualMsgLength = 0; 					// the length of the msg that the update function already got
-	private byte[] tag = null; 							// the current calculated tag from the update function.
-														// the result of the update function is saved in the tag to
-														// avoid unnecessary allocating and copying of arrays
-	private boolean isMacStarted = false; 				// set to false until startMac is called
+	private PrpFixed prp; 						// The underlying prp
+	private SecureRandom random;				// Source of randomness used in key generation
+	private int expectedMsgLength; 				// The length of the msg, as given in the startMac function
+	private int actualMsgLength; 				// The length of the msg that the update function already got
+	private byte[] tag; 						// The current calculated tag from the update function.
+												// The result of the update function is saved in the tag to
+												// avoid unnecessary allocation and copying of arrays
+	private boolean isMacStarted = false; 		// Set to false until startMac is called
 
 	/**
 	 * Constructor that gets a prp name and set it as the underlying prp.
@@ -67,6 +67,8 @@ public class ScCbcMacPrepending implements CbcMac {
 		}
 		// sets the class member prp to the given object.
 		this.prp = prp;
+		//Set the random variable. We assume that if this constructor is called there will not be (necessarily) a subsequent call to init.
+		this.random = new SecureRandom();
 	}
 
 	/**
@@ -146,7 +148,7 @@ public class ScCbcMacPrepending implements CbcMac {
 	 */
 	public String getAlgorithmName() {
 
-		return "CBC=MAC/" + prp.getAlgorithmName();
+		return "CBC-MAC/" + prp.getAlgorithmName();
 	}
 
 	/**
@@ -163,7 +165,6 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits
 	 * @return the generated secret key
 	 * @throws InvalidParameterSpecException 
-	 * @throws UnInitializedException if this object is not initialized
 	 */
 	public SecretKey generateKey(AlgorithmParameterSpec keySize) throws InvalidParameterSpecException {
 		// call the generateKey function that gets a random with the default secureRandom
@@ -175,7 +176,6 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits
 	 * @return the generated secret key
 	 * @throws InvalidParameterSpecException 
-	 * @throws UnInitializedException if this object is not initialized
 	 */
 	public SecretKey generateKey(AlgorithmParameterSpec keySize,
 			SecureRandom rnd) throws InvalidParameterSpecException {
