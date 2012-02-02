@@ -67,5 +67,18 @@ public class SecretKeyGeneratorUtil {
 		return secretKey;
 
 	}
-
+	/**
+	 * This static function generates a SecretKey. It looks for a default provider implementation for the algorithm name requested.
+	 * If found then uses it. Otherwise it creates the Key using {@link}SecretKeyGeneratorSpi {@link}.
+	 * This function is useful if there is a default key size for the requested algorithm, 
+	 * and there is a default provider implementation for it. 
+	 * This function uses SCAPI's default source of randomness.
+	 * 
+	 * @param algName The name of the algorithm for which to generate the key.
+	 * @throws NoSuchAlgorithmException  
+	 **/
+	static public SecretKey generateKey(String algName) throws NoSuchAlgorithmException{
+		SecureRandom random = new SecureRandom();
+		return generateKey(algName, random);
+	}
 }
