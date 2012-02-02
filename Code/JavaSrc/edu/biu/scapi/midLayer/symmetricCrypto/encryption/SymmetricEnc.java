@@ -16,12 +16,12 @@ import edu.biu.scapi.securityLevel.Eav;
 import edu.biu.scapi.securityLevel.Indistinguishable;
 
 /**
- * This is the main interface for the Symmetric Encryption family. 
+ * This is the main interface for the Symmetric Encryption family.<p> 
  * The symmetric encryption family of classes implements three main functionalities that correspond to the cryptographer’s language 
- * in which an encryption scheme is composed of three algorithms:
- * 	1.	Generation of the key.
- *	2.	Encryption of the plaintext.
- *	3.	Decryption of the ciphertext.
+ * in which an encryption scheme is composed of three algorithms:<p>
+ * 	1.	Generation of the key.<p>
+ *	2.	Encryption of the plaintext.<p>
+ *	3.	Decryption of the ciphertext.<p>
  * 
  * Any symmetric encryption scheme belongs by default at least to the Eavsdropper Security Level and to the Indistinguishable Security Level.
  *   
