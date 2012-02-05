@@ -188,7 +188,7 @@ class FactoriesUtility {
 	 * @param algName the algorithm name to get the default provider for
 	 * @return the default provider for the algorithm specified with the key algName
 	 */
-	public String getDefaultImplProvider(String algName) {
+	private String getDefaultImplProvider(String algName) {
 		
 		//get the parsed algorithm details to have name and params
 		AlgDetails algDetails = parseAlgNames(algName);
