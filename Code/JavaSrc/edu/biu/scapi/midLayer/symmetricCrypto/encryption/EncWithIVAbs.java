@@ -18,32 +18,110 @@ import edu.biu.scapi.midLayer.ciphertext.SymmetricCiphertext;
 import edu.biu.scapi.midLayer.plaintext.BasicPlaintext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
 import edu.biu.scapi.midLayer.symmetricCrypto.keys.SymKeyGenParameterSpec;
+import edu.biu.scapi.paddings.BitPadding;
+import edu.biu.scapi.paddings.PaddingParameterSpec;
+import edu.biu.scapi.paddings.PaddingScheme;
 import edu.biu.scapi.primitives.prf.PseudorandomPermutation;
+import edu.biu.scapi.tools.Factories.PaddingFactory;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 abstract class EncWithIVAbs implements SymmetricEnc {
 	protected PseudorandomPermutation prp;
 	protected SecureRandom random;
+	protected PaddingScheme padding;
+	
 	
 	/**
 	 * By passing a specific Pseudorandom permutation we are setting the type of encryption scheme.<p>
 	 * This constructor gets and initialized Pseudorandom permutation. This implies that there is
 	 * no need to call init afterwards.
 	 * @param prp specific Pseudorandom permutation, for example AES.
+	 * @param random a user provided source of randomness
+	 * @param params can be PadingParameterSpec
 	 * @throws UnInitializedException
+	 * @throws FactoriesException 
 	 */
-	public EncWithIVAbs(PseudorandomPermutation prp) throws UnInitializedException {
+	public EncWithIVAbs(PseudorandomPermutation prp) throws UnInitializedException{
 		if(!(prp.isInitialized())) {
 			throw new UnInitializedException("The PRP object must be initilized");
 		}	
 		this.prp = prp;
+		//sets default random and padding scheme
+		this.random = new SecureRandom();
+		padding = new BitPadding();
+	}
+	
+	/**
+	 * By passing a specific Pseudorandom permutation we are setting the type of encryption scheme.<p>
+	 * random and params sets the source of randomness and the padding scheme.
+	 * This constructor gets and initialized Pseudorandom permutation. This implies that there is
+	 * no need to call init afterwards.
+	 * @param prp specific Pseudorandom permutation, for example AES.
+	 * @param random a user provided source of randomness
+	 * @param params can be PadingParameterSpec
+	 * @throws UnInitializedException
+	 * @throws FactoriesException 
+	 */
+	public EncWithIVAbs(PseudorandomPermutation prp, SecureRandom random, AlgorithmParameterSpec params) throws UnInitializedException, FactoriesException {
+		if(!(prp.isInitialized())) {
+			throw new UnInitializedException("The PRP object must be initilized");
+		}	
+		this.prp = prp;
+		this.random = random;
+		//if params is instance of padding parameters, create the corresponding object
+		if (params instanceof PaddingParameterSpec){
+			padding = PaddingFactory.getInstance().getObject(((PaddingParameterSpec) params).getPaddingName());
+		//else, create default padding scheme
+		} else {
+			padding = new BitPadding();
+		}
 	}
 
+	/**
+	 * By passing a specific Pseudorandom permutation we are setting the type of encryption scheme.<p>
+	 * Random object sets the source of randomness.
+	 * This constructor gets and initialized Pseudorandom permutation. This implies that there is
+	 * no need to call init afterwards.
+	 * @param prp the name of a specific Pseudorandom permutation, for example "AES".
+	 * @param random SecureRandom object to set the random member
+	 */
+	public EncWithIVAbs(PseudorandomPermutation prp, SecureRandom random) {
+		//sets the prp and random
+		this.prp = prp;
+		this.random = random;
+		//create default padding scheme
+		padding = new BitPadding();
+	}
+	
+	/**
+	 * By passing a specific Pseudorandom permutation we are setting the type of encryption scheme.<p>
+	 * params object sets the padding scheme.
+	 * This constructor gets and initialized Pseudorandom permutation. This implies that there is
+	 * no need to call init afterwards.
+	 * If the AlgorithmParameterSpec is instance of PadingParameterSpec that contains padding name, this constructor responsible for creating a corresponding instance.
+	 * @param prp the name of a specific Pseudorandom permutation, for example "AES".
+	 * @param params can be paddind parameterSpec
+	 * @throws FactoriesException 
+	 */
+	public EncWithIVAbs(PseudorandomPermutation prp, AlgorithmParameterSpec params) throws FactoriesException {
+		//sets the prp
+		this.prp = prp;
+		//set default random
+		random = new SecureRandom();
+		//if params is instance of padding parameters, create the corresponding object
+		if (params instanceof PaddingParameterSpec){
+			padding = PaddingFactory.getInstance().getObject(((PaddingParameterSpec) params).getPaddingName());
+		//else, create default padding scheme
+		} else {
+			padding = new BitPadding();
+		}
+	}
 	/**
 	 * By passing a specific Pseudorandom permutation we are setting the type of encryption scheme.<p>
 	 * This constructor gets the name of a Pseudorandom permutation and is responsible for creating a corresponding instance.<p>
 	 * The init function must be called subsequently in order to work properly with this encryption object.
 	 * @param prp the name of a specific Pseudorandom permutation, for example "AES".
+	 * @throws FactoriesException 
 	 */
 	public EncWithIVAbs(String prpName) throws FactoriesException {
 		// Creates a prp object and set this.prp to it
@@ -61,6 +139,7 @@ abstract class EncWithIVAbs implements SymmetricEnc {
 	public void init(SecretKey secretKey) throws InvalidKeyException{
 		prp.init(secretKey); //Do we need to check that prp is not null? What if it is? What if the concrete implementation doesn't instantiate the prp?
 		random = new SecureRandom();
+		padding = new BitPadding();
 	}
 
 	/**
@@ -69,21 +148,34 @@ abstract class EncWithIVAbs implements SymmetricEnc {
 	public void init(SecretKey secretKey, SecureRandom random) throws InvalidKeyException{
 		prp.init(secretKey);
 		this.random = random; 
+		padding = new BitPadding();
 	}
 
 	/**
 	 * Initialize the encryption scheme with a Secret Key and relevant parameters.
+	 * @throws FactoriesException if params is instance of PaddingParameterSpec and contains padding name that is not exists
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidParameterSpecException{
-		prp.init(secretKey, params); //Do we need to check that prp is not null? What if it is? What if the concrete implementation doesn't instantiate the prp?
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidParameterSpecException, FactoriesException{
+		prp.init(secretKey/*, params*/); //Do we need to check that prp is not null? What if it is? What if the concrete implementation doesn't instantiate the prp?
 		random = new SecureRandom();
+		if (params instanceof PaddingParameterSpec){
+			padding = PaddingFactory.getInstance().getObject(((PaddingParameterSpec) params).getPaddingName());
+		} else {
+			padding = new BitPadding();
+		}
 	}
 	/**
 	 * Initialize the encryption scheme with a Secret Key, other relevant parameters and a user provided source of randomness.
+	 * @throws FactoriesException if params is instance of PaddingParameterSpec and contains padding name that is not exists
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidParameterSpecException{
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidParameterSpecException, FactoriesException{
 		prp.init(secretKey, params); //Do we need to check that prp is not null? What if it is? What if the concrete implementation doesn't instantiate the prp?
 		this.random = random;
+		if (params instanceof PaddingParameterSpec){
+			padding = PaddingFactory.getInstance().getObject(((PaddingParameterSpec) params).getPaddingName());
+		} else{
+			padding = new BitPadding();
+		}
 	}
 	
 	/**
