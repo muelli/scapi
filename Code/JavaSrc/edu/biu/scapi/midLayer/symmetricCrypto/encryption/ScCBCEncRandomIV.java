@@ -1,5 +1,7 @@
 package edu.biu.scapi.midLayer.symmetricCrypto.encryption;
 
+import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
 import java.util.logging.Level;
 
 import javax.crypto.IllegalBlockSizeException;
@@ -29,9 +31,46 @@ public class ScCBCEncRandomIV extends EncWithIVAbs implements CBCEnc {
 	 * Sets the underlying prp that determines the type of encryption that will be performed.
 	 * @param prp the underlying pseudorandom permutation
 	 * @throws UnInitializedException if the given prp is not initialized
+	 * @throws FactoriesException if the creation of the padding scheme failed
 	 */
-	public ScCBCEncRandomIV(PseudorandomPermutation prp) throws UnInitializedException {
+	public ScCBCEncRandomIV(PseudorandomPermutation prp) throws UnInitializedException{
 		super(prp);
+	}
+	
+	/**
+	 * Sets the underlying prp that determines the type of encryption that will be performed.
+	 * The random and params passed to this constructor determines the source of randomness and padding scheme that will be used.
+	 * @param prp the underlying pseudorandom permutation
+	 * @param random a user provided source of randomness
+	 * @param params can be PadingParameterSpec
+	 * @throws UnInitializedException if the given prp is not initialized
+	 * @throws FactoriesException if the creation of the padding scheme failed
+	 */
+	public ScCBCEncRandomIV(PseudorandomPermutation prp, SecureRandom random, AlgorithmParameterSpec params) throws UnInitializedException, FactoriesException {
+		super(prp, random, params);
+	}
+	
+	/**
+	 * Sets the underlying prp that determines the type of encryption that will be performed.
+	 * The random passed to this constructor determines the source of randomness that will be used.
+	 * @param prp the underlying pseudorandom permutation
+	 * @param random a user provided source of randomness
+	 * @throws UnInitializedException if the given prp is not initialized
+	 */
+	public ScCBCEncRandomIV(PseudorandomPermutation prp, SecureRandom random) throws UnInitializedException {
+		super(prp, random);
+	}
+	
+	/**
+	 * Sets the underlying prp that determines the type of encryption that will be performed.
+	 * The params passed to this constructor determines the padding scheme that will be used.
+	 * @param prp the underlying pseudorandom permutation
+	 * @param params can be PadingParameterSpec
+	 * @throws UnInitializedException if the given prp is not initialized
+	 * @throws FactoriesException if the creation of the padding scheme failed
+	 */
+	public ScCBCEncRandomIV(PseudorandomPermutation prp, AlgorithmParameterSpec params) throws UnInitializedException, FactoriesException {
+		super(prp, params);
 	}
 	
 	/**
