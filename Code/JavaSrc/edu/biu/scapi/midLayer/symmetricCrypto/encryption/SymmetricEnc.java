@@ -8,6 +8,7 @@ import java.security.spec.InvalidParameterSpecException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
+import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
 import edu.biu.scapi.midLayer.ciphertext.SymmetricCiphertext;
@@ -32,8 +33,8 @@ public interface SymmetricEnc extends Eav, Indistinguishable{
 
 	public void init(SecretKey secretKey) throws InvalidKeyException;
 	public void init(SecretKey secretKey, SecureRandom random) throws InvalidKeyException;
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidParameterSpecException;
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidParameterSpecException;
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidParameterSpecException, FactoriesException;
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidParameterSpecException, FactoriesException;
 	public boolean isInitialized();
 	public AlgorithmParameterSpec getParams() throws UnInitializedException;
 	public String getAlgorithmName();
