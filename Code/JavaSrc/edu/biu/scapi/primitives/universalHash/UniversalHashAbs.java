@@ -4,6 +4,7 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.SecretKey;
 
+import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
@@ -23,7 +24,7 @@ public abstract class UniversalHashAbs implements UniversalHash {
 		isInitialized = true; //marks this object as initialized
 	}
 	
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params){
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws FactoriesException{
 		//sets the parameters
 		this.params = params;
 		this.secretKey = secretKey;

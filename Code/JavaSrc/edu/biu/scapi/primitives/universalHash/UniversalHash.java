@@ -5,6 +5,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
+import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
@@ -33,8 +34,9 @@ public interface UniversalHash {
 	 * Initializes this PerfectUniversalHash with the secret key and the auxiliary parameters.
 	 * @param secretKey secret key
 	 * @param params algorithm parameters
+	 * @throws FactoriesException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params);
+	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws FactoriesException;
 
 	/**
 	 * An object trying to use an instance of perfectUniversalHash needs to check if it has already been initialized.
