@@ -11,12 +11,6 @@ import edu.biu.scapi.primitives.dlog.groupParams.ZpGroupParams;
  *
  */
 public interface DlogZp extends DlogGroup{
-
-	/**
-	 * Initialize the CryptoPP implementation of Dlog over Zp* 
-	 * @param groupParams
-	 */
-	public void init(ZpGroupParams groupParams);
 	
 	/**
 	 * Initialize the CryptoPP implementation of Dlog over Zp* with random elements
