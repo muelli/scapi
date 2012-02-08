@@ -3,6 +3,7 @@ package edu.biu.scapi.primitives.dlog;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.spec.AlgorithmParameterSpec;
 import java.util.Properties;
 
 
@@ -17,6 +18,21 @@ public abstract class DlogGroupEC extends DlogGroupAbs{
 
 	private  Properties nistProperties; // properties object to hold nist parameters
 	protected String PROPERTIES_FILES_PATH = System.getProperty("java.class.path").toString().split(";")[0]+"\\propertiesFiles\\NISTEC.properties";
+	
+	/**
+	 * Initialize this elliptic curve with the given parameters.
+	 * The parameters should be of type ECParameterSpec.
+	 * @param params used to initialize this group
+	 * @throws IOException 
+	 * @throws IllegalArgumentException in case there is a problem with the given file
+	 */
+	public void init(AlgorithmParameterSpec params) throws IllegalArgumentException, IOException{
+		if (!(params instanceof ECParameterSpec)){
+			throw new IllegalArgumentException("params should be instance of ECParameterSpec");
+		}
+		ECParameterSpec curveParams = (ECParameterSpec) params;
+		init(curveParams.getFileName(), curveParams.getCurveName());
+	}
 	
 	/*
 	 * Initializes this DlogGroup with a curve which does not comply with NIST recommended elliptic curves.
