@@ -1,7 +1,9 @@
 package edu.biu.scapi.primitives.dlog;
 
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.security.spec.AlgorithmParameterSpec;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
@@ -21,6 +23,16 @@ import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
  */
 public interface DlogGroup {
 
+	/**
+	 * Initialize this DlopGroup with the given parameters.
+	 * In case of Zp group the parameters should be of type ZpGroupParams.
+	 * In elliptic curves case the parameters should be of type ECParameterSpec
+	 * @param params used to initialize this group
+	 * @throws IOException 
+	 * @throws IllegalArgumentException in case there is a problem with the given file
+	 */
+	public void init(AlgorithmParameterSpec params) throws IllegalArgumentException, IOException;
+	
 	/**
 	 * Checks if this DlogGroup object has been previously initialized.<p> 
 	 * To initialize the object the init function has to be called with corresponding parameters after construction.
