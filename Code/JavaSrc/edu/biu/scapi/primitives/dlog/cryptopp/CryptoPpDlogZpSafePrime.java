@@ -1,6 +1,7 @@
 package edu.biu.scapi.primitives.dlog.cryptopp;
 
 import java.math.BigInteger;
+import java.security.spec.AlgorithmParameterSpec;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.DlogGroupAbs;
@@ -36,7 +37,11 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	 * Initializes the CryptoPP implementation of Dlog over Zp* with the given groupParams
 	 * @param groupParams - contains the group parameters
 	 */
-	public void init(ZpGroupParams groupParams){
+	public void init(AlgorithmParameterSpec params){
+		if (!(groupParams instanceof ZpGroupParams)){
+			throw new IllegalArgumentException("params should be instance of ZpGroupParams");
+		}
+		ZpGroupParams groupParams = (ZpGroupParams) params;
 		BigInteger p = groupParams.getP();
 		BigInteger q = groupParams.getQ();
 		BigInteger g = groupParams.getXg();
