@@ -8,6 +8,7 @@ package edu.biu.scapi.tools.Factories;
 
 import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.midLayer.asymmetricCrypto.*;
+import edu.biu.scapi.midLayer.asymmetricCrypto.encryption.AsymmetricEnc;
 
 public final class AsymmetricEncFactory {
 	private static AsymmetricEncFactory instance = new AsymmetricEncFactory();;
