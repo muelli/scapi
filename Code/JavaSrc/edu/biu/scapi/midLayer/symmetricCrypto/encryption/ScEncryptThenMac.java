@@ -112,7 +112,7 @@ public class ScEncryptThenMac implements AuthenticatedEnc {
 
 	@Override
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params)
-			throws InvalidKeyException, InvalidParameterSpecException {
+			throws InvalidKeyException, InvalidParameterSpecException, FactoriesException {
 		//Check for validity of input before creating an instance of SecureRandom, to avoid waste of resources.
 		if(!(secretKey instanceof EncThenMacKey))
 			throw new InvalidKeyException("This encryption requires a key of type EncThenMacKey");
@@ -126,7 +126,7 @@ public class ScEncryptThenMac implements AuthenticatedEnc {
 	@Override
 	public void init(SecretKey secretKey, AlgorithmParameterSpec params,
 			SecureRandom random) throws InvalidKeyException,
-			InvalidParameterSpecException {
+			InvalidParameterSpecException, FactoriesException {
 		//Validate the SecretKey.
 		if(!(secretKey instanceof EncThenMacKey))
 			throw new InvalidKeyException("This encryption requires a key of type EncThenMacKey");
