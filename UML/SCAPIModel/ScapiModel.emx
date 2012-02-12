@@ -444,6 +444,7 @@
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_THdWsCC-EeGgp9a0aLX5Ug" name="SecureRandom"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_H-GX4C78EeGfsvvHaRh43Q" name="long"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_ed9q4D0YEeGERN4lDLuyQA" name="BigInteger"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_TKdLAFALEeG_FItaMFh_Ow" name="GroupElement"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Package" xmi:id="_gNQrwP3pEd-nt4IVKKjkMA" name="edu">
       <eAnnotations xmi:id="_gOmIgP3pEd-nt4IVKKjkMA" source="uml2.diagrams"/>
