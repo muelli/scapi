@@ -7,6 +7,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 import java.util.logging.Level;
 
 import org.bouncycastle.util.BigIntegers;
@@ -93,9 +94,11 @@ public class ScElGamal implements ElGamalEnc{
 	 * @param publicKey should be ElGamalPublicKey
 	 * @param privateKey should be ElGamalPrivateKey
 	 * @param params can be GroupParams to initialize the DlogGroup
+	 * @throws IOException 
+	 * @throws IllegalArgumentException 
 	 */
 	public void init(PublicKey publicKey, PrivateKey privateKey,
-			AlgorithmParameterSpec params) {
+			AlgorithmParameterSpec params) throws IllegalArgumentException, IOException {
 		//call the corresponding init function that get a random with the default source of randomness
 		init(publicKey, privateKey, params, new SecureRandom());
 	}
@@ -107,29 +110,25 @@ public class ScElGamal implements ElGamalEnc{
 	 * @param privateKey should be ElGamalPrivateKey
 	 * @param params can be GroupParams to initialize the DlogGroup
 	 * @param random source of secure randomness
+	 * @throws IOException 
+	 * @throws IllegalArgumentException 
 	 */
 	public void init(PublicKey publicKey, PrivateKey privateKey,
-			AlgorithmParameterSpec params, SecureRandom random) {
+			AlgorithmParameterSpec params, SecureRandom random) throws IllegalArgumentException, IOException {
 		//key should be ElGamal keys
 		if(!(publicKey instanceof ScElGamalPublicKey) || !(privateKey instanceof ScElGamalPrivateKey)){
 			throw new IllegalArgumentException("keys should be instances of ElGamal keys");
+		}
+		if (!(params instanceof ElGamalParameterSpec)){
+			throw new IllegalArgumentException("params should be instances of ElGamalParameterSpec");
 		}
 		//set the parameters
 		this.publicKey = (ScElGamalPublicKey) publicKey;
 		
 		//initialize dlog
 		this.params = params;
-		try {
-			dlog.init(params);
+		dlog.init(((ElGamalParameterSpec) params).getGroupParams());
 			
-		//dlog initialization failed, the dlog will initialized with default values 
-		} catch (IllegalArgumentException e) {} 
-		catch (IOException e) {}
-		//init the dlog with default values
-		if (!dlog.isInitialized()){
-			initDlogDefault();
-		}
-		
 		//operates an optimization of the private key
 		initPrivateKey(privateKey);
 		
@@ -183,8 +182,10 @@ public class ScElGamal implements ElGamalEnc{
 	 * After this initialization the user can encrypt messages but can not decrypt messages.
 	 * @param publicKey should be ElGamalPublicKey
 	 * @param params can be GroupParams to initialize the DlogGroup
+	 * @throws IOException 
+	 * @throws IllegalArgumentException 
 	 */
-	public void init(PublicKey publicKey, AlgorithmParameterSpec params) {
+	public void init(PublicKey publicKey, AlgorithmParameterSpec params) throws IllegalArgumentException, IOException {
 		//call the corresponding init function that get a random with the default source of randomness
 		init(publicKey, params, new SecureRandom());
 	}
@@ -195,28 +196,24 @@ public class ScElGamal implements ElGamalEnc{
 	 * @param publicKey should be ElGamalPublicKey
 	 * @param params can be GroupParams to initialize the DlogGroup
 	 * @param random source of secure randomness
+	 * @throws IOException 
+	 * @throws IllegalArgumentException 
 	 */
 	public void init(PublicKey publicKey, AlgorithmParameterSpec params,
-			SecureRandom random) {
+			SecureRandom random) throws IllegalArgumentException, IOException {
 		//public key should be ElGamal public key
 		if(!(publicKey instanceof ScElGamalPublicKey)){
 			throw new IllegalArgumentException("key should be instances of ElGamal key");
 		}
-		//set the parameters
+		if (!(params instanceof ElGamalParameterSpec)){
+			throw new IllegalArgumentException("params should be instances of ElGamalParameterSpec");
+		}
+		//set the key
 		this.publicKey = (ScElGamalPublicKey) publicKey;
 		
 		//initialize dlog
 		this.params = params;
-		try {
-			dlog.init(params);
-			
-		//dlog initialization failed, the dlog will initialized with default values 
-		} catch (IllegalArgumentException e) {} 
-		catch (IOException e) {}
-		//init the dlog with default values
-		if (!dlog.isInitialized()){
-			initDlogDefault();
-		}
+		dlog.init(((ElGamalParameterSpec) params).getGroupParams());
 		
 		this.random = random;
 		//mark this object as initialized
@@ -402,44 +399,42 @@ public class ScElGamal implements ElGamalEnc{
 
 	/**
 	 * Generates a KeyPair contains set of ElGamalPublicKEy and ElGamalPrivateKey using default source of randomness.
-	 * @param keyParams in the case of El Gamal there are not any actual parameters that need to be passed 
-	 * 					since all it needs to generate the key is the Dlog Group, which was set upon construction.
+	 * @param keyParams ElGamalParameterSpec.
 	 * @return KeyPair contains keys for this El Gamal object
+	 * @throws InvalidParameterSpecException 
 	 */
-	public KeyPair generateKey(AlgorithmParameterSpec keyParams) {
-		//ignore the given params since ElGamal doesn't need any parameters for key generation 
-		//and call the generateKey function without params
-		return generateKey();
+	public KeyPair generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException {
+		return keyGen(keyParams);
 	}
 
 	/**
 	 * Generates a KeyPair contains set of ElGamalPublicKEy and ElGamalPrivateKey using the given random.
-	 * @param keyParams in the case of El Gamal there are not any actual parameters that need to be passed 
-	 * 					since all it needs to generate the key is the Dlog Group, which was set upon construction.
+	 * @param keyParams ElGamalParameterSpec.
 	 * @param random source of randomness
 	 * @return KeyPair contains keys for this El Gamal object
+	 * @throws InvalidParameterSpecException 
 	 */
-	public KeyPair generateKey(AlgorithmParameterSpec keyParams, SecureRandom random) {
-		//ignore the given params since ElGamal doesn't need any parameters for key generation 
-		//and call the generateKey function with random parameter
-		return generateKey(random);
+	public KeyPair generateKey(AlgorithmParameterSpec keyParams, SecureRandom random) throws InvalidParameterSpecException {
+		return keyGen(keyParams, random);
 	}
-	
+
 	/**
 	 * Generates a KeyPair contains set of ElGamalPublicKEy and ElGamalPrivateKey using default source of randomness.
+	 * @param keyParams ElGamalParameterSpec.
 	 * @return KeyPair contains keys for this El Gamal object
+	 * @throws InvalidParameterSpecException 
 	 */
-	public KeyPair generateKey() {
+	public static KeyPair keyGen(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException {
 		//call the generateKey function with default source of randomness
-		return generateKey(new SecureRandom());
+		return keyGen(keyParams, new SecureRandom());
 	}
-
-	/**
-	 * Generates a KeyPair contains set of ElGamalPublicKEy and ElGamalPrivateKey using the given random.
-	 * @param random source of randomness
-	 * @return KeyPair contains keys for this El Gamal object
-	 */
-	public KeyPair generateKey(SecureRandom random) {
+	
+	public static KeyPair keyGen(AlgorithmParameterSpec keyParams, SecureRandom random) throws InvalidParameterSpecException {
+		if (!(keyParams instanceof ElGamalParameterSpec)){
+			throw new InvalidParameterSpecException("params should be instance of ElGamalParameterSpec");
+		}
+		DlogGroup dlog = createDlogGroup((ElGamalParameterSpec) keyParams);
+		
 		KeyPair pair = null;
 		try {
 			//choose a random value in Zq
@@ -457,6 +452,29 @@ public class ScElGamal implements ElGamalEnc{
 			Logging.getLogger().log(Level.WARNING, e.toString());
 		}
 		return pair;
+	}
+	
+	/**
+	 * Creates DlogGroup using the ElGamalParameterSpec
+	 * @param keyParams ElGamalParameterSpec
+	 * @return initialized dlogGroup
+	 */
+	private static DlogGroup createDlogGroup(ElGamalParameterSpec keyParams) {
+		try {
+			DlogGroup dlog = null;
+			String provider = keyParams.getProviderName();
+			if (provider == null){
+				dlog = DlogGroupFactory.getInstance().getObject(keyParams.getDlogName());
+			} else {
+				dlog = DlogGroupFactory.getInstance().getObject(keyParams.getDlogName(), provider);
+			}
+			dlog.init(keyParams.getGroupParams());
+			return dlog;
+			
+		} catch(Exception e){
+			
+		}
+		return null;
 	}
 	
 	public Ciphertext multiply(Ciphertext cipher1, Ciphertext cipher2) {
