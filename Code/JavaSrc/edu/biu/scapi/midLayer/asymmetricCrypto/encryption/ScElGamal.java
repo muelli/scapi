@@ -78,7 +78,7 @@ public class ScElGamal implements ElGamalEnc{
 	 * @throws UnInitializedException if the given dlog group is not initialized
 	 * @throws FactoriesException if the creation of the dlog failed
 	 */
-	public ScElGamal(String dlogName) throws UnInitializedException, FactoriesException{
+	public ScElGamal(String dlogName) throws FactoriesException{
 		//create the DlogGroup
 		DlogGroup dlogGroup = DlogGroupFactory.getInstance().getObject(dlogName);
 		//the underlying dlog group must be DDH secure
@@ -343,12 +343,13 @@ public class ScElGamal implements ElGamalEnc{
 			GroupElement msgElement = dlog.convertByteArrayToGroupElement(((BasicPlaintext)plaintext).getText());
 		
 			//choose a random value y<-Zq
-			BigInteger y = BigIntegers.createRandomInRange(BigInteger.ONE, dlog.getOrder(), random);
+			BigInteger qMinusOne = dlog.getOrder().subtract(BigInteger.ONE);
+			BigInteger y = BigIntegers.createRandomInRange(BigInteger.ONE, qMinusOne, random);
 			
 			//calculate c1 = g^y and c2 = msg * h^y
 			GroupElement generator = dlog.getGenerator();
-			GroupElement c1 = dlog.exponentiate(y, generator);
-			GroupElement hy = dlog.exponentiate(y, publicKey.getH());
+			GroupElement c1 = dlog.exponentiate(generator, y);
+			GroupElement hy = dlog.exponentiate(publicKey.getH(), y);
 			GroupElement c2 = dlog.multiplyGroupElements(hy, msgElement);
 			
 			//return an ElGamalCiphertext with c1, c2
@@ -382,7 +383,7 @@ public class ScElGamal implements ElGamalEnc{
 		try {
 			ElGamalCiphertext ciphertext = (ElGamalCiphertext) cipher;
 			//calculates s = ciphertext.getC1() ^ x
-			GroupElement s = dlog.exponentiate(privateKey.getX(),ciphertext.getC1());
+			GroupElement s = dlog.exponentiate(ciphertext.getC1(), privateKey.getX());
 			//calculate the plaintext element m = ciphertext.getC2() * s
 			GroupElement m = dlog.multiplyGroupElements(ciphertext.getC2(), s);
 			
@@ -441,7 +442,7 @@ public class ScElGamal implements ElGamalEnc{
 			BigInteger x = BigIntegers.createRandomInRange(BigInteger.ONE, dlog.getOrder(), random);
 			GroupElement generator = dlog.getGenerator();
 			//calculates h = g^x
-			GroupElement h = dlog.exponentiate(x, generator);
+			GroupElement h = dlog.exponentiate(generator, x);
 			//create an ElGamalPublicKey with h and ElGamalPrivateKey with x
 			ScElGamalPublicKey publicKey = new ScElGamalPublicKey(h);
 			ScElGamalPrivateKey privateKey = new ScElGamalPrivateKey(x);
