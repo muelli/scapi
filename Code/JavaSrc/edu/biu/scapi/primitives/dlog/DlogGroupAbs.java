@@ -222,7 +222,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 			for (int i=1; i<4; i++){
 				GroupElement multI;
 				try {
-					multI = exponentiate(new BigInteger("2"), exponentiations.get(i-1));
+					multI = exponentiate(exponentiations.get(i-1), new BigInteger("2"));
 					
 					exponentiations.add(i, multI);
 				} catch (UnInitializedException e) {
@@ -246,7 +246,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 			for (int i=exponentiations.size(); i<=index; i++){
 				GroupElement multI;
 				try {
-					multI = exponentiate(new BigInteger("2"), exponentiations.get(i-1));
+					multI = exponentiate(exponentiations.get(i-1), new BigInteger("2"));
 					
 					exponentiations.add(i, multI);
 				} catch (UnInitializedException e) {
