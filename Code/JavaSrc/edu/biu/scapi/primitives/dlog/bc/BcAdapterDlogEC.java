@@ -105,7 +105,7 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @throws IllegalArgumentException
 	 * @throws UnInitializedException 
 	 */
-	public GroupElement exponentiate(BigInteger exponent, GroupElement base) 
+	public GroupElement exponentiate(GroupElement base, BigInteger exponent) 
 									 throws IllegalArgumentException, UnInitializedException{
 		if (!isInitialized()){
 			throw new UnInitializedException();
