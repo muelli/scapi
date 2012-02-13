@@ -134,7 +134,7 @@ public interface DlogGroup {
 	 * @throws IllegalArgumentException
 	 * @throws UnInitializedException
 	 */
-	public GroupElement exponentiate(BigInteger exponent, GroupElement base) throws IllegalArgumentException, UnInitializedException;
+	public GroupElement exponentiate(GroupElement base, BigInteger exponent) throws IllegalArgumentException, UnInitializedException;
 	
 	/**
 	 * Multiplies two GroupElements
@@ -183,8 +183,9 @@ public interface DlogGroup {
 	 * Converts a byte array to a GroupElement.
 	 * @param binaryString the byte array to convert
 	 * @return the created group Element
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement convertByteArrayToGroupElement(byte[] binaryString);
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString) throws UnInitializedException;
 	
 	/**
 	 * Convert a GroupElement to a byte array.
