@@ -182,7 +182,7 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	 * @throws IllegalArgumentException
 	 * @throws UnInitializedException 
 	 */
-	public GroupElement exponentiate(BigInteger exponent, GroupElement base) throws IllegalArgumentException, UnInitializedException{
+	public GroupElement exponentiate(GroupElement base, BigInteger exponent) throws IllegalArgumentException, UnInitializedException{
 		if (!isInitialized()){
 			throw new UnInitializedException();
 		}
@@ -252,8 +252,12 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	 * Converts a byte array to a ZpSafePrimeElementCryptoPp element.
 	 * @param binaryString the byte array to convert
 	 * @return the created group Element
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement convertByteArrayToGroupElement(byte[] binaryString){
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString) throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
 		if (binaryString.length >= ((ZpGroupParams) groupParams).getP().bitLength()){
 			throw new IllegalArgumentException("String is too long. It has to be of length less than p");
 		}
