@@ -163,7 +163,7 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	 * @throws IllegalArgumentException
 	 * @throws UnInitializedException 
 	 */
-	public GroupElement exponentiate(BigInteger exponent, GroupElement base) 
+	public GroupElement exponentiate(GroupElement base, BigInteger exponent) 
 									 throws IllegalArgumentException, UnInitializedException{
 		if (!isInitialized()){
 			throw new UnInitializedException();
@@ -252,8 +252,9 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	 * Converts a byte array to a ECFpPointMiracl.
 	 * @param binaryString the byte array to convert
 	 * @return the created group Element
+	 * @throws UnInitializedException 
 	 */
-	public GroupElement convertByteArrayToGroupElement(byte[] binaryString){
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString) throws UnInitializedException{
 		if (binaryString.length >= ((ECFpGroupParams) groupParams).getP().bitLength()){
 			throw new IllegalArgumentException("String is too long. It has to be of length less than log p");
 		}
@@ -263,10 +264,7 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 			point = new ECFpPointMiracl(x, this);
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException("The given string is not a valid point to this curve");
-		} catch (UnInitializedException e) {
-			// shouldn't occur since this dlog is initialized
-			Logging.getLogger().log(Level.WARNING, "this object is not initialized");
-		}
+		} 
 		return point;
 	}
 	
