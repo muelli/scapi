@@ -3,7 +3,6 @@ package edu.biu.scapi.primitives.dlog;
 import java.math.BigInteger;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.primitives.dlog.groupParams.ZpGroupParams;
 
 /**
  * Marker interface. Every class that implements it is signed as Zp*
