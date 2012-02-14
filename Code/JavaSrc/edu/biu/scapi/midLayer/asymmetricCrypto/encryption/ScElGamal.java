@@ -369,11 +369,12 @@ public class ScElGamal implements ElGamalEnc{
 	 *		•	Calculate m = ciphertext.getC2() * invS
 	 * @param cipherText of type ElGamalCiphertext contains the cipher to decrypt
 	 * @return Plaintext contains the decrypted message
+	 * @throws UnInitializedException 
 	 */
-	public Plaintext decrypt(Ciphertext cipher) {
+	public Plaintext decrypt(Ciphertext cipher) throws UnInitializedException {
 		//if there is no private key, throw exception
 		if (privateKey == null){
-			throw new IllegalStateException("in order to decrypt a message, this object must be initialized with private key");
+			throw new UnInitializedException("in order to decrypt a message, this object must be initialized with private key");
 		}
 		//ciphertext should be ElGamal ciphertext
 		if (!(cipher instanceof ElGamalCiphertext)){

@@ -303,12 +303,13 @@ public class BcRSAOaep implements RSAOaep {
 	 * Decrypts the given ciphertext according to the RSAOAEP algorithm using BC OAEPEncoding.
 	 * @param cipher the ciphertext to decrypt
 	 * @return Plaintext contains the decrypted ciphertext
+	 * @throws UnInitializedException 
 	 */
 	@Override
-	public Plaintext decrypt(Ciphertext cipher) {
+	public Plaintext decrypt(Ciphertext cipher) throws UnInitializedException {
 		//if there is no private key can not decrypt, throw exception
 		if (privateKey == null){
-			throw new IllegalStateException("in order to decrypt a message, this object must be initialized with private key");
+			throw new UnInitializedException("in order to decrypt a message, this object must be initialized with private key");
 		}
 		//cipher must be of type BasicAsymCiphertext
 		if (!(cipher instanceof BasicAsymCiphertext)){
