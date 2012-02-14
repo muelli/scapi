@@ -1,10 +1,12 @@
 package edu.biu.scapi.midLayer.asymmetricCrypto.digitalSignature;
 
 import java.io.IOException;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.DataLengthException;
@@ -144,4 +146,21 @@ public interface DigitalSignature {
 	 * @return true if the signature is valid. false, otherwise.
 	 */
 	public boolean verify(byte[] signature);
+
+	/**
+	 * Generates public and private keys for this digital signature.
+	 * @param keyParams hold the required key parameters
+	 * @return KeyPair holding the public and private keys
+	 * @throws InvalidParameterSpecException 
+	 */
+	public KeyPair generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException;
+	
+	/**
+	 * Generates public and private keys for this digital signature.
+	 * @param keyParams hold the required key parameters
+	 * @param random source of randomness
+	 * @return KeyPair holding the public and private keys
+	 * @throws InvalidParameterSpecException 
+	 */
+	public KeyPair generateKey(AlgorithmParameterSpec keyParams, SecureRandom random) throws InvalidParameterSpecException;
 }
