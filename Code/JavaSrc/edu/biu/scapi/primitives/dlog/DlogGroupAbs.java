@@ -96,6 +96,20 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * and distinct exponents. 
 	 * Instead of computing each part separately, an optimization is used to 
 	 * compute it simultaneously. 
+	 * 
+	 * *INPUT:
+	 * *Let e0,e1,...e(k-1) be k positive integers each of bit length t (t should be the maximum bit length).
+	 * *Let g0, g1,... g(k-1) be k group elements.
+	 * *OUTPUT:
+	 * *(g0^e0)*(g1^e1)*...*(g(k-1)^e(k-1))
+	 * *ALGORITHM:
+	 * *Form a k*t array called EA (exponent array) (in our code is called indexArray), whose rows are the binary representations of the exponents ei, 0 <=i<=k-1.
+	 * *Let Ij be the non-negative integer whose binary representation is the jth column, 1<=j<=t, where low-order bits are at the top of the column.
+	 * *Precompute: for 0<=i,i<= (2^k - 1), Gi = Product(gj^ij) where  0<=j <=k-1 and ij is the bit of i in the jth position where i = (i(k-1)...i0)base2.
+	 * *A=1
+	 * * for 1<=i to i < t do
+	 * * 	A= A*A,  A = A * G(Ij)  (Ij is the sub-exponent of G).  
+	 * * return A. 
 	 * @param groupElements
 	 * @param exponentiations
 	 * @return the exponentiation result
@@ -143,7 +157,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		int[] indexArr = new int[t];
 		int size = exponentiations.length;
 		//calculates the index of each cell in the indexes array
-		for (int j=0; j<t-1; j++){
+		for (int j=0; j<t; j++){
 			int result = 0;
 			for (int i=0; i<size; i++){
 				//if the i bit is set, add to the result 2^i
