@@ -31,10 +31,10 @@ public final class BcHMAC implements Hmac {
 	 * Our class Hmac is an adapter class for the adaptee class HMac of BC.  
 	 */
 	private HMac hMac;									//The underlying wrapped hmac of BC.
-	private AlgorithmParameterSpec params = null;
-	private SecretKey secretKey = null;
+	private AlgorithmParameterSpec params;
+	private SecretKey secretKey;
 	private boolean isInitialized = false;				//until init is called set to false.
-	private SecureRandom random = new SecureRandom();	//source of randomness used in key generation
+	private SecureRandom random;	//source of randomness used in key generation
 
 	/** 
 	 * This constructor receives an hashName and build the underlying hmac accoring to it. It can be called from the factory.
@@ -65,6 +65,7 @@ public final class BcHMAC implements Hmac {
 		else{//the user must pass an initialized object, otherwise throw an exception
 			throw new UnInitializedException("argument hash must be initialized");
 		}
+		this.random = new SecureRandom();
 	}
 	
 	/** 
@@ -232,8 +233,18 @@ public final class BcHMAC implements Hmac {
 	 * @throws UnInitializedException if this object is not initialized
 	 */
 	public SecretKey generateKey(AlgorithmParameterSpec keySize) throws InvalidParameterSpecException{
-		//call the generateKey function that gets a random with the default secureRandom
-		return generateKey(keySize, random);
+		//key size must be a SymKeyGenParameterSpec
+		if (!(keySize instanceof SymKeyGenParameterSpec)){
+			throw new InvalidParameterSpecException("keySize should be instance of SymKeyGenParameterSpec");
+		}
+		//Call the static function that creates a secretKey with default source of randomness
+		//If the source of randomness has been previously set, then use it.
+		//If not, then we do not need to set it at this stage. It will be set with one of the init functions.
+		if ( random != null){
+			return keyGen((SymKeyGenParameterSpec) keySize, random);
+		} else {
+			return keyGen((SymKeyGenParameterSpec) keySize, new SecureRandom());
+		}
 	}
 	
 	/**
@@ -249,7 +260,30 @@ public final class BcHMAC implements Hmac {
 		}
 		
 		//generates key according to the given key size, this algorithm name and random
-		return SecretKeyGeneratorUtil.generateKey(((SymKeyGenParameterSpec) keySize).getEncKeySize(), getAlgorithmName(), rnd);
+		return keyGen((SymKeyGenParameterSpec) keySize ,rnd);
+	}
+	
+	/**
+	 * Static function that generates a secret key to initialize a mac object.
+	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
+	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
+	 */
+	public static SecretKey keyGen(SymKeyGenParameterSpec keySize) {
+		return keyGen(keySize, new SecureRandom());
+	}
+
+	/**
+	 * Static function that generates a secret key to initialize a mac object.
+	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
+	 * @param random source of randomness
+	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
+	 */
+	public static SecretKey keyGen(SymKeyGenParameterSpec keySize, SecureRandom random){
+		
+		// generates key according to the given key size, this algorithm name and random
+		return SecretKeyGeneratorUtil.generateKey(keySize.getEncKeySize(), keySize.getAlgorithmName(), random);
 	}
 	
 	/**
