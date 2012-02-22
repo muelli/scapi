@@ -35,6 +35,7 @@ public class ScCbcMacPrepending implements CbcMac {
 												// The result of the update function is saved in the tag to
 												// avoid unnecessary allocation and copying of arrays
 	private boolean isMacStarted = false; 		// Set to false until startMac is called
+	private boolean isInitialized = false;
 
 	/**
 	 * Constructor that gets a prp name and set it as the underlying prp.
@@ -92,6 +93,7 @@ public class ScCbcMacPrepending implements CbcMac {
 		prp.init(secretKey);
 		// set the random member with the given random
 		random = rnd;
+		isInitialized = true;
 
 	}
 
@@ -123,11 +125,12 @@ public class ScCbcMacPrepending implements CbcMac {
 		prp.init(secretKey, params);
 		// set the random member with the given random
 		random = rnd;
+		isInitialized = true;
 	}
 
 	public boolean isInitialized() {
-		// return true is the underlying prp is initialized
-		return prp.isInitialized();
+		// return true is this object is initialized
+		return isInitialized;
 	}
 
 	/**
@@ -162,31 +165,65 @@ public class ScCbcMacPrepending implements CbcMac {
 
 	/**
 	 * Generates a secret key to initialize this mac object.
-	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits
+	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
 	 * @return the generated secret key
 	 * @throws InvalidParameterSpecException 
 	 */
 	public SecretKey generateKey(AlgorithmParameterSpec keySize) throws InvalidParameterSpecException {
-		// call the generateKey function that gets a random with the default secureRandom
-		return generateKey(keySize, random);
+		//key size must be a SymKeyGenParameterSpec
+		if (!(keySize instanceof SymKeyGenParameterSpec)){
+			throw new InvalidParameterSpecException("keySize should be instance of SymKeyGenParameterSpec");
+		}
+		//Call the static function that creates a secretKey with default source of randomness
+		//If the source of randomness has been previously set, then use it.
+		//If not, then we do not need to set it at this stage. It will be set with one of the init functions.
+		if ( random != null){
+			return keyGen((SymKeyGenParameterSpec) keySize, random);
+		} else {
+			return keyGen((SymKeyGenParameterSpec) keySize, new SecureRandom());
+		}
 	}
 
 	/**
 	 * Generates a secret key to initialize this mac object.
-	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits
+	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
+	 * @param random source of randomness
 	 * @return the generated secret key
 	 * @throws InvalidParameterSpecException 
 	 */
 	public SecretKey generateKey(AlgorithmParameterSpec keySize,
 			SecureRandom rnd) throws InvalidParameterSpecException {
-		if(!(keySize instanceof SymKeyGenParameterSpec)){
+		//key size must be a SymKeyGenParameterSpec
+		if (!(keySize instanceof SymKeyGenParameterSpec)){
 			throw new InvalidParameterSpecException("keySize should be instance of SymKeyGenParameterSpec");
 		}
-
-		// generates key according to the given key size, this algorithm name and random
-		return SecretKeyGeneratorUtil.generateKey(((SymKeyGenParameterSpec) keySize).getEncKeySize(), prp.getAlgorithmName(), rnd);
+		//call the static function that creates a secretKey
+		return keyGen((SymKeyGenParameterSpec)keySize, rnd);
+	}
+	
+	/**
+	 * Static function that generates a secret key to initialize a mac object.
+	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
+	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
+	 */
+	public static SecretKey keyGen(SymKeyGenParameterSpec keySize) {
+		return keyGen(keySize, new SecureRandom());
 	}
 
+	/**
+	 * Static function that generates a secret key to initialize a mac object.
+	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
+	 * @param random source of randomness
+	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
+	 */
+	public static SecretKey keyGen(SymKeyGenParameterSpec keySize, SecureRandom random){
+		
+		// generates key according to the given key size, this algorithm name and random
+		return SecretKeyGeneratorUtil.generateKey(keySize.getEncKeySize(), keySize.getAlgorithmName(), random);
+	}
+	
 	/**
 	 * Pre-pends the length if the message to the message. 
 	 * As a result, the mac will be calculated on [msgLength||msg].
