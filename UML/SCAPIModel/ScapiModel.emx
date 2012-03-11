@@ -7,6 +7,7 @@
     <eAnnotations xmi:id="_zYbqgXVmEeCUEoD1Yz45YA" source="com.ibm.xtools.uml.msl.fragments">
       <references xmi:type="uml:Package" href="primitives.efx#_rgG5AP3pEd-nt4IVKKjkMA?SCAPI%20Model/edu/biu/scapi/primitives?"/>
       <references xmi:type="uml:Package" href="nonInteractiveMidCrypto.efx#_7Gjz0HVmEeCUEoD1Yz45YA?SCAPI%20Model/edu/biu/scapi/nonInteractiveMidCrypto?"/>
+      <references xmi:type="uml:Package" href="InitParametersStructure.efx#_7po2UFySEeGKPPBNYXA_qA?SCAPI%20Model/edu/biu/scapi/InitParametersStructure?"/>
     </eAnnotations>
     <eAnnotations xmi:id="_XzxRRP3pEd-nt4IVKKjkMA" source="uml2.diagrams">
       <contents xmi:type="notation:Diagram" xmi:id="_qzmhYCPSEeCRC8DybcqBZg" type="Freeform" name="ObjectsCreation">
@@ -445,6 +446,8 @@
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_H-GX4C78EeGfsvvHaRh43Q" name="long"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_ed9q4D0YEeGERN4lDLuyQA" name="BigInteger"/>
       <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_TKdLAFALEeG_FItaMFh_Ow" name="GroupElement"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_YyMEYFyUEeGKPPBNYXA_qA" name="secretKey"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="_-W2YkFyUEeGKPPBNYXA_qA" name="numOfBits"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Package" xmi:id="_gNQrwP3pEd-nt4IVKKjkMA" name="edu">
       <eAnnotations xmi:id="_gOmIgP3pEd-nt4IVKKjkMA" source="uml2.diagrams"/>
@@ -6684,6 +6687,7 @@
               </ownedEnd>
             </packagedElement>
           </packagedElement>
+          <packagedElement xmi:type="uml:Package" href="InitParametersStructure.efx#_7po2UFySEeGKPPBNYXA_qA?SCAPI%20Model/edu/biu/scapi/InitParametersStructure?"/>
         </packagedElement>
       </packagedElement>
     </packagedElement>
