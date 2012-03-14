@@ -38,7 +38,7 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	 * @param groupParams - contains the group parameters
 	 */
 	public void init(AlgorithmParameterSpec params){
-		if (!(groupParams instanceof ZpGroupParams)){
+		if (!(params instanceof ZpGroupParams)){
 			throw new IllegalArgumentException("params should be instance of ZpGroupParams");
 		}
 		ZpGroupParams groupParams = (ZpGroupParams) params;
@@ -107,6 +107,14 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 		return "Zp*";
 	}
 	
+	/**
+	 * 
+	 * @return the identity of this Zp group - 1
+	 * @throws UnInitializedException 
+	 */
+	public GroupElement getIdentity() throws UnInitializedException {
+		return new ZpSafePrimeElementCryptoPp(BigInteger.ONE, ((ZpGroupParams) groupParams).getP(), false);
+	}
 	/**
 	 * Checks if the given element is member of this Dlog group
 	 * @param element 
@@ -224,6 +232,19 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 		}else throw new IllegalArgumentException("element type doesn't match the group type");
 	}
 
+	public GroupElement simultaneousMultipleExponentiations
+				(GroupElement[] groupElements, BigInteger[] exponentiations) throws UnInitializedException{
+		
+		if (!isInitialized()){
+		throw new UnInitializedException();
+		}
+		
+		//currently, in cryptoPpDlogZpSafePrime the native algorithm is faster than the optimized one due to many calls to the JNI.
+		//Thus, we operate the native algorithm. In the future we may change this.
+		return computeNaive(groupElements, exponentiations);		
+		
+	}
+	
 	/**
 	 * Creates a random member of this Dlog group
 	 * @return the random element
