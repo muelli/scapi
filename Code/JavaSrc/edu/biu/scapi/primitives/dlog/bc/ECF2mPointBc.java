@@ -266,4 +266,10 @@ public class ECF2mPointBc extends ECPointBc{
 		}
 		return false;
 	}
+
+	@Override
+	public void release() {
+		// TODO Auto-generated method stub
+		
+	}
 }
