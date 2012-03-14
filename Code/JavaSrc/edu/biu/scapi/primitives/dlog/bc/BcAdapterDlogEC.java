@@ -179,6 +179,15 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 		
 	}
 	
+	public GroupElement simultaneousMultipleExponentiations
+					(GroupElement[] groupElements, BigInteger[] exponentiations) throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		//Our test results show that for BC elliptic curve the LL algorithm always gives the best performances
+		return computeLL(groupElements, exponentiations);
+	}
+	
 	/*
 	 * Each of the concrete classes implements this function.
 	 * BcDlogECFp creates an ECPoint.Fp
