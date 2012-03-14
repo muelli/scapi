@@ -67,10 +67,17 @@ public interface DlogGroup {
 	
 	/**
 	 * 
-	 * @return the order of that Dlog group
+	 * @return the order of this Dlog group
 	 * @throws UnInitializedException 
 	 */
 	public BigInteger getOrder() throws UnInitializedException;
+	
+	/**
+	 * 
+	 * @return the identity of this Dlog group
+	 * @throws UnInitializedException 
+	 */
+	public GroupElement getIdentity() throws UnInitializedException;
 	
 	/**
 	 * Checks if the given element is a member of this Dlog group
