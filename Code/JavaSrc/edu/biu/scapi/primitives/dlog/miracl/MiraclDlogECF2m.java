@@ -26,6 +26,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 
 	private native void initF2mCurve(long mip, int m, int k1, int k2, int k3, byte[] a, byte[] b);
 	private native long multiplyF2mPoints(long mip, long p1, long p2);
+	private native long simultaneousMultiplyF2m(long mip, long[] points, byte[][] exponents);
 	private native long exponentiateF2mPoint(long mip, long p, byte[] exponent);
 	private native long invertF2mPoint(long mip, long p);
 	private native boolean validateF2mGenerator(long mip, long generator, byte[] x, byte[] y);
@@ -221,6 +222,43 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 		//build a ECF2mPointMiracl element from the result value
 		return new ECF2mPointMiracl(result, mip);
 		
+	}
+	
+	public GroupElement simultaneousMultipleExponentiations(GroupElement[] groupElements, 
+			BigInteger[] exponentiations) throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		
+		//Koblitz curve has an optimization that cause the naive algorithm to be faster than the following optimized algorithm.
+		//so currently we operate the naive algorithm instead of the optimized algorithm.
+		//may be in the future this will be change.
+		if (groupParams instanceof ECF2mKoblitz){
+			return computeNaive(groupElements, exponentiations);
+		}
+		
+		int len = groupElements.length;
+		
+		//Our test results show that for elliptic curve over F2m and n<60 the naive algorithm gives the best performances
+		if (len < 60){
+				return computeNaive(groupElements, exponentiations);
+		} 
+		
+		long[] nativePoints = new long[len];
+		byte[][] exponents = new byte[len][];
+		for(int i=0; i<len; i++){
+			//if the GroupElements don't match the DlogGroup, throw exception
+			if (!(groupElements[i] instanceof ECF2mPointMiracl)){
+				throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+			}
+			nativePoints[i] = ((ECF2mPointMiracl)groupElements[i]).getPoint();
+			exponents[i] = exponentiations[i].toByteArray();
+		}
+		
+		//call to native exponentiate function
+		long result = simultaneousMultiplyF2m(mip, nativePoints, exponents);
+		//build a ECF2mPointMiracl element from the result value
+		return new ECF2mPointMiracl(result, mip);
 	}
 	
 	/**
