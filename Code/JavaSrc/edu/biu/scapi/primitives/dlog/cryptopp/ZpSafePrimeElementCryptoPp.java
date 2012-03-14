@@ -5,7 +5,7 @@ import java.security.SecureRandom;
 import java.util.logging.Level;
 
 import edu.biu.scapi.generals.Logging;
-import edu.biu.scapi.primitives.dlog.ZpElement;
+import edu.biu.scapi.primitives.dlog.ZpSafePrimeElement;
 
 /**
  * This class is an adapter class of Crypto++ to a ZpElement in SCAPI.<p>
@@ -13,7 +13,7 @@ import edu.biu.scapi.primitives.dlog.ZpElement;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public class ZpSafePrimeElementCryptoPp implements ZpElement{
+public class ZpSafePrimeElementCryptoPp implements ZpSafePrimeElement{
 
 	private long pointerToElement;
 	
@@ -118,6 +118,11 @@ public class ZpSafePrimeElementCryptoPp implements ZpElement{
 		return false;
 	}
 	
+	public void release(){
+		//delete from the dll the dynamic allocation of the Integer.
+		deleteElement(pointerToElement);
+		
+	}
 	/*
 	 * delete the related Dlog element object
 	 */
