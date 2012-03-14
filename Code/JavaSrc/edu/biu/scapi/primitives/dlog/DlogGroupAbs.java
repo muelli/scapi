@@ -2,6 +2,8 @@ package edu.biu.scapi.primitives.dlog;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Vector;
 
 import edu.biu.scapi.exceptions.UnInitializedException;
@@ -92,57 +94,47 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	}
 	
 	/*
-	 * Computes the product of several exponentiations with distinct bases 
-	 * and distinct exponents. 
-	 * Instead of computing each part separately, an optimization is used to 
-	 * compute it simultaneously. 
-	 * 
-	 * *INPUT:
-	 * *Let e0,e1,...e(k-1) be k positive integers each of bit length t (t should be the maximum bit length).
-	 * *Let g0, g1,... g(k-1) be k group elements.
-	 * *OUTPUT:
-	 * *(g0^e0)*(g1^e1)*...*(g(k-1)^e(k-1))
-	 * *ALGORITHM:
-	 * *Form a k*t array called EA (exponent array) (in our code is called indexArray), whose rows are the binary representations of the exponents ei, 0 <=i<=k-1.
-	 * *Let Ij be the non-negative integer whose binary representation is the jth column, 1<=j<=t, where low-order bits are at the top of the column.
-	 * *Precompute: for 0<=i,i<= (2^k - 1), Gi = Product(gj^ij) where  0<=j <=k-1 and ij is the bit of i in the jth position where i = (i(k-1)...i0)base2.
-	 * *A=1
-	 * * for 1<=i to i < t do
-	 * * 	A= A*A,  A = A * G(Ij)  (Ij is the sub-exponent of G).  
-	 * * return A. 
-	 * @param groupElements
-	 * @param exponentiations
-	 * @return the exponentiation result
-	 * @throws UnInitializedException 
+	 * Compute the simultanouesMultiplyExponentiate by the native algorithm
 	 */
-	public GroupElement simultaneousMultipleExponentiations
-					(GroupElement[] groupElements, BigInteger[] exponentiations) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
-		/*
-		 * preComputation for the algorithm.
-		 */
-		int preCompLen = (int) Math.pow(2, groupElements.length);
+	protected GroupElement computeNaive(GroupElement[] groupElements, BigInteger[] exponentiations){
+		int n = groupElements.length; //number of bases and exponents
+		GroupElement[] exponentsRasult = new GroupElement[n]; //holds the exponentiations result
 		
-		GroupElement[] preComp = new GroupElement[preCompLen];
-		
-		/* calculates the value of each cell in the preComputation array */
-		for(int k=0; k<preCompLen; k++){
-			BigInteger count = new BigInteger(String.valueOf(k));
-			GroupElement result = null;
-			int bitCount = count.bitLength();
-			//if the i bit is set, multiplies the result with the i group element
-			for (int i=0; i<bitCount; i++){
-				if (count.testBit(i)==true){
-					if (result==null)
-						result = groupElements[i];
-					else 
-						result = multiplyGroupElements(result, groupElements[i]);
-				}
+		//raises each element to the corresponding power
+		for (int i = 0; i<n; i++){
+			try {
+				exponentsRasult[i] = exponentiate(groupElements[i], exponentiations[i]);
+			} catch (UnInitializedException e) {
+				// shouldn't occur since this object is initialized. It was checked before. 
 			}
-			preComp[k] = result;
 		}
+		
+		GroupElement result = null; //holds the multiplication of all the exponentations
+		try {
+			result = getIdentity(); //initialized to the identity element
+		} catch (UnInitializedException e) {
+			// shouldn't occur since this object is initialized. It was checked before. 
+		}
+		
+		//multiplies every exponentiate
+		for (int i = 0; i<n; i++){
+			try {
+				result = multiplyGroupElements(exponentsRasult[i], result);
+			} catch (UnInitializedException e) {
+				// shouldn't occur since this object is initialized. It was checked before. 
+			}
+		}
+		
+		//return the final result
+		return result;
+	}
+	
+	/*
+	 * Compute the simultanouesMultiplyExponentiate by LL algorithm.
+	 * The code is taken from the pseudo code of LL algorithm in http://dasan.sejong.ac.kr/~chlim/pub/multi_exp.ps.
+	 */
+	protected GroupElement computeLL(GroupElement[] groupElements, BigInteger[] exponentiations){
+		int n = groupElements.length; //number of bases and exponents
 		
 		//get the biggest exponent
 		BigInteger bigExp = BigInteger.ZERO;
@@ -150,35 +142,408 @@ public abstract class DlogGroupAbs implements DlogGroup{
 			if (bigExp.compareTo(exponentiations[i])<0)
 				bigExp = exponentiations[i];
 		
-		/*
-		 * calculates the indexes array
-		 */
-		int t = bigExp.bitLength();
-		int[] indexArr = new int[t];
-		int size = exponentiations.length;
-		//calculates the index of each cell in the indexes array
-		for (int j=0; j<t; j++){
-			int result = 0;
-			for (int i=0; i<size; i++){
-				//if the i bit is set, add to the result 2^i
-				if (exponentiations[i].testBit(t-j-1)==true)
-					result = (int) (result + Math.pow(2, i));
+		int t = bigExp.bitLength(); //num bits of the biggest exponent.
+		int w = 0; //window size
+		
+		//choose w according to the value of t
+		w = getLLW(t);
+		
+		//h = n/w
+		int h;
+		if ((n % w) == 0){
+			h = n / w;
+		} else{
+			h = ((int) (n / w)) + 1;
+		}
+		
+		//create pre computation table
+		GroupElement[][] preComp = createLLPreCompTable(groupElements, w, h);
+		
+		/*for (int i=0; i<h; i++)
+			for (int j=0; j<Math.pow(2, w); j++)
+				System.out.println(((ECElement) preComp[i][j]).getX());
+		*/
+		GroupElement result = null; //holds the computation result
+		try {
+			result = getIdentity();
+		} catch (UnInitializedException e) {
+			// shouldn't occur since this object is initialized. It was checked before. 
+		}
+		
+		//computes the first loop of the algorithm. This loop returns in the next part of the algorithm with one single tiny change. 
+		result = computeLoop(exponentiations, w, h, preComp, result, t-1);
+		
+		//computes the third part of the algorithm
+		for (int j=t-2; j>=0; j--){
+			try {
+				//Y = Y^2
+				result = exponentiate(result, new BigInteger("2"));
+			} catch (UnInitializedException e1) {
+				// shouldn't occur since this object is initialized. It was checked before. 
 			}
-			indexArr[j] = result;
+			//computes the inner loop
+			result = computeLoop(exponentiations, w, h, preComp, result, j);
 		}
 		
-		/*
-		 * calculates the multiplication result
-		 */
-		GroupElement a = preComp[indexArr[0]];
-		
-		for(int i=1; i<t; i++){
-			a = multiplyGroupElements(a, a);
-			if (preComp[indexArr[i]] != null)		
-				a = multiplyGroupElements(a,preComp[indexArr[i]]);	
+		return result;
+	}
+	
+	/*
+	 * Computes the loop the repeats in the algorithm.
+	 * for k=0 to h-1
+	 * 		e=0
+	 * 		for i=kw to kw+w-1 
+	 *			if the bitIndex bit in ci is set:
+	 *			calculate e += 2^(i-kw)
+	 *		result = result *preComp[k][e]
+	 * 
+	 */
+	private GroupElement computeLoop(BigInteger[] exponentiations, int w, int h, GroupElement[][] preComp, GroupElement result, int bitIndex){
+		int e = 0;
+		for (int k=0; k<h; k++){
+			for (int i=k*w; i<(k * w + w); i++){
+				if (i < exponentiations.length){
+					//if the bit is set, change the e value 
+					if (exponentiations[i].testBit(bitIndex) == true){
+						int twoPow = (int) (Math.pow(2, i-k*w));
+						e += twoPow;
+					}
+				}
+			}
+			try {
+				//multiply result with preComp[k][e]
+				result = multiplyGroupElements(result, preComp[k][e]);
+			} catch (UnInitializedException e1) {
+				// shouldn't occur since this object is initialized. It was checked before. 
+			}
+			e = 0;
 		}
-		return a;
 		
+		return result;
+	}
+	
+	/*
+	 * Creates the preComputation table.
+	 */
+	private GroupElement[][] createLLPreCompTable(GroupElement[] groupElements, int w, int h){
+		int twoPowW = (int) (Math.pow(2, w));
+		//create the pre-computation table of size h*(2^(w))
+		GroupElement[][] preComp = new GroupElement[h][twoPowW];
+		
+		GroupElement base = null;
+		int baseIndex;
+		
+		//fill the table
+		for (int k=0; k<h; k++){
+			for (int e=0; e<twoPowW; e++){
+				try {
+					preComp[k][e] = getIdentity();
+				} catch (UnInitializedException e1) {
+					// shouldn't occur since this object is initialized. It was checked before.
+				}
+				for (int i=0; i<w; i++){
+					baseIndex = k*w + i;
+					if (baseIndex < groupElements.length){
+						base = groupElements[baseIndex];
+						//if bit i in e is set, change preComp[k][e]
+						if ((e & (1 << i)) != 0){ //bit i is set
+							try {
+								preComp[k][e] = multiplyGroupElements(preComp[k][e], base);
+							} catch (UnInitializedException e1) {
+								// shouldn't occur since this object is initialized. It was checked before.
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return preComp;
+		
+	}
+	
+	/*
+	 * returns the w value according to the given t
+	 */
+	private int getLLW(int t){
+		int w;
+		//choose w according to the value of t
+		if (t <= 10){
+			w = 2;
+		} else if (t <= 24){
+			w = 3;
+		} else if (t <= 60){
+			w = 4;
+		} else if (t <= 144){
+			w = 5;
+		} else if (t <= 342){
+			w = 6;
+		} else if (t <= 797){
+			w = 7;
+		} else if (t <= 1828){
+			w = 8;
+		} else {
+			w = 9;
+		}
+		return w;
+	}
+	
+	/*
+	 * Compute the simultanouesMultiplyExponentiate by LL algorithm.
+	 * The code is taken from the pseudo code of LL algorithm in http://dasan.sejong.ac.kr/~chlim/pub/multi_exp.ps.
+	 */
+	private GroupElement computeWU(GroupElement[] groupElements, BigInteger[] exponentiations){
+		int n = groupElements.length; //number of bases and exponents
+		
+		//get the biggest exponent
+		BigInteger bigExp = BigInteger.ZERO;
+		for (int i=0; i<exponentiations.length; i++)
+			if (bigExp.compareTo(exponentiations[i])<0)
+				bigExp = exponentiations[i];
+		
+		int t = bigExp.bitLength(); //num bits of the biggest exponent.
+		int w = 0; //window size
+		
+		//choose w according to the value of t
+		w = getWUW(t);
+		
+		//create the pre-computation table of size n*(2^(w-1)+1)
+		GroupElement[][] preComp = createWUPreCompTable(groupElements, w, n);
+		
+		LinkedList<lValue> list = new LinkedList<lValue>(); //contains the li,j values
+		HashMap<String,Integer> map = new HashMap<String,Integer>(n*t); //contains the ci,j values
+		
+		
+		//calculates the li,j and ci,j and fill these values in li,j list and ci,j map
+		int len = fillListAndMap(exponentiations, list, map, n, w);
+		
+		GroupElement result = null; //holds the computation result
+		try {
+			result = getIdentity();
+		} catch (UnInitializedException e) {
+			// shouldn't occur since this object is initialized. It was checked before. 
+		}
+		
+		//the list is sorted such that the maximum value is the first element in the list.
+		//by each list.pop we get the current max value in the list
+		lValue l= list.pop(); 
+		//compute y<-Yi,(ci,ki+1)/2 for each i such that li,ki = len
+		while(l.getVal() == len){
+			//calculate result *=Yi,(ci,ki+1)/2, for i such that li,ki = len
+			result = multL(result, l, map, preComp);
+			
+			//get the next max li,j
+			if (list.isEmpty())
+				break;
+			l = list.pop();		
+		}
+		
+		while (len>0){
+			len--;
+			//Y = Y^2
+			try {
+				result = exponentiate(result, new BigInteger("2"));
+			} catch (UnInitializedException e) {
+				// shouldn't occur since this object is initialized. It was checked before.
+			}
+			
+			while(l.getVal() == len){
+				result = multL(result, l, map, preComp);
+		
+				if (list.isEmpty())
+					break;
+				l = list.pop();
+			}
+			
+		}
+		
+		return result;
+			
+	}
+	
+	/*
+	 * fill the list of li,j and the map of ci,j.
+	 * The list of li,j contains lValue instances that hold the li,j values 
+	 * the map of ci,j contains pair of <key, value>. the key is a string representing the i and j values and the value is the integer ci,j
+	 * this function returns the maximum value of li,j
+	 */
+	private int fillListAndMap(BigInteger[] exponentiations, LinkedList<lValue> list, HashMap<String,Integer> map, int n, int w){
+		int len = 0; //holds the maximum value of li,j
+		ListIterator<lValue> current = null;
+		
+		for (int i=0; i<n; i++){
+			BigInteger exponent = exponentiations[i];
+			int l = 0; //holds li,j
+			int c = 0; //holds Ci,j
+			int numWindows = 0;
+			int k = 0; //current index in the window
+			boolean startWindow = false;
+			
+			for (int j=0; j<exponent.bitLength(); j++){
+				//starting the window in the first bit that is set
+				if (!startWindow && exponent.testBit(j) == true){
+					startWindow = true;
+					l = j;
+				}
+				//calculate Ci,j
+				if (k < w && startWindow){
+					if (exponent.testBit(j) == true){
+						c += Math.pow(2, k);
+					}
+					k++;
+					if (k == w){
+						putInMap(i, numWindows, c, map);
+						current = putInList(i, numWindows, l, list, current);
+						k = 0;
+						c = 0;
+						numWindows++;
+						startWindow = false;
+					}
+				} 
+			}
+			if (startWindow){
+				putInMap(i, numWindows, c, map);
+				putInList(i, numWindows, l, list, current);
+				
+			}
+			
+			if (len < l){
+				len = l;
+			}
+			current = list.listIterator(list.size());
+		}
+
+		return len;
+	}
+	
+	private GroupElement[][] createWUPreCompTable(GroupElement[] groupElements, int w, int n){
+		//create the pre-computation table of size n*(2^(w-1)+1)
+		int twoPowW = (int) (Math.pow(2, w-1));
+		GroupElement[][] preComp = new GroupElement[n][twoPowW + 1];
+		GroupElement temp = null;
+		for (int i=0; i<n; i++){
+			preComp[i][1] = groupElements[i];
+			try {
+				temp = exponentiate(groupElements[i], new BigInteger("2"));
+			} catch (UnInitializedException e) {
+				// shouldn't occur since this object is initialized. It was checked before. 
+			}
+			for (int j=2; j<=twoPowW; j++){
+				try {
+					preComp[i][j] = multiplyGroupElements(preComp[i][j-1], temp);
+				} catch (UnInitializedException e) {
+					// shouldn't occur since this object is initialized. It was checked before. 
+				}
+			}
+		}
+		
+		return preComp;
+	}
+	
+	
+	private GroupElement multL(GroupElement result, lValue l, HashMap<String,Integer> map, GroupElement[][] preComp){
+		int i = l.getI();
+		String key = Integer.toString(i) + " " + Integer.toString(l.getJ());
+		Integer c = map.get(key);
+		int j = (c + 1) / 2;
+		try {
+			result = multiplyGroupElements(result, preComp[i][j]);
+		} catch (UnInitializedException e) {
+			// shouldn't occur since this object is initialized. It was checked before.
+		}
+		return result;
+	}
+	
+	private ListIterator<lValue> putInList(int i, int j, int l, LinkedList<lValue> list, ListIterator<lValue> current){
+		lValue lij = new lValue(i, j, l);
+		boolean add = false;
+		int size = list.size();
+		//if this is the first element in the list, add it and set the iterator to point on it
+		if (size == 0){
+			list.add(lij);
+			current = list.listIterator(); 
+		} else {
+			//while there is a previous element that is smaller than this element, go back in the list.
+			//when you find an element that is bigger than this element, add this element after it.
+			//set the current iterator to point at the inserted element
+			while (current.hasPrevious() && !add){
+				int preIndex = current.previousIndex();
+				if (lij.compareTo(current.previous()) < 0){
+					current.next();
+					current.add(lij);
+					current = list.listIterator(preIndex + 1);
+					add = true;
+				}
+			}
+			//if this element is bigger than all the elements in the list, put it at the beginning and set the iterator to point on it
+			if (add == false){
+				list.addFirst(lij);
+				current = list.listIterator(); 
+			}
+		}
+		return current;
+	}
+	
+	private void putInMap(int i, int j, int c, HashMap<String,Integer> map){
+		String ijKey = Integer.toString(i) + " " + Integer.toString(j);
+		map.put(ijKey, c);
+	}
+	
+	/**
+	 * 
+	 * @param t
+	 * @return
+	 */
+	private int getWUW(int t){
+		int w;
+		//choose w according to the value of t
+		if (t <= 24){
+			w = 2;
+		} else if (t <= 80){
+			w = 3;
+		} else if (t <= 240){
+			w = 4;
+		} else if (t <= 672){
+			w = 5;
+		} else if (t <= 1792){
+			w = 6;
+		} else {
+			w = 7;
+		}
+		return w;
+	}
+	
+	private class lValue {
+		private int i;
+		private int j;
+		private int val;
+		
+		lValue(int i, int j, int val){
+			this.i = i;
+			this.j = j;
+			this.val = val;
+		}
+		
+		public int getI(){
+			return i;
+		}
+		
+		public int getJ(){
+			return j;
+		}
+		
+		public int getVal(){
+			return val;
+		}
+		
+		public int compareTo(lValue second){
+			int secondVal = second.getVal();
+			if (val > secondVal)
+				return 1;
+			if (val < secondVal)
+				return -1;
+			else return 0;
+		}
 	}
 	/*
 	 * Computes the product of several exponentiations of the same base
