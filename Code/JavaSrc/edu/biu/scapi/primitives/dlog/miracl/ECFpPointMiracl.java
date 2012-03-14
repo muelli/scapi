@@ -148,6 +148,11 @@ public class ECFpPointMiracl implements ECElement{
 		return false;
 	}
 	
+	public void release(){
+		//delete from the dll the dynamic allocation of the point.
+		deletePointFp(point);
+	}
+	
 	/**
 	 * delete the related point
 	 */
