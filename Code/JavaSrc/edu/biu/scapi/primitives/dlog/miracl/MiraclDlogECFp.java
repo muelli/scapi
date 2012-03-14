@@ -23,6 +23,7 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 
 	private native void initFpCurve(long mip, byte[] p, byte[] a,byte[] b);
 	private native long multiplyFpPoints(long mip, long p1, long p2);
+	private native long simultaneousMultiplyFp(long mip, long[] points, byte[][] exponents);
 	private native long exponentiateFpPoint(long mip, long p, byte[] exponent);
 	private native long invertFpPoint(long mip, long p);
 	private native boolean validateFpGenerator(long mip, long generator, byte[] x, byte[] y);
@@ -186,6 +187,35 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 		
 	}
 	
+	public GroupElement simultaneousMultipleExponentiations(GroupElement[] groupElements, 
+			BigInteger[] exponentiations) throws UnInitializedException{
+		if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		int len = groupElements.length;
+		
+		//Our test results show that for elliptic curve over Fp and n<25 the naive algorithm gives the best performances
+		if (len < 25){
+				return computeNaive(groupElements, exponentiations);
+		} 				
+		
+		long[] nativePoints = new long[len];
+		byte[][] exponents = new byte[len][];
+		for(int i=0; i<len; i++){
+			//if the GroupElements don't match the DlogGroup, throw exception
+			if (!(groupElements[i] instanceof ECFpPointMiracl)){
+				throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+			}
+			nativePoints[i] = ((ECFpPointMiracl)groupElements[i]).getPoint();
+			exponents[i] = exponentiations[i].toByteArray();
+		}
+		
+		//call to native exponentiate function
+		long result = simultaneousMultiplyFp(mip, nativePoints, exponents);
+		//build a ECF2mPointMiracl element from the result value
+		return new ECFpPointMiracl(result, mip);
+	}
+	
 	/**
 	 * Create a random member of that Dlog group
 	 * @return the random element
@@ -280,4 +310,9 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 		return ((ECElement) groupElement).getX().toByteArray();
 	}
 	
+	
+	//upload MIRACL library
+	static {
+        System.loadLibrary("MiraclJavaInterface");
+	}
 }
