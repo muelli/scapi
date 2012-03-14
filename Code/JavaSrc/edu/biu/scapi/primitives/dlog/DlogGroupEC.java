@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Properties;
 
+import edu.biu.scapi.exceptions.UnInitializedException;
+
 
 /*
  * This class manages the creation of NIST recommended elliptic curves.
@@ -14,7 +16,7 @@ import java.util.Properties;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public abstract class DlogGroupEC extends DlogGroupAbs{
+public abstract class DlogGroupEC extends DlogGroupAbs implements DlogEllipticCurve{
 
 	private  Properties nistProperties; // properties object to hold nist parameters
 	protected String PROPERTIES_FILES_PATH = System.getProperty("java.class.path").toString().split(";")[0]+"\\propertiesFiles\\NISTEC.properties";
@@ -107,6 +109,15 @@ public abstract class DlogGroupEC extends DlogGroupAbs{
 	 */
 	public boolean isGenerator(){
 		return true;
+	}
+	
+	/**
+	 * 
+	 * @return the identity of this Dlog group
+	 * @throws UnInitializedException 
+	 */
+	public GroupElement getIdentity() throws UnInitializedException {
+		return getInfinity();
 	}
 		
 	
