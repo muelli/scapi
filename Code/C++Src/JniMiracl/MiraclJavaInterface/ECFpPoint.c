@@ -28,6 +28,9 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
 	  /* release the array */
 	  (*env)->ReleaseBooleanArrayElements(env, validity, valid, 0);
 	  
+	  mirkill(x);
+	  mirkill(y);
+
 	  return (jlong) p; // return the point
 	 
 }
@@ -53,6 +56,8 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
 	  /* release the array */
 	  (*env)->ReleaseBooleanArrayElements(env, validity, valid, 0);
 	  
+	  mirkill(x);
+
 	  return (jlong) p; // return the point
 	 
 }
@@ -93,6 +98,9 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
 	   /* release the jni array */
 	   (*env)->ReleaseBooleanArrayElements(env, validity, valid, 0);
 
+	   mirkill(p);
+	   mirkill(x);
+
 	   return (jlong)point; // return the point
 }
 
@@ -118,14 +126,20 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPoint
 	  /* convert the accepted parameters to MIRACL parameters*/
 	  miracl* mip = (miracl*)m;
 	  big x, y;
+	  jbyteArray xBytes;
+
 	  x= mirvar(mip, 0);
 	  y= mirvar(mip, 0);
 
 	  //get x, y values of the point
 	  epoint_get(mip, (epoint*)point, x, y);
 
+	  xBytes =  miraclBigToJbyteArray(env, mip, x);
+	 
+	  mirkill(x);
+	  mirkill(y);
 	  //return the bytes of x
-	  return miraclBigToJbyteArray(env, mip, x);
+	  return xBytes;
 }
 
 /* function getYValue : This function return the y coordinate of the given point
@@ -139,20 +153,27 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPoint
 	  miracl* mip = (miracl*)m;
 
 	  big x, y;
+	  jbyteArray yBytes;
+
 	  x= mirvar(mip, 0);
 	  y= mirvar(mip, 0);
 
 	  //get x, y values of the point
 	  epoint_get(mip, (epoint*)point, x, y);
 
+	  yBytes =  miraclBigToJbyteArray(env, mip, y);
+	 
+	  mirkill(x);
+	  mirkill(y);
+
 	  //retur nthe bytes of x
-	  return miraclBigToJbyteArray(env, mip, y);
+	  return yBytes;
 }
 
 /* function deletePointFp : This function deletes point of elliptic curve over Fp
  * param p				  : pointer to elliptic curve point
  */
-JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECPointMiracl_deletePointFp
+JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMiracl_deletePointFp
   (JNIEnv *env, jobject obj, jlong p){
 	  epoint_free((epoint*)p);
 }
