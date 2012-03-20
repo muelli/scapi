@@ -3,9 +3,9 @@
  */
 package edu.biu.scapi.midLayer.asymmetricCrypto;
 
+import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 
-import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 
 /**
  * This class holds parameters needed to initialize an instance of the Cramer-Shoup encryption algorithm.<p>
@@ -14,14 +14,21 @@ import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
  *
  */
 public class CramerShoupParameterSpec implements AlgorithmParameterSpec {
+	//Cramer-Shoup algo needs a source of randomness to be able to work.
+	SecureRandom random;
 	//Parameters to initialize the Dlog Group used by Cramer-Shoup
-	GroupParams groupParams;
+	//Do we want to hold the group params as a variable of type GroupParams or AlgorithmParameterSpec
+	AlgorithmParameterSpec groupParams;
 
-	public CramerShoupParameterSpec(GroupParams groupParams) {
+	public CramerShoupParameterSpec(SecureRandom random, AlgorithmParameterSpec groupParams) {
+		this.random = random;
 		this.groupParams = groupParams;
 	}
 	
-	public GroupParams getGroupParams(){
+	public SecureRandom getSecureRandom(){
+		return random;
+	}
+	public AlgorithmParameterSpec getDlogGroupParams(){
 		return groupParams;
 	}
 }
