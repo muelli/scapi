@@ -5,11 +5,14 @@ package edu.biu.scapi.midLayer.asymmetricCrypto.encryption;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 import org.bouncycastle.util.BigIntegers;
 
@@ -42,6 +45,7 @@ public class ScCramerShoupDDH implements CramerShoupDDHEnc {
 	private CramerShoupPrivateKey privateKey;
 	private SecureRandom random;
 	private boolean isInitialized;
+	private CramerShoupParameterSpec params;
 
 	/**
 	 * Default constructor. It uses a Dlog group over Zp with p of size 1024 bits, and SHA1.
@@ -90,64 +94,69 @@ public class ScCramerShoupDDH implements CramerShoupDDHEnc {
 	/* (non-Javadoc)
 	 * @see edu.biu.scapi.midLayer.asymmetricCrypto.encryption.AsymmetricEnc#init(java.security.PublicKey)
 	 */
-	@Override
+	/*@Override
 	public void init(PublicKey publicKey) {
 		init(publicKey, new SecureRandom());
 	}
-
+	*/
 	
 
 	/* (non-Javadoc)
 	 * @see edu.biu.scapi.midLayer.asymmetricCrypto.encryption.AsymmetricEnc#init(java.security.PublicKey, java.security.SecureRandom)
 	 */
-	@Override
+	/*@Override
 	public void init(PublicKey publicKey, SecureRandom random) {
 		init(publicKey, null, null, random);
 	}
-
+	*/
+	
 	/* (non-Javadoc)
 	 * @see edu.biu.scapi.midLayer.asymmetricCrypto.encryption.AsymmetricEnc#init(java.security.PublicKey, java.security.PrivateKey)
 	 */
 	@Override
-	public void init(PublicKey publicKey, PrivateKey privateKey) {
-		init(publicKey, privateKey, new SecureRandom());
+	public void init(PublicKey publicKey, PrivateKey privateKey) throws InvalidKeyException {
+		try{
+			init(publicKey, privateKey, null);
+		}catch (InvalidAlgorithmParameterException e){
+			//Do nothing here, since passing a "null" parameter spec is legal in this case.
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.biu.scapi.midLayer.asymmetricCrypto.encryption.AsymmetricEnc#init(java.security.PublicKey, java.security.PrivateKey, java.security.SecureRandom)
 	 */
-	@Override
+	/*@Override
 	public void init(PublicKey publicKey, PrivateKey privateKey, SecureRandom random) {
 		//Call init function will all arguments. Set the parameter spec argument to null.
 		init(publicKey, privateKey, null, random);
 	}
-
+	*/
 
 	/* (non-Javadoc)
 	 * @see edu.biu.scapi.midLayer.asymmetricCrypto.encryption.AsymmetricEnc#init(java.security.PublicKey, java.security.PrivateKey, java.security.spec.AlgorithmParameterSpec)
 	 */
-	@Override
-	public void init(PublicKey publicKey, PrivateKey privateKey, AlgorithmParameterSpec params) throws IllegalArgumentException, IOException {
+	/*@Override
+	public void init(PublicKey publicKey, PrivateKey privateKey, AlgorithmParameterSpec params) {
 		init(publicKey, privateKey, params, new SecureRandom());
 	}
-
+*/
 	/* (non-Javadoc)
 	 * @see edu.biu.scapi.midLayer.asymmetricCrypto.encryption.AsymmetricEnc#init(java.security.PublicKey, java.security.spec.AlgorithmParameterSpec)
 	 */
-	@Override
+	/*@Override
 	public void init(PublicKey publicKey, AlgorithmParameterSpec params) {
 		init(publicKey, params, new SecureRandom());
 	}
-
+*/
 	/* (non-Javadoc)
 	 * @see edu.biu.scapi.midLayer.asymmetricCrypto.encryption.AsymmetricEnc#init(java.security.PublicKey, java.security.spec.AlgorithmParameterSpec, java.security.SecureRandom)
 	 */
-	@Override
+	/*@Override
 	public void init(PublicKey publicKey, AlgorithmParameterSpec params,
 			SecureRandom random) {
 		init(publicKey, null, params, random);
 	}
-	
+	*/
 	/**
 	 * This function initialize an instance of this class.
 	 * It checks the validity of the arguments and sets them.
@@ -159,38 +168,44 @@ public class ScCramerShoupDDH implements CramerShoupDDHEnc {
 	 * @see edu.biu.scapi.midLayer.asymmetricCrypto.encryption.AsymmetricEnc#init(java.security.PublicKey, java.security.PrivateKey, java.security.spec.AlgorithmParameterSpec, java.security.SecureRandom)
 	 */
 	@Override
-	public void init(PublicKey publicKey, PrivateKey privateKey, AlgorithmParameterSpec params, SecureRandom random) throws IllegalArgumentException, IOException {
+	public void init(PublicKey publicKey, PrivateKey privateKey, AlgorithmParameterSpec params) throws  InvalidKeyException, InvalidAlgorithmParameterException{
 		
 		//public key should be Cramer Shoup public key
 		if(!(publicKey instanceof ScCramerShoupPublicKey)){
-			throw new IllegalArgumentException("the public key must be of type CramerShoupPublicKey");
+			throw new InvalidKeyException("The public key must be of type CramerShoupPublicKey");
 		}
 		//Set the public key
 		this.publicKey = (ScCramerShoupPublicKey) publicKey;
 
-		//private key should be Cramer Shoup private key
-		if(!(publicKey instanceof ScCramerShoupPrivateKey)){
-			throw new IllegalArgumentException("the private key must be of type CramerShoupPrivatKey");
+		//private key should be Cramer Shoup private key	
+		if(privateKey == null){
+			//If the private key in the argument is null then this instance's private key should be null.  
+			this.privateKey = null;
+		}else{
+			if(!(privateKey instanceof ScCramerShoupPrivateKey)){
+				throw new InvalidKeyException("The private key must be of type CramerShoupPrivatKey");
+			}
+			//Set the private key
+			this.privateKey = (ScCramerShoupPrivateKey) privateKey;
 		}
-		//Set the private key
-		this.privateKey = (ScCramerShoupPrivateKey) privateKey;
-
-		//If the caller has not passed any parameters, and the dlog group has not been initialized already
-		//then, initialize the dlog group with default values. 
-		if((params == null) && !dlogGroup.isInitialized()) {
+		
+		//If the caller has not passed any parameters, then, initialize the secure random and the dlog group with default values. 
+		if(params == null){
 			initDlogDefault();
 		}else{
 			//Now we know that the caller wants this specific set of parameters: 
 			//Make sure that params is of type  CramerShoupParameterSpec
 			if(!(params instanceof CramerShoupParameterSpec)){
-				throw new IllegalArgumentException("the params argument must be of type CramerShoupParameterSpec");
+				throw new InvalidAlgorithmParameterException("the params argument must be of type CramerShoupParameterSpec");
 			}
-			//If we got to this point, it's OK to force params to behave like CramerShoupParameterSpec. 
+			//If we got to this point, it's OK to force params to behave like CramerShoupParameterSpec.
+			
+			//Set the source of randomness
+			this.random = ((CramerShoupParameterSpec) params).getSecureRandom();
 			//Then we know for sure that it has a getGroupParams() function that we can use.
-			dlogGroup.init(((CramerShoupParameterSpec) params).getGroupParams());
+			dlogGroup.init(((CramerShoupParameterSpec) params).getDlogGroupParams()); //Dlog shouldn't throw IOException. Once it's removed the compiler won't complain about this.
 		}
-		//Set the source of randomness
-		this.random = random;
+		
 		
 		//Now we finished doing all the initialization work, mark this object as initialized:
 		isInitialized = true;
@@ -217,9 +232,9 @@ public class ScCramerShoupDDH implements CramerShoupDDHEnc {
 		BigInteger qMinusOne = dlogGroup.getOrder().subtract(BigInteger.ONE);
 		
 		BigInteger r = BigIntegers.createRandomInRange(BigInteger.ZERO, qMinusOne, random);
-		GroupElement u1 = dlogGroup.exponentiate(r, publicKey.getGenerator1());
-		GroupElement u2 = dlogGroup.exponentiate(r, publicKey.getGenerator2());
-		GroupElement hExpr = dlogGroup.exponentiate(r, publicKey.getH());
+		GroupElement u1 = dlogGroup.exponentiate(publicKey.getGenerator1(), r);
+		GroupElement u2 = dlogGroup.exponentiate(publicKey.getGenerator2(), r);
+		GroupElement hExpr = dlogGroup.exponentiate(publicKey.getH(), r);
 		GroupElement e = dlogGroup.multiplyGroupElements(hExpr, msgElement);
 		byte[] u1ToByteArray = dlogGroup.convertGroupElementToByteArray(u1);
 		byte[] u2ToByteArray = dlogGroup.convertGroupElementToByteArray(u2);
@@ -243,10 +258,10 @@ public class ScCramerShoupDDH implements CramerShoupDDHEnc {
 		
 		
 		//Calculate v = c^r * d^(r*alpha)
-		GroupElement cExpr = dlogGroup.exponentiate(r, publicKey.getC());
+		GroupElement cExpr = dlogGroup.exponentiate(publicKey.getC(), r);
 		BigInteger q = dlogGroup.getOrder();
 		BigInteger rAlphaModQ = (r.multiply(new BigInteger(alpha))).mod(q);
-		GroupElement dExpRAlpha = dlogGroup.exponentiate(rAlphaModQ, publicKey.getD());
+		GroupElement dExpRAlpha = dlogGroup.exponentiate(publicKey.getD(), rAlphaModQ);
 		GroupElement v = dlogGroup.multiplyGroupElements(cExpr, dExpRAlpha); 
 		
 		//Create and return an CramerShoupCiphertext object with u1, u2, e and v.
@@ -267,7 +282,7 @@ public class ScCramerShoupDDH implements CramerShoupDDHEnc {
 	 * @see edu.biu.scapi.midLayer.asymmetricCrypto.encryption.AsymmetricEnc#generateKey(edu.biu.scapi.midLayer.asymmetricCrypto.keys.AsymKeyGenParameterSpec, java.security.SecureRandom)
 	 */
 	@Override
-	public KeyPair generateKey(AsymKeyGenParameterSpec keyParams, SecureRandom random) {
+	public KeyPair generateKey(AsymKeyGenParameterSpec keyParams, SecureRandom random) throws InvalidParameterSpecException{
 		return ScCramerShoupDDH.keyGen(keyParams, random, dlogGroup);
 	}
 
@@ -324,9 +339,9 @@ public class ScCramerShoupDDH implements CramerShoupDDHEnc {
 		GroupElement h = null;
 		
 		try {
-			c = dlogGroup.multiplyGroupElements(dlogGroup.exponentiate(x1,generator1), dlogGroup.exponentiate(x2, generator2));
-			d = dlogGroup.multiplyGroupElements(dlogGroup.exponentiate(y1,generator1), dlogGroup.exponentiate(y2, generator2));
-			h = dlogGroup.exponentiate(z, generator1);
+			c = dlogGroup.multiplyGroupElements(dlogGroup.exponentiate(generator1,x1), dlogGroup.exponentiate(generator2, x2));
+			d = dlogGroup.multiplyGroupElements(dlogGroup.exponentiate(generator1,y1), dlogGroup.exponentiate(generator2, y2));
+			h = dlogGroup.exponentiate(generator1, z);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (UnInitializedException e) {
@@ -357,5 +372,42 @@ public class ScCramerShoupDDH implements CramerShoupDDHEnc {
 		if (dlogGroup instanceof DlogZp){
 			((DlogZp)dlogGroup).init(1024);
 		}
+	}
+
+
+	@Override
+	public boolean isInitialized() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public AlgorithmParameterSpec getParams() throws UnInitializedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String getAlgorithmName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public KeyPair generateKey(AlgorithmParameterSpec keyParams)
+			throws InvalidParameterSpecException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public KeyPair generateKey(AlgorithmParameterSpec keyParams,
+			SecureRandom random) throws InvalidParameterSpecException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
