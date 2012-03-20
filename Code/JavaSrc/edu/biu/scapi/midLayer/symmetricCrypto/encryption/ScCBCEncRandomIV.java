@@ -92,7 +92,7 @@ public class ScCBCEncRandomIV extends EncWithIVAbs implements CBCEnc {
 	}
 
 	/**
-	 * Ecrypts the given ciphertext using the CBC mode of operation and the underlying prp as the block cipher function.
+	 * Decrypts the given ciphertext using the CBC mode of operation and the underlying prp as the block cipher function.
 	 * The algorithm pseudo-code is: 
 	 * 		•	plaintext[0] = prp.invert(cipher[0]) XOR c0
 	 *		•	For i from 1 to length of plaintext do:
