@@ -1,5 +1,9 @@
 package edu.biu.scapi.primitives.dlog.miracl;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.logging.Level;
@@ -13,7 +17,12 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public class ECF2mPointMiracl implements ECElement{
+public class ECF2mPointMiracl implements ECElement, Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5263481969362114289L;
 
 	private native long createF2mPoint(long mip, byte[] x, byte[] y, boolean[] validity);
 	private native long createF2mPointFromX(long mip, byte[] x, boolean[] validity);
@@ -25,7 +34,8 @@ public class ECF2mPointMiracl implements ECElement{
 	
 	private long point = 0;
 	private long mip = 0;
-	
+	private String curveName;
+	private String fileName;
 	
 	/**
 	 * Constructor that accepts x,y values of a point. 
@@ -38,7 +48,9 @@ public class ECF2mPointMiracl implements ECElement{
 		
 		mip = curve.getMip();
 		boolean validity[] = new boolean[1];
-
+		curveName = curve.getCurveName();
+		fileName = curve.getFileName();
+		
 		//creates a point in the field with the given parameters
 		point = createF2mPoint(mip, x.toByteArray(), y.toByteArray(), validity);
 		
@@ -57,6 +69,8 @@ public class ECF2mPointMiracl implements ECElement{
 	public ECF2mPointMiracl(MiraclDlogECF2m curve) throws UnInitializedException{
 	
 		mip = curve.getMip();
+		curveName = curve.getCurveName();
+		fileName = curve.getFileName();
 		
 		boolean validity[] = new boolean[1];
 		
@@ -81,6 +95,8 @@ public class ECF2mPointMiracl implements ECElement{
 	 */
 	ECF2mPointMiracl(BigInteger x, MiraclDlogECF2m curve) throws UnInitializedException{
 		mip = curve.getMip();
+		curveName = curve.getCurveName();
+		fileName = curve.getFileName();
 		
 		boolean validity[] = new boolean[1];
 		
@@ -100,11 +116,39 @@ public class ECF2mPointMiracl implements ECElement{
 	 * The ptr is a result of our DlogGroup functions, such as multiply.
 	 * @param ptr - pointer to native point
 	 */
-	ECF2mPointMiracl(long ptr, long mip){
+	ECF2mPointMiracl(long ptr, MiraclDlogECF2m curve){
 		this.point = ptr;
-		this.mip = mip;
+		mip = curve.getMip();
+		curveName = curve.getCurveName();
+		fileName = curve.getFileName();
 	}
 	
+	private void writeObject(ObjectOutputStream out) throws IOException{ 
+		out.writeObject(curveName); 
+		out.writeObject(fileName);
+		byte[] x = getXValueF2mPoint(mip, point);
+		byte[] y = getYValueF2mPoint(mip, point);
+		out.writeObject(x);
+		out.writeObject(y);
+	}
+	
+	private void readObject(ObjectInputStream in) throws IOException { 
+		byte [] x = null, y = null;
+		try {
+			curveName = (String) in.readObject();
+			fileName = (String) in.readObject();
+			x = (byte[]) in.readObject();
+			y = (byte[]) in.readObject();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		MiraclDlogECF2m dlog = new MiraclDlogECF2m();
+		dlog.init(fileName, curveName);
+		mip = dlog.getMip();
+		boolean validity[] = new boolean[1];
+		point = createF2mPoint(mip, x, y, validity);
+	}
 	
 	/**
 	 * 
