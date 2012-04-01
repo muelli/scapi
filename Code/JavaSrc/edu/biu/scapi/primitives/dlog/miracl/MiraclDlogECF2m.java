@@ -49,7 +49,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 			if(!ecProperties.containsKey(curveName)) { 
 				throw new IllegalArgumentException("no such NIST elliptic curve"); 
 			} 
-			
+			this.curveName = curveName;
 			//check that the given curve is in the field that matches the group
 			if (!curveName.startsWith("B-") && !curveName.startsWith("K-")){
 				throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match the DlogGroup type"); 
@@ -149,7 +149,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 		//call to native inverse function
 		long result = invertF2mPoint(mip, point);
 		//build a ECF2mPointMiracl element from the result value
-		return new ECF2mPointMiracl(result, mip);	
+		return new ECF2mPointMiracl(result, this);	
 		
 	}
 	
@@ -189,7 +189,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 		//call to native multiply function
 		long result = multiplyF2mPoints(mip, point1, point2);
 		//build a ECF2mPointMiracl element from the result value
-		return new ECF2mPointMiracl(result, mip);
+		return new ECF2mPointMiracl(result, this);
 		
 	}
 	
@@ -220,7 +220,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 		//call to native exponentiate function
 		long result = exponentiateF2mPoint(mip, point, exponent.toByteArray());
 		//build a ECF2mPointMiracl element from the result value
-		return new ECF2mPointMiracl(result, mip);
+		return new ECF2mPointMiracl(result, this);
 		
 	}
 	
@@ -258,7 +258,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 		//call to native exponentiate function
 		long result = simultaneousMultiplyF2m(mip, nativePoints, exponents);
 		//build a ECF2mPointMiracl element from the result value
-		return new ECF2mPointMiracl(result, mip);
+		return new ECF2mPointMiracl(result, this);
 	}
 	
 	/**
@@ -314,7 +314,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	
 	public ECElement getInfinity(){
 		long infinity = createInfinityF2mPoint(mip);
-		return new ECF2mPointMiracl(infinity, mip);
+		return new ECF2mPointMiracl(infinity, this);
 	}
 	
 	/**
