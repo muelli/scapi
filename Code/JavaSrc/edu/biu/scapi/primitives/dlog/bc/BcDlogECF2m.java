@@ -44,7 +44,7 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m, DDH{
 			if(!ecProperties.containsKey(curveName)) { 
 				throw new IllegalArgumentException("no such NIST elliptic curve"); 
 			} 
-			
+			this.curveName = curveName;
 			//check that the given curve is in the field that matches the group
 			if (!curveName.startsWith("B-") && !curveName.startsWith("K-")){
 				throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match this DlogGroup type"); 
