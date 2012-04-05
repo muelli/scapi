@@ -256,16 +256,6 @@ public class ECF2mPointBc extends ECPointBc{
 		}
 	}
 	
-	public boolean equals(Object elementToCompare){
-		if (!(elementToCompare instanceof ECF2mPointBc)){
-			throw new IllegalArgumentException("element type doesn't match the group type");
-		}
-		ECF2mPointBc element = (ECF2mPointBc) elementToCompare;
-		if ((element.getX().compareTo(getX()) ==0) && (element.getY().compareTo(getY()) == 0)){
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	public void release() {
