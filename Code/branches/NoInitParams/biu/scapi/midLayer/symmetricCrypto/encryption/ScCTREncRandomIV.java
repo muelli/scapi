@@ -69,9 +69,7 @@ public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 	 * @throws IllegalArgumentException if the argument ciphertext is not specifically of type IVCiphertext
 	 */
 	@Override
-	public Plaintext decrypt(Ciphertext ciphertext) throws UnInitializedException {
-		if (!isInitialized())
-			throw new UnInitializedException();
+	public Plaintext decrypt(Ciphertext ciphertext){
 		if (! (ciphertext instanceof IVCiphertext))
 			throw new IllegalArgumentException("The ciphertext has to be of type IVCiphertext");
 
@@ -135,10 +133,7 @@ public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 	 * @throws UnInitializedException if this object has not been initialized
 	 */
 	@Override
-	protected IVCiphertext encAlg(byte[] plaintext, byte[] iv) throws UnInitializedException {
-		if (!isInitialized())
-			throw new UnInitializedException();
-		
+	protected IVCiphertext encAlg(byte[] plaintext, byte[] iv) {
 		
 		int plaintextLengthInBytes = plaintext.length;
 		byte[] cipher = new byte[plaintextLengthInBytes];

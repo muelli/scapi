@@ -31,18 +31,14 @@ import edu.biu.scapi.securityLevel.Indistinguishable;
  */
 public interface SymmetricEnc extends Eav, Indistinguishable{
 
-	public void init(SecretKey secretKey) throws InvalidKeyException;
-	public void init(SecretKey secretKey, SecureRandom random) throws InvalidKeyException;
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidParameterSpecException, FactoriesException;
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidParameterSpecException, FactoriesException;
-	public boolean isInitialized();
-	public AlgorithmParameterSpec getParams() throws UnInitializedException;
+	public void setKey(SecretKey secretKey) throws InvalidKeyException;
+	public boolean isKeySet();
 	public String getAlgorithmName();
-	public SecretKey generateKey(AlgorithmParameterSpec keySize ) throws InvalidParameterSpecException;
-	public SecretKey generateKey(AlgorithmParameterSpec keySize, SecureRandom random ) throws InvalidParameterSpecException;
-	public SymmetricCiphertext encrypt(Plaintext plaintext) throws UnInitializedException;
-	public SymmetricCiphertext encrypt(Plaintext plaintext, byte[] iv)throws UnInitializedException, IllegalBlockSizeException;
-	public Plaintext decrypt(Ciphertext ciphertext) throws UnInitializedException;
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams ) throws InvalidParameterSpecException;
+	public SecretKey generateKey(int keySize);
+	public SymmetricCiphertext encrypt(Plaintext plaintext);
+	public SymmetricCiphertext encrypt(Plaintext plaintext, byte[] iv)throws IllegalBlockSizeException;
+	public Plaintext decrypt(Ciphertext ciphertext);
 	
 	
 }
