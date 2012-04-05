@@ -139,7 +139,7 @@ public class ECFpPointMiracl implements ECElement{
 	
 	public boolean equals(Object elementToCompare){
 		if (!(elementToCompare instanceof ECFpPointMiracl)){
-			throw new IllegalArgumentException("element type doesn't match the group type");
+			return false;
 		}
 		ECFpPointMiracl element = (ECFpPointMiracl) elementToCompare;
 		if ((element.getX().compareTo(getX()) ==0) && (element.getY().compareTo(getY()) == 0)){

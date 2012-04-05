@@ -182,7 +182,7 @@ public class ECF2mPointMiracl implements ECElement, Serializable{
 	
 	public boolean equals(Object elementToCompare){
 		if (!(elementToCompare instanceof ECF2mPointMiracl)){
-			throw new IllegalArgumentException("element type doesn't match the group type");
+			return false;
 		}
 		ECF2mPointMiracl element = (ECF2mPointMiracl) elementToCompare;
 		if ((element.getX().compareTo(getX()) ==0) && (element.getY().compareTo(getY()) == 0)){
