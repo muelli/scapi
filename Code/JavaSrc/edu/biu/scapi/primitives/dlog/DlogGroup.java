@@ -184,7 +184,7 @@ public interface DlogGroup {
 	 * @return the exponentiation result
 	 * @throws UnInitializedException 
 	 */
-	public GroupElement exponentiateWithPreComputedValues(GroupElement groupElement, int exponent) throws UnInitializedException;
+	public GroupElement exponentiateWithPreComputedValues(GroupElement groupElement, BigInteger exponent) throws UnInitializedException;
 	
 	/**
 	 * Converts a byte array to a GroupElement.
