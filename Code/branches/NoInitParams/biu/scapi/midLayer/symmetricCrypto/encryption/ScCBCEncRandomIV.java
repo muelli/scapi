@@ -1,5 +1,6 @@
 package edu.biu.scapi.midLayer.symmetricCrypto.encryption;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.logging.Level;
@@ -15,8 +16,11 @@ import edu.biu.scapi.midLayer.ciphertext.IVCiphertext;
 import edu.biu.scapi.midLayer.ciphertext.SymmetricCiphertext;
 import edu.biu.scapi.midLayer.plaintext.BasicPlaintext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
+import edu.biu.scapi.paddings.BitPadding;
 import edu.biu.scapi.paddings.NoPadding;
+import edu.biu.scapi.paddings.PaddingScheme;
 import edu.biu.scapi.primitives.prf.PseudorandomPermutation;
+import edu.biu.scapi.tools.Factories.PaddingFactory;
 
 /**
  * This class performs the Cipher Block Chaining (CBC) Mode encryption and decryption.
@@ -27,27 +31,27 @@ import edu.biu.scapi.primitives.prf.PseudorandomPermutation;
  */
 public class ScCBCEncRandomIV extends EncWithIVAbs implements CBCEnc {
 
+	private PaddingScheme padding;
+	
+	
 	/**
-	 * Sets the underlying prp that determines the type of encryption that will be performed.
-	 * @param prp the underlying pseudorandom permutation
-	 * @throws UnInitializedException if the given prp is not initialized
-	 * @throws FactoriesException if the creation of the padding scheme failed
+	 * Default constructor
 	 */
-	public ScCBCEncRandomIV(PseudorandomPermutation prp) throws UnInitializedException{
-		super(prp);
+	public ScCBCEncRandomIV(){
+		super();
+		this.padding = new BitPadding();
 	}
 	
 	/**
 	 * Sets the underlying prp that determines the type of encryption that will be performed.
-	 * The random and params passed to this constructor determines the source of randomness and padding scheme that will be used.
+	 * A default source of randomness is used.
 	 * @param prp the underlying pseudorandom permutation
-	 * @param random a user provided source of randomness
-	 * @param params can be PadingParameterSpec
-	 * @throws UnInitializedException if the given prp is not initialized
+	 * @param padding the padding scheme to use
 	 * @throws FactoriesException if the creation of the padding scheme failed
 	 */
-	public ScCBCEncRandomIV(PseudorandomPermutation prp, SecureRandom random, AlgorithmParameterSpec params) throws UnInitializedException, FactoriesException {
-		super(prp, random, params);
+	public ScCBCEncRandomIV(PseudorandomPermutation prp, PaddingScheme padding) {
+		super(prp);
+		this.padding = padding;
 	}
 	
 	/**
@@ -55,33 +59,46 @@ public class ScCBCEncRandomIV extends EncWithIVAbs implements CBCEnc {
 	 * The random passed to this constructor determines the source of randomness that will be used.
 	 * @param prp the underlying pseudorandom permutation
 	 * @param random a user provided source of randomness
-	 * @throws UnInitializedException if the given prp is not initialized
+	 * @param padding the padding scheme to use
 	 */
-	public ScCBCEncRandomIV(PseudorandomPermutation prp, SecureRandom random) throws UnInitializedException {
+	public ScCBCEncRandomIV(PseudorandomPermutation prp, SecureRandom random, PaddingScheme padding) {
 		super(prp, random);
+		this.padding = padding;
 	}
 	
-	/**
-	 * Sets the underlying prp that determines the type of encryption that will be performed.
-	 * The params passed to this constructor determines the padding scheme that will be used.
-	 * @param prp the underlying pseudorandom permutation
-	 * @param params can be PadingParameterSpec
-	 * @throws UnInitializedException if the given prp is not initialized
-	 * @throws FactoriesException if the creation of the padding scheme failed
-	 */
-	public ScCBCEncRandomIV(PseudorandomPermutation prp, AlgorithmParameterSpec params) throws UnInitializedException, FactoriesException {
-		super(prp, params);
-	}
 	
 	/**
-	 * Sets the underlying prp that determines the type of encryption that will be performed.
-	 * @param prp the underlying pseudorandom permutation
-	 * @throws FactoriesException if the name is not a valid prp name
+	 * By passing a specific Pseudorandom permutation we are setting the type of encryption scheme.<p>
+	 * This constructor gets the name of a Pseudorandom permutation and is responsible for creating a corresponding instance.<p>
+	 * It also gets the name of a Random Number Generator Algorithm to use to generate the source of randomness<p> and the name of a Padding Scheme. 
+	 * @param prp the name of a specific Pseudorandom permutation, for example "AES".
+	 * @param randNumGenAlg  the name of the RNG algorithm, for example "SHA1PRNG"
+	 * @param paddingName name of the Padding Scheme to use
+	 * @throws FactoriesException 
+	 * @throws NoSuchAlgorithmException 
 	 */
-	public ScCBCEncRandomIV(String prpName) throws FactoriesException {
-		super(prpName);
+	public ScCBCEncRandomIV(String prpName, String paddingName, String randNumGenAlg) throws FactoriesException, NoSuchAlgorithmException {
+		super(prpName, randNumGenAlg);
+		this.padding = PaddingFactory.getInstance().getObject(paddingName);
 	}
 
+	/**
+	 * By passing a specific Pseudorandom permutation we are setting the type of encryption scheme.<p>
+	 * This constructor gets the name of a Pseudorandom permutation and is responsible for creating a corresponding instance.<p>
+	 * It also gets the name of a Padding Scheme. 
+	 * A defualt source of randomness is used.
+	 * @param prp the name of a specific Pseudorandom permutation, for example "AES".
+	 * @param paddingName name of the Padding Scheme to use
+	 * @throws FactoriesException 
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public ScCBCEncRandomIV(String prpName, String paddingName) throws FactoriesException, NoSuchAlgorithmException {
+		super(prpName);
+		this.padding = PaddingFactory.getInstance().getObject(paddingName);
+	}
+	
+	
+	
 	/**
 	 * @return the algorithm name - CBC and the underlying prp name
 	 */
@@ -102,12 +119,7 @@ public class ScCBCEncRandomIV extends EncWithIVAbs implements CBCEnc {
 	 * @return the plaintext object containing the decrypted ciphertext
 	 */
 	@Override
-	public Plaintext decrypt(Ciphertext ciphertext)
-			throws UnInitializedException {
-		//if the object is not initialized - throw exception
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public Plaintext decrypt(Ciphertext ciphertext) {
 		//if the ciphertext is not of type IVCiphertext - throw exception
 		if (!(ciphertext instanceof IVCiphertext)){
 			throw new IllegalArgumentException("The ciphertext has to be of type IVCiphertext");
@@ -191,8 +203,7 @@ public class ScCBCEncRandomIV extends EncWithIVAbs implements CBCEnc {
 	 * @return the ciphertext object containing the encrypted plaintext
 	 */
 	@Override
-	protected IVCiphertext encAlg(byte[] plaintext, byte[] iv)
-			throws UnInitializedException {
+	protected IVCiphertext encAlg(byte[] plaintext, byte[] iv) {
 		byte[] paddedPlaintext; // will contain the padded plaintext
 		
 		int blockSize = prp.getBlockSize();
