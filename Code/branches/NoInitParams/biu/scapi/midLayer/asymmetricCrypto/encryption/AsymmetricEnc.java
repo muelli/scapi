@@ -1,6 +1,9 @@
 package edu.biu.scapi.midLayer.asymmetricCrypto.encryption;
 
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -9,6 +12,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
 import edu.biu.scapi.exceptions.FactoriesException;
+import edu.biu.scapi.exceptions.InitializationException;
 import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
@@ -27,76 +31,18 @@ import edu.biu.scapi.midLayer.plaintext.Plaintext;
 public interface AsymmetricEnc {
 
 	/**
-	 * Initializes this asymmetric encryption with public key, private key and params.
-	 * @param publicKey
-	 * @param privateKey
-	 * @param params
-	 * @throws FactoriesException 
-	 * @throws IOException 
-	 * @throws IllegalArgumentException 
-	 */
-	public void init(PublicKey publicKey, PrivateKey privateKey, AlgorithmParameterSpec params) throws FactoriesException, IllegalArgumentException, IOException;
-	
-	/**
-	 * Initializes this asymmetric encryption with public key, private key, params and source of randomness.
-	 * @param publicKey
-	 * @param privateKey
-	 * @param params
-	 * @param random source of randomness
-	 * @throws FactoriesException 
-	 * @throws IOException 
-	 * @throws IllegalArgumentException 
-	 */
-	public void init(PublicKey publicKey, PrivateKey privateKey, AlgorithmParameterSpec params, SecureRandom random) throws FactoriesException, IllegalArgumentException, IOException;
-	
-	/**
-	 * Initializes this asymmetric encryption with public key and private key.
+	 * Sets this asymmetric encryption with public key and private key.
 	 * @param publicKey
 	 * @param privateKey
 	 */
-	public void init(PublicKey publicKey, PrivateKey privateKey);
+	public void setKey(PublicKey publicKey, PrivateKey privateKey)throws InvalidKeyException;
 	
 	/**
-	 * Initializes this asymmetric encryption with public key, private keyand source of randomness.
-	 * @param publicKey
-	 * @param privateKey
-	 * @param random source of randomness
-	 */
-	public void init(PublicKey publicKey, PrivateKey privateKey, SecureRandom random);
-	
-	/**
-	 * Initializes this asymmetric encryption with public key and params.
-	 * If this function is called, this asymmetric encryption can encrypt messages but can not decrypt any cipher text.
-	 * @param publicKey
-	 * @param params
-	 * @throws FactoriesException 
-	 */
-	public void init(PublicKey publicKey, AlgorithmParameterSpec params) throws FactoriesException, IOException;
-	
-	/**
-	 * Initializes this asymmetric encryption with public key, params and source of randomness.
-	 * If this function is called, this asymmetric encryption can encrypt messages but can not decrypt any cipher text.
-	 * @param publicKey
-	 * @param params
-	 * @param random source of randomness
-	 * @throws FactoriesException
-	 */
-	public void init(PublicKey publicKey, AlgorithmParameterSpec params, SecureRandom random) throws FactoriesException, IOException;
-	
-	/**
-	 * Initializes this asymmetric encryption with public key.
-	 * If this function is called, this asymmetric encryption can encrypt messages but can not decrypt any cipher text.
+	 * Sets this asymmetric encryption with a public key<p> 
+	 * In this case the encryption object can be used only for encryption.
 	 * @param publicKey
 	 */
-	public void init(PublicKey publicKey);
-	
-	/**
-	 * Initializes this asymmetric encryption with public key and source of randomness.
-	 * If this function is called, this asymmetric encryption can encrypt messages but can not decrypt any cipher text.
-	 * @param publicKey
-	 * @param random source of randomness
-	 */
-	public void init(PublicKey publicKey, SecureRandom random);
+	public void setKey(PublicKey publicKey)throws InvalidKeyException;
 	
 	/**
 	 * Checks if this AsymmetricEnc object has been previously initialized.<p> 
@@ -105,14 +51,9 @@ public interface AsymmetricEnc {
 	 * @return <code>true<code> if the object was initialized;
 	 * 		   <code>false</code> otherwise.
 	 */
-	public boolean isInitialized();
+	public boolean isKeySet();
 	
-	/**
-	 * @return the algorithmParameterSpec used in this object
-	 * @throws UnInitializedException if this object is not initialized
-	 */
-	public AlgorithmParameterSpec getParams() throws UnInitializedException;
-	
+		
 	/**
 	 * @return the name of this AsymmetricEnc
 	 */
@@ -121,17 +62,16 @@ public interface AsymmetricEnc {
 	 * Encrypts the given plaintext using this asymmetric encryption scheme.
 	 * @param plaintext message to encrypt
 	 * @return Ciphertext the encrypted plaintext
-	 * @throws UnInitializedException 
 	 */
-	public Ciphertext encrypt(Plaintext plainText) throws UnInitializedException;
+	public Ciphertext encrypt(Plaintext plainText);
 	
 	/**
 	 * Decrypts the given ciphertext using this asymmetric encryption scheme.
 	 * @param cipher ciphertext to decrypt
 	 * @return Plaintext the decrypted cipher
-	 * @throws UnInitializedException 
+	 * @throws KeyException 
 	 */
-	public Plaintext decrypt(Ciphertext cipher) throws UnInitializedException;
+	public Plaintext decrypt(Ciphertext cipher) throws KeyException;
 	
 	/**
 	 * Generates public and private keys for this asymmetric encryption.
@@ -143,13 +83,9 @@ public interface AsymmetricEnc {
 	
 	/**
 	 * Generates public and private keys for this asymmetric encryption.
-	 * @param keyParams hold the required key size
-	 * @param random source of randomness
 	 * @return KeyPair holding the public and private keys
 	 * @throws InvalidParameterSpecException 
 	 */
-	public KeyPair generateKey(AlgorithmParameterSpec keyParams, SecureRandom random) throws InvalidParameterSpecException;
-	
-
-	
+	public KeyPair generateKey();
+		
 }
