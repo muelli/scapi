@@ -149,17 +149,6 @@ public class ECFpPointBc extends ECPointBc{
 			//if the GroupParams is not ECFpGroupParams throw exception
 		} else throw new IllegalArgumentException("groupParams doesn't match the GroupElement");
 	}
-	
-	public boolean equals(Object elementToCompare){
-		if (!(elementToCompare instanceof ECFpPointBc)){
-			throw new IllegalArgumentException("element type doesn't match the group type");
-		}
-		ECFpPointBc element = (ECFpPointBc) elementToCompare;
-		if ((element.getX().compareTo(getX()) == 0) && (element.getY().compareTo(getY()) == 0)){
-			return true;
-		}
-		return false;
-	}
 
 
 	@Override
