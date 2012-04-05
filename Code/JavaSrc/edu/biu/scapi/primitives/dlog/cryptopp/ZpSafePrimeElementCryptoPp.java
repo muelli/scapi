@@ -109,7 +109,7 @@ public class ZpSafePrimeElementCryptoPp implements ZpSafePrimeElement{
 	 */
 	public boolean equals(Object elementToCompare){
 		if (!(elementToCompare instanceof ZpSafePrimeElementCryptoPp)){
-			throw new IllegalArgumentException("element type doesn't match the group type");
+			return false;
 		}
 		ZpSafePrimeElementCryptoPp element = (ZpSafePrimeElementCryptoPp) elementToCompare;
 		if (element.getElementValue().compareTo(getElementValue()) == 0){
