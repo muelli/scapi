@@ -45,4 +45,18 @@ public abstract class ECPointBc implements ECElement{
 	public boolean isInfinity(){
 		return point.isInfinity();
 	}
+	
+	
+	
+	public boolean equals(Object elementToCompare){
+		if (elementToCompare == null || elementToCompare.getClass() != this.getClass()) 
+			return false;
+	
+		ECPointBc element = (ECPointBc) elementToCompare;
+		if ((element.getX().compareTo(getX()) ==0) && (element.getY().compareTo(getY()) == 0)){
+			return true;
+		}
+		
+		return false;
+	}
 }
