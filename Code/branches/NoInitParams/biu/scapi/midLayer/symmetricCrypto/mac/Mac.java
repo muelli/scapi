@@ -23,48 +23,19 @@ import edu.biu.scapi.exceptions.UnInitializedException;
 public interface Mac {
 	
 	/**
-	 * Initializes this mac with a secret key
+	 * Sets the secret key for this mac.
+	 * The key can be changed at any time. 
 	 * @param secretKey secret key
 	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) throws InvalidKeyException;
+	public void setKey(SecretKey secretKey) throws InvalidKeyException;
 	
-	/**
-	 * Initializes this mac with a secret key and source of randomness
-	 * @param secretKey secret key
-	 * @throws InvalidKeyException 
-	 */
-	public void init(SecretKey secretKey, SecureRandom random) throws InvalidKeyException;
-	
-	/**
-	 * Initializes this mac with a secret key and auxiliary parameters
-	 * @param secretKey secret key
-	 * @param params auxiliary parameters
-	 * @throws InvalidParameterSpecException 
-	 * @throws InvalidKeyException 
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidParameterSpecException;
-	
-	/**
-	 * Initializes this mac with a secret key, auxiliary parameters and source of randomness
-	 * @param secretKey secret key
-	 * @param params auxiliary parameters
-	 * @throws InvalidParameterSpecException 
-	 * @throws InvalidKeyException 
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params, SecureRandom random) throws InvalidKeyException, InvalidParameterSpecException;
 	/**
 	 * An object trying to use an instance of mac needs to check if it has already been initialized.
 	 * @return true if the object was initialized by calling the function init.
 	 */
-	public boolean isInitialized();
+	public boolean isKeySet();
 	
-	/**
-	 * Returns the algorithmParameterSpec of this mac
-	 * @return AlgorithmParameterSpec auxiliary parameters
-	 * @throws UnInitializedException if this object is not initialized
-	 */
-	public AlgorithmParameterSpec getParams() throws UnInitializedException;
 	
 	/**
 	 * Returns the name of this mac algorithm
@@ -88,11 +59,10 @@ public interface Mac {
 	
 	/**
 	 * Generates a secret key to initialize this mac object.
-	 * @param keySize algorithmParameterSpec contains the required secret key size in bits 
-	 * @return the generated secret key
-	 * @throws InvalidParameterSpecException 
+	 * @param keySize is the required secret key size in bits 
+	 * @return the generated secret key 
 	 */
-	public SecretKey generateKey(AlgorithmParameterSpec keyParams, SecureRandom rnd) throws InvalidParameterSpecException;
+	public SecretKey generateKey(int keySize);
 	
 	/**
 	 * Computes the mac operation on the given msg and return the calculated tag
@@ -100,9 +70,8 @@ public interface Mac {
 	 * @param offset the offset within the message array to take the bytes from
 	 * @param msgLen the length of the message
 	 * @return byte[] the return tag from the mac operation
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public byte[] mac(byte[] msg, int offset, int msgLen) throws UnInitializedException;
+	public byte[] mac(byte[] msg, int offset, int msgLen);
 	
 	/**
 	 * verifies that the given tag is valid for the given message
@@ -111,9 +80,8 @@ public interface Mac {
 	 * @param msgLength the length of the message
 	 * @param tag the tag to verify
 	 * @return true if the tag is the result of computing mac on the message. false, otherwise.
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public boolean verify(byte[] msg, int offset, int msgLength, byte[] tag) throws UnInitializedException;
+	public boolean verify(byte[] msg, int offset, int msgLength, byte[] tag);
 	
 	/**
 	 * Adds the byte array to the existing message to mac.

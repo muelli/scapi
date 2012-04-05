@@ -2,21 +2,23 @@ package edu.biu.scapi.midLayer.symmetricCrypto.mac;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.logging.Level;
 
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
-import edu.biu.scapi.midLayer.SecretKeyGeneratorUtil;
-import edu.biu.scapi.midLayer.symmetricCrypto.keys.SymKeyGenParameterSpec;
 import edu.biu.scapi.primitives.prf.PrpFixed;
 import edu.biu.scapi.primitives.prf.PseudorandomFunction;
+import edu.biu.scapi.primitives.prf.bc.BcAES;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /**
@@ -35,10 +37,21 @@ public class ScCbcMacPrepending implements CbcMac {
 												// The result of the update function is saved in the tag to
 												// avoid unnecessary allocation and copying of arrays
 	private boolean isMacStarted = false; 		// Set to false until startMac is called
-	private boolean isInitialized = false;
+	private boolean isKeySet = false;
 
+	
 	/**
-	 * Constructor that gets a prp name and set it as the underlying prp.
+	 * Default constructor
+	 */
+	public ScCbcMacPrepending() {
+		this.prp = new BcAES();
+		this.random = new SecureRandom();
+	}
+	
+	
+	/**
+	 * Constructor that gets a prp name and sets it as the underlying prp.
+	 * The source of randomness will be set with the default implementation.
 	 * @param prpName the name of the underlying prp
 	 * @throws FactoriesException if the creation of the prp failed
 	 */
@@ -52,6 +65,40 @@ public class ScCbcMacPrepending implements CbcMac {
 		}
 		// sets the prp
 		prp = (PrpFixed) prf;
+		
+		this.random = new SecureRandom();
+	}
+
+	/**
+	 * Constructor that gets a prp name and sets it as the underlying prp.<p>
+	 * The source of randomness will be set with the default implementation.<p>
+	 * * It also gets the name of a Random Number Generator Algorithm to use to generate the source of randomness.<p>
+	 * @param prpName the name of the underlying prp
+	 * @param randNumGenAlg  the name of the RNG algorithm, for example "SHA1PRNG"
+	 * @throws FactoriesException if the creation of the prp failed
+	 */
+	public ScCbcMacPrepending(String prpName, String randNumGenAlg) throws FactoriesException, NoSuchAlgorithmException {
+
+		// creates a prf object
+		PseudorandomFunction prf = PrfFactory.getInstance().getObject(prpName);
+		// if the prf is not an instance of prp, throw exception
+		if (!(prf instanceof PrpFixed)) {
+			throw new IllegalArgumentException("the given name must be a prp fixed name");
+		}
+		// sets the prp
+		prp = (PrpFixed) prf;
+		
+		this.random = SecureRandom.getInstance(randNumGenAlg);
+	}
+
+	/**
+	 * Constructor that gets an initialized prp object and sets it as the underlying prp. 
+	 * @param prpName the name of the underlying prp
+	 * @throws UnInitializedException if the given prp is not initialized
+	 */
+	public ScCbcMacPrepending(PrpFixed prp){
+		//Call other constructor using default implementation of SecureRandom
+		this(prp, new SecureRandom());
 	}
 
 	/**
@@ -60,90 +107,27 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * @param prpName the name of the underlying prp
 	 * @throws UnInitializedException if the given prp is not initialized
 	 */
-	public ScCbcMacPrepending(PrpFixed prp)
-			throws UnInitializedException {
-		// the given prp object must be initialized
-		if (!prp.isInitialized()) {
-			throw new UnInitializedException("the given prp argument must be initialized");
-		}
+	public ScCbcMacPrepending(PrpFixed prp, SecureRandom random) {
 		// sets the class member prp to the given object.
 		this.prp = prp;
-		//Set the random variable. We assume that if this constructor is called there will not be (necessarily) a subsequent call to init.
-		this.random = new SecureRandom();
+		//Set the random variable.
+		this.random = random;
 	}
 
+	
 	/**
-	 * Initializes this cbc-mac with a secret key.
+	 * Supply this cbc-mac with a secret key.
 	 * @param secretKey secret key
 	 * @throws InvalidKeyException
 	 */
-	public void init(SecretKey secretKey) throws InvalidKeyException {
-		// call the second init function with default source of randomness
-		init(secretKey, new SecureRandom());
+	public void setKey(SecretKey secretKey) throws InvalidKeyException {
+		// Supply the underlying prp with the key
+		prp.setKey(secretKey);
+		isKeySet = true;
 	}
 
-	/**
-	 * Initializes this cbc-mac with a secret key and source of randomness
-	 * @param secretKey secret key
-	 * @throws InvalidKeyException
-	 */
-	public void init(SecretKey secretKey, SecureRandom rnd)
-			throws InvalidKeyException {
-		// initializes the underlying prp with the key
-		prp.init(secretKey);
-		// set the random member with the given random
-		random = rnd;
-		isInitialized = true;
-
-	}
-
-	/**
-	 * Initializes this cbc-mac with a secret key and auxiliary parameters
-	 * @param secretKey secret key
-	 * @param params auxiliary parameters
-	 * @throws InvalidParameterSpecException
-	 * @throws InvalidKeyException
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params)
-			throws InvalidKeyException, InvalidParameterSpecException {
-		// call the second init function with default source of randomness
-		init(secretKey, params, new SecureRandom());
-	}
-
-	/**
-	 * Initializes this cbc-mac with a secret key, auxiliary parameters and
-	 * source of randomness.
-	 * @param secretKey secret key
-	 * @param params auxiliary parameters
-	 * @throws InvalidParameterSpecException
-	 * @throws InvalidKeyException
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params,
-			SecureRandom rnd) throws InvalidKeyException,
-			InvalidParameterSpecException {
-		// initializes the underlying prp with the key and params
-		prp.init(secretKey, params);
-		// set the random member with the given random
-		random = rnd;
-		isInitialized = true;
-	}
-
-	public boolean isInitialized() {
-		// return true is this object is initialized
-		return isInitialized;
-	}
-
-	/**
-	 * Returns the algorithmParameterSpec of this mac.
-	 * @return AlgorithmParameterSpec auxiliary parameters
-	 * @throws UnInitializedException if this object is not initialized
-	 */
-	public AlgorithmParameterSpec getParams() throws UnInitializedException {
-		if (!isInitialized()) {
-			throw new UnInitializedException();
-		}
-		// return the params of the underlying prp
-		return prp.getParams();
+	public boolean isKeySet(){
+		return isKeySet;
 	}
 
 	/**
@@ -165,63 +149,55 @@ public class ScCbcMacPrepending implements CbcMac {
 
 	/**
 	 * Generates a secret key to initialize this mac object.
-	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
+	 * This function delegates the generation of the key to the underlying PRP. 
+	 * It should only be used if the Secret Key is not a string of random bits of a specified length.
+	 * @param keyParams parameters needed to create the key.
 	 * @return the generated secret key
 	 * @throws InvalidParameterSpecException 
 	 */
-	public SecretKey generateKey(AlgorithmParameterSpec keySize) throws InvalidParameterSpecException {
-		//key size must be a SymKeyGenParameterSpec
-		if (!(keySize instanceof SymKeyGenParameterSpec)){
-			throw new InvalidParameterSpecException("keySize should be instance of SymKeyGenParameterSpec");
-		}
-		//Call the static function that creates a secretKey with default source of randomness
-		//If the source of randomness has been previously set, then use it.
-		//If not, then we do not need to set it at this stage. It will be set with one of the init functions.
-		if ( random != null){
-			return keyGen((SymKeyGenParameterSpec) keySize, random);
-		} else {
-			return keyGen((SymKeyGenParameterSpec) keySize, new SecureRandom());
-		}
-	}
-
-	/**
-	 * Generates a secret key to initialize this mac object.
-	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
-	 * @param random source of randomness
-	 * @return the generated secret key
-	 * @throws InvalidParameterSpecException 
-	 */
-	public SecretKey generateKey(AlgorithmParameterSpec keySize,
-			SecureRandom rnd) throws InvalidParameterSpecException {
-		//key size must be a SymKeyGenParameterSpec
-		if (!(keySize instanceof SymKeyGenParameterSpec)){
-			throw new InvalidParameterSpecException("keySize should be instance of SymKeyGenParameterSpec");
-		}
-		//call the static function that creates a secretKey
-		return keyGen((SymKeyGenParameterSpec)keySize, rnd);
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException {
+		return prp.generateKey(keyParams);
 	}
 	
 	/**
-	 * Static function that generates a secret key to initialize a mac object.
-	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
+	 * Generates a secret key to initialize this mac object.
+	 * @param keySize the length of the key to generate, it must be greater than zero.
 	 * @return the generated secret key
-	 * @throws InvalidParameterSpecException 
 	 */
-	public static SecretKey keyGen(SymKeyGenParameterSpec keySize) {
-		return keyGen(keySize, new SecureRandom());
-	}
-
-	/**
-	 * Static function that generates a secret key to initialize a mac object.
-	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
-	 * @param random source of randomness
-	 * @return the generated secret key
-	 * @throws InvalidParameterSpecException 
-	 */
-	public static SecretKey keyGen(SymKeyGenParameterSpec keySize, SecureRandom random){
+	public SecretKey generateKey(int keySize) {
+		//First looks for a default provider implementation of the key generation for the underlying prp.
+		//If found then return it. 
+		//Otherwise it generate a random string of bits of length keySize 
+		try {
+			//gets the KeyGenerator of this algorithm
+			KeyGenerator keyGen = KeyGenerator.getInstance(prp.getAlgorithmName());
+			//if the key size is zero or less - uses the default key size as implemented in the provider implementation
+			if(keySize <= 0){
+				keyGen.init(random);
+			//else, uses the keySize to generate the key
+			} else {
+				keyGen.init(keySize, random);
+			}
+			//generates the key
+			return keyGen.generateKey();
 		
-		// generates key according to the given key size, this algorithm name and random
-		return SecretKeyGeneratorUtil.generateKey(keySize.getEncKeySize(), keySize.getAlgorithmName(), random);
+		//Could not find a default provider implementation, 
+		//then, generate a random string of bits of length keySize, which has to be greater that zero. 
+		} catch (NoSuchAlgorithmException e) {
+			//if the key size is zero or less - throw exception
+			if (keySize < 0){
+				throw new NegativeArraySizeException("key size must be greater than 0");
+			}
+			//creates a byte array of size keySize
+			byte[] genBytes = new byte[keySize];
+
+			//generates the bytes using the random
+			//Do we need to seed random??
+			random.nextBytes(genBytes);
+			//creates a secretKey from the generated bytes
+			SecretKey generatedKey = new SecretKeySpec(genBytes, "");
+			return generatedKey;
+		}
 	}
 	
 	/**
