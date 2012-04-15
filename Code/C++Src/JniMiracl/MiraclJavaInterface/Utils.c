@@ -6,14 +6,14 @@
 big byteArrayToMiraclBig(JNIEnv *env, miracl *mip, jbyteArray byteArrToConvert){
 	  
 	//get jbyte* from byteArrToConvert
-	jbyte* pjbyte  = (*env)->GetByteArrayElements(env, byteArrToConvert, 0);
+	jbyte* pjbyte  = env->GetByteArrayElements(byteArrToConvert, 0);
 	big result;
 
 	result = mirvar(mip,0);  
-	bytes_to_big(mip, (*env)->GetArrayLength(env, byteArrToConvert), (char*)pjbyte, result);
+	bytes_to_big(mip, env->GetArrayLength(byteArrToConvert), (char*)pjbyte, result);
 	
 	//release jbyte
-	(*env) ->ReleaseByteArrayElements(env, byteArrToConvert, pjbyte, 0);
+	env ->ReleaseByteArrayElements(byteArrToConvert, pjbyte, 0);
 
 	//return the Integer
 	return result;
@@ -31,9 +31,9 @@ jbyteArray miraclBigToJbyteArray(JNIEnv *env, miracl *mip, big bigToConvert){
 	big_to_bytes(mip, size, bigToConvert, bytesValue, TRUE);
 	
 	//build jbyteArray from the byteArray
-	result = (*env)-> NewByteArray(env, size);
+	result = env-> NewByteArray(size);
 	
-	(*env)->SetByteArrayRegion(env, result, 0, size, (jbyte*)bytesValue);
+	env->SetByteArrayRegion(result, 0, size, (jbyte*)bytesValue);
 	
 	 //delete the allocated memory
 	free(bytesValue);
