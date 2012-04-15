@@ -16,7 +16,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
   (JNIEnv *env, jobject obj, jlong m, jbyteArray xVal, jbyteArray yVal,  jbooleanArray validity){
 	  /* convert the accepted parameters to MIRACL parameters*/
 	  miracl* mip = (miracl*)m;
-	  jboolean* valid = (*env)->GetBooleanArrayElements(env, validity, 0);
+	  jboolean* valid = env->GetBooleanArrayElements(validity, 0);
 	  
 	   /* create the point with x,y values */
 	  epoint* p = epoint_init(mip);
@@ -26,7 +26,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
 	  valid[0] = epoint2_set(mip, x, y, 0, p);
 
 	  /* release the array */
-	  (*env)->ReleaseBooleanArrayElements(env, validity, valid, 0);
+	  env->ReleaseBooleanArrayElements(validity, valid, 0);
 	  
 	  mirkill(x);
 	  mirkill(y);
@@ -43,7 +43,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
   (JNIEnv *env, jobject obj, jlong m, jbyteArray xVal, jbooleanArray validity){
 	  /* convert the accepted parameters to MIRACL parameters*/
 	  miracl* mip = (miracl*)m;
-	  jboolean* valid = (*env)->GetBooleanArrayElements(env, validity, 0);
+	  jboolean* valid = env->GetBooleanArrayElements(validity, 0);
 	  
 	   /* create the point with x,y values */
 	  epoint* p = epoint_init(mip);
@@ -52,7 +52,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
 	  valid[0] = epoint2_set(mip, x, x, 1, p);
 
 	  /* release the array */
-	  (*env)->ReleaseBooleanArrayElements(env, validity, valid, 0);
+	  env->ReleaseBooleanArrayElements(validity, valid, 0);
 	  
 	  mirkill(x);
 
@@ -69,7 +69,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
 	(JNIEnv *env, jobject obj, jlong m, jint mod, jint seed, jbooleanArray validity){
 	   /* convert the accepted parameters to MIRACL parameters*/
 	   miracl* mip = (miracl*)m;
-	   jboolean* valid = (*env)->GetBooleanArrayElements(env, validity, 0);
+	   jboolean* valid = env->GetBooleanArrayElements(validity, 0);
 	   int i;
 
 	   //create the point
@@ -92,7 +92,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECF2mPointMira
 	   }
 	   
 	   /* release the jni array */
-	   (*env)->ReleaseBooleanArrayElements(env, validity, valid, 0);
+	   env->ReleaseBooleanArrayElements(validity, valid, 0);
 	  
 	   mirkill(bigMod);
 	   mirkill(x);
