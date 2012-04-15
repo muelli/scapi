@@ -151,7 +151,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp
  * Method:    createInfinityF2mPoint
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_createInfinityF2mPoint
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_createInfinityF2mPoint
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
