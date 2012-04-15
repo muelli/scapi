@@ -16,7 +16,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
   (JNIEnv *env, jobject obj, jlong m, jbyteArray xVal, jbyteArray yVal, jbooleanArray validity){
 	  /* convert the accepted parameters to MIRACL parameters*/
 	  miracl* mip = (miracl*)m;
-	  jboolean* valid = (*env)->GetBooleanArrayElements(env, validity, 0);
+	  jboolean* valid = env->GetBooleanArrayElements(validity, 0);
 	  
 	  /* create the point with x,y values */
 	  epoint* p = epoint_init(mip);
@@ -26,7 +26,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
 	  valid[0] = epoint_set(mip, x, y, 0, p);
 	  
 	  /* release the array */
-	  (*env)->ReleaseBooleanArrayElements(env, validity, valid, 0);
+	  env->ReleaseBooleanArrayElements(validity, valid, 0);
 	  
 	  mirkill(x);
 	  mirkill(y);
@@ -45,7 +45,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
   (JNIEnv *env, jobject obj, jlong m, jbyteArray xVal, jbooleanArray validity){
 	  /* convert the accepted parameters to MIRACL parameters*/
 	  miracl* mip = (miracl*)m;
-	  jboolean* valid = (*env)->GetBooleanArrayElements(env, validity, 0);
+	  jboolean* valid = env->GetBooleanArrayElements(validity, 0);
 	  
 	  /* create the point with x,y values */
 	  epoint* p = epoint_init(mip);
@@ -54,7 +54,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
 	  valid[0] = epoint_set(mip, x, x, 1, p);
 	  
 	  /* release the array */
-	  (*env)->ReleaseBooleanArrayElements(env, validity, valid, 0);
+	  env->ReleaseBooleanArrayElements(validity, valid, 0);
 	  
 	  mirkill(x);
 
@@ -73,14 +73,14 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
 	   /* convert the accepted parameters to MIRACL parameters*/
 	   miracl* mip = (miracl*)m;
 	   big p = byteArrayToMiraclBig(env, mip, pVal);
-	   jboolean* valid = (*env)->GetBooleanArrayElements(env, validity, 0);
+	   jboolean* valid = env->GetBooleanArrayElements(validity, 0);
 	   int i;
 
 	   //create the point
 	   epoint* point = epoint_init(mip);
 	   
 	   /* choose randomly x,y values*/
-	   int len = 2*((*env)->GetArrayLength(env, pVal));
+	   int len = 2*(env->GetArrayLength(pVal));
 	   big x = mirvar(mip, 0);
 
 	   irand(mip, seed); //set seed to generate random numbers
@@ -96,7 +96,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPointMirac
 	   }
 	   
 	   /* release the jni array */
-	   (*env)->ReleaseBooleanArrayElements(env, validity, valid, 0);
+	   env->ReleaseBooleanArrayElements(validity, valid, 0);
 
 	   mirkill(p);
 	   mirkill(x);
@@ -166,7 +166,7 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_ECFpPoint
 	  mirkill(x);
 	  mirkill(y);
 
-	  //retur nthe bytes of x
+	  //return the bytes of x
 	  return yBytes;
 }
 
