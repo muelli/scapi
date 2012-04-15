@@ -123,8 +123,8 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2
   (JNIEnv *env, jobject obj, jlong m, jlongArray elements, jobjectArray exponents){
 
 	  
-	  int size = (*env)->GetArrayLength(env, elements); //number of points
-	  jlong* longElements  = (*env)->GetLongArrayElements(env, elements, 0); //convert JllongArray to long array
+	  int size = env->GetArrayLength(elements); //number of points
+	  jlong* longElements  = env->GetLongArrayElements(elements, 0); //convert JllongArray to long array
 	  epoint ** points = (epoint**) calloc(size, sizeof(epoint*)); //create a big array to hold the points
 	  big* bigExponents =  (big*) calloc(size, sizeof(big)); //create a big array to hold the exponents
 	  int i;
@@ -136,7 +136,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2
 
 	  for(i=0; i<size; i++){
 		  points[i] = (epoint*) longElements[i];
-		  exponent = (*env)->GetObjectArrayElement(env, exponents, i);
+		  exponent = (jbyteArray) env->GetObjectArrayElement(exponents, i);
 		  bigExponents[i] = byteArrayToMiraclBig(env, mip, exponent);
 	  }
 
@@ -153,16 +153,16 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2
 	  free(points);
 	  free(bigExponents);
 	  //release jbyte
-	  (*env) ->ReleaseLongArrayElements(env, elements, longElements, 0);
+	  env ->ReleaseLongArrayElements(elements, longElements, 0);
 
-	  return (jlong)p; //return the result*/
+	  return (jlong)p; //return the result
 }
 
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_simultaneousMultiplyFp
   (JNIEnv *env, jobject obj, jlong m, jlongArray elements, jobjectArray exponents){
 
-	  int size = (*env)->GetArrayLength(env, elements); //number of points
-	  jlong* longElements  = (*env)->GetLongArrayElements(env, elements, 0); //convert JllongArray to long array
+	  int size = env->GetArrayLength(elements); //number of points
+	  jlong* longElements  = env->GetLongArrayElements(elements, 0); //convert JllongArray to long array
 	  epoint ** points = (epoint**) calloc(size, sizeof(epoint*)); //create a big array to hold the points
 	  big* bigExponents =  (big*) calloc(size, sizeof(big)); //create a big array to hold the exponents
 	  int i;
@@ -173,7 +173,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp
 
 	  for(i=0; i<size; i++){
 		  points[i] = (epoint*) longElements[i];
-		  exponent = (*env)->GetObjectArrayElement(env, exponents, i);
+		  exponent = (jbyteArray) env->GetObjectArrayElement(exponents, i);
 		  bigExponents[i] = byteArrayToMiraclBig(env, mip, exponent);
 	  }
 
@@ -192,7 +192,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp
 	  free(bigExponents);
 
 	  //release jbyte
-	  (*env) ->ReleaseLongArrayElements(env, elements, longElements, 0);
+	  env ->ReleaseLongArrayElements(elements, longElements, 0);
 
 	  return (jlong)p; //return the result
 }
