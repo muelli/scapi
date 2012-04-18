@@ -9,7 +9,9 @@ public abstract class MiraclAdapterDlogEC extends DlogGroupEC
 										  implements DlogEllipticCurve{
 	
 	private native long createMip();
-
+	//protected native long createExponentiationsMap();
+	
+	//protected long exponentiationsMap = 0;
 	protected long mip = 0; ///MIRACL pointer
 
 	/*
