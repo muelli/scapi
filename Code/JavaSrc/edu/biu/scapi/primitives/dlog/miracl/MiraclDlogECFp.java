@@ -29,6 +29,9 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	private native boolean validateFpGenerator(long mip, long generator, byte[] x, byte[] y);
 	private native boolean isFpMember(long mip, long point);
 	private native long createInfinityFpPoint(long mip);
+	//private native long exponentiateFpWithPreComputed(long mip, long exponentiationsMap, long base, int bits, byte[] size);
+	
+	
 	
 	public void init(String curveName) throws IllegalArgumentException{
 		
@@ -112,7 +115,7 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 		//call to native inverse function
 		long result = invertFpPoint(mip, point);
 		//build a ECFpPointMiracl element from the result value
-		return new ECFpPointMiracl(result, mip);	
+		return new ECFpPointMiracl(result, this);	
 		
 	}
 	
@@ -152,7 +155,7 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 		//call to native multiply function
 		long result = multiplyFpPoints(mip, point1, point2);
 		//build a ECFpPointMiracl element from the result value
-		return new ECFpPointMiracl(result, mip);
+		return new ECFpPointMiracl(result, this);
 		
 	}
 	
@@ -183,10 +186,11 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 		//call to native exponentiate function
 		long result = exponentiateFpPoint(mip, point, exponent.toByteArray());
 		//build a ECFpPointMiracl element from the result value
-		return new ECFpPointMiracl(result, mip);
+		return new ECFpPointMiracl(result, this);
 		
 	}
 	
+	@Override
 	public GroupElement simultaneousMultipleExponentiations(GroupElement[] groupElements, 
 			BigInteger[] exponentiations) throws UnInitializedException{
 		if (!isInitialized()){
@@ -213,7 +217,45 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 		//call to native exponentiate function
 		long result = simultaneousMultiplyFp(mip, nativePoints, exponents);
 		//build a ECF2mPointMiracl element from the result value
-		return new ECFpPointMiracl(result, mip);
+		return new ECFpPointMiracl(result, this);
+	}
+	
+	
+	
+	@Override
+	public GroupElement exponentiateWithPreComputedValues
+			(GroupElement groupElement, BigInteger exponent) throws UnInitializedException{
+		
+		//tests showed that the naive algorithm is faster than the optimized.
+		return exponentiate(groupElement, exponent);
+		
+		//override of the function exponentiateWithPreComputedValues that uses the same algorithm as the ABS but in native.
+		//Results showed that the naive algorithm is faster so we dicide not to use this algorithm but the naive
+		/*if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		//if the GroupElements don't match the DlogGroup, throw exception
+		if (!(groupElement instanceof ECFpPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		}
+		
+		ECFpPointMiracl base = (ECFpPointMiracl)groupElement;
+		
+		//infinity remains the same after any exponentiate
+		if (base.isInfinity()){
+			return base;
+		}
+		
+		if (exponentiationsMap == 0){
+			exponentiationsMap = createExponentiationsMap();
+			System.out.println("created map");
+		}
+		
+		//call to native exponentiate function
+		long result = exponentiateFpWithPreComputed(mip, exponentiationsMap, base.getPoint(), ((ECFpGroupParams) groupParams).getP().bitLength()+1, exponent.toByteArray());
+		System.out.println("java result is "+result);
+		//build a ECF2mPointMiracl element from the result value
+		return new ECFpPointMiracl(result, this);*/
 	}
 	
 	/**
@@ -270,7 +312,7 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	
 	public ECElement getInfinity(){
 		long infinity = createInfinityFpPoint(mip);
-		return new ECFpPointMiracl(infinity, mip);
+		return new ECFpPointMiracl(infinity, this);
 	}
 	
 	//upload MIRACL library
