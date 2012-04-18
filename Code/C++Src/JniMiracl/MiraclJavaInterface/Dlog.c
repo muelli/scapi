@@ -1,10 +1,13 @@
 #include "StdAfx.h"
 #include <jni.h>
+#include <stdlib.h>
+#include <iostream>
+#include <math.h>
+#include <map>
 #include "Dlog.h"
 #include "Utils.h"
 #include "miracl.h"
-#include <stdlib.h>
-#include <math.h>
+
 
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclAdapterDlogEC_createMip
   (JNIEnv *env, jobject obj){
@@ -622,9 +625,7 @@ epoint*** createLLPreCompTable(miracl* mip, epoint** points, int w, int h, int n
 	epoint *** preComp = (epoint***) calloc(h, sizeof(epoint**)); //create a big array to hold the points
 	epoint* base = epoint_init(mip);
 	int baseIndex, k, e, i;
-	big x,y;
-	x = mirvar(mip, 0);
-	y = mirvar(mip, 0);
+	
 
 	for (i=0; i<h; i++){
 		preComp[i] = (epoint**) calloc(twoPowW, sizeof(epoint*));
@@ -655,7 +656,7 @@ epoint*** createLLPreCompTable(miracl* mip, epoint** points, int w, int h, int n
 	}
 		
 	epoint_free(base);
-
+	
 	/*for (i=0; i<h; i++){
 		for (j=0; j<twoPowW; j++){
 			epoint_get(mip, preComp[i][j], x, y);
@@ -670,6 +671,86 @@ epoint*** createLLPreCompTable(miracl* mip, epoint** points, int w, int h, int n
 	return preComp;
 		
 }
+
+/*
+ * Creates the exponentiations map in the first time it required
+ */
+/*JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclAdapterDlogEC_createExponentiationsMap
+  (JNIEnv *, jobject){
+	  
+
+	  map<epoint*, GroupElementsExponentiations*>* exponentiationsMap = new map<epoint*, GroupElementsExponentiations*>;
+	 
+	  return (jlong)exponentiationsMap;
+	  
+
+
+}
+
+/*
+ * Computes the product of several exponentiations of the same base
+ * and distinct exponents for Fp curves. 
+ * An optimization is used to compute it more quickly by keeping in memory 
+ * the result of h1, h2, h4,h8,... and using it in the calculation.
+ * Note that if we want a one-time exponentiation of h it is preferable to use the basic exponentiation function 
+ * since there is no point to keep anything in memory if we have no intention to use it. 
+ */
+/*JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_exponentiateFpWithPreComputed
+  (JNIEnv *env, jobject obj, jlong m, jlong expMap, jlong base, jint bits, jbyteArray size){
+	   
+	  //translate parameters  to miracl notation
+	  miracl* mip = (miracl*)m;
+	  big exponent = byteArrayToMiraclBig(env, mip, size);
+	  map<epoint*, GroupElementsExponentiations*>* exponentiationsMap = (map<epoint*, GroupElementsExponentiations*>*) expMap; //cast the given map to the right type
+	  map<epoint*, GroupElementsExponentiations*>::iterator it;
+
+	  //get the base exponentiations from the map
+	  it=exponentiationsMap->find((epoint*)base);
+	  GroupElementsExponentiations* exponentiations = (*it).second;
+	  //if there is no exponentiations in the map for this base - creates them
+	  if (it == exponentiationsMap->end()){
+		  exponentiations = new GroupElementsExponentiations(mip, (epoint*)base, true);
+		  exponentiationsMap->insert(pair<epoint*, GroupElementsExponentiations*>((epoint*)base, exponentiations));
+	  }
+	  //calculates the required exponent 
+	  return (jlong)exponentiations->getExponentiation(exponent);
+	  //translate parameters  to miracl notation
+	  
+	 
+}
+
+
+/*
+ * Computes the product of several exponentiations of the same base
+ * and distinct exponents for F2m curves. 
+ * An optimization is used to compute it more quickly by keeping in memory 
+ * the result of h1, h2, h4,h8,... and using it in the calculation.
+ * Note that if we want a one-time exponentiation of h it is preferable to use the basic exponentiation function 
+ * since there is no point to keep anything in memory if we have no intention to use it. 
+ */
+/*JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_exponentiateF2mWithPreComputed
+  (JNIEnv *env, jobject obj, jlong m, jlong expMap, jlong base, jint bits, jbyteArray size){
+	  //translate parameters  to miracl notation
+	  miracl* mip = (miracl*)m;
+	  big exponent = byteArrayToMiraclBig(env, mip, size);
+	  map<epoint*, GroupElementsExponentiations*>* exponentiationsMap = (map<epoint*, GroupElementsExponentiations*>*) expMap; //cast the given map to the right type
+	  map<epoint*, GroupElementsExponentiations*>::iterator it;
+
+	  //get the base exponentiations from the map
+	  it=exponentiationsMap->find((epoint*)base);
+	  GroupElementsExponentiations* exponentiations = (*it).second;;
+	  
+	  //if there is no exponentiations in the map for this base - creates them
+	  if (it == exponentiationsMap->end()){
+		  exponentiations = new GroupElementsExponentiations(mip, (epoint*)base, false);
+		  exponentiationsMap->insert(pair<epoint*, GroupElementsExponentiations*>((epoint*)base, exponentiations));
+	  }
+	  //calculates the required exponent 
+	  return (jlong)exponentiations->getExponentiation(exponent);
+	  
+}*/
+
+
 
 /*
  * Returns the identity point
@@ -690,3 +771,123 @@ epoint* getIdentity(miracl* mip, int field){
 	mirkill(y);
 	return identity;
 }
+
+/*
+ * The class GroupElementExponentiations is a nested class of DlogGroupAbs.
+ * It performs the actual work of exponentially multiple exponentiations for one base.
+ * It is composed of two main elements. The group element for which the optimized computations 
+ * are built for, called the base and a vector of group elements that are the result of 
+ * exponentiations of order 1,2,4,8,… 
+ */
+/*GroupElementsExponentiations::GroupElementsExponentiations(miracl* mip, epoint* base, bool fp){
+	this->mip = mip;
+	this->fp = fp;
+	big two = mirvar(mip, 2); //2
+	
+	exponentiations.push_back(base); //add the base - base^1
+	
+	//add the base raised to the exponentiations 2, 4, 8
+	for (int i=1; i<4; i++){
+		epoint* multI = epoint_init(mip);
+		if (fp == true){ // the operation depends on the given curve type
+			ecurve_mult(mip, two, exponentiations[i-1], multI);
+		} else {
+			ecurve2_mult(mip, two, exponentiations[i-1], multI);
+		}
+		exponentiations.push_back(multI);
+	}
+	mirkill(two);
+}
+
+/*
+ * Destructor
+ */
+/*GroupElementsExponentiations::~GroupElementsExponentiations(){
+	//free all the points in the vector
+	int size = exponentiations.size();
+	for (int i=0; i<size; i++){
+		epoint_free(exponentiations[i]);
+	}
+}
+
+/*
+ * Calculates the necessary additional exponentiations and fills the exponentiations vector with them.
+ */
+/*void GroupElementsExponentiations::prepareExponentiations(big size){
+
+	big two = mirvar(mip, 2); //2
+
+	//find log of the number - this is the index of the size-exponent in the exponentiation array 
+	int index = logb2(mip, size)-1;
+
+	// calculates the necessary exponentiations and put them in the exponentiations vector 
+	for (int i=exponentiations.size(); i<=index; i++){
+		epoint* multI = epoint_init(mip);
+		if (fp == true){// the operation depends on the given curve type
+			ecurve_mult(mip, two, exponentiations[i-1], multI);
+		} else {
+			ecurve2_mult(mip, two, exponentiations[i-1], multI);
+		}
+		exponentiations.push_back(multI);
+	}
+	mirkill(two);
+}
+
+/*
+ * Checks if the exponentiations had already been calculated for the required size. 
+ * If so, returns them, else it calls the private function prepareExponentiations with the given size.
+ */
+/*epoint* GroupElementsExponentiations::getExponentiation(big size){
+	
+	/**
+	* The exponents in the exponents vector are all power of 2.
+	* In order to achieve the exponent size, we calculate its closest power 2 in the exponents vector 
+	* and continue the calculations from there.
+	*/
+/*
+	//find log of the number - this is the index of the size-exponent in the exponentiation array 
+	int index = logb2(mip, size)-1;
+	
+	epoint* exponent = epoint_init(mip);
+	// if the requested index out of the vector bounds, the exponents have not been calculated yet, so calculates them.
+	if (exponentiations.size() <= index)
+		prepareExponentiations(size);
+	big x= mirvar(mip, 0);
+	big y= mirvar(mip, 0);
+
+	// copy the exponent in the right index to the new point
+	if (fp == true){ // the operation depends on the given curve type
+		epoint_get(mip, exponentiations[index], x, y);
+		epoint_set(mip, x,y,0, exponent);
+	} else{
+		epoint2_get(mip, exponentiations[index], x, y);
+		epoint2_set(mip, x,y,0, exponent);
+	}
+	  
+	mirkill(x);
+	mirkill(y);
+ 
+	// if size is not power 2, calculates the additional multiplications 
+	big lastExp = mirvar(mip, 0);
+	expb2(mip, index, lastExp);
+	big difference = mirvar(mip, 0);
+	big zero = mirvar(mip, 0);
+	subtract(mip, size, lastExp, difference);
+	big newSize = mirvar(mip, 0);
+	if (compare(difference, zero) > 0){
+		subtract(mip, size, lastExp, newSize);
+		epoint* diff = getExponentiation(newSize);
+		if (fp == true){ // the operation depends on the given curve type
+			ecurve_add(mip, diff, exponent);
+		} else {
+			ecurve2_add(mip, diff, exponent);
+		}
+	}
+	mirkill(lastExp);
+	mirkill(difference);
+	mirkill(zero);
+	mirkill(newSize);
+	return exponent;		
+	
+}*/
+
