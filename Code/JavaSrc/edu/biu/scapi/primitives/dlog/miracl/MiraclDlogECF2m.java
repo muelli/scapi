@@ -32,6 +32,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	private native boolean validateF2mGenerator(long mip, long generator, byte[] x, byte[] y);
 	private native boolean isF2mMember(long mip, long point);
 	private native long createInfinityF2mPoint(long mip);
+	//private native long exponentiateF2mWithPreComputed(long mip, long exponentiationsMap, long base, int bits, byte[] size);
 	
 	/**
 	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
@@ -224,6 +225,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 		
 	}
 	
+	@Override
 	public GroupElement simultaneousMultipleExponentiations(GroupElement[] groupElements, 
 			BigInteger[] exponentiations) throws UnInitializedException{
 		if (!isInitialized()){
@@ -259,6 +261,40 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 		long result = simultaneousMultiplyF2m(mip, nativePoints, exponents);
 		//build a ECF2mPointMiracl element from the result value
 		return new ECF2mPointMiracl(result, this);
+	}
+	
+	@Override
+	public GroupElement exponentiateWithPreComputedValues
+			(GroupElement groupElement, BigInteger exponent) throws UnInitializedException{
+		
+		//tests showed that the naive algorithm is faster than the optimized.
+		return exponentiate(groupElement, exponent);
+		
+		//override of the function exponentiateWithPreComputedValues that uses the same algorithm as the ABS but in native.
+		//Results showed that the naive algorithm is faster so we dicide not to use this algorithm but the naive
+		/*if (!isInitialized()){
+			throw new UnInitializedException();
+		}
+		//if the GroupElements don't match the DlogGroup, throw exception
+		if (!(groupElement instanceof ECF2mPointMiracl)){
+			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+		}
+		ECF2mPointMiracl base = (ECF2mPointMiracl)groupElement;
+		
+		//infinity remains the same after any exponentiate
+		if (base.isInfinity()){
+			return base;
+		}
+		
+		if (exponentiationsMap == 0){
+			exponentiationsMap = createExponentiationsMap();
+		}
+		//call to native exponentiate function
+		long result = exponentiateF2mWithPreComputed(mip, exponentiationsMap, base.getPoint(), ((ECF2mGroupParams) groupParams).getM(), exponent.toByteArray());
+		
+		//build a ECF2mPointMiracl element from the result value
+		return new ECF2mPointMiracl(result, this);*/
+		
 	}
 	
 	/**
