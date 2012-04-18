@@ -100,9 +100,9 @@ public class ECFpPointMiracl implements ECElement{
 	 * The ptr is a result of our DlogGroup functions, such as multiply.
 	 * @param ptr - pointer to native point
 	 */
-	ECFpPointMiracl(long ptr, long mip){
+	ECFpPointMiracl(long ptr, MiraclDlogECFp curve){
 		this.point = ptr;
-		this.mip = mip;
+		mip = curve.getMip();
 	}
 	
 	public boolean isInfinity(){
