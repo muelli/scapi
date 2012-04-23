@@ -1,7 +1,5 @@
 package edu.biu.scapi.primitives.kdf.bc;
 
-import java.security.spec.AlgorithmParameterSpec;
-
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -12,7 +10,6 @@ import org.bouncycastle.crypto.params.ISO18033KDFParameters;
 import org.bouncycastle.crypto.params.KDFParameters;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.hash.CryptographicHash;
 import edu.biu.scapi.primitives.kdf.KeyDerivationFunction;
 import edu.biu.scapi.tools.Factories.BCFactory;
@@ -29,64 +26,32 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 	
 	/**
 	 * creates the related bc kdf. Retrieve the related digest out of the given hash name.
+	 * @param hash name of the underlying hash to use
 	 * @throws FactoriesException in case of error while creating the object
 	 */
-	public BcKdfISO18033(String hash) throws FactoriesException {
-		
+	public BcKdfISO18033(String hash) throws FactoriesException{
 		//creates a digest through the factory and passes it to the KDF
-		bcKdfGenerator = new KDF1BytesGenerator(BCFactory.getInstance().getDigest(hash));
-		
+		bcKdfGenerator = new KDF1BytesGenerator(BCFactory.getInstance().getDigest(hash));	
 	}
 	
 	/**
 	 * creates the related bc kdf, with the given hash
 	 * @param hash - the underlying collision resistant hash
 	 * @throws FactoriesException in case of error while creating the object
-	 * @throws UnInitializedException if the given hash is not initialized
 	 */
-	public BcKdfISO18033(CryptographicHash hash) throws FactoriesException, UnInitializedException {
-		//first checks that the hmac is initialized.
-		if(hash.isInitialized()){
-			//creates a digest of the given hash type through the factory and passes it to the KDF
-			bcKdfGenerator = new KDF1BytesGenerator(BCFactory.getInstance().getDigest(hash.getAlgorithmName()));
-		}
-		else{//the user must pass an initialized object, otherwise throws an exception
-			throw new UnInitializedException("The input variable must be initialized");
-		}
+	public BcKdfISO18033(CryptographicHash hash) throws FactoriesException{
+		
+		//creates a digest of the given hash type through the factory and passes it to the KDF
+		bcKdfGenerator = new KDF1BytesGenerator(BCFactory.getInstance().getDigest(hash.getAlgorithmName()));
 	}
 	
-	/**
-	 * BcKdfISO18033 is initialized by the constructor. The underlying type is a digest that doesn't need a key.
-	 * Therefore this function souldn't be called. Throws exception.
-	 */
-	public void init(SecretKey secretKey) {
-		throw new UnsupportedOperationException("BcKdfISO18033 doesn't need initialization");	
-	}
-
-	/**
-	 * BcKdfISO18033 is initialized by the constructor. The underlying type is a digest that doesn't need a key.
-	 * Therefore this function souldn't be called. Throws exception.
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) {
-		throw new UnsupportedOperationException("BcKdfISO18033 doesn't need initialization");	
-	}
-
-	/**
-	 * BcKdfISO18033 is initialized by the constructor. Therefore, always return true.
-	 */
-	public boolean isInitialized() {
-		return true;
-	}
-	
-	public SecretKey generateKey(SecretKey seedForGeneration, int len) throws UnInitializedException {
+	public SecretKey generateKey(SecretKey seedForGeneration, int len){
 		//calls the generateKey with iv=null
 		return generateKey(seedForGeneration, len, null);
 	}
 
-	public SecretKey generateKey(SecretKey seedForGeneration, int outLen, byte[] iv) throws UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public SecretKey generateKey(SecretKey seedForGeneration, int outLen, byte[] iv){
+		
 		byte[] generatedKey = new byte[outLen];//generated key bytes
 		
 		//generates the related derivation parameter for bc with the seed and iv
@@ -101,17 +66,15 @@ public class BcKdfISO18033 implements KeyDerivationFunction {
 
 
 	public void generateKey(byte[] seedForGeneration, int inOff, int inLen, byte[] outKey,
-			 int outOff,int outLen) throws UnInitializedException {
+			 int outOff,int outLen){
 		//calls the generateKey with iv=null
 		generateKey(seedForGeneration, inOff, inLen, outKey, outOff, outLen, null);
 		
 	}
 	
 	public void generateKey(byte[] seedForGeneration, int inOff, int inLen, byte[] outKey,
-			 int outOff,int outLen, byte[] iv) throws UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
-		}
+			 int outOff,int outLen, byte[] iv){
+		
 		//checks that the offset and length are correct
 		if ((inOff > seedForGeneration.length) || (inOff+inLen > seedForGeneration.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
