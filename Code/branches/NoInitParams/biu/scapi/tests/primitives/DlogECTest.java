@@ -3,13 +3,9 @@ package edu.biu.scapi.tests.primitives;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.Vector;
-import java.util.logging.Level;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogEllipticCurve;
 import edu.biu.scapi.primitives.dlog.DlogGroup;
-import edu.biu.scapi.primitives.dlog.DlogGroupEC;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.GroupElement;
 import edu.biu.scapi.primitives.dlog.cryptopp.CryptoPpDlogZpSafePrime;
@@ -42,9 +38,9 @@ public abstract class DlogECTest extends DlogGroupTest{
 	 * @param xOutput the x coordinate of the expected result
 	 * @param yOutput the y coordinate of the expected result
 	 */
-	protected void addData(String params, BigInteger x, BigInteger xElement, BigInteger yElement, BigInteger xOutput, BigInteger yOutput){
+	protected void addData(DlogGroup dlog, BigInteger x, BigInteger xElement, BigInteger yElement, BigInteger xOutput, BigInteger yOutput){
 		//added new test data with the inputs
-		testDataVector.add(new TestData(params, x, xElement, yElement, xOutput, yOutput));
+		testDataVector.add(new TestData(dlog, x, xElement, yElement, xOutput, yOutput));
 	}
 	
 	/** 
@@ -58,7 +54,7 @@ public abstract class DlogECTest extends DlogGroupTest{
 		for(int i=0; i<testDataVector.size();i++){
 
 			//tests the test vector by calling computeAndCompare function. 
-			computeAndCompare(testDataVector.get(i).params, testDataVector.get(i).x, testDataVector.get(i).xElement, 
+			computeAndCompare(testDataVector.get(i).dlog, testDataVector.get(i).x, testDataVector.get(i).xElement, 
 					testDataVector.get(i).yElement, testDataVector.get(i).xOutput, testDataVector.get(i).yOutput, file);
 		}
 		super.testVector(file);
@@ -74,32 +70,27 @@ public abstract class DlogECTest extends DlogGroupTest{
 	 * @param yOutput the y coordinate of the expected result
 	 * @param file the output file
 	 */
-	private void computeAndCompare(String params, BigInteger exponent, BigInteger xElement, BigInteger yElement, BigInteger xOutput, BigInteger yOutput, PrintWriter file) {
+	private void computeAndCompare(DlogGroup dlogGroup, BigInteger exponent, BigInteger xElement, BigInteger yElement, BigInteger xOutput, BigInteger yOutput, PrintWriter file) {
 		String testResult = null; //the test result. 
 		
-		try{
-			((DlogEllipticCurve) dlog).init(params);
-			GroupElement element = ((DlogEllipticCurve) dlog).getElement(xElement, yElement);
+		DlogEllipticCurve dlog = (DlogEllipticCurve) dlogGroup;
+		GroupElement element = ((DlogEllipticCurve) dlog).getElement(xElement, yElement);
+	
+		//computes element^x
+		GroupElement eExpX = dlog.exponentiate(element, exponent);
+		//gets the points coordinates
+		BigInteger x_eExpX = ((ECElement) eExpX).getX();
+		BigInteger y_eExpX = ((ECElement) eExpX).getY();
 		
-			//computes element^x
-			GroupElement eExpX = dlog.exponentiate(element, exponent);
-			//gets the points coordinates
-			BigInteger x_eExpX = ((ECElement) eExpX).getX();
-			BigInteger y_eExpX = ((ECElement) eExpX).getY();
-			
-			//compares the points
-			if(x_eExpX.equals(xOutput) && y_eExpX.equals(yOutput)){
-				testResult = "Success: output is as expected";
-			} else{
-				testResult = "Failure: element is different from the expected";
-			}
-			
-			//prints the test result to the output file
-			file.println(dlog.getGroupType()+"," + provider + ",Compute and compare,Test vector,,,"+testResult);
-			
-		} catch (UnInitializedException e) {//shouldn't occur since the object is initialized
-			Logging.getLogger().log(Level.WARNING, e.toString());
+		//compares the points
+		if(x_eExpX.equals(xOutput) && y_eExpX.equals(yOutput)){
+			testResult = "Success: output is as expected";
+		} else{
+			testResult = "Failure: element is different from the expected";
 		}
+		
+		//prints the test result to the output file
+		file.println(dlog.getGroupType()+"," + provider + ",Compute and compare,Test vector,,,"+testResult);
 	}
 	
 	/** 
@@ -111,15 +102,11 @@ public abstract class DlogECTest extends DlogGroupTest{
 		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
 		try{
 			//creates a dlog over Zp in order to get an element of Zp type
-			CryptoPpDlogZpSafePrime dlogTemp = new CryptoPpDlogZpSafePrime();
+			
 			ZpGroupParams params = new ZpGroupParams(new BigInteger("22"), new BigInteger("3"), new BigInteger("11"));
-			dlogTemp.init(params);
+			CryptoPpDlogZpSafePrime dlogTemp = new CryptoPpDlogZpSafePrime(params);
 			//get the Zp generator
 			GroupElement element = dlogTemp.getGenerator();
-			
-			//init the tested object as elliptic curve of type B-163
-			String filePath = System.getProperty("java.class.path").toString().split(";")[0]+"\\propertiesFiles\\NISTEC.properties";
-			((DlogGroupEC) dlog).init(filePath, "B-163");
 			
 			//calls the exponentiate function with the Zp element
 			dlog.exponentiate(element, new BigInteger("3"));
@@ -145,7 +132,7 @@ public abstract class DlogECTest extends DlogGroupTest{
 	 *
 	 */
 	class TestData{
-		String params;
+		DlogGroup dlog;
 		BigInteger x;
 		BigInteger xElement;
 		BigInteger yElement;
@@ -161,8 +148,8 @@ public abstract class DlogECTest extends DlogGroupTest{
 		 * @param xOutput the x coordinate of the expected result
 		 * @param yOutput the y coordinate of the expected result
 		 */
-		public TestData(String params, BigInteger x, BigInteger xElement, BigInteger yElement, BigInteger xOutput, BigInteger yOutput){
-			this.params = params;
+		public TestData(DlogGroup dlog, BigInteger x, BigInteger xElement, BigInteger yElement, BigInteger xOutput, BigInteger yOutput){
+			this.dlog = dlog;
 			this.x = x;
 			this.xElement = xElement;
 			this.yElement = yElement;
