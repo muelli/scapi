@@ -3,12 +3,9 @@ package edu.biu.scapi.primitives.dlog.miracl;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Properties;
-import java.util.logging.Level;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogECF2m;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.GroupElement;
@@ -34,35 +31,39 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	private native long createInfinityF2mPoint(long mip);
 	
 	/**
-	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
-	 * @param curveName - name of NIST curve to initialized
-	 * @throws IllegalAccessException
+	 * Default constructor. Initializes this object with K-163 NIST curve.
 	 */
-	public void init(String curveName) throws IllegalArgumentException{
-		
-		try {
-			Properties ecProperties;
-		
-			ecProperties = getProperties(PROPERTIES_FILES_PATH); //get properties object containing the curve data
-		
-			//checks that the curveName is in the file 
-			if(!ecProperties.containsKey(curveName)) { 
-				throw new IllegalArgumentException("no such NIST elliptic curve"); 
-			} 
-			
-			//check that the given curve is in the field that matches the group
-			if (!curveName.startsWith("B-") && !curveName.startsWith("K-")){
-				throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match the DlogGroup type"); 
-			}
-			isInitialized = true; 
-			doInit(ecProperties, curveName);  // set the data and initialize the curve
-			
-			
-		} catch (IOException e) {
-			Logging.getLogger().log(Level.WARNING, "error while loading the NIST elliptic curves file");
-		}
+	public MiraclDlogECF2m() throws IOException{
+		this("K-163");
 	}
 	
+	public MiraclDlogECF2m(String fileName, String curveName) throws IOException{
+		super(fileName, curveName);
+	}
+	/**
+	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
+	 * @param curveName - name of NIST curve to initialized
+	 * @throws IOException 
+	 * @throws IllegalAccessException
+	 */
+	public MiraclDlogECF2m(String curveName) throws IllegalArgumentException, IOException{
+		
+		Properties ecProperties;
+	
+		ecProperties = getProperties(PROPERTIES_FILES_PATH); //get properties object containing the curve data
+	
+		//checks that the curveName is in the file 
+		if(!ecProperties.containsKey(curveName)) { 
+			throw new IllegalArgumentException("no such NIST elliptic curve"); 
+		} 
+		
+		//check that the given curve is in the field that matches the group
+		if (!curveName.startsWith("B-") && !curveName.startsWith("K-")){
+			throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match the DlogGroup type"); 
+		}
+		
+		doInit(ecProperties, curveName);  // set the data and initialize the curv
+	}
 	
 	/**
 	 * Extracts the parameters of the curve from the properties object and initialize the groupParams, 
@@ -129,12 +130,9 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException{
+		
 		//if the GroupElement doesn't match the DlogGroup, throw exception
 		if (!(groupElement instanceof ECF2mPointMiracl)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -159,14 +157,10 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	 * @param groupElement2
 	 * @return the multiplication result
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
 	public GroupElement multiplyGroupElements(GroupElement groupElement1, 
-											  GroupElement groupElement2) 
-											  throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+						GroupElement groupElement2) throws IllegalArgumentException{
+		
 		//if the GroupElements don't match the DlogGroup, throw exception
 		if (!(groupElement1 instanceof ECF2mPointMiracl)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -199,13 +193,10 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	 * @param base 
 	 * @return the result of the exponentiation
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
 	public GroupElement exponentiate(GroupElement base, BigInteger exponent) 
-									 throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+									 throws IllegalArgumentException{
+		
 		//if the GroupElements don't match the DlogGroup, throw exception
 		if (!(base instanceof ECF2mPointMiracl)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -224,11 +215,18 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 		
 	}
 	
+	/**
+	 * Computes the product of several exponentiations with distinct bases 
+	 * and distinct exponents. 
+	 * Instead of computing each part separately, an optimization is used to 
+	 * compute it simultaneously. 
+	 * @param groupElements
+	 * @param exponentiations
+	 * @return the exponentiation result
+	 */
+	@Override
 	public GroupElement simultaneousMultipleExponentiations(GroupElement[] groupElements, 
-			BigInteger[] exponentiations) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+			BigInteger[] exponentiations) {
 		
 		//Koblitz curve has an optimization that cause the naive algorithm to be faster than the following optimized algorithm.
 		//so currently we operate the naive algorithm instead of the optimized algorithm.
@@ -263,25 +261,19 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	
 	/**
 	 * Creates a random member of this Dlog group
-	 * @return the random element
-	 * @throws UnInitializedException 
+	 * @return the random element 
 	 */
-	public GroupElement getRandomElement() throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getRandomElement() {
+		
 		return new ECF2mPointMiracl(this);
 	}
 	
 	/**
 	 * Creates a point in the F2m field with the given parameters 
 	 * @return the random element
-	 * @throws UnInitializedException 
 	 */
-	public ECElement getElement(BigInteger x, BigInteger y) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public ECElement getElement(BigInteger x, BigInteger y) {
+		
 		return new ECF2mPointMiracl(x, y, this);
 	}
 	
@@ -289,13 +281,10 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	 * Check if the given element is member of this Dlog group
 	 * @param element - 
 	 * @return true if the given element is member of that group. false, otherwise.
-	 * @throws UnInitializedException 
 	 * @throws IllegalArgumentException
 	 */
-	public boolean isMember(GroupElement element) throws UnInitializedException {
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public boolean isMember(GroupElement element){
+		
 		boolean member = false;
 		if(!(element instanceof ECF2mPointMiracl)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -321,9 +310,8 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	 * Converts a byte array to a ECF2mPointMiracl.
 	 * @param binaryString the byte array to convert
 	 * @return the created group Element
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement convertByteArrayToGroupElement(byte[] binaryString) throws UnInitializedException{
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString){
 		if (binaryString.length >= ((ECF2mGroupParams) groupParams).getM()){
 			throw new IllegalArgumentException("String is too long. It has to be of length less than log p");
 		}
