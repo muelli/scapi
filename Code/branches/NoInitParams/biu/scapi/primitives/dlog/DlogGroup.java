@@ -1,11 +1,7 @@
 package edu.biu.scapi.primitives.dlog;
 
-
-import java.io.IOException;
 import java.math.BigInteger;
-import java.security.spec.AlgorithmParameterSpec;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 
 /**
@@ -24,25 +20,6 @@ import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 public interface DlogGroup {
 
 	/**
-	 * Initialize this DlopGroup with the given parameters.
-	 * In case of Zp group the parameters should be of type ZpGroupParams.
-	 * In elliptic curves case the parameters should be of type ECParameterSpec
-	 * @param params used to initialize this group
-	 * @throws IOException 
-	 * @throws IllegalArgumentException in case there is a problem with the given file
-	 */
-	public void init(AlgorithmParameterSpec params) throws IllegalArgumentException, IOException;
-	
-	/**
-	 * Checks if this DlogGroup object has been previously initialized.<p> 
-	 * To initialize the object the init function has to be called with corresponding parameters after construction.
-	 * 
-	 * @return <code>true<code> if the object was initialized;
-	 * 		   <code>false</code> otherwise.
-	 */
-	public boolean isInitialized();
-
-	/**
 	 * Each concrete class implementing this interface returns a string with a meaningful name for this type of Dlog group. 
 	 * For example: "elliptic curve over F2m" or "Zp*"
 	 * @return the name of the group type
@@ -52,32 +29,28 @@ public interface DlogGroup {
 	/**
 	 * The generator g of the group is an element of the group such that, when written multiplicatively, every element of the group is a power of g.
 	 * @return the generator of this Dlog group
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getGenerator() throws UnInitializedException;
+	public GroupElement getGenerator();
 	
 	/**
 	 * GroupParams is a structure that holds the actual data that makes this group a specific Dlog group.<p> 
 	 * For example, for a Dlog group over Zp* what defines the group is p. 
 	 * 
-	 * @return the GroupDesc of that Dlog group
-	 * @throws UnInitializedException 
+	 * @return the GroupParams of that Dlog group
 	 */
-	public GroupParams getGroupParams() throws UnInitializedException;
+	public GroupParams getGroupParams();
 	
 	/**
 	 * 
 	 * @return the order of this Dlog group
-	 * @throws UnInitializedException 
 	 */
-	public BigInteger getOrder() throws UnInitializedException;
+	public BigInteger getOrder();
 	
 	/**
 	 * 
 	 * @return the identity of this Dlog group
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getIdentity() throws UnInitializedException;
+	public GroupElement getIdentity();
 	
 	/**
 	 * Checks if the given element is a member of this Dlog group
@@ -87,51 +60,45 @@ public interface DlogGroup {
 	 * @return <code>true<code> if the given element is a member of this group; <code>false<code> otherwise.
 	 * 
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException
 	 */
-	public boolean isMember(GroupElement element) throws IllegalArgumentException, UnInitializedException;
+	public boolean isMember(GroupElement element) throws IllegalArgumentException;
 	
 	/**
 	 * Checks if the order is a prime number
 	 * 
 	 * @return <code>true<code> if the order is a prime number; <code>false<code> otherwise.
 	 * 
-	 * @throws UnInitializedException
 	 */
-	public boolean isPrimeOrder() throws UnInitializedException;
+	public boolean isPrimeOrder();
 	
 	/**
 	 * Checks if the order of this group is greater than 2^numBits
 	 * @param numBits
 	 * @return <code>true<code> if the order is greater than 2^numBits; <code>false<code> otherwise.
-	 * @throws UnInitializedException
 	 */
-	public boolean isOrderGreaterThan(int numBits) throws UnInitializedException;
+	public boolean isOrderGreaterThan(int numBits);
 	
 	/**
 	 * Checks if the element set as the generator is indeed the generator of this group.
 	 * The generator is set upon calling the init function of this group. <p>
 	 * Therefore, if init hasn't been called this function throws an UnInitializedException.
 	 * @return <code>true<code> if the generator is valid; <code>false<code> otherwise.
-	 * @throws UnInitializedException
 	 */
-	public boolean isGenerator() throws UnInitializedException;
+	public boolean isGenerator();
 	
 	/**
 	 * Checks parameters of this group to see if they conform to the type this group is supposed to be. 
 	 * @return <code>true<code> if valid; <code>false<code> otherwise.
-	 * @throws UnInitializedException
 	 */
-	public boolean validateGroup() throws UnInitializedException;
+	public boolean validateGroup();
 	
 	/**
 	 * Calculates the inverse of the given GroupElement.
 	 * @param groupElement to invert
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException
 	 **/
-	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException, UnInitializedException;
+	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException;
 	
 	/**
 	 * Raises the base GroupElement to the exponent. The result is another GroupElement.
@@ -139,9 +106,8 @@ public interface DlogGroup {
 	 * @param base 
 	 * @return the result of the exponentiation
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException
 	 */
-	public GroupElement exponentiate(GroupElement base, BigInteger exponent) throws IllegalArgumentException, UnInitializedException;
+	public GroupElement exponentiate(GroupElement base, BigInteger exponent) throws IllegalArgumentException;
 	
 	/**
 	 * Multiplies two GroupElements
@@ -149,16 +115,14 @@ public interface DlogGroup {
 	 * @param groupElement2
 	 * @return the multiplication result
 	 * throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement multiplyGroupElements(GroupElement groupElement1, GroupElement groupElement2) throws IllegalArgumentException, UnInitializedException;
+	public GroupElement multiplyGroupElements(GroupElement groupElement1, GroupElement groupElement2) throws IllegalArgumentException;
 	
 	/**
 	 * Creates a random member of this Dlog group
-	 * @return the random element
-	 * @throws UnInitializedException 
+	 * @return the random element 
 	 */
-	public GroupElement getRandomElement() throws UnInitializedException;
+	public GroupElement getRandomElement();
 	
 	/**
 	 * Computes the product of several exponentiations with distinct bases 
@@ -168,9 +132,8 @@ public interface DlogGroup {
 	 * @param groupElements
 	 * @param exponentiations
 	 * @return the exponentiation result
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement simultaneousMultipleExponentiations(GroupElement[] groupElements, BigInteger[] exponentiations) throws UnInitializedException;
+	public GroupElement simultaneousMultipleExponentiations(GroupElement[] groupElements, BigInteger[] exponentiations);
 	
 	/**
 	 * Computes the product of several exponentiations of the same base
@@ -182,17 +145,15 @@ public interface DlogGroup {
 	 * @param groupElement
 	 * @param exponent
 	 * @return the exponentiation result
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement exponentiateWithPreComputedValues(GroupElement groupElement, int exponent) throws UnInitializedException;
+	public GroupElement exponentiateWithPreComputedValues(GroupElement groupElement, int exponent);
 	
 	/**
 	 * Converts a byte array to a GroupElement.
 	 * @param binaryString the byte array to convert
 	 * @return the created group Element
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement convertByteArrayToGroupElement(byte[] binaryString) throws UnInitializedException;
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString);
 	
 	/**
 	 * Convert a GroupElement to a byte array.
