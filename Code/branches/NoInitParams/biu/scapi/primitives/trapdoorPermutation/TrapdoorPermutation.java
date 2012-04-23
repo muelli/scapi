@@ -2,12 +2,11 @@ package edu.biu.scapi.primitives.trapdoorPermutation;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
-
-import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
  * This interface is the general interface of trapdoor permutation. Every class in this family should implement this interface.
@@ -19,87 +18,77 @@ import edu.biu.scapi.exceptions.UnInitializedException;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
   */
 public interface TrapdoorPermutation {
-	/** 
-	 * Initializes this trapdoor permutation with the keys and the auxiliary parameters
-	 * @param publicKey  public key
-	 * @param privateKey  private key
-	 * @param params  auxiliary parameters
-	 * @thros UnsupportedOperationException in some trapdoor permutations this function is not supported
-	 */
-	public void init(PublicKey publicKey, PrivateKey privateKey,
-			AlgorithmParameterSpec params) throws UnsupportedOperationException;
-
-	/** 
-	 * Initializes this trapdoor permutation with the keys
-	 * @param publicKey - public key
-	 * @param privateKey - private key
-	 * @throws InvalidKeyException  if the keys are invalid for this trapdoor permutation
-	 */
-	public void init(PublicKey publicKey, PrivateKey privateKey) throws InvalidKeyException;
 	
-	/** 
-	 * Initializes this trapdoor permutation with the public key.
+	/**
+	 * Sets this trapdoor permutation with public key and private key.
+	 * @param publicKey
+	 * @param privateKey
+	 */
+	public void setKey(PublicKey publicKey, PrivateKey privateKey)throws InvalidKeyException;
+	
+	/**
+	 * Sets this trapdoor permutation with a public key<p> 
 	 * After this initialization, this object can do compute but not invert.
 	 * This initialization is for user that wants to encrypt a message using the public key but deosn't want to decrypt a message.
-	 * @param publicKey - public key
-	 * @throws InvalidKeyException  if the key is invalid for this trapdoor permutation
+	 * @param publicKey
 	 */
-	public void init(PublicKey publicKey) throws InvalidKeyException;
+	public void setKey(PublicKey publicKey)throws InvalidKeyException;
 	
-	/** 
-	 * Initializes this trapdoor permutation with auxiliary parameters
-	 * @param params  auxiliary parameters
-	 * @throws InvalidParameterSpecException if the params are invalid for this trapdoor permutation
-	 */
-	public void init(AlgorithmParameterSpec params) throws InvalidParameterSpecException;
-
 	/**
-	 * An object trying to use an instance of trapdoor permutation needs to check if it has already been initialized.
-	 * @return true if the object was initialized by calling the function init.
+	 * Checks if this trapdoor permutation object has been previously initialized.<p> 
+	 * To initialize the object the setKey function has to be called with corresponding parameters after construction.
+	 * 
+	 * @return <code>true<code> if the object was initialized;
+	 * 		   <code>false</code> otherwise.
 	 */
-	public boolean IsInitialized();
-	
-	/** 
-	 * @return the parameter spec of this trapdoor permutation
-	 * @throws UnInitializedException if this object is not initialized
-	 */
-	public AlgorithmParameterSpec getParams() throws UnInitializedException;
+	public boolean isKeySet();
 
 	/** 
 	 * @return the public key
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public PublicKey getPubKey() throws UnInitializedException;
+	public PublicKey getPubKey();
 	
 	/** 
 	 * Some of the trapdoor permutations are written as exponentiation modulo a composite number. This function returns this modulus. 
 	 * @return the modulus of the permutation. 
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public BigInteger getModulus() throws UnInitializedException;
+	public BigInteger getModulus();
 
 	/** 
 	 * @return the algorithm name. for example - RSA, Rabin.
 	 */
 	public String getAlgorithmName();
 
+	/**
+	 * Generates public and private keys for this trapdoor permutation.
+	 * @param keyParams hold the required parameters
+	 * @return KeyPair holding the public and private keys
+	 * @throws InvalidParameterSpecException 
+	 */
+	public KeyPair generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException;
+	
+	/**
+	 * Generates public and private keys for this trapdoor permutation.
+	 * @return KeyPair holding the public and private keys
+	 * @throws InvalidParameterSpecException 
+	 */
+	public KeyPair generateKey();
+	
 	/** 
 	 * Computes the operation of this trapdoor permutation on the given TPElement.
 	 * @param tpEl - the input for the computation
 	 * @return - the result TPElement from the computation
 	 * @throws IllegalArgumentException if the given element is invalid for this permutation
-	 * @throws UnInitializedException  if this object is not initialized
 	 */
-	public TPElement compute(TPElement tpEl) throws IllegalArgumentException, UnInitializedException;
+	public TPElement compute(TPElement tpEl) throws IllegalArgumentException;
 
 	/** 
 	 * Inverts the operation of this trapdoor permutation on the given TPElement.
 	 * @param tpEl - the input to invert
 	 * @return - the result TPElement from the invert operation
 	 * @throws IllegalArgumentException if the given element is invalid for this permutation
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public TPElement invert(TPElement tpEl) throws IllegalArgumentException, UnInitializedException;
+	public TPElement invert(TPElement tpEl) throws IllegalArgumentException;
 
 	/** 
 	 * Computes the hard core predicate of the given tpElement. <p>
@@ -135,15 +124,13 @@ public interface TrapdoorPermutation {
 	 * NOT_VALID (it is not an element)
 	 * DON’T_KNOW (there is not enough information to check if it is an element or not)  
 	 * @throws IllegalArgumentException if the given element is invalid for this permutation
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public TPElValidity isElement(TPElement tpEl) throws IllegalArgumentException, UnInitializedException;
+	public TPElValidity isElement(TPElement tpEl) throws IllegalArgumentException;
 	
 	/** 
 	 * creates a random TPElement that is valid for this trapdoor permutation
 	 * @return TPElement - the created random element 
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public TPElement getRandomTPElement() throws UnInitializedException;
+	public TPElement getRandomTPElement();
 	
 }
