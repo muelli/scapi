@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.security.InvalidKeyException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Arrays;
 import java.util.Vector;
@@ -14,7 +15,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.prg.PseudorandomGenerator;
 import edu.biu.scapi.tests.Test;
@@ -98,16 +98,15 @@ public abstract class PrgTest extends Test {
 		SecretKey secretKey = new SecretKeySpec(key, "");
 		
 		//init the prg with the new secret key
-		prg.init(secretKey);
-		
-		
-		//computes the function
 		try {
-			prg.getPRGBytes(out, 0, out.length);
-		} catch (UnInitializedException e) {
-			//shouldn't be called since the object is initialized
-			Logging.getLogger().log(Level.WARNING, e.toString());
+			prg.setKey(secretKey);
+		} catch (InvalidKeyException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+	
+		//computes the function
+		prg.getPRGBytes(out, 0, out.length);
 		
 		//if out is equal to the outbytes than result is sets to true
 		boolean result =  Arrays.equals(out,outBytes);
@@ -182,7 +181,7 @@ public abstract class PrgTest extends Test {
 			byte[] out = new byte[1000];
 			
 			//init the prg with the new secret key
-			prg.init(secretKey);
+			prg.setKey(secretKey);
 			
 			//computes the function
 			prg.getPRGBytes(out, out.length+2, out.length);
@@ -212,7 +211,7 @@ public abstract class PrgTest extends Test {
 			byte[] out = new byte[100];
 			
 			//init the prg with the new secret key
-			prg.init(secretKey);
+			prg.setKey(secretKey);
 			
 			//computes the function
 			prg.getPRGBytes(out, 0, out.length+2);
@@ -243,11 +242,11 @@ public abstract class PrgTest extends Test {
 			//computes the function without initialization
 			prg.getPRGBytes(out, 0, out.length);
 		//the expected result of this test is UnInitializedException
-		} catch (UnInitializedException e){
-			testResult = "Success: The expected exception \"UnInitializedException\" was thrown";
+		} catch (IllegalStateException e){
+			testResult = "Success: The expected exception \"IllegalStateException\" was thrown";
 		//any other exception is a failure
 		}catch(Exception e){
-			testResult = "Failure: Exception different from the expected exception \"UnInitializedException\" was thrown";
+			testResult = "Failure: Exception different from the expected exception \"IllegalStateException\" was thrown";
 		}
 		
 		//writes the result to the output file
@@ -263,7 +262,7 @@ public abstract class PrgTest extends Test {
 		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
 		try {
 			//init the prg with a public key casted to secretKey
-			prg.init((SecretKey) new RSAPublicKeySpec(null, null));
+			prg.setKey((SecretKey) new RSAPublicKeySpec(null, null));
 			
 		//the expected result of this test is ClassCastException
 		} catch (ClassCastException e) {
