@@ -2,10 +2,7 @@ package edu.biu.scapi.tests.primitives;
 
 import java.io.PrintWriter;
 import java.math.BigInteger;
-import java.util.logging.Level;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogGroup;
 import edu.biu.scapi.primitives.dlog.GroupElement;
 import edu.biu.scapi.primitives.dlog.bc.BcDlogECFp;
@@ -63,8 +60,8 @@ public class DlogZpTest extends DlogGroupTest{
 					  "B539CCE3409D13CD566AFBB48D6C019181E1BCFE94B30269EDFE72FE9B6AA4BD7B5A0F1C71CFFF4C19C418E1F6EC0179" +
 					  "81BC087F2A7065B384B890D3191F2BFA", 16);
 			ZpGroupParams params = new ZpGroupParams(q, g, p);
-			//init the object with the wrong arguments
-			((CryptoPpDlogZpSafePrime) dlog).init(params);
+			//creates the object with the wrong arguments
+			new CryptoPpDlogZpSafePrime(params);
 			
 		//the expected result of this test is IllegalArgumentException
 		}catch (IllegalArgumentException e){
@@ -87,14 +84,13 @@ public class DlogZpTest extends DlogGroupTest{
 		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
 		try{
 			//creates an elliptic curve dlog in order to get an element of elliptic curve type
-			BcDlogECFp dlogTemp = new BcDlogECFp();
-			dlogTemp.init("P-521");
+			BcDlogECFp dlogTemp = new BcDlogECFp("P-521");
 			//gets the generator of the created dlog
 			GroupElement element = dlogTemp.getGenerator();
 			
 			//init the tested DlogZp object
 			ZpGroupParams params = new ZpGroupParams(new BigInteger("22"), new BigInteger("3"), new BigInteger("11"));
-			((CryptoPpDlogZpSafePrime) dlog).init(params);
+			CryptoPpDlogZpSafePrime dlog = new CryptoPpDlogZpSafePrime(params);
 			
 			//calls the exponentiate function with the elliptic curve element
 			dlog.exponentiate(element, new BigInteger("3"));
@@ -121,7 +117,7 @@ public class DlogZpTest extends DlogGroupTest{
 		try{
 			//init the tested dlog
 			ZpGroupParams params = new ZpGroupParams(new BigInteger("11"), new BigInteger("3"), new BigInteger("23"));
-			((CryptoPpDlogZpSafePrime) dlog).init(params);
+			CryptoPpDlogZpSafePrime dlog = new CryptoPpDlogZpSafePrime(params);
 			
 			//create an element with value 5 which is no quadratic residue of this dlog
 			((CryptoPpDlogZpSafePrime) dlog).getElement(new BigInteger("5"), true);
@@ -141,26 +137,23 @@ public class DlogZpTest extends DlogGroupTest{
 	
 	protected void conversionsTest(PrintWriter file){
 		String testResult = null; //the test result. initialized to failure
-		try {
-			//init the tested dlog
-			((CryptoPpDlogZpSafePrime) dlog).init(1024);
-			
-			//converts the generator to byte array
-			GroupElement generator= dlog.getGenerator();
-			byte[] gBytes = dlog.convertGroupElementToByteArray(generator);
-			//converts back to the generator
-			GroupElement backToGenerator = dlog.convertByteArrayToGroupElement(gBytes);
-			
-			//checks if the converted element is equal to the generator
-			if (generator.equals(backToGenerator)){
-				testResult = "Success: The conversions from GroupElement to byte array and vice versa succeeded";
-			} else {
-				testResult = "Failure: The conversions from GroupElement to byte array and vice versa failed";
-			}
-		} catch (UnInitializedException e) {
-			// shouldn't occur since the dlog is initialized
-			Logging.getLogger().log(Level.WARNING, e.toString());
+	
+		//creates the tested dlog
+		CryptoPpDlogZpSafePrime dlogGroup = new CryptoPpDlogZpSafePrime(1024);
+		
+		//converts the generator to byte array
+		GroupElement generator= dlogGroup.getGenerator();
+		byte[] gBytes = dlogGroup.convertGroupElementToByteArray(generator);
+		//converts back to the generator
+		GroupElement backToGenerator = dlogGroup.convertByteArrayToGroupElement(gBytes);
+		
+		//checks if the converted element is equal to the generator
+		if (generator.equals(backToGenerator)){
+			testResult = "Success: The conversions from GroupElement to byte array and vice versa succeeded";
+		} else {
+			testResult = "Failure: The conversions from GroupElement to byte array and vice versa failed";
 		}
+		
 		
 		//writes the result to the file
 		file.println(dlog.getGroupType() + "," + provider + ",conversionsTest,Test vector,,," + testResult);
