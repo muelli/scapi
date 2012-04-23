@@ -8,7 +8,6 @@ import org.bouncycastle.math.ec.ECFieldElement;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.ECFieldElement.Fp;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.groupParams.ECFpGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ECGroupParams;
@@ -26,9 +25,8 @@ public class ECFpPointBc extends ECPointBc{
 	 * @param x
 	 * @param y
 	 * @param curve - DlogGroup
-	 * @throws UnInitializedException 
 	 */
-	public ECFpPointBc(BigInteger x, BigInteger y, BcDlogECFp curve) throws UnInitializedException {
+	public ECFpPointBc(BigInteger x, BigInteger y, BcDlogECFp curve){
 		
 		//checks validity
 		if (!checkValidity(x, y, (ECFpGroupParams) curve.getGroupParams()))  //if not valid, throws exception
@@ -42,9 +40,8 @@ public class ECFpPointBc extends ECPointBc{
 	/**
 	 *  Constructor that gets DlogGroup and choose random point in the group
 	 * @param curve
-	 * @throws UnInitializedException 
 	 */
-	public ECFpPointBc(BcDlogECFp curve) throws UnInitializedException{
+	public ECFpPointBc(BcDlogECFp curve){
 		
 		ECFpGroupParams desc = (ECFpGroupParams)curve.getGroupParams();
 		
@@ -87,9 +84,8 @@ public class ECFpPointBc extends ECPointBc{
 	 * Constructor that accepts x value of a point, calculates its corresponding y value and create a point with these values. 
 	 * @param x the x coordinate of the point
 	 * @param curve - elliptic curve dlog group over Fp
-	 * @throws UnInitializedException if the given curve is not initialized
 	 */
-	ECFpPointBc(BigInteger x, BcDlogECFp curve) throws UnInitializedException{
+	ECFpPointBc(BigInteger x, BcDlogECFp curve){
 		
 		BigInteger p = ((ECFpGroupParams) curve.getGroupParams()).getP();
 		ECFieldElement.Fp xElement = new ECFieldElement.Fp(p, x);
