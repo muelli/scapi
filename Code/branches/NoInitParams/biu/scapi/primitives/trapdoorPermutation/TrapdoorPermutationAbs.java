@@ -4,10 +4,6 @@ import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
-
-import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
  * This class implements some common functionality of trapdoor permutation.
@@ -15,63 +11,40 @@ import edu.biu.scapi.exceptions.UnInitializedException;
  */
 public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 	
-	protected AlgorithmParameterSpec params = null;    //algorithm parameters
-	protected PrivateKey privKey = null;               //private key
-	protected PublicKey pubKey = null;                 //public key
-	protected BigInteger modN = null;				   //modulus
-	protected boolean isInitialized = false;		   // indicates if this object is initialized or not. Set to false until init is called
+	protected PrivateKey privKey = null;        //private key
+	protected PublicKey pubKey = null;          //public key
+	protected BigInteger modN = null;			//modulus
+	protected boolean isKeySet = false;		    // indicates if this object is initialized or not. Set to false until init is called
 
-	
-	public void init(PublicKey publicKey, PrivateKey privateKey,
-			AlgorithmParameterSpec params) {
-		//sets the class members with the parameters
-		pubKey = publicKey;
-		privKey = privateKey;
-		this.params = params;
-		isInitialized = true; // mark this object as initialized
-	}
 
-	public void init(PublicKey publicKey, PrivateKey privateKey) throws InvalidKeyException {
+	public void setKey(PublicKey publicKey, PrivateKey privateKey) throws InvalidKeyException {
 		//sets the class members with the keys
 		pubKey = publicKey;
 		privKey = privateKey;
-		isInitialized = true; // mark this object as initialized
+		isKeySet = true; // mark this object as initialized
 	}
 
-	public void init(PublicKey publicKey) throws InvalidKeyException {
+	public void setKey(PublicKey publicKey) throws InvalidKeyException {
 		//sets the class member with the public key
 		pubKey = publicKey;
-		isInitialized = true; // mark this object as initialized
-	}
-	
-	public void init(AlgorithmParameterSpec params) throws InvalidParameterSpecException {
-		//sets the class member with the params
-		this.params = params; 
-		isInitialized = true; // mark this object as initialized
+		isKeySet = true; // mark this object as initialized
 	}
 	
 
-	public boolean IsInitialized() {
-		return isInitialized;
+	public boolean isKeySet() {
+		return isKeySet;
 	}
 
-	public AlgorithmParameterSpec getParams() throws UnInitializedException {
-		if (!IsInitialized()){
-			throw new UnInitializedException();
-		}
-		return params;
-	}
-
-	public PublicKey getPubKey() throws UnInitializedException {
-		if (!IsInitialized()){
-			throw new UnInitializedException();
+	public PublicKey getPubKey(){
+		if (!isKeySet()){
+			throw new IllegalStateException("public key isn't set");
 		}
 		return pubKey;
 	}
 	
-	public BigInteger getModulus() throws UnInitializedException{
-		if (!IsInitialized()){
-			throw new UnInitializedException();
+	public BigInteger getModulus(){
+		if (!isKeySet()){
+			throw new IllegalStateException("keys aren't set");
 		}
 		return modN;
 	}
@@ -86,6 +59,9 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 	 * and it will be easier with a byte than with a boolean.
 	 */
 	public byte hardCorePredicate(TPElement tpEl) {
+		if (!isKeySet()){
+			throw new IllegalStateException("keys aren't set");
+		}
 		/*
 		 *  We use this implementation both in RSA permutation and in Rabin permutation. 
 		 * Thus, We implement it in TrapdoorPermutationAbs and let derived classes override it if needed. 
@@ -105,6 +81,10 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 	 * @return byte[] - log (N) least significant bits
 	 */
 	public byte[] hardCoreFunction(TPElement tpEl) {
+		
+		if (!isKeySet()){
+			throw new IllegalStateException("keys aren't set");
+		}
 		/*
 		 * We use this implementation both in RSA permutation and in Rabin permutation. 
 		 * Thus, We implement it in TrapdoorPermutationAbs and let derived classes override it if needed. 
