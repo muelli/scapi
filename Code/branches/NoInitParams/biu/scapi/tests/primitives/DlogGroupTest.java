@@ -2,7 +2,6 @@ package edu.biu.scapi.tests.primitives;
 
 import java.io.PrintWriter;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.DlogGroup;
 import edu.biu.scapi.tests.Test;
 
@@ -90,19 +89,6 @@ public abstract class DlogGroupTest extends Test {
 	 * @param file the results file
 	 */
 	private void unInited(PrintWriter file) {
-		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
-		try{ //calls the getGenerator function before initialization
-			dlog.getGenerator();
-		}catch(UnInitializedException e){
-			// the expected exception was thrown - result is sets to success
-			testResult = "Success: The expected exception \"UnInitializedException\" was thrown";
-		//any other exception is wrong
-		}catch(Exception e){
-			testResult = "Failure: Exception different from the expected exception \"UnInitializedException\" was thrown";
-		}
-		
-		//prints the results to the given output file
-		file.println(dlog.getGroupType() + "," + provider + ",unInited,Wrong behavior,,," + testResult);
 		
 	}
 	
