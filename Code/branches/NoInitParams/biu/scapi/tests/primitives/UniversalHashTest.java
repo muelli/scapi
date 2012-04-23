@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.security.InvalidKeyException;
 import java.util.Arrays;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -14,10 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
-import edu.biu.scapi.paddings.PaddingParameterSpec;
 import edu.biu.scapi.primitives.universalHash.UniversalHash;
 import edu.biu.scapi.tests.Test;
 
@@ -56,9 +54,9 @@ public class UniversalHashTest extends Test {
 	 * @param output the expected output. The vector test will pass if the outcome of the computation will yield the byte array output
 	 * @param key the related secret key
 	 */
-	protected void addData(byte[] input, byte[] output, byte[] key, PaddingParameterSpec padding){
+	protected void addData(byte[] input, byte[] output, byte[] key){
 		
-		TestData testData = new TestData(input, output, key, padding);
+		TestData testData = new TestData(input, output, key);
 		
 		testDataVector.add(testData);
 		
@@ -81,7 +79,7 @@ public class UniversalHashTest extends Test {
 			out = new byte[(testDataVector.get(i).output).length];
 			
 			//tests the test vector by calling computeAndCompare function.
-			computeAndCompare(out, testDataVector.get(i).input, testDataVector.get(i).output, testDataVector.get(i).key,  testDataVector.get(i).padding, file);
+			computeAndCompare(out, testDataVector.get(i).input, testDataVector.get(i).output, testDataVector.get(i).key, file);
 		}
 	}
 	
@@ -96,28 +94,25 @@ public class UniversalHashTest extends Test {
 	 * @param file the output file
 	 */
 
-	protected void computeAndCompare(byte[] out, byte[] in, byte[] outBytes, byte[] key, PaddingParameterSpec padding, PrintWriter file) {
+	protected void computeAndCompare(byte[] out, byte[] in, byte[] outBytes, byte[] key, PrintWriter file) {
 		
 		//creates a SecretKey object out of the byte array key.
 		SecretKey secretKey = new SecretKeySpec(key, "");
 		try {
 			
 			//init the uh with the new secret key
-			uh.init(secretKey, padding);
+			uh.setKey(secretKey);
 			
 		
 			//computes the hash computation
 			uh.compute(in, 0, in.length, out, 0);
-		} catch (UnInitializedException e) {
-			//shouldn't be called since the object is initialized
-			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (IllegalBlockSizeException e) {
 			//shouldn't be called since the offsets and lengths are in the range
 			Logging.getLogger().log(Level.WARNING, e.toString());
-		} catch (FactoriesException e) {
-			//shouldn't be called since the padding is correct
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
 			Logging.getLogger().log(Level.WARNING, e.toString());
-		}
+		} 
 		
 		//if out is equal to the outbytes than result is set to true
 		boolean result =  Arrays.equals(out,outBytes);
@@ -191,11 +186,11 @@ public class UniversalHashTest extends Test {
 			uh.compute(testDataVector.get(0).input, testDataVector.get(0).input.length, 0, out, 0);
 			
 		//the expected result of this test is UnInitializedException
-		}catch(UnInitializedException e){
-			testResult = "Success: The expected exception \"UnInitializedException\" was thrown";
+		}catch(IllegalStateException e){
+			testResult = "Success: The expected exception \"IllegalStateException\" was thrown";
 		//any other exception is a failure
 		}catch(Exception e){
-			testResult = "Failure: Exception different from the expected exception \"UnInitializedException\" was thrown";
+			testResult = "Failure: Exception different from the expected exception \"IllegalStateException\" was thrown";
 		}
 		
 		//prints the result to the file
@@ -217,7 +212,7 @@ public class UniversalHashTest extends Test {
 			SecretKey secretKey = new SecretKeySpec(testDataVector.get(0).key, "");
 			
 			//init the uh with the new secret key
-			uh.init(secretKey);
+			uh.setKey(secretKey);
 			
 			//calls compute qith a wrong offsets
 			uh.compute(testDataVector.get(0).input, testDataVector.get(0).input.length+1, testDataVector.get(0).input.length, out, out.length+1);
@@ -246,17 +241,15 @@ public class UniversalHashTest extends Test {
 		byte[] input;
 		byte[] output;
 		byte[] key;
-		PaddingParameterSpec padding;
 		
 		/**
 		 * Sets the data
 		 * @param padding 
 		 */
-		public TestData(byte[] input, byte[] output, byte[] key, PaddingParameterSpec padding) {
+		public TestData(byte[] input, byte[] output, byte[] key) {
 			this.input = input;
 			this.output = output;
 			this.key = key;
-			this.padding = padding;
 		}
 
 	}
