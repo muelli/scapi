@@ -3,12 +3,9 @@ package edu.biu.scapi.primitives.dlog.miracl;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Properties;
-import java.util.logging.Level;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogECFp;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.GroupElement;
@@ -30,29 +27,36 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	private native boolean isFpMember(long mip, long point);
 	private native long createInfinityFpPoint(long mip);
 	
-	public void init(String curveName) throws IllegalArgumentException{
+	/**
+	 * Default constructor. Initializes this object with P-192 NIST curve.
+	 */
+	public MiraclDlogECFp() throws IOException{
+		this("P-192");
+	}
+	
+	public MiraclDlogECFp(String fileName, String curveName) throws IOException{
+		super(fileName, curveName);
+	}
+	
+	public MiraclDlogECFp(String curveName) throws IllegalArgumentException, IOException{
 		
-		try {
-			Properties ecProperties;
 		
-			ecProperties = getProperties(PROPERTIES_FILES_PATH); //get properties object containing the curve data
+		Properties ecProperties;
+	
+		ecProperties = getProperties(PROPERTIES_FILES_PATH); //get properties object containing the curve data
+	
+		//checks that the curveName is in the file
+		if(!ecProperties.containsKey(curveName)) { 
+			throw new IllegalArgumentException("no such NIST elliptic curve"); 
+		} 
 		
-			//checks that the curveName is in the file
-			if(!ecProperties.containsKey(curveName)) { 
-				throw new IllegalArgumentException("no such NIST elliptic curve"); 
-			} 
+		//check that the given curve is in the field that matches the group
+		if (!curveName.startsWith("P-")){
+			throw new IllegalArgumentException("curveName is not a curve over Fp field and doesn't match the DlogGroup type"); 
+		} 
+		doInit(ecProperties, curveName);  // set the data and initialize the curve
+		
 			
-			//check that the given curve is in the field that matches the group
-			if (!curveName.startsWith("P-")){
-				throw new IllegalArgumentException("curveName is not a curve over Fp field and doesn't match the DlogGroup type"); 
-			}
-			isInitialized = true; 
-			doInit(ecProperties, curveName);  // set the data and initialize the curve
-			
-			
-		} catch (IOException e) {
-			Logging.getLogger().log(Level.WARNING, "error while loading the NIST elliptic curves file");
-		}
 	}
 
 	/**
@@ -92,12 +96,9 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException{
+		
 		//if the GroupElement doesn't match the DlogGroup, throw exception
 		if (!(groupElement instanceof ECFpPointMiracl)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -122,14 +123,10 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	 * @param groupElement2
 	 * @return the multiplication result
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
 	public GroupElement multiplyGroupElements(GroupElement groupElement1, 
-											  GroupElement groupElement2) 
-											  throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+						GroupElement groupElement2) throws IllegalArgumentException{
+		
 		//if the GroupElements don't match the DlogGroup, throw exception
 		if (!(groupElement1 instanceof ECFpPointMiracl)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -162,13 +159,10 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	 * @param base 
 	 * @return the result of the exponentiation
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
 	public GroupElement exponentiate(GroupElement base, BigInteger exponent) 
-									 throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+									 throws IllegalArgumentException{
+		
 		//if the GroupElements don't match the DlogGroup, throw exception
 		if (!(base instanceof ECFpPointMiracl)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -187,11 +181,19 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 		
 	}
 	
+	/**
+	 * Computes the product of several exponentiations with distinct bases 
+	 * and distinct exponents. 
+	 * Instead of computing each part separately, an optimization is used to 
+	 * compute it simultaneously. 
+	 * @param groupElements
+	 * @param exponentiations
+	 * @return the exponentiation result
+	 */
+	@Override
 	public GroupElement simultaneousMultipleExponentiations(GroupElement[] groupElements, 
-			BigInteger[] exponentiations) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+			BigInteger[] exponentiations) {
+		
 		int len = groupElements.length;
 		
 		//Our test results show that for elliptic curve over Fp and n<25 the naive algorithm gives the best performances
@@ -218,25 +220,19 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	
 	/**
 	 * Create a random member of that Dlog group
-	 * @return the random element
-	 * @throws UnInitializedException 
+	 * @return the random element 
 	 */
-	public GroupElement getRandomElement() throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getRandomElement(){
+		
 		return new ECFpPointMiracl(this);
 	}
 	
 	/**
 	 * Create a point in the Fp field with the given parameters
 	 * @return the created point
-	 * @throws UnInitializedException 
 	 */
-	public ECElement getElement(BigInteger x, BigInteger y) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public ECElement getElement(BigInteger x, BigInteger y) {
+		
 		return new ECFpPointMiracl(x, y, this);
 	}
 	
@@ -244,13 +240,10 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	 * Check if the given element is member of that Dlog group
 	 * @param element - 
 	 * @return true if the given element is member of that group. false, otherwise.
-	 * @throws UnInitializedException 
 	 * @throws IllegalArgumentException
 	 */
-	public boolean isMember(GroupElement element) throws UnInitializedException {
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public boolean isMember(GroupElement element){
+		
 		boolean member = false;
 		//checks that the element is the correct object
 		if(!(element instanceof ECFpPointMiracl)){
@@ -282,9 +275,8 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	 * Converts a byte array to a ECFpPointMiracl.
 	 * @param binaryString the byte array to convert
 	 * @return the created group Element
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement convertByteArrayToGroupElement(byte[] binaryString) throws UnInitializedException{
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString){
 		if (binaryString.length >= ((ECFpGroupParams) groupParams).getP().bitLength()){
 			throw new IllegalArgumentException("String is too long. It has to be of length less than log p");
 		}
