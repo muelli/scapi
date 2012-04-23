@@ -1,7 +1,8 @@
 package edu.biu.scapi.primitives.prf.bc;
 
 import java.security.InvalidKeyException;
-import java.security.spec.AlgorithmParameterSpec;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import javax.crypto.SecretKey;
 
@@ -24,33 +25,39 @@ public final class BcAES extends BcPRP implements AES{
 		super(new AESEngine());
 		
 	}
+	
+	/**
+	 * Receives random object to use.
+	 * Passes it and the DesedeEngine of BC to the abstract super class.
+	 * @param random SecureRandom to use
+	 */
+	public BcAES(SecureRandom random) {
+		super(new AESEngine(), random);
+	}
+	
+	/**
+	 * Receives name of random algorithm to use.
+	 * Passes it and the AESEngine of BC to the abstract super class.
+	 * @param randNumGenAlg random algorithm to use
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public BcAES(String randNumGenAlg) throws NoSuchAlgorithmException {
+		super(new AESEngine(), SecureRandom.getInstance(randNumGenAlg));
+		
+	}
 
 	/**
 	 * initializes this AES with secret key.
 	 * @param secretKey the secret key
 	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) throws InvalidKeyException {
+	public void setKey(SecretKey secretKey) throws InvalidKeyException {
 		int len = secretKey.getEncoded().length;
 		//AES key size should be 128/192/256 bits long
 		if(len!=16 && len!=24 && len!=32){
 			throw new InvalidKeyException("AES key size should be 128/192/256 bits long");
 		}
-		super.init(secretKey);
+		super.setKey(secretKey);
 	}
 	
-	/**
-	 * initializes this AES with secret key and auxiliary parameters.
-	 * @param secretKey the secret key
-	 * @param params algorithm parameters
-	 * @throws InvalidKeyException 
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException {
-		int len = secretKey.getEncoded().length;
-		//AES key size should be 128/192/256 bits long
-		if(len!=16 && len!=24 && len!=32){
-			throw new InvalidKeyException("AES key size should be 128/192/256 bits long");
-		}
-		super.init(secretKey, params);
-	}
 }
