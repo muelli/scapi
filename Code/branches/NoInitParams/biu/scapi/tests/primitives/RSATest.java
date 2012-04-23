@@ -148,7 +148,7 @@ public abstract class RSATest extends TrapdoorPermutationTest {
 		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
 		try {
 			//init the tp
-			tp.init(testDataVector.get(0).publicKey, testDataVector.get(0).privateKey);
+			tp.setKey(testDataVector.get(0).publicKey, testDataVector.get(0).privateKey);
 			//creates a rabin element
 			CryptoPpRabinElement element = new CryptoPpRabinElement(tp.getModulus());
 			
@@ -177,7 +177,7 @@ public abstract class RSATest extends TrapdoorPermutationTest {
 			RabinKeyGenParameterSpec spec = new RabinKeyGenParameterSpec(1024);
 			
 			//init the RSA permutation with Rabin spec
-			tp.init(spec);
+			tp.generateKey(spec);
 			
 			//the expected result of this test is InvalidParameterSpecException
 		} catch(InvalidParameterSpecException e){
