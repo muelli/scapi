@@ -7,8 +7,6 @@ import java.security.spec.InvalidParameterSpecException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-
 
 /** 
  * General interface for pseudorandom function. Every class in this family should implement this interface. <p>
@@ -21,33 +19,20 @@ import edu.biu.scapi.exceptions.UnInitializedException;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
 public interface PseudorandomFunction {
+	
 	/**
-	 * Initializes this prf with the secret key.
-	 * @param secretKey the secrete key
-	 * @throws InvalidKeyException 
-	 *  */
-	public void init(SecretKey secretKey) throws InvalidKeyException;
-
-	/** 
-	 * Initializes this prf with the secret key and the auxiliary parameters.
+	 * Sets the secret key for this prf.
+	 * The key can be changed at any time. 
 	 * @param secretKey secret key
-	 * @param params algorithm parameters
-	 * @throws InvalidParameterSpecException 
 	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException, InvalidKeyException;
+	public void setKey(SecretKey secretKey) throws InvalidKeyException;
 	
 	/**
 	 * An object trying to use an instance of prf needs to check if it has already been initialized.
-	 * @return true if the object was initialized by calling the function init.
+	 * @return true if the object was initialized by calling the function setKey.
 	 */
-	public boolean isInitialized();
-
-	/** 
-	 * @return the parameter spec of this prf
-	 * @throws UnInitializedException 
-	 */
-	public AlgorithmParameterSpec getParams() throws UnInitializedException;
+	public boolean isKeySet();
 
 	/** 
 	 * @return The algorithm name
@@ -57,7 +42,22 @@ public interface PseudorandomFunction {
 	/** 
 	 * @return the input block size in bytes
 	 */
-	public int getBlockSize() ;
+	public int getBlockSize();
+	
+	/**
+	 * Generates a secret key to initialize this prf object.
+	 * @param keySize algorithmParameterSpec contains the required parameters for the key generation
+	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
+	 */
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException;
+	
+	/**
+	 * Generates a secret key to initialize this prf object.
+	 * @param keySize is the required secret key size in bits 
+	 * @return the generated secret key 
+	 */
+	public SecretKey generateKey(int keySize);
 
 	/** 
 	 * Computes the function using the secret key. <p>
@@ -70,9 +70,8 @@ public interface PseudorandomFunction {
 	 * @param outBytes output bytes. The resulted bytes of compute
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException, UnInitializedException;
+	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException;
 	
 	/**
 	 * Computes the function using the secret key. <p>
@@ -86,9 +85,8 @@ public interface PseudorandomFunction {
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param outLen the length of the output array
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException, UnInitializedException;
+	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException;
 	
 	/**
 	 * Computes the function using the secret key. <p>
@@ -102,9 +100,8 @@ public interface PseudorandomFunction {
 	 * @param outBytes output bytes. The resulted bytes of compute.
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOffset, int inLen, byte[] outBytes, int outOffset) throws IllegalBlockSizeException, UnInitializedException;;
+	public void computeBlock(byte[] inBytes, int inOffset, int inLen, byte[] outBytes, int outOffset) throws IllegalBlockSizeException;
 
 	
 }
