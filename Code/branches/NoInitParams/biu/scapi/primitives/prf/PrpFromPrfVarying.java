@@ -1,13 +1,9 @@
 package edu.biu.scapi.primitives.prf;
 
 import java.security.InvalidKeyException;
-import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
-
-import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
  * This class implements some common functionality of PrpVaryingIOLength by having an instance of prfVaryingIOLength.
@@ -23,50 +19,31 @@ public abstract class PrpFromPrfVarying implements PrpVaryingIOLength {
 	 * @param secretKey the secret key
 	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) throws InvalidKeyException {
+	public void setKey(SecretKey secretKey) throws InvalidKeyException {
 		//initializes the underlying prf with the given secret key
-		prfVaryingIOLength.init(secretKey);
-		
+		prfVaryingIOLength.setKey(secretKey);
 	}
 
-	/**
-	 * Initializes this PrpFromPrfVarying with the secret key and the auxiliary parameters
-	 * @param secretKey the secret key
-	 * @param params the auxiliary parameters
-	 * @throws InvalidKeyException 
-	 * @throws InvalidParameterSpecException 
-	 */
-	
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidParameterSpecException {
-		//initializes the underlying prf with the given secret key and params
-		prfVaryingIOLength.init(secretKey, params);	
-	}
-	
-	public boolean isInitialized(){
+	public boolean isKeySet(){
 		// call the underlying prf isInitialized function and return the result
-		return prfVaryingIOLength.isInitialized();
+		return prfVaryingIOLength.isKeySet();
 	}
 	
-	public AlgorithmParameterSpec getParams() throws UnInitializedException {
-		// return the params of the underlying prf
-		return prfVaryingIOLength.getParams();
-	}
+	
 
 	/** 
 	 * This function is suitable for block ciphers where the input/output length is known in advance.
 	 * In this case, both input and output variables are varying so this function should not be called. Throws an exception.
 	 * 
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-
 	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff) throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			int outOff) throws IllegalBlockSizeException {
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
-		throw new IllegalBlockSizeException("to use this prp, call the computeBlock function which specify the block size length");
 		
+		throw new IllegalBlockSizeException("to use this prp, call the computeBlock function which specify the block size length");
 	}
 
 	/** 
@@ -83,13 +60,12 @@ public abstract class PrpFromPrfVarying implements PrpVaryingIOLength {
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param outLen the length of the output array
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen,
 			byte[] outBytes, int outOff, int outLen)
-			throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			throws IllegalBlockSizeException {
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offsets and lengths are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
@@ -112,12 +88,11 @@ public abstract class PrpFromPrfVarying implements PrpVaryingIOLength {
 	 * In this case, both input and output variables are varying so this function should not be called. Throws an exception.
 	 * 
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
 	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff) throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			int outOff) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		throw new IllegalBlockSizeException("to use this prp, call the invertBlock function which specify the block size length");
 		
