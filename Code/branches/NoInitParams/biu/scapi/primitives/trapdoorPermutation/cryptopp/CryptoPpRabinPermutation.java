@@ -2,16 +2,17 @@ package edu.biu.scapi.primitives.trapdoorPermutation.cryptopp;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.trapdoorPermutation.RabinKeyGenParameterSpec;
 import edu.biu.scapi.primitives.trapdoorPermutation.RabinPermutation;
 import edu.biu.scapi.primitives.trapdoorPermutation.RabinPrivateKey;
 import edu.biu.scapi.primitives.trapdoorPermutation.RabinPublicKey;
+import edu.biu.scapi.primitives.trapdoorPermutation.ScRabinPrivateKey;
 import edu.biu.scapi.primitives.trapdoorPermutation.ScRabinPublicKey;
 import edu.biu.scapi.primitives.trapdoorPermutation.TPElValidity;
 import edu.biu.scapi.primitives.trapdoorPermutation.TPElement;
@@ -24,7 +25,7 @@ import edu.biu.scapi.primitives.trapdoorPermutation.TrapdoorPermutationAbs;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  */
 public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs implements RabinPermutation {
-	
+
 	private long tpPtr; //pointer to the Rabin native object 
 	
 	// native functions. These functions are implemented in the CryptoPPJavaInterface dll using the JNI.
@@ -40,6 +41,12 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 	private native String loadRabinName(long ptr);
 	//returns the modulus
 	private native byte[] getRabinModulus(long ptr);
+	//returns p
+	private native byte[] getPrime1(long ptr);
+	//returns q
+	private native byte[] getPrime2(long ptr);
+	//returns inversePModQ (u)
+	private native byte[] getinversePModQ(long ptr);
 	//returns the QuadraticResidueModPrime1 (r)
 	private native byte[]getQuadraticResidueModPrime1(long ptr);
 	//returns the QuadraticResidueModPrime1 (s)
@@ -56,33 +63,13 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 	private native void deleteRabin(long ptr);
 	
 	
-
-	/** 
-	 * No such implementation for Rabin permutation. throws UnsupportedOperationException.
-	 * This Rabin implementation can be initialized by two ways:
-	 * 1. keys
-	 * 2. algorithmParameterSpec
-	 * any combination of these ways is not a legal initialization.
-	 * @throws UnsupportedOperationException 
-	 */
-	public void init(PublicKey publicKey, PrivateKey privateKey,
-			AlgorithmParameterSpec params) throws UnsupportedOperationException {
-		/*initialization of Rabin can be done by two ways:
-		 * 1. keys
-		 * 2. algorithmParameterSpec
-		 * any combination of these ways is not a legal initialization.
-		 */
-		throw new UnsupportedOperationException("no such Rabin initialization");
-
-	}
-	
 	/** 
 	 * Initializes this Rabin permutation with public and private keys
 	 * @param publicKey - public key
 	 * @param privateKey - private key
 	 * @throws InvalidKeyException if the given keys are invalid for Rabin permutation
 	 */
-	public void init(PublicKey publicKey, PrivateKey privateKey) throws InvalidKeyException {
+	public void setKey(PublicKey publicKey, PrivateKey privateKey) throws InvalidKeyException {
 			
 		if (!(publicKey instanceof RabinPublicKey) || !(privateKey instanceof RabinPrivateKey)) {
 			throw new InvalidKeyException("Key type doesn't match the trapdoor permutation type");
@@ -106,7 +93,7 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 					 p.toByteArray(), q.toByteArray(), u.toByteArray());
 		
 		//calls the parent init that sets the keys
-		super.init(publicKey, privateKey);
+		super.setKey(publicKey, privateKey);
 			
 	}
 
@@ -117,7 +104,7 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 	 * @param publicKey - public key
 	 * @throws InvalidKeyException if the given key is invalid for this Rabin permutation
 	 */
-	public void init(PublicKey publicKey) throws InvalidKeyException {
+	public void setKey(PublicKey publicKey) throws InvalidKeyException {
 			
 		if (!(publicKey instanceof RabinPublicKey)) {
 			throw new InvalidKeyException("Key type doesn't match the trapdoor permutation type");
@@ -134,37 +121,8 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 		tpPtr = initRabinPublic(modN.toByteArray(), r.toByteArray(), s.toByteArray());
 		
 		//calls the parent init that sets the key
-		super.init(publicKey);
+		super.setKey(publicKey);
 		
-	}
-	
-	/** 
-	 * Initializes this Rabin permutation with random parameters.
-	 * @param params auxiliary parameters
-	 * @throws InvalidParameterSpecException if params are invalid parameter spec
-	 */
-	public void init(AlgorithmParameterSpec params) throws InvalidParameterSpecException {
-
-		if (!(params instanceof RabinKeyGenParameterSpec)) {
-			throw new InvalidParameterSpecException("AlgorithmParameterSpec type doesn't match the trapdoor permutation type");
-		}
-		
-		//gets the modulus bits size
-		int numBits = ((RabinKeyGenParameterSpec) params).getKeySize();
-
-		//init the Rabin native object
-		tpPtr = initRabinRandomly(numBits);
-		
-		//sets the modN
-		modN = new BigInteger(getRabinModulus(tpPtr));
-		BigInteger r = new BigInteger(getQuadraticResidueModPrime1(tpPtr));
-		BigInteger s = new BigInteger(getQuadraticResidueModPrime2(tpPtr));
-		
-		pubKey = new ScRabinPublicKey(modN, r, s);
-		
-		//calls the parent init
-		super.init(params);
-
 	}
 	
 	/** 
@@ -176,16 +134,54 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 	}
 	
 	/** 
+	 * Generates Rabin private and public keys
+	 * @param params RabinKeyGenParameterSpec
+	 * @throws InvalidParameterSpecException if params are invalid parameter spec
+	 */
+	public KeyPair generateKey(AlgorithmParameterSpec params) throws InvalidParameterSpecException {
+
+		if (!(params instanceof RabinKeyGenParameterSpec)) {
+			throw new InvalidParameterSpecException("AlgorithmParameterSpec type doesn't match the trapdoor permutation type");
+		}
+		
+		//gets the modulus bits size
+		int numBits = ((RabinKeyGenParameterSpec) params).getKeySize();
+
+		//init the Rabin native object
+		long tpPtr = initRabinRandomly(numBits);
+		
+		//sets the modN
+		BigInteger mod = new BigInteger(getRabinModulus(tpPtr));
+		BigInteger p = new BigInteger(getPrime1(tpPtr));
+		BigInteger q = new BigInteger(getPrime2(tpPtr));
+		BigInteger u = new BigInteger(getinversePModQ(tpPtr));
+		BigInteger r = new BigInteger(getQuadraticResidueModPrime1(tpPtr));
+		BigInteger s = new BigInteger(getQuadraticResidueModPrime2(tpPtr));
+		
+		ScRabinPublicKey publicKey = new ScRabinPublicKey(mod, r, s);
+		ScRabinPrivateKey privateKey = new ScRabinPrivateKey(mod, p, q, u);
+		
+		KeyPair pair = new KeyPair(publicKey, privateKey);
+		return pair;
+	}
+	
+	/**
+	 * This function is not supported in this implementation. Throws exception.
+	 * @throws UnsupportedOperationException 
+	 */
+	public KeyPair generateKey(){
+		throw new UnsupportedOperationException("To generate keys for this RSA object use the generateKey(AlgorithmParameterSpec params) function");
+	}
+	
+	/** 
 	 * Computes the Rabin permutation on the given TPElement 
 	 * @param tpEl - the input for the computation
 	 * @return - the result element
-	 * @throws UnInitializedException if this object is not initialized 
 	 * @throws - IllegalArgumentException if the given element is not CryptoPpRabinElement
 	 */
-	public TPElement compute(TPElement tpEl) throws IllegalArgumentException, UnInitializedException{
-		
-		if (!IsInitialized()){
-			throw new UnInitializedException();
+	public TPElement compute(TPElement tpEl) throws IllegalArgumentException{
+		if (!isKeySet()){
+			throw new IllegalStateException("keys aren't set");
 		}
 		if (!(tpEl instanceof CryptoPpRabinElement)){
 			throw new IllegalArgumentException("trapdoor element type doesn't match the trapdoor permutation type");
@@ -207,15 +203,14 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 	 * Inverts the Rabin permutation on the given element 
 	 * @param tpEl - the input to invert
 	 * @return - the result element
-	 * @throws UnInitializedException if this object is not initialized 
 	 * @throws - IllegalArgumentException if the given element is not CryptoPpRabinElement
 	 */
-	public TPElement invert(TPElement tpEl) throws IllegalArgumentException, UnInitializedException{
-		if (!IsInitialized()){
-			throw new UnInitializedException();
+	public TPElement invert(TPElement tpEl) throws IllegalArgumentException{
+		if (!isKeySet()){
+			throw new IllegalStateException("keys aren't set");
 		}
 		//in case that the initialization was with public key and no private key - can't do the invert and returns null
-		if ((privKey == null && pubKey!=null) && (params == null) )
+		if (privKey == null && pubKey!=null)
 			return null;
 		
 		if (!(tpEl instanceof CryptoPpRabinElement)){
@@ -243,13 +238,12 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 	 * VALID (it is an element)
 	 * NOT_VALID (it is not an element)
 	 * DON’T_KNOW (there is not enough information to check if it is an element or not)  
-	 * @throws UnInitializedException if this object is not initialized
 	 * @throws - IllegalArgumentException if the given element is not CryptoPpRabinElement
 	 */
-	public TPElValidity isElement(TPElement tpEl) throws IllegalArgumentException, UnInitializedException{
+	public TPElValidity isElement(TPElement tpEl) throws IllegalArgumentException{
 		
-		if (!IsInitialized()){
-			throw new UnInitializedException();
+		if (!isKeySet()){
+			throw new IllegalStateException("keys aren't set");
 		}
 		if (!(tpEl instanceof CryptoPpRabinElement)){
 			throw new IllegalArgumentException("trapdoor element type doesn't match the trapdoor permutation type");
@@ -278,11 +272,10 @@ public final class CryptoPpRabinPermutation extends TrapdoorPermutationAbs imple
 	/** 
 	 * creates a random CryptoPpRabinElement.
 	 * @return TPElement - the created element
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public TPElement getRandomTPElement() throws UnInitializedException {
-		if (!IsInitialized()){
-			throw new UnInitializedException();
+	public TPElement getRandomTPElement(){
+		if (!isKeySet()){
+			throw new IllegalStateException("keys aren't set");
 		}
 		return new CryptoPpRabinElement(modN);
 	}
