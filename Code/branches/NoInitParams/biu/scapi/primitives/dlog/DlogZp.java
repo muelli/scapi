@@ -12,16 +12,10 @@ import edu.biu.scapi.exceptions.UnInitializedException;
 public interface DlogZp extends DlogGroup{
 	
 	/**
-	 * Initialize the CryptoPP implementation of Dlog over Zp* with random elements
-	 * @param groupParams
-	 */
-	public void init(int numBits);
-	
-	/**
 	 * Creates an element with the given x value 
 	 * @param x
 	 * @return the created element
 	 * @throws UnInitializedException 
 	 */
-	public ZpElement getElement (BigInteger x, Boolean bCheckMembership) throws UnInitializedException;
+	public ZpElement getElement (BigInteger x, Boolean bCheckMembership);
 }
