@@ -16,7 +16,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.kdf.KeyDerivationFunction;
 import edu.biu.scapi.tests.Test;
@@ -111,24 +110,19 @@ public class KdfTest extends Test {
 		//only if the kdf uses a key init the underlying kdf with this key.
 		if(key!=null)
 			try {
-				kdf.init(new SecretKeySpec(key,""));
+				kdf.setKey(new SecretKeySpec(key,""));
 			} catch (InvalidKeyException e1) {
 				//shouldn't be called since the vector test is known and correct
 				Logging.getLogger().log(Level.WARNING, e1.toString());
 			}
 		
 		SecretKey secretKeyOut = null;
-		try {
-			//generates new secretKey
-			secretKeyOut = kdf.generateKey(secretKey, outLen, info);
-			
-			//puts the byte results in the out byte array
-			out = secretKeyOut.getEncoded();
-			
-		} catch (UnInitializedException e) {
-			//shouldn't be called since the object is initialized
-			Logging.getLogger().log(Level.WARNING, e.toString());
-		}
+		
+		//generates new secretKey
+		secretKeyOut = kdf.generateKey(secretKey, outLen, info);
+		
+		//puts the byte results in the out byte array
+		out = secretKeyOut.getEncoded();
 		
 		//if out is equal to the outbytes than returns true
 		boolean result =  Arrays.equals(out,outBytes);
@@ -200,12 +194,12 @@ public class KdfTest extends Test {
 			//calls generateKey without initialization
 			kdf.generateKey(secretKey, 100);
 		
-		//the expected result of this test is UnInitializedException
-		} catch (UnInitializedException e){
-			testResult = "Success: The expected exception \"UnInitializedException\" was thrown";
+		//the expected result of this test is IllegalStateException
+		} catch (IllegalStateException e){
+			testResult = "Success: The expected exception \"IllegalStateException\" was thrown";
 		//any other exception is a failure
 		}catch(Exception e){
-			testResult = "Failure: Exception different from the expected exception \"UnInitializedException\" was thrown";
+			testResult = "Failure: Exception different from the expected exception \"IllegalStateException\" was thrown";
 		}
 		
 		//prints the result to the file
@@ -228,7 +222,7 @@ public class KdfTest extends Test {
 			byte[] outKey = new byte[100];
 			if (key!=null){
 				//init the kdf
-				kdf.init(new SecretKeySpec(key,""));
+				kdf.setKey(new SecretKeySpec(key,""));
 			}
 			//calls generateKey with a wrong offset
 			kdf.generateKey(input, input.length+2, input.length, outKey, outKey.length+2, 100, info);
@@ -260,7 +254,7 @@ public class KdfTest extends Test {
 			byte[] info = testDataVector.get(0).info;
 			if (key!=null){
 				//init the kdf
-				kdf.init(new SecretKeySpec(key,""));
+				kdf.setKey(new SecretKeySpec(key,""));
 			}
 			//calls generateKey with a wrong length
 			kdf.generateKey(input, 0, input.length+2, outKey, 0, 102, info);
@@ -286,7 +280,7 @@ public class KdfTest extends Test {
 		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
 		try {
 			//tries to initialize with a public key instead of secretkey
-			kdf.init((SecretKey) new RSAPublicKeySpec(null, null));
+			kdf.setKey((SecretKey) new RSAPublicKeySpec(null, null));
 		
 		//the expected result of this test is ClassCastException
 		} catch (ClassCastException e){
