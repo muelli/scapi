@@ -1,12 +1,11 @@
 package edu.biu.scapi.primitives.universalHash;
 
+import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
-
-import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
  * General interface for perfect universal hash. Every class in this family should implement this interface.
@@ -24,31 +23,18 @@ import edu.biu.scapi.exceptions.UnInitializedException;
 public interface UniversalHash {
 	
 	/**
-	 * Initializes this PerfectUniversalHash with the secret key.
-	 * @param secretKey the secret key
-	 *  
-	 */
-	public void init(SecretKey secretKey);
-
-	/** 
-	 * Initializes this PerfectUniversalHash with the secret key and the auxiliary parameters.
+	 * Sets the secret key for this UH.
+	 * The key can be changed at any time. 
 	 * @param secretKey secret key
-	 * @param params algorithm parameters
-	 * @throws FactoriesException 
+	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws FactoriesException;
-
-	/**
-	 * An object trying to use an instance of perfectUniversalHash needs to check if it has already been initialized.
-	 * @return true if the object was initialized by calling the function init.
-	 */
-	public boolean isInitialized();
+	public void setKey(SecretKey secretKey) throws InvalidKeyException;
 	
-	/** 
-	 * @return the parameter spec of this perfect universal hash
-	 * @throws UnInitializedException if this object is not initialized
+	/**
+	 * An object trying to use an instance of UH needs to check if it has already been initialized.
+	 * @return true if the object was initialized by calling the function setKey.
 	 */
-	public AlgorithmParameterSpec getParams() throws UnInitializedException;
+	public boolean isKeySet();
 	
 	/** 
 	 * @return the algorithm name
@@ -73,6 +59,21 @@ public interface UniversalHash {
 	 * @return the output size of this hash function
 	 */
 	public int getOutputSize();
+	
+	/**
+	 * Generates a secret key to initialize this UH object.
+	 * @param keySize algorithmParameterSpec contains the required parameters for the key generation
+	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
+	 */
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException;
+	
+	/**
+	 * Generates a secret key to initialize this UH object.
+	 * @param keySize is the required secret key size in bits 
+	 * @return the generated secret key 
+	 */
+	public SecretKey generateKey(int keySize);
 
 	/** 
 	 * Computes the hash function on the in byte array and put the result in the output byte array
@@ -81,9 +82,8 @@ public interface UniversalHash {
 	 * @param inLen - length. The number of bytes to take after the offset
 	 * @param out - output byte array
 	 * @param outOffset - the offset within the output byte array
-	 * @throws UnInitializedException if this object is not initialized
 	 * @throws IllegalBlockSizeException if the input length is greater than the upper limit
 	 */
 	public void compute(byte[] in, int inOffset, int inLen, byte[] out,
-			int outOffset) throws UnInitializedException, IllegalBlockSizeException;
+			int outOffset) throws IllegalBlockSizeException;
 }
