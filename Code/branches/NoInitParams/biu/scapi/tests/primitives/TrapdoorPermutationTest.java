@@ -3,6 +3,7 @@ package edu.biu.scapi.tests.primitives;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.AlgorithmParameterSpec;
@@ -13,7 +14,6 @@ import java.util.logging.Level;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.trapdoorPermutation.TPElement;
 import edu.biu.scapi.primitives.trapdoorPermutation.TrapdoorPermutation;
@@ -146,7 +146,7 @@ public abstract class TrapdoorPermutationTest extends Test {
 		TPElement computeResult = null;
 		try {
 			//init the trapdoor with the keys
-			tp.init(pub, priv);
+			tp.setKey(pub, priv);
 			
 			//computes the function
 			computeResult = tp.compute(value);
@@ -163,11 +163,7 @@ public abstract class TrapdoorPermutationTest extends Test {
 			//should not occur since the elements are from the test vector
 			e.printStackTrace();
 			Logging.getLogger().log(Level.WARNING, e.toString());
-		} catch (UnInitializedException e) {
-			//should not occur since the object is initialized
-			e.printStackTrace();
-			Logging.getLogger().log(Level.WARNING, e.toString());
-		}
+		} 
 		
 		//copies the input, output and expected output to outputStreams
 		//if the value is too long, cut it in the middle and append ".." to sign that this is not the complete value
@@ -213,10 +209,12 @@ public abstract class TrapdoorPermutationTest extends Test {
 		try {
 			//if the algorithmParameterSpec is null, init the object with the keys, else, init with the algorithmParameterSpec
 			if(spec==null){
-				tp.init(pub, priv);
+				tp.setKey(pub, priv);
 			}
-			else
-				tp.init(spec);
+			else{
+				KeyPair pair = tp.generateKey(spec);
+				tp.setKey(pair.getPublic(), pair.getPrivate());
+			}
 			
 			//if there is no input element, gets a random element
 			if(value==null)
@@ -237,10 +235,6 @@ public abstract class TrapdoorPermutationTest extends Test {
 			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (IllegalArgumentException e) {
 			//should not occur since the elements are from the test vector
-			e.printStackTrace();
-			Logging.getLogger().log(Level.WARNING, e.toString());
-		} catch (UnInitializedException e) {
-			//should not occur since the object is initialized
 			e.printStackTrace();
 			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (InvalidParameterSpecException e) {
@@ -302,7 +296,7 @@ public abstract class TrapdoorPermutationTest extends Test {
 			//creates an DH algorithmParameterSpec, which is not trapdoor's algorithmParameterSpec
 			AlgorithmParameterSpec spec = new DHParameterSpec(new BigInteger("11"), new BigInteger("3"));
 			//initialized the trapdoorPermutation with the DH spec
-			tp.init(spec);
+			tp.generateKey(spec);
 			
 		//the expected result of this test is InvalidParameterSpecException
 		}catch(InvalidParameterSpecException e){
@@ -318,7 +312,7 @@ public abstract class TrapdoorPermutationTest extends Test {
 
 	/**
 	 * Tests the case that a function is called while the object is not initialized.
-	 * the expected result is to throw UnInitializedException
+	 * the expected result is to throw IllegalStateException
 	 * @param the output file
 	 */
 	private void unInited(PrintWriter file) {
@@ -330,12 +324,12 @@ public abstract class TrapdoorPermutationTest extends Test {
 			tp.compute(element);
 			tp.invert(element);
 			
-		//the expected result of this test is UnInitializedException
-		}catch(UnInitializedException e){
-			testResult = "Success: The expected exception \"UnInitializedException\" was thrown";
+		//the expected result of this test is IllegalStateException
+		}catch(IllegalStateException e){
+			testResult = "Success: The expected exception \"IllegalStateException\" was thrown";
 		//any other exception is a failure
 		}catch(Exception e){
-			testResult = "Failure: Exception different from the expected exception \"UnInitializedException\" was thrown";
+			testResult = "Failure: Exception different from the expected exception \"IllegalStateException\" was thrown";
 		}
 		
 		//prints the result to the output file
@@ -351,7 +345,7 @@ public abstract class TrapdoorPermutationTest extends Test {
 		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
 		try{
 			//cast a SecretKey to PublicKey and PrivateKey
-			tp.init((PublicKey) new SecretKeySpec("adsfd".getBytes(), ""), (PrivateKey) new SecretKeySpec("asdfsdf".getBytes(), ""));
+			tp.setKey((PublicKey) new SecretKeySpec("adsfd".getBytes(), ""), (PrivateKey) new SecretKeySpec("asdfsdf".getBytes(), ""));
 			
 		//the expected result of this test is ClassCastException
 		}catch(ClassCastException e){
