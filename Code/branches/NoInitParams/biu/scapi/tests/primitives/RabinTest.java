@@ -55,7 +55,8 @@ public abstract class RabinTest extends TrapdoorPermutationTest {
 		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
 		try {
 			//init the tp
-			tp.init(testDataInvertCompute.get(0).spec);
+			KeyPair pair= tp.generateKey(testDataInvertCompute.get(0).spec);
+			tp.setKey(pair.getPublic(), pair.getPrivate());
 			//creates a RSA element
 			RSAElement element = new RSAElement(tp.getModulus());
 			
@@ -91,7 +92,7 @@ public abstract class RabinTest extends TrapdoorPermutationTest {
 			PrivateKey privateKey = pair.getPrivate();
 			
 			//init the Rabin object with RSA keys
-			tp.init(publicKey, privateKey);
+			tp.setKey(publicKey, privateKey);
 			
 			//the expected result of this test is InvalidKeyException
 		} catch(InvalidKeyException e){
