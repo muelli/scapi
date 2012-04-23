@@ -1,11 +1,11 @@
 package edu.biu.scapi.primitives.dlog.bc;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.DlogEllipticCurve;
 import edu.biu.scapi.primitives.dlog.DlogGroupEC;
 import edu.biu.scapi.primitives.dlog.GroupElement;
@@ -21,17 +21,20 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 
 	protected ECCurve curve; // BC elliptic curve
 	
+	protected BcAdapterDlogEC(){}
+	
+	public BcAdapterDlogEC(String fileName, String curveName) throws IOException {
+		super(fileName, curveName);
+	}
+
 	/*
 	 * Creates an ECPoint from the given x,y
 	 * @param x
 	 * @param y
 	 * @return ECPoint - the created point
-	 * @throws UnInitializedException 
 	 */
-	public ECPoint createPoint(BigInteger x, BigInteger y) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public ECPoint createPoint(BigInteger x, BigInteger y){
+		
 		return curve.createPoint(x, y, false);
 	}
 	
@@ -40,12 +43,9 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param element - 
 	 * @return true if the given element is member of this group; false, otherwise.
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
-	public boolean isMember(GroupElement element) throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public boolean isMember(GroupElement element) throws IllegalArgumentException{
+		
 		if (!(element instanceof ECPointBc)){
 			throw new IllegalArgumentException("element type doesn't match the group type");
 		}
@@ -67,12 +67,9 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException{
+		
 		//if the GroupElement doesn't match the DlogGroup, throws exception
 		if (!(groupElement instanceof ECPointBc)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -103,13 +100,10 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param base 
 	 * @return the result of the exponentiation
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
 	public GroupElement exponentiate(GroupElement base, BigInteger exponent) 
-									 throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+									 throws IllegalArgumentException{
+		
 		//if the GroupElements don't match the DlogGroup, throws exception
 		if (!(base instanceof ECPointBc)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -143,11 +137,8 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @throws UnInitializedException 
 	 */
 	public GroupElement multiplyGroupElements(GroupElement groupElement1, 
-											  GroupElement groupElement2) 
-											  throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+						GroupElement groupElement2) throws IllegalArgumentException{
+		
 		//if the GroupElements don't match the DlogGroup, throws exception
 		if (!(groupElement1 instanceof ECPointBc)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -179,11 +170,19 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 		
 	}
 	
+	/**
+	 * Computes the product of several exponentiations with distinct bases 
+	 * and distinct exponents. 
+	 * Instead of computing each part separately, an optimization is used to 
+	 * compute it simultaneously. 
+	 * @param groupElements
+	 * @param exponentiations
+	 * @return the exponentiation result
+	 */
+	@Override
 	public GroupElement simultaneousMultipleExponentiations
-					(GroupElement[] groupElements, BigInteger[] exponentiations) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+					(GroupElement[] groupElements, BigInteger[] exponentiations){
+		
 		//Our test results show that for BC elliptic curve the LL algorithm always gives the best performances
 		return computeLL(groupElements, exponentiations);
 	}
