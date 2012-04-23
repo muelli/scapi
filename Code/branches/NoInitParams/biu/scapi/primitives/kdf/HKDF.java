@@ -1,7 +1,6 @@
 package edu.biu.scapi.primitives.kdf;
 
 import java.security.InvalidKeyException;
-import java.security.spec.AlgorithmParameterSpec;
 import java.util.logging.Level;
 
 import javax.crypto.IllegalBlockSizeException;
@@ -9,7 +8,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.prf.Hmac;
 import edu.biu.scapi.tools.Factories.PrfFactory;
@@ -24,52 +22,45 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
 public final class HKDF implements KeyDerivationFunction {
 	
 	private Hmac hmac; // the underlying hmac
-
+	
 	/**
 	 * Constructor that accepts a name of hmac and creates the HKDF object with it.
 	 * @param hmac the underlying object
 	 * @throws FactoriesException if this object is not initialized
 	 */
 	public HKDF(String hmac) throws FactoriesException{
-		//creates the hmac by the prf factory
-		this.hmac = (Hmac) PrfFactory.getInstance().getObject(hmac);
+		//creates the hmac by the prf factory, the SecureRandom object and call the extended constructor
+		this((Hmac) PrfFactory.getInstance().getObject(hmac));
 	}
 	
 	/**
 	 * Constructor that accepts an HMAC to be the underlying object.
-	 * The given Hmac MUST be initialized.
 	 * @param hmac the underlying hmac. 
-	 * @throws UnInitializedException if the given Hmac is not initialized
 	 */
-	public HKDF(Hmac hmac) throws UnInitializedException{
+	public HKDF(Hmac hmac) {
 		
-		//first checks that the hmac is initialized.
-		if(hmac.isInitialized()){
-			this.hmac = hmac;
-		}
-		else{//the user must pass an initialized object, otherwise throw an exception
-			throw new UnInitializedException("The input variable must be initialized");
-		}
-			
+		this.hmac = hmac;
 	}
 	
-	
-	public void init(SecretKey secretKey) throws InvalidKeyException {
+	/**
+	 * Sets the secret key for this kdf.
+	 * The key can be changed at any time. 
+	 * @param secretKey secret key
+	 * @throws InvalidKeyException 
+	 */
+	public void setKey(SecretKey secretKey) throws InvalidKeyException{
 		//init the underlying hmac
-		hmac.init(secretKey);
+		hmac.setKey(secretKey);
 		
 	}
-
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException {
-		// there are no params. ignore the params and sends to the other init function
-		init(secretKey);
-		
-	}
-
-	public boolean isInitialized() {
-
+	
+	/**
+	 * An object trying to use an instance of kdf needs to check if it has already been initialized.
+	 * @return true if the object was initialized by calling the function setKey.
+	 */
+	public boolean isKeySet(){
 		//if the hmac is initialized than the HKDF is initialized as well.
-		return hmac.isInitialized(); 
+		return hmac.isKeySet(); 
 	}
 
 	/**
@@ -84,16 +75,14 @@ public final class HKDF implements KeyDerivationFunction {
 	 *   OUTPUT the first L bits of K(1),…,K(t)
 	 *   
 	 *   @param iv - CTXInfo 
-	 * @throws UnInitializedException 
 	 * 
 	 */
-	public SecretKey generateKey(SecretKey seedForGeneration, int outLen, byte[] iv) throws UnInitializedException {
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
-		
+	public SecretKey generateKey(SecretKey seedForGeneration, int outLen, byte[] iv)  {
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
+		}	
 		int hmacLength = hmac.getBlockSize();                           //the size of the output of the hmac.
-		byte[] inBytes = seedForGeneration.getEncoded();                              //gets the input key to work on
+		byte[] inBytes = seedForGeneration.getEncoded();                 //gets the input key to work on
 		byte[] outBytes = new byte[outLen];                             //the output key
 		byte[] roundKey = new byte[hmacLength];							//PRK from the pseudocode
 		byte[] intermediateOutBytes = new byte[hmacLength];             //round result K(i) in the pseudocode
@@ -111,7 +100,7 @@ public final class HKDF implements KeyDerivationFunction {
 		
 		//init the hmac with the new key. From now on this is the key for all the rounds.
 		try {
-			hmac.init(new SecretKeySpec(roundKey, "HKDF"));
+			hmac.setKey(new SecretKeySpec(roundKey, "HKDF"));
 		} catch (InvalidKeyException e) {
 			//shoudln't happen since the key is the output of compute block and its length is ok
 			Logging.getLogger().log(Level.WARNING, e.toString());
@@ -180,9 +169,6 @@ public final class HKDF implements KeyDerivationFunction {
 			} catch (IllegalBlockSizeException e) {
 				// souldn't happen since the offsets and length are within the arrays
 				Logging.getLogger().log(Level.WARNING, e.toString());
-			} catch (UnInitializedException e) {
-				// souldn't happen since the underlying object is initialized
-				Logging.getLogger().log(Level.WARNING, e.toString());
 			}
 			
 			if(i==rounds){//We fill the rest of the array with a portion of the last result.
@@ -231,34 +217,29 @@ public final class HKDF implements KeyDerivationFunction {
 		} catch (IllegalBlockSizeException e) {	
 			// souldn't happen since the offsets and length are within the arrays
 			Logging.getLogger().log(Level.WARNING, e.toString());
-		} catch (UnInitializedException e) {
-			// souldn't happen since the underlying object is initialized
-			Logging.getLogger().log(Level.WARNING, e.toString());
-		}
+		} 
 		
 		//copies the results to the output array
 		System.arraycopy(intermediateOutBytes, 0,outBytes , 0, hmacLength);
 	}
 
-	public SecretKey generateKey(SecretKey seedForGeneration, int outLen) throws UnInitializedException {
+	public SecretKey generateKey(SecretKey seedForGeneration, int outLen)  {
 		//there is no auxiliary information, sends an empty iv.
 		return generateKey(seedForGeneration, outLen, null);
 	}
 
 	public void generateKey(byte[] seedForGeneration, int inOff, int inLen, byte[] outKey,
-			int outOff, int outLen) throws UnInitializedException {
+			int outOff, int outLen) {
 		//there is no auxiliary information, sends an empty iv.
 		generateKey(seedForGeneration, inOff, inLen, outKey, outOff, outLen, null);
 		
 	}
 
 	public void generateKey(byte[] seedForGeneration, int inOff, int inLen, byte[] outKey,
-			int outOff, int outLen, byte[] iv) throws UnInitializedException {
-		//checks that the object is initialized
-		if (!isInitialized()){
-			throw new UnInitializedException();
+			int outOff, int outLen, byte[] iv) {
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
-		
 		//checks that the offset and length are correct
 		if ((inOff > seedForGeneration.length) || (inOff+inLen > seedForGeneration.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
