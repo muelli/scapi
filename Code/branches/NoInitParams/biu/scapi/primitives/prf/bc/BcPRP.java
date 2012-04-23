@@ -1,15 +1,18 @@
 package edu.biu.scapi.primitives.prf.bc;
 
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
+
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.prf.PrpFixed;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
 
@@ -28,8 +31,8 @@ public abstract class BcPRP implements PrpFixed{
 	private CipherParameters bcParams = null;//bc parameters
 	private boolean forEncryption = true;//set for true. If decryption is needed the flag will be set to false. 
 	protected SecretKey secretKey = null;
-	protected AlgorithmParameterSpec params = null;
-	protected boolean isInitialized = false;//until init is called set to false.
+	private SecureRandom random;
+	protected boolean isKeySet = false;//until init is called set to false.
 	
 
 	/** 
@@ -38,17 +41,29 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param bcBlockCipher the underlying bc block cipher
 	 */
 	public BcPRP(BlockCipher bcBlockCipher) {
+		//creates random and call the other constructor
+		this(bcBlockCipher, new SecureRandom());
+		
+	}
+	
+	/** 
+	 * Constructor that accepts a blockCipher to be the underlying blockCipher and secureRadom.
+	 * 
+	 * @param bcBlockCipher the underlying bc block cipher
+	 */
+	public BcPRP(BlockCipher bcBlockCipher, SecureRandom random) {
 		
 		this.bcBlockCipher = bcBlockCipher;
+		this.random = random;
 	}
 
 
 	/** 
-	 * Initializes this prp with the given secret key.
+	 * Initializes this prf with the given secret key.
 	 * @param secretKey secret key
 	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) throws InvalidKeyException {
+	public void setKey(SecretKey secretKey) throws InvalidKeyException {
 		
 		/*
 		 * Creates the relevant bc parameters to pass when inverting or computing.
@@ -63,49 +78,15 @@ public abstract class BcPRP implements PrpFixed{
 		//at the beginning forEncryption is set to true. Init the BC block cipher.
 		bcBlockCipher.init(forEncryption, bcParams);
 			
-		isInitialized = true; //marks this object as initialized
+		isKeySet = true; //marks this object as initialized
 			
 		
 	}
 	
-	
-
-	/** 
-	 * Initializes this prp with secret key and the auxiliary parameters.
-	 * @param secretKey secret key
-	 * @param params algorithm parameters
-	 * @throws InvalidParameterSpecException 
-	 * @throws InvalidKeyException 
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException  {
-		/*
-		 * Creates the relevant bc parameters to pass when inverting or computing.
-		 */
-		
-		//init parameters
-		this.secretKey = secretKey;
-		this.params = params;
-		
-		//send the parameters converted to bc.
-		bcParams = BCParametersTranslator.getInstance().translateParameter(secretKey, params);
-		
-		//at the beginning forEncryption is set to true. Init the BC block cipher.
-		bcBlockCipher.init(forEncryption, bcParams);
-		
-		isInitialized = true; //marks this object as initialized
+	public boolean isKeySet(){
+		return isKeySet;
 	}
 	
-	public boolean isInitialized(){
-		return isInitialized;
-	}
-	
-	
-	public AlgorithmParameterSpec getParams() throws UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
-		}
-		return params;
-	}
 	
 	/**
 	 * @return the name of the underlying blockCipher
@@ -121,6 +102,47 @@ public abstract class BcPRP implements PrpFixed{
 		
 		return bcBlockCipher.getBlockSize();
 	}
+	
+	/**
+	 * Generates a secret key to initialize this prf object.
+	 * @param keySize algorithmParameterSpec contains the required secret key size in bits 
+	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
+	 */
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException{
+		throw new UnsupportedOperationException("To generate a key for this prf object use the generateKey(int keySize) function");
+	}
+	
+	/**
+	 * Generates a secret key to initialize this prf object.
+	 * @param keySize is the required secret key size in bits 
+	 * @return the generated secret key 
+	 */
+	public SecretKey generateKey(int keySize){
+		SecretKey secretKey = null;
+		//Looks for a default provider implementation of the key generation for this prp. 
+		//The current prps we use are AES and TripleDes that exists in the default provider implementation.
+		//If found then return it. 
+		try {
+			//gets the KeyGenerator of this algorithm
+			KeyGenerator keyGen = KeyGenerator.getInstance(getAlgorithmName());
+			//if the key size is zero or less - uses the default key size as implemented in the provider implementation
+			if(keySize <= 0){
+				keyGen.init(random);
+			//else, uses the keySize to generate the key
+			} else {
+				keyGen.init(keySize, random);
+			}
+			//generates the key
+			secretKey = keyGen.generateKey();
+		
+		//Could not find a default provider implementation.
+		} catch (NoSuchAlgorithmException e) {
+			//shouldn't occur since the current prp we use (AES and TripleDes) have key generator that implemented by sun
+		}
+		
+		return secretKey;
+	}
 
 	/** 
 	 * Computes the underlying permutation. <p>
@@ -129,12 +151,11 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param inOff input offset in the inBytes array
 	 * @param outBytes output bytes. The resulted bytes of compute.
 	 * @param outOff output offset in the outBytes array to put the result from
-	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff) throws UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			int outOff) {
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+getBlockSize() > inBytes.length)){
@@ -163,13 +184,12 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param inOffset input offset in the inBytes array
 	 * @param outBytes output bytes. The resulted bytes of invert
 	 * @param outOffset output offset in the outBytes array to put the result from
-	 * @throws UnInitializedException 
 	 */
 
 	public void computeBlock(byte[] inBytes, int inOffset, int inLen,
-			byte[] outBytes, int outOffset) throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			byte[] outBytes, int outOffset) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		//the checks on the offset and length is done in the computeBlock (inBytes, inOffset, outBytes, outOffset)
 		if(inLen==getBlockSize()) //checks that the input length is the same as the block size.
@@ -188,13 +208,12 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param outBytes output bytes. The resulted bytes of compute.
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen,
 			byte[] outBytes, int outOff, int outLen)
-			throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		//the checks on the offset and length are done in the computeBlock(inBytes, inOff, outBytes, outOff)
 		if (inLen==outLen && inLen==getBlockSize()) //checks that the lengths are the same as the block size
@@ -211,18 +230,15 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param inOff input offset in the inBytes array
 	 * @param outBytes output bytes. The resulted bytes of invert
 	 * @param outOff output offset in the outBytes array to put the result from
-	 * @throws UnInitializedException 
 	 */
-	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,	int outOff) throws UnInitializedException {
+	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,	int outOff) {
 		/*
 		 * Calls the underlying bc block cipher processBlock. Since we wish to invertBlock we first set the flag
 		 * of forEncryption to false.
 		 */
-		
-		if(!isInitialized()){
-			throw new UnInitializedException();
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
-		
 		// checks that the offsets are correct 
 		if ((inOff > inBytes.length) || (inOff+getBlockSize() > inBytes.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
@@ -253,12 +269,11 @@ public abstract class BcPRP implements PrpFixed{
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param len the length of the input and the output.
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
 	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff, int len) throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			int outOff, int len) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		//the checks of the offset and lengths are done in the invertBlock(inBytes, inOff, outBytes, outOff)
 		if (len==getBlockSize()) //checks that the length is the same asthe block size
