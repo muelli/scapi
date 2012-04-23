@@ -16,7 +16,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.prf.PseudorandomFunction;
 import edu.biu.scapi.tests.Test;
@@ -110,15 +109,12 @@ public abstract class PrfTest extends Test {
 		SecretKey secretKey = new SecretKeySpec(key, "");
 		try {
 			//initializes the prf with the new secret key
-			prf.init(secretKey);
+			prf.setKey(secretKey);
 		
 			//computes the function
 			prf.computeBlock(in, 0, in.length, out, 0, out.length);
 		} catch (IllegalBlockSizeException e) {
 			//shouldn't be called since the offsets and lengths are in the range
-			Logging.getLogger().log(Level.WARNING, e.toString());
-		} catch (UnInitializedException e) {
-			//shouldn't be called since the object is initialized
 			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (InvalidKeyException e) {
 			//shouldn't be called since the vector test is known and correct
@@ -213,12 +209,12 @@ public abstract class PrfTest extends Test {
 			//computes the function
 			prf.computeBlock(input, 0, input.length, out, 0, 0);
 			
-		//the right result of this test is UnInitializedException
-		} catch (UnInitializedException e) {
-			testResult = "Success: The expected exception \"UnInitializedException\" was thrown";
+		//the right result of this test is IllegalStateException
+		} catch (IllegalStateException e) {
+			testResult = "Success: The expected exception \"IllegalStateException\" was thrown";
 		//any other exception is wrong
 		}catch(Exception e){
-			testResult = "Failure: Exception different from the expected exception \"UnInitializedException\" was thrown";
+			testResult = "Failure: Exception different from the expected exception \"IllegalStateException\" was thrown";
 		}
 		
 		//writes the result to the file
@@ -237,7 +233,7 @@ public abstract class PrfTest extends Test {
 			SecretKey secretKey = new SecretKeySpec(testDataVector.get(0).key, "");
 			
 			//init the prf with the new secret key
-			prf.init(secretKey);
+			prf.setKey(secretKey);
 			
 			byte[] out = new byte[(testDataVector.get(0).output).length]; // create an out array
 			byte[] input = getData(); //get the input
@@ -268,7 +264,7 @@ public abstract class PrfTest extends Test {
 			SecretKey secretKey = new SecretKeySpec(testDataVector.get(0).key, "");
 			
 			//init the prf with the new secret key
-			prf.init(secretKey);
+			prf.setKey(secretKey);
 			
 			byte[] out = new byte[(testDataVector.get(0).output).length]; // create an out array
 			byte [] input = getData();  //get the input
@@ -298,7 +294,7 @@ public abstract class PrfTest extends Test {
 		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
 		try {
 			//init the prf with the public key with casting to secretKey
-			prf.init((SecretKey) new RSAPublicKeySpec(null, null));
+			prf.setKey((SecretKey) new RSAPublicKeySpec(null, null));
 			
 		//the right result of this test is ClassCastException
 		} catch (ClassCastException e) {
