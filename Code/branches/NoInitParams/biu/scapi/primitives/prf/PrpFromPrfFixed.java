@@ -1,13 +1,9 @@
 package edu.biu.scapi.primitives.prf;
 
 import java.security.InvalidKeyException;
-import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
-
-import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
  * This class implements some common functionality of PrpFixed by having an instance of prfFixed.
@@ -23,34 +19,17 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 	 * @param secretKey the secret key
 	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) throws InvalidKeyException {
+	public void setKey(SecretKey secretKey) throws InvalidKeyException {
 		//initializes the underlying prf with the secret key
-		prfFixed.init(secretKey);
-		
-	}
-
-	/**
-	 * Initializes this PrpFromPrfFixed with the secret key and the auxiliary parameters.
-	 * @param secretKey the secret key
-	 * @param params the auxiliary parameters
-	 * @throws InvalidParameterSpecException 
-	 * @throws InvalidKeyException 
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException, InvalidKeyException {
-		//initializes the underlying prf with the secret key and params
-		prfFixed.init(secretKey, params);
+		prfFixed.setKey(secretKey);
 		
 	}
 	
-	public boolean isInitialized(){
+	public boolean isKeySet(){
 		// call the underlying prf isInitialized function and return the result
-		return prfFixed.isInitialized();
+		return prfFixed.isKeySet();
 	}
 	
-	public AlgorithmParameterSpec getParams() throws UnInitializedException {
-		// return the params of the underlying prf
-		return prfFixed.getParams();
-	}
 
 	/** 
 	 * Computes the function using the secret key. <p>
@@ -67,12 +46,11 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param outLen output array length
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes,
-			int outOff, int outLen) throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			int outOff, int outLen) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
@@ -105,14 +83,12 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 	 * @param outBytes output bytes. The resulted bytes of compute
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen,
 			byte[] outBytes, int outOff)
-			throws IllegalBlockSizeException, UnInitializedException {
-		
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
@@ -143,12 +119,11 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param len the length of the input and the output.
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
 	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff, int len) throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			int outOff, int len) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+len > inBytes.length)){
@@ -158,7 +133,7 @@ public abstract class PrpFromPrfFixed implements PrpFixed {
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
 		}
 		if (len==getBlockSize())//the length is correct
-			//callt the derived class implementation of invertBlock ignoring len
+			//call the derived class implementation of invertBlock ignoring len
 			invertBlock(inBytes, inOff, outBytes, outOff);
 		else 
 			throw new IllegalBlockSizeException("the length should be the same as block size");
