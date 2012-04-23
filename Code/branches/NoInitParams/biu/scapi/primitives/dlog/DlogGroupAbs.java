@@ -2,11 +2,10 @@ package edu.biu.scapi.primitives.dlog;
 
 import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.ListIterator;
+//import java.util.LinkedList;
+//import java.util.ListIterator;
 import java.util.Vector;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 
 /**
@@ -18,60 +17,41 @@ public abstract class DlogGroupAbs implements DlogGroup{
 
 	protected GroupParams groupParams;			//group parameters
 	protected GroupElement generator;			//generator of the group
-	protected boolean isInitialized = false;	//flag if an object is initialized or not
 	//map for multExponentiationsWithSameBase calculations
 	private HashMap<GroupElement, GroupElementsExponentiations> exponentiationsMap = new HashMap<GroupElement, GroupElementsExponentiations>();
 	
 	/**
-	 * Checks if this object has been initialized.
-	 * @return true if the object was initialized. Usually this means that the function init was called
-	 */
-	public boolean isInitialized(){
-		return isInitialized;
-	}
-	
-	/**
 	 * If this group has been initialized then it returns the group's generator. Otherwise throws exception.
 	 * @return the generator of this Dlog group
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getGenerator() throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getGenerator(){
+		
 		return generator;
 	}
 	
 	/**
 	 * GroupParams are the parameters of the group that define the actual group. That is, different parameters will create a different group. 
 	 * @return the GroupDesc of this Dlog group
-	 * @throws UnInitializedException 
 	 */
-	public GroupParams getGroupParams() throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupParams getGroupParams() {
+		
 		return groupParams;
 	}
 	
 	/**
 	 * If this group has been initialized then it returns the group's order. Otherwise throws exception.
 	 * @return the order of this Dlog group
-	 * @throws UnInitializedException 
 	 */
-	public BigInteger getOrder() throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public BigInteger getOrder(){
+		
 		return groupParams.getQ();
 	}
 	
 	/**
 	 * Checks if the order is a prime number
 	 * @return true if the order is a prime number. false, otherwise.
-	 * @throws UnInitializedException 
 	 */
-	public boolean isPrimeOrder() throws UnInitializedException{
+	public boolean isPrimeOrder(){
 		
 		/* isProbablePrime is BigInteger function, which gets a certainty parameter.
 		 * We will test some values to decide which is appropriate to our demands.
@@ -85,16 +65,15 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * Checks if the order is greater than 2^numBits
 	 * @param numBits
 	 * @return true if the order is greater than 2^numBits, false - otherwise.
-	 * @throws UnInitializedException 
 	 */
-	public boolean isOrderGreaterThan(int numBits) throws UnInitializedException{
+	public boolean isOrderGreaterThan(int numBits){
 		if (getOrder().compareTo(new BigInteger("2").pow(numBits)) > 0)
 			return true;
 		else return false;
 	}
 	
 	/*
-	 * Compute the simultanouesMultiplyExponentiate by the native algorithm
+	 * Computes the simultanouesMultiplyExponentiate by the native algorithm
 	 */
 	protected GroupElement computeNaive(GroupElement[] groupElements, BigInteger[] exponentiations){
 		int n = groupElements.length; //number of bases and exponents
@@ -102,27 +81,15 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		
 		//raises each element to the corresponding power
 		for (int i = 0; i<n; i++){
-			try {
-				exponentsRasult[i] = exponentiate(groupElements[i], exponentiations[i]);
-			} catch (UnInitializedException e) {
-				// shouldn't occur since this object is initialized. It was checked before. 
-			}
+			exponentsRasult[i] = exponentiate(groupElements[i], exponentiations[i]);
 		}
 		
 		GroupElement result = null; //holds the multiplication of all the exponentations
-		try {
-			result = getIdentity(); //initialized to the identity element
-		} catch (UnInitializedException e) {
-			// shouldn't occur since this object is initialized. It was checked before. 
-		}
+		result = getIdentity(); //initialized to the identity element
 		
 		//multiplies every exponentiate
 		for (int i = 0; i<n; i++){
-			try {
-				result = multiplyGroupElements(exponentsRasult[i], result);
-			} catch (UnInitializedException e) {
-				// shouldn't occur since this object is initialized. It was checked before. 
-			}
+			result = multiplyGroupElements(exponentsRasult[i], result);
 		}
 		
 		//return the final result
@@ -164,23 +131,16 @@ public abstract class DlogGroupAbs implements DlogGroup{
 				System.out.println(((ECElement) preComp[i][j]).getX());
 		*/
 		GroupElement result = null; //holds the computation result
-		try {
-			result = getIdentity();
-		} catch (UnInitializedException e) {
-			// shouldn't occur since this object is initialized. It was checked before. 
-		}
+		result = getIdentity();
 		
 		//computes the first loop of the algorithm. This loop returns in the next part of the algorithm with one single tiny change. 
 		result = computeLoop(exponentiations, w, h, preComp, result, t-1);
 		
 		//computes the third part of the algorithm
 		for (int j=t-2; j>=0; j--){
-			try {
-				//Y = Y^2
-				result = exponentiate(result, new BigInteger("2"));
-			} catch (UnInitializedException e1) {
-				// shouldn't occur since this object is initialized. It was checked before. 
-			}
+			//Y = Y^2
+			result = exponentiate(result, new BigInteger("2"));
+			
 			//computes the inner loop
 			result = computeLoop(exponentiations, w, h, preComp, result, j);
 		}
@@ -210,12 +170,9 @@ public abstract class DlogGroupAbs implements DlogGroup{
 					}
 				}
 			}
-			try {
-				//multiply result with preComp[k][e]
-				result = multiplyGroupElements(result, preComp[k][e]);
-			} catch (UnInitializedException e1) {
-				// shouldn't occur since this object is initialized. It was checked before. 
-			}
+			//multiply result with preComp[k][e]
+			result = multiplyGroupElements(result, preComp[k][e]);
+			
 			e = 0;
 		}
 		
@@ -236,22 +193,15 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		//fill the table
 		for (int k=0; k<h; k++){
 			for (int e=0; e<twoPowW; e++){
-				try {
-					preComp[k][e] = getIdentity();
-				} catch (UnInitializedException e1) {
-					// shouldn't occur since this object is initialized. It was checked before.
-				}
+				preComp[k][e] = getIdentity();
+				
 				for (int i=0; i<w; i++){
 					baseIndex = k*w + i;
 					if (baseIndex < groupElements.length){
 						base = groupElements[baseIndex];
 						//if bit i in e is set, change preComp[k][e]
 						if ((e & (1 << i)) != 0){ //bit i is set
-							try {
-								preComp[k][e] = multiplyGroupElements(preComp[k][e], base);
-							} catch (UnInitializedException e1) {
-								// shouldn't occur since this object is initialized. It was checked before.
-							}
+							preComp[k][e] = multiplyGroupElements(preComp[k][e], base);
 						}
 					}
 				}
@@ -289,10 +239,10 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	}
 	
 	/*
-	 * Compute the simultanouesMultiplyExponentiate by LL algorithm.
-	 * The code is taken from the pseudo code of LL algorithm in http://dasan.sejong.ac.kr/~chlim/pub/multi_exp.ps.
+	 * Compute the simultanouesMultiplyExponentiate by WU algorithm.
+	 * The code is taken from the pseudo code of WU algorithm in http://dasan.sejong.ac.kr/~chlim/pub/multi_exp.ps.
 	 */
-	private GroupElement computeWU(GroupElement[] groupElements, BigInteger[] exponentiations){
+	/*private GroupElement computeWU(GroupElement[] groupElements, BigInteger[] exponentiations){
 		int n = groupElements.length; //number of bases and exponents
 		
 		//get the biggest exponent
@@ -318,11 +268,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		int len = fillListAndMap(exponentiations, list, map, n, w);
 		
 		GroupElement result = null; //holds the computation result
-		try {
-			result = getIdentity();
-		} catch (UnInitializedException e) {
-			// shouldn't occur since this object is initialized. It was checked before. 
-		}
+		result = getIdentity();
 		
 		//the list is sorted such that the maximum value is the first element in the list.
 		//by each list.pop we get the current max value in the list
@@ -341,11 +287,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		while (len>0){
 			len--;
 			//Y = Y^2
-			try {
-				result = exponentiate(result, new BigInteger("2"));
-			} catch (UnInitializedException e) {
-				// shouldn't occur since this object is initialized. It was checked before.
-			}
+			result = exponentiate(result, new BigInteger("2"));
 			
 			while(l.getVal() == len){
 				result = multL(result, l, map, preComp);
@@ -359,7 +301,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		
 		return result;
 			
-	}
+	}*/
 	
 	/*
 	 * fill the list of li,j and the map of ci,j.
@@ -367,7 +309,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * the map of ci,j contains pair of <key, value>. the key is a string representing the i and j values and the value is the integer ci,j
 	 * this function returns the maximum value of li,j
 	 */
-	private int fillListAndMap(BigInteger[] exponentiations, LinkedList<lValue> list, HashMap<String,Integer> map, int n, int w){
+/*	private int fillListAndMap(BigInteger[] exponentiations, LinkedList<lValue> list, HashMap<String,Integer> map, int n, int w){
 		int len = 0; //holds the maximum value of li,j
 		ListIterator<lValue> current = null;
 		
@@ -423,17 +365,10 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		GroupElement temp = null;
 		for (int i=0; i<n; i++){
 			preComp[i][1] = groupElements[i];
-			try {
-				temp = exponentiate(groupElements[i], new BigInteger("2"));
-			} catch (UnInitializedException e) {
-				// shouldn't occur since this object is initialized. It was checked before. 
-			}
+			temp = exponentiate(groupElements[i], new BigInteger("2"));
+			
 			for (int j=2; j<=twoPowW; j++){
-				try {
-					preComp[i][j] = multiplyGroupElements(preComp[i][j-1], temp);
-				} catch (UnInitializedException e) {
-					// shouldn't occur since this object is initialized. It was checked before. 
-				}
+				preComp[i][j] = multiplyGroupElements(preComp[i][j-1], temp);
 			}
 		}
 		
@@ -446,11 +381,8 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		String key = Integer.toString(i) + " " + Integer.toString(l.getJ());
 		Integer c = map.get(key);
 		int j = (c + 1) / 2;
-		try {
-			result = multiplyGroupElements(result, preComp[i][j]);
-		} catch (UnInitializedException e) {
-			// shouldn't occur since this object is initialized. It was checked before.
-		}
+		result = multiplyGroupElements(result, preComp[i][j]);
+		
 		return result;
 	}
 	
@@ -488,13 +420,13 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		String ijKey = Integer.toString(i) + " " + Integer.toString(j);
 		map.put(ijKey, c);
 	}
-	
-	/**
+	*/
+	/*
 	 * 
 	 * @param t
 	 * @return
 	 */
-	private int getWUW(int t){
+	/*private int getWUW(int t){
 		int w;
 		//choose w according to the value of t
 		if (t <= 24){
@@ -555,13 +487,10 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * @param groupElement
 	 * @param exponent
 	 * @return the exponentiation result
-	 * @throws UnInitializedException 
 	 */
 	public GroupElement exponentiateWithPreComputedValues
-					(GroupElement groupElement, int exponent) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+					(GroupElement groupElement, int exponent){
+		
 		//extracts from the map the GroupElementsExponentiations object corresponding to the accepted base
 		GroupElementsExponentiations exponentiations = exponentiationsMap.get(groupElement);
 	
@@ -590,7 +519,6 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		 * The constructor creates a map structure in memory. 
 		 * Then calculates the exponentiations of order 1,2,4,8 for the given base and save them in the map.
 		 * @param base
-		 * @throws UnInitializedException 
 		 * @throws IllegalArgumentException 
 		 */
 		public GroupElementsExponentiations(GroupElement base) {
@@ -600,20 +528,15 @@ public abstract class DlogGroupAbs implements DlogGroup{
 			exponentiations.add(0, base); //add the base - base^1
 			for (int i=1; i<4; i++){
 				GroupElement multI;
-				try {
-					multI = exponentiate(exponentiations.get(i-1), new BigInteger("2"));
+				multI = exponentiate(exponentiations.get(i-1), new BigInteger("2"));
 					
-					exponentiations.add(i, multI);
-				} catch (UnInitializedException e) {
-					//the creation of GroupElementsExponentiations is done after we check that the object is initialized
-				}
+				exponentiations.add(i, multI);		
 			}
 		}
 		
 		/**
 		 * Calculates the necessary additional exponentiations and fills the exponentiations vector with them.
 		 * @param size - the required exponent
-		 * @throws UnInitializedException 
 		 * @throws IllegalArgumentException 
 		 */
 		private void prepareExponentiations(int size) {
@@ -624,13 +547,9 @@ public abstract class DlogGroupAbs implements DlogGroup{
 			/* calculates the necessary exponentiations and put them in the exponentiations vector */
 			for (int i=exponentiations.size(); i<=index; i++){
 				GroupElement multI;
-				try {
-					multI = exponentiate(exponentiations.get(i-1), new BigInteger("2"));
+				multI = exponentiate(exponentiations.get(i-1), new BigInteger("2"));
 					
-					exponentiations.add(i, multI);
-				} catch (UnInitializedException e) {
-					//the creation of GroupElementsExponentiations is done after we check that the object is initialized
-				}	
+				exponentiations.add(i, multI);	
 			}
 		}
 		
@@ -660,11 +579,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 			/* if size is not power 2, calculates the additional multiplications */
 			if ((double) index != log){
 				for (int i=(int) Math.pow(2, index); i<size; i++){
-					try {
-						exponent = multiplyGroupElements(base, exponent);
-					} catch (UnInitializedException e) {
-						//the creation of GroupElementsExponentiations is done after we check that the object is initialized
-					}
+					exponent = multiplyGroupElements(base, exponent);
 				}
 			}
 			return exponent;		
