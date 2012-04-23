@@ -9,7 +9,7 @@ extern "C" {
 #endif
 /*
  * Class:     edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation
- * Method:    initRabinAll
+ * Method:    initRabinPublicPrivate
  * Signature: ([B[B[B[B[B[B)J
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinPublicPrivate
@@ -17,7 +17,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
 
 /*
  * Class:     edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation
- * Method:    initRabinNRS
+ * Method:    initRabinPublic
  * Signature: ([B[B[B)J
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinPublic
@@ -25,7 +25,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
 
 /*
  * Class:     edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation
- * Method:    initRabinKeySize
+ * Method:    initRabinRandomly
  * Signature: (I)J
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_initRabinRandomly
@@ -49,7 +49,31 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_c
 
 /*
  * Class:     edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation
- * Method:    getRabinModulus
+ * Method:    getPrime1
+ * Signature: (J)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_getPrime1
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation
+ * Method:    getPrime2
+ * Signature: (J)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_getPrime2
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation
+ * Method:    getinversePModQ
+ * Signature: (J)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_getinversePModQ
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation
+ * Method:    getQuadraticResidueModPrime1
  * Signature: (J)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_getQuadraticResidueModPrime1
@@ -57,7 +81,7 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_c
 
 /*
  * Class:     edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation
- * Method:    getRabinModulus
+ * Method:    getQuadraticResidueModPrime2
  * Signature: (J)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_getQuadraticResidueModPrime2

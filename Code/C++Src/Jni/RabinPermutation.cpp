@@ -122,6 +122,57 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_c
 }
 
 /*
+ * function getPrime1						: This function returns the prime 1 (p) of the current Rabin permutation
+ * param tpPtr								: The pointer to the trapdoor permutation object 
+ * return jbyteArray						: The modulus as byte array
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_getPrime1
+  (JNIEnv *env, jobject, jlong tpPtr){
+	   Utils utils;
+	  Integer r;
+
+	  //get the value from the tp
+	  r = ((InvertibleRabinFunction *) tpPtr) ->  GetPrime1();
+
+	  //convert the value to jbyteArray and return it
+	  return utils.CryptoPPIntegerTojbyteArray(env, r);
+}
+
+/*
+ * function getPrime2						: This function returns the prime 2 (q) of the current Rabin permutation
+ * param tpPtr								: The pointer to the trapdoor permutation object 
+ * return jbyteArray						: The modulus as byte array
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_getPrime2
+  (JNIEnv *env, jobject, jlong tpPtr){
+	   Utils utils;
+	  Integer r;
+
+	  //get the value from the tp
+	  r = ((InvertibleRabinFunction *) tpPtr) ->  GetPrime2();
+
+	  //convert the value to jbyteArray and return it
+	  return utils.CryptoPPIntegerTojbyteArray(env, r);
+}
+
+/*
+ * function getinversePModQ						: This function return the inverse of p mod q of the current Rabin permutation
+ * param tpPtr									: The pointer to the trapdoor permutation object 
+ * return jbyteArray							: The modulus as byte array
+ */
+JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_cryptopp_CryptoPpRabinPermutation_getinversePModQ
+  (JNIEnv *env, jobject, jlong tpPtr){
+	   Utils utils;
+	  Integer r;
+
+	  //get the value from the tp
+	  r = ((InvertibleRabinFunction *) tpPtr) -> GetMultiplicativeInverseOfPrime2ModPrime1();
+
+	  //convert the value to jbyteArray and return it
+	  return utils.CryptoPPIntegerTojbyteArray(env, r);
+}
+
+/*
  * function getQuadraticResidueModPrime1		: This function return the quadratic residue mod prime1 of the current Rabin permutation
  * param tpPtr									: The pointer to the trapdoor permutation object 
  * return jbyteArray							: The modulus as byte array
