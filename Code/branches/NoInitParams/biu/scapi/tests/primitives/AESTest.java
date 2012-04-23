@@ -58,7 +58,7 @@ public class AESTest extends PrpTest {
 			SecretKey secretKey = new SecretKeySpec(Hex.decode("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f000102030405"), "");
 			
 			//init the prf with the new secret key
-			prf.init(secretKey);
+			prf.setKey(secretKey);
 			
 		//the right result of this test is InvalidKeyException
 		} catch (InvalidKeyException e) {
