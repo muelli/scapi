@@ -1,21 +1,20 @@
 package edu.biu.scapi.primitives.prf.bc;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.macs.HMac;
 
-
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.midLayer.SecretKeyGeneratorUtil;
-import edu.biu.scapi.midLayer.symmetricCrypto.keys.SymKeyGenParameterSpec;
 import edu.biu.scapi.primitives.hash.CryptographicHash;
+import edu.biu.scapi.primitives.hash.cryptopp.CryptoPpSHA1;
 import edu.biu.scapi.primitives.prf.Hmac;
 import edu.biu.scapi.tools.Factories.BCFactory;
 import edu.biu.scapi.tools.Translation.BCParametersTranslator;
@@ -30,81 +29,77 @@ public final class BcHMAC implements Hmac {
 	/*
 	 * Our class Hmac is an adapter class for the adaptee class HMac of BC.  
 	 */
-	private HMac hMac;									//The underlying wrapped hmac of BC.
-	private AlgorithmParameterSpec params;
+	private HMac hMac;							//The underlying wrapped hmac of BC.
 	private SecretKey secretKey;
-	private boolean isInitialized = false;				//until init is called set to false.
-	private SecureRandom random;	//source of randomness used in key generation
+	private boolean isKeySet = false;			//until init is called set to false.
+	private SecureRandom random;				//source of randomness used in key generation
 
+	/**
+	 * Default constructor that uses SHA1.
+	 * @throws FactoriesException if BC has no hash function corresponding to the given hash.
+	 */
+	public BcHMAC() throws FactoriesException {
+		//creates SHA1 and secure random end than use the extended constructor
+		this(new CryptoPpSHA1(), new SecureRandom());
+	}
+	
 	/** 
 	 * This constructor receives an hashName and build the underlying hmac accoring to it. It can be called from the factory.
-	 * @param hashName - the hash function to translate into digest of bc hmac
-	 * @throws FactoriesException 
+	 * @param hashName - the hash function to translate into digest of bc hmac.
+	 * @throws FactoriesException if there is no hash function with given name.
 	 */
-	public BcHMAC(String hashName) throws FactoriesException {
-		
+	public BcHMAC(String hashName) throws FactoriesException{
+		//passes a digest to the hmac.
 		hMac = new HMac(BCFactory.getInstance().getDigest(hashName));
-			
+		//creates SecureRandom object from the given algorithm
+		this.random = new SecureRandom();
+	}
+	
+	/** 
+	 * This constructor receives an hashName and build the underlying hmac accoring to it. It can be called from the factory.
+	 * @param hashName - the hash function to translate into digest of bc hmac.
+	 * @param randNumGenAlg - the random number generator algorithm to use.
+	 * @throws FactoriesException if there is no hash function with given name.
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public BcHMAC(String hashName, String randNumGenAlg) throws FactoriesException, NoSuchAlgorithmException {
+		//passes a digest to the hmac.
+		hMac = new HMac(BCFactory.getInstance().getDigest(hashName));
+		//creates SecureRandom object from the given algorithm
+		this.random = SecureRandom.getInstance(randNumGenAlg);
 	}
 
 	/**
 	 * This constructor gets a SCAPI collision resistant hash to be the underlying hash and retrieves the name of the hash in
 	 * order to create the related digest for the BC Hmac this class uses.
 	 * @param hash - the underlying collision resistant hash 
-	 * @throws FactoriesException
-	 * @throws UnInitializedException if the given hash is not initialized
+	 * @throws FactoriesException if BC has no hash function corresponding to the given hash.
 	 */
-
-	public BcHMAC(CryptographicHash hash) throws FactoriesException, UnInitializedException {
-	
-		//first check that the hmac is initialized.
-		if(hash.isInitialized()){
-			//passes a digest to the hmac.
-			hMac = new HMac(BCFactory.getInstance().getDigest(hash.getAlgorithmName()));
-		}
-		else{//the user must pass an initialized object, otherwise throw an exception
-			throw new UnInitializedException("argument hash must be initialized");
-		}
-		this.random = new SecureRandom();
+	public BcHMAC(CryptographicHash hash) throws FactoriesException{
+		//creates random and uses the extended constructor
+		this(hash, new SecureRandom());
 	}
 	
-	/** 
-	 * Initializes this hmac with the secret key and the auxiliary parameters
-	 * @param secretKey secret key 
-	 * @param params algorithm parameter
+	/**
+	 * This constructor gets a random and a SCAPI collision resistant hash to be the underlying hash and retrieves the name of the hash in
+	 * order to create the related digest for the BC Hmac this class uses.
+	 * @param hash - the underlying collision resistant hash 
+	 * @param random
+	 * @throws FactoriesException if BC has no hash function corresponding to the given hash.
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params)  {
-		//call the second init(SecretKey secretKey, AlgorithmParameterSpec params) function with default source of randomness
-		init(secretKey, params, new SecureRandom());
-	}
-	
-	/** 
-	 * Initializes this hmac with the secret key and the auxiliary parameters
-	 * @param secretKey secret key 
-	 * @param params algorithm parameter
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params, SecureRandom rnd)  {
-		//no auxiliary parameters for HMAC. Passes the key and the random
-		init(secretKey, rnd);
+	public BcHMAC(CryptographicHash hash, SecureRandom random) throws FactoriesException{
 		
+		//passes a digest to the hmac.
+		hMac = new HMac(BCFactory.getInstance().getDigest(hash.getAlgorithmName()));
+		//sets the random
+		this.random = random;
 	}
 	
 	/** 
 	 * Initializes this hmac with a secret key.
 	 * @param secretKey the secret key 
 	 */
-	public void init(SecretKey secretKey) {
-		//call the second init function with default source of randomness
-		init(secretKey, new SecureRandom());
-		
-	}
-	
-	/** 
-	 * Initializes this hmac with a secret key.
-	 * @param secretKey the secret key 
-	 */
-	public void init(SecretKey secretKey, SecureRandom rnd) {
-		
+	public void setKey(SecretKey secretKey) {
 		//assigns the key
 		this.secretKey = secretKey;
 		
@@ -115,23 +110,13 @@ public final class BcHMAC implements Hmac {
 		//passes the key parameter to bc hmac
 		hMac.init(bcParams);
 		
-		//set the random member with the given random
-		random = rnd;
-		
 		//sets flag to true. Object is initializing.
-		isInitialized = true;
+		isKeySet = true;
 		
 	}
 	
-	public boolean isInitialized(){
-		return isInitialized;
-	}
-
-	public AlgorithmParameterSpec getParams() throws UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
-		}
-		return params;
+	public boolean isKeySet(){
+		return isKeySet;
 	}
 	
 	/** 
@@ -144,7 +129,6 @@ public final class BcHMAC implements Hmac {
 
 	/**
 	 * @return the block size of the BC hmac in bytes
-	 * @throws UnInitializedException 
 	 */
 	public int getBlockSize(){
 		return hMac.getMacSize();
@@ -155,12 +139,12 @@ public final class BcHMAC implements Hmac {
 	 * Since in this case the input is not fixed, it must be supplied and this function should not be called. 
 	 * If the user still calls this function, throws an exception.
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException, UnInitializedException{
-		if(!isInitialized()){
-			throw new UnInitializedException();
+	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
+		
 		throw new IllegalBlockSizeException("Size of input is not specified");
 	}
 	
@@ -177,11 +161,10 @@ public final class BcHMAC implements Hmac {
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param outLen the length of the output array
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException, UnInitializedException{
-		if(!isInitialized()){
-			throw new UnInitializedException();
+	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		//the checks of the offsets and lengths are done in the conputeBlock (inBytes, inOff, inLen, outBytes, outOff)
 		//make sure the output size is correct
@@ -203,13 +186,11 @@ public final class BcHMAC implements Hmac {
 	 * @param inOffset input offset in the inBytes array
 	 * @param outBytes output bytes. The resulted bytes of compute
 	 * @param outOffset output offset in the outBytes array to put the result from
-	 * @throws UnInitializedException 
 	 */
-
 	public void computeBlock(byte[] inBytes, int inOffset, int inLen,
-			byte[] outBytes, int outOffset) throws UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			byte[] outBytes, int outOffset) {
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offset and length are correct 
 		if ((inOffset > inBytes.length) || (inOffset+inLen > inBytes.length)){
@@ -226,65 +207,40 @@ public final class BcHMAC implements Hmac {
 	}
 	
 	/**
-	 * Generates a secret key to initialize this mac object.
-	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits 
+	 * Generates a secret key to initialize this prf object.
+	 * @param keySize algorithmParameterSpec contains the required secret key size in bits 
 	 * @return the generated secret key
 	 * @throws InvalidParameterSpecException 
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public SecretKey generateKey(AlgorithmParameterSpec keySize) throws InvalidParameterSpecException{
-		//key size must be a SymKeyGenParameterSpec
-		if (!(keySize instanceof SymKeyGenParameterSpec)){
-			throw new InvalidParameterSpecException("keySize should be instance of SymKeyGenParameterSpec");
-		}
-		//Call the static function that creates a secretKey with default source of randomness
-		//If the source of randomness has been previously set, then use it.
-		//If not, then we do not need to set it at this stage. It will be set with one of the init functions.
-		if ( random != null){
-			return keyGen((SymKeyGenParameterSpec) keySize, random);
-		} else {
-			return keyGen((SymKeyGenParameterSpec) keySize, new SecureRandom());
-		}
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException{
+		throw new UnsupportedOperationException("To generate a key for this HMAC object use the generateKey(int keySize) function");
 	}
 	
 	/**
-	 * Generates a secret key to initialize this mac object.
-	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits 
-	 * @return the generated secret key
-	 * @throws InvalidParameterSpecException 
-	 * @throws UnInitializedException if this object is not initialized
+	 * Generates a secret key to initialize this HMac object.
+	 * @param keySize is the required secret key size in bits 
+	 * @return the generated secret key 
 	 */
-	public SecretKey generateKey(AlgorithmParameterSpec keySize, SecureRandom rnd) throws InvalidParameterSpecException{
-		if(!(keySize instanceof SymKeyGenParameterSpec)){
-			throw new InvalidParameterSpecException("keySize should be instance of SymKeyGenParameterSpec");
-		}
+	public SecretKey generateKey(int keySize){
+		//generate a random string of bits of length keySize, which has to be greater that zero. 
 		
-		//generates key according to the given key size, this algorithm name and random
-		return keyGen((SymKeyGenParameterSpec) keySize ,rnd);
-	}
-	
-	/**
-	 * Static function that generates a secret key to initialize a mac object.
-	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
-	 * @return the generated secret key
-	 * @throws InvalidParameterSpecException 
-	 */
-	public static SecretKey keyGen(SymKeyGenParameterSpec keySize) {
-		return keyGen(keySize, new SecureRandom());
+		//if the key size is zero or less - throw exception
+		if (keySize < 0){
+			throw new NegativeArraySizeException("key size must be greater than 0");
+		}
+		//creates a byte array of size keySize
+		byte[] genBytes = new byte[keySize];
+
+		//generates the bytes using the random
+		//Do we need to seed random??
+		random.nextBytes(genBytes);
+		//creates a secretKey from the generated bytes
+		SecretKey generatedKey = new SecretKeySpec(genBytes, "");
+		
+		return generatedKey;
+		
 	}
 
-	/**
-	 * Static function that generates a secret key to initialize a mac object.
-	 * @param keySize SymKeyGenParameterSpec contains the required secret key size in bits and the algorithm name
-	 * @param random source of randomness
-	 * @return the generated secret key
-	 * @throws InvalidParameterSpecException 
-	 */
-	public static SecretKey keyGen(SymKeyGenParameterSpec keySize, SecureRandom random){
-		
-		// generates key according to the given key size, this algorithm name and random
-		return SecretKeyGeneratorUtil.generateKey(keySize.getEncKeySize(), keySize.getAlgorithmName(), random);
-	}
 	
 	/**
 	 * Returns the input block size in bytes
@@ -300,9 +256,11 @@ public final class BcHMAC implements Hmac {
 	 * @param offset the offset within the message array to take the bytes from
 	 * @param msgLen the length of the message
 	 * @return byte[] the return tag from the mac operation
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public byte[] mac(byte[] msg, int offset, int msgLen) throws UnInitializedException{
+	public byte[] mac(byte[] msg, int offset, int msgLen){
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
+		}
 		//creates the tag
 		byte[] tag = new byte[getMacSize()];
 		//computes the hmac operation
@@ -318,9 +276,11 @@ public final class BcHMAC implements Hmac {
 	 * @param msgLength the length of the message
 	 * @param tag the tag to verify
 	 * @return true if the tag is the result of computing mac on the message. false, otherwise.
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public boolean verify(byte[] msg, int offset, int msgLength, byte[] tag) throws UnInitializedException{
+	public boolean verify(byte[] msg, int offset, int msgLength, byte[] tag){
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
+		}
 		//if the tag size is not the mac size - returns false
 		if (tag.length != getMacSize()){
 			return false;
@@ -349,6 +309,9 @@ public final class BcHMAC implements Hmac {
 	 * @param msgLen the length of the message
 	 */
 	public void update(byte[] msg, int offset, int msgLen){
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
+		}
 		//calls the underlying hmac update
 		hMac.update(msg, offset, msgLen);
 	}
@@ -361,6 +324,9 @@ public final class BcHMAC implements Hmac {
 	 * @return the result tag from the mac operation
 	 */
 	public byte[] doFinal(byte[] msg, int offset, int msgLength){
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
+		}
 		//updates the last msg block
 		update(msg, offset, msgLength);
 		//creates the tag
