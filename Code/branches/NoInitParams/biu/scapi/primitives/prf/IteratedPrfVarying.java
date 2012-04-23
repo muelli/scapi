@@ -1,12 +1,18 @@
 package edu.biu.scapi.primitives.prf;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 import java.util.logging.Level;
 
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
+import edu.biu.scapi.primitives.prf.bc.BcHMAC;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
@@ -15,37 +21,60 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public class IteratedPrfVarying extends
-		PrfVaryingFromPrfVaryingInput {
+public class IteratedPrfVarying extends PrfVaryingFromPrfVaryingInput {
 	
+	private SecureRandom random;
+	
+	/**
+	 * Default constructor that uses HMac.
+	 * @throws FactoriesException 
+	 */
+	public IteratedPrfVarying() throws FactoriesException{
+		this(new BcHMAC(), new SecureRandom());
+	}
 	/** 
 	 * Constructor that accepts the name of the underlying prfVaryingInputLength.
 	 * @param prfVaryingInputName  the prf to use. 
 	 * @throws FactoriesException 
 	 */
 	public IteratedPrfVarying(String prfVaringInputName) throws FactoriesException {
-		/*
-		 * The initialization of this prf is in the function init of PrfVaryingFromPrfVaryingInput.
-		 */
-		//get the requested prfVaringInput from the factory. 
-		prfVaryingInputLength = (PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaringInputName);
+		
+		//get the requested prfVaringInput from the factory, creates random and call the extended constructor 
+		this((PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaringInputName), new SecureRandom());
+	}
+	
+	/** 
+	 * Constructor that accepts the name of the underlying prfVaryingInputLength.
+	 * @param prfVaryingInputName  the prf to use. 
+	 * @throws FactoriesException 
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public IteratedPrfVarying(String prfVaringInputName, String randNumGenAlg) throws FactoriesException, NoSuchAlgorithmException {
+		
+		//get the requested prfVaringInput and random from the factories. 
+		//then call the extended constructor
+		this((PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaringInputName), SecureRandom.getInstance(randNumGenAlg));
 	}
 	
 	/**
 	 * Constructor that accepts the underlying PrfVaryingInputLength.
 	 * @param prfVaryingInput the underlying prf varying. MUST be initialized, and there is no need to call init.
-	 * @throws UnInitializedException if the given prfVaryingInput is not initialized
 	 */
-	public IteratedPrfVarying(PrfVaryingInputLength prfVaryingInput) throws UnInitializedException {
+	public IteratedPrfVarying(PrfVaryingInputLength prfVaryingInput){
+		//creates random and call the extended constructor
+		this(prfVaryingInput, new SecureRandom());
+	}
+	
+	/**
+	 * Constructor that accepts the underlying PrfVaryingInputLength and random to use.
+	 * @param prfVaryingInput the underlying prf varying. MUST be initialized, and there is no need to call init.
+	 * @param random SecureRandom object to use
+	 */
+	public IteratedPrfVarying(PrfVaryingInputLength prfVaryingInput, SecureRandom random){
 		
-		//first checks that the prf is initialized.
-		if(prfVaryingInput.isInitialized()){
-			//assigns the prf varying input.
-			prfVaryingInputLength = prfVaryingInput;
-		}
-		else{//the user must pass an initialized object, otherwise throws an exception
-			throw new UnInitializedException("The input variable must be initialized");
-		}
+		//assigns the prf varying input.
+		prfVaryingInputLength = prfVaryingInput;
+		this.random = random;
 	}
 
 	/** 
@@ -65,7 +94,40 @@ public class IteratedPrfVarying extends
 		throw new IllegalStateException("prp varying has no fixed block size");
 	}
 
+	/**
+	 * Generates a secret key to initialize this prf object.
+	 * @param keySize algorithmParameterSpec contains the required secret key size in bits 
+	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
+	 */
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException{
+		throw new UnsupportedOperationException("To generate a key for this HMAC object use the generateKey(int keySize) function");
+	}
+	
+	/**
+	 * Generates a secret key to initialize this prf object.
+	 * @param keySize is the required secret key size in bits 
+	 * @return the generated secret key 
+	 */
+	public SecretKey generateKey(int keySize){
+		//generate a random string of bits of length keySize, which has to be greater that zero. 
+		
+		//if the key size is zero or less - throw exception
+		if (keySize < 0){
+			throw new NegativeArraySizeException("key size must be greater than 0");
+		}
+		//creates a byte array of size keySize
+		byte[] genBytes = new byte[keySize];
 
+		//generates the bytes using the random
+		//Do we need to seed random??
+		random.nextBytes(genBytes);
+		//creates a secretKey from the generated bytes
+		SecretKey generatedKey = new SecretKeySpec(genBytes, "");
+		
+		return generatedKey;
+		
+	}
 	
 	/**
 	 * Computes the iterated permutation. <p>
@@ -87,12 +149,11 @@ public class IteratedPrfVarying extends
 	 * @param outBytes - output bytes. The resulted bytes of compute.
 	 * @param outOff - output offset in the outBytes array to put the result from
 	 * @param outLen - the length of the output array
-	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen, 
-			byte[] outBytes, int outOff, int outLen) throws UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			byte[] outBytes, int outOff, int outLen) {
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
