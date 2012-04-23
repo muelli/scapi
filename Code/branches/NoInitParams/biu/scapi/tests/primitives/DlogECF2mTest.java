@@ -2,11 +2,7 @@ package edu.biu.scapi.tests.primitives;
 
 import java.io.PrintWriter;
 import java.math.BigInteger;
-import java.util.logging.Level;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
-import edu.biu.scapi.primitives.dlog.DlogECF2m;
 import edu.biu.scapi.primitives.dlog.DlogEllipticCurve;
 import edu.biu.scapi.primitives.dlog.DlogGroup;
 import edu.biu.scapi.primitives.dlog.GroupElement;
@@ -30,8 +26,6 @@ public class DlogECF2mTest extends DlogECTest{
 	protected void conversionsTest(PrintWriter file){
 		String testResult = null; //the test result. initialized to failure
 		try {
-			//init the tested dlog
-			((DlogECF2m) dlog).init("B-163");
 			
 			//converts the generator to byte array
 			GroupElement generator= dlog.getGenerator();
@@ -45,9 +39,6 @@ public class DlogECF2mTest extends DlogECTest{
 			} else {
 				testResult = "Failure: The conversions from GroupElement to byte array and vice versa failed";
 			}
-		} catch (UnInitializedException e) {
-			// shouldn't occur since the dlog is initialized
-			Logging.getLogger().log(Level.WARNING, e.toString());
 		} catch (Exception e){
 			if (e.getMessage().equals("Create an ECF2mPointBC element will be available as soon as BC implements the sqrt function in ECFieldElement.F2m")){
 				testResult = "Success: A RuntimeException was thrown as expected. BC didn't implement the sqrt function so we can't calculate the y coordinate via the elliptic curve equation.";
@@ -66,8 +57,6 @@ public class DlogECF2mTest extends DlogECTest{
 	protected void wrongElementInput(PrintWriter file){
 		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
 		try{
-			//init the tested object as elliptic curve of type B-163
-			((DlogEllipticCurve) dlog).init("B-163");
 			
 			//create an element which is not valid to this dlog
 			((DlogEllipticCurve) dlog).getElement(new BigInteger("5"), new BigInteger("5"));
