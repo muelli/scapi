@@ -3,14 +3,11 @@ package edu.biu.scapi.primitives.dlog.bc;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Properties;
-import java.util.logging.Level;
 
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogECFp;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.GroupElement;
@@ -24,33 +21,38 @@ import edu.biu.scapi.securityLevel.DDH;
  */
 public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp, DDH{
 	
+	/**
+	 * Default constructor. Initializes this object with P-192 NIST curve.
+	 */
+	public BcDlogECFp() throws IOException{
+		this("P-192");
+	}
+	
+	public BcDlogECFp(String fileName, String curveName) throws IOException{
+		super(fileName, curveName);
+	}
 	
 	/**
 	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
 	 * @param curveName - name of NIST curve to initialized
+	 * @throws IOException 
 	 * @throws IllegalAccessException
 	 */
-	public void init(String curveName) throws IllegalArgumentException{
+	public BcDlogECFp(String curveName) throws IllegalArgumentException, IOException{
 		
-		try {
-			Properties ecProperties = getProperties(PROPERTIES_FILES_PATH); //get properties object containing the curve data
+		Properties ecProperties = getProperties(PROPERTIES_FILES_PATH); //get properties object containing the curve data
+	
+		//checks that the curveName is in the file
+		if(!ecProperties.containsKey(curveName)) { 
+			throw new IllegalArgumentException("no such NIST elliptic curve"); 
+		} 
 		
-			//checks that the curveName is in the file
-			if(!ecProperties.containsKey(curveName)) { 
-				throw new IllegalArgumentException("no such NIST elliptic curve"); 
-			} 
-			
-			//check that the given curve is in the field that matches the group
-			if (!curveName.startsWith("P-")){
-				throw new IllegalArgumentException("curveName is not a curve over Fp field and doesn't match the DlogGroup type"); 
-			}
-			isInitialized = true; 
-			doInit(ecProperties, curveName);  // set the data and initialize the curve
-			
-			
-		} catch (IOException e) {
-			Logging.getLogger().log(Level.WARNING, "error while loading the NIST elliptic curves file");
+		//check that the given curve is in the field that matches the group
+		if (!curveName.startsWith("P-")){
+			throw new IllegalArgumentException("curveName is not a curve over Fp field and doesn't match the DlogGroup type"); 
 		}
+		
+		doInit(ecProperties, curveName);  // set the data and initialize the curve
 	}
 	
 	/**
@@ -75,12 +77,7 @@ public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp, DDH{
 		//create the ECCurve
 		curve = new ECCurve.Fp(p, a, b);
 		
-		//create the generator
-		try {
-			generator = new ECFpPointBc(x,y, this);
-		} catch (UnInitializedException e) {
-			//creation of the generator is done after initialization of the DlogGroup so this exception shouldn't occur
-		}	
+		generator = new ECFpPointBc(x,y, this);	
 	}
 	
 	/**
@@ -93,24 +90,18 @@ public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp, DDH{
 	/**
 	 * Create a random member of this Dlog group
 	 * @return the random element
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getRandomElement() throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getRandomElement(){
+		
 		return new ECFpPointBc(this);
 	}
 	 
 	/**
 	 * Creates a point over Fp field. 
 	 * @return the created point
-	 * @throws UnInitializedException 
 	 */
-	public ECElement getElement(BigInteger x, BigInteger y) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public ECElement getElement(BigInteger x, BigInteger y){
+		
 		return new ECFpPointBc(x, y, this);
 	}
 	
@@ -133,9 +124,9 @@ public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp, DDH{
 	 * Converts a byte array to an ECFpPointBc.
 	 * @param binaryString the byte array to convert
 	 * @return the created group Element
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement convertByteArrayToGroupElement(byte[] binaryString) throws UnInitializedException{
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString){
+		
 		if (binaryString.length >= ((ECFpGroupParams) groupParams).getP().bitLength()){
 			throw new IllegalArgumentException("String is too long. It has to be of length less than log p");
 		}
