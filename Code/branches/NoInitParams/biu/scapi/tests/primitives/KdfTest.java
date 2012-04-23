@@ -17,7 +17,8 @@ import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.util.encoders.Hex;
 
 import edu.biu.scapi.generals.Logging;
-import edu.biu.scapi.primitives.kdf.KeyDerivationFunction;
+import edu.biu.scapi.primitives.kdf.*;
+
 import edu.biu.scapi.tests.Test;
 
 /**
@@ -110,7 +111,7 @@ public class KdfTest extends Test {
 		//only if the kdf uses a key init the underlying kdf with this key.
 		if(key!=null)
 			try {
-				kdf.setKey(new SecretKeySpec(key,""));
+				((HKDF) kdf).setKey(new SecretKeySpec(key,""));
 			} catch (InvalidKeyException e1) {
 				//shouldn't be called since the vector test is known and correct
 				Logging.getLogger().log(Level.WARNING, e1.toString());
@@ -222,7 +223,7 @@ public class KdfTest extends Test {
 			byte[] outKey = new byte[100];
 			if (key!=null){
 				//init the kdf
-				kdf.setKey(new SecretKeySpec(key,""));
+				((HKDF) kdf).setKey(new SecretKeySpec(key,""));
 			}
 			//calls generateKey with a wrong offset
 			kdf.generateKey(input, input.length+2, input.length, outKey, outKey.length+2, 100, info);
@@ -254,7 +255,7 @@ public class KdfTest extends Test {
 			byte[] info = testDataVector.get(0).info;
 			if (key!=null){
 				//init the kdf
-				kdf.setKey(new SecretKeySpec(key,""));
+				((HKDF) kdf).setKey(new SecretKeySpec(key,""));
 			}
 			//calls generateKey with a wrong length
 			kdf.generateKey(input, 0, input.length+2, outKey, 0, 102, info);
@@ -280,7 +281,7 @@ public class KdfTest extends Test {
 		String testResult = "Failure: no exception was thrown"; //the test result. initialized to failure
 		try {
 			//tries to initialize with a public key instead of secretkey
-			kdf.setKey((SecretKey) new RSAPublicKeySpec(null, null));
+			((HKDF) kdf).setKey((SecretKey) new RSAPublicKeySpec(null, null));
 		
 		//the expected result of this test is ClassCastException
 		} catch (ClassCastException e){
