@@ -1,11 +1,7 @@
-/**
- * 
- */
 package edu.biu.scapi.primitives.hash.bc;
 
 import org.bouncycastle.crypto.Digest;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.hash.CryptographicHash;
 
 /** 
@@ -28,10 +24,6 @@ public abstract class BcHash implements CryptographicHash {
 	
 		//sets the underlying bc digest
 		this.digest = digest;
-	}
-
-	public boolean isInitialized(){
-		return true;
 	}
 	
 	/** 
@@ -57,13 +49,9 @@ public abstract class BcHash implements CryptographicHash {
 	 * @param in input byte array
 	 * @param inOffset the offset within the byte array
 	 * @param inLen the length. The number of bytes to take after the offset
-	 * @throws UnInitializedException if this object is not initialized
 	 * */
-	public void update(byte[] in, int inOffset, int inLen) throws UnInitializedException {
-		//checks that the object is initialized
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public void update(byte[] in, int inOffset, int inLen) {
+		
 		//checks that the offset and length are correct
 		if ((inOffset > in.length) || (inOffset+inLen > in.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given input buffer");
@@ -76,13 +64,9 @@ public abstract class BcHash implements CryptographicHash {
 	 * Completes the hash computation and puts the result in the out array.
 	 * @param out the output in byte array
 	 * @param outOffset the offset which to put the result bytes from
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public void hashFinal(byte[] out, int outOffset) throws UnInitializedException {
-		//checks that the object is initialized
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public void hashFinal(byte[] out, int outOffset) {
+		
 		//checks that the offset and length are correct
 		if ((outOffset > out.length) || (outOffset+getHashedMsgSize() > out.length)){
 			throw new ArrayIndexOutOfBoundsException("wrong offset for the given output buffer");
