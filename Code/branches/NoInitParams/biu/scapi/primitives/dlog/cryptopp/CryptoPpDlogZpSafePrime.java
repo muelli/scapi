@@ -1,9 +1,7 @@
 package edu.biu.scapi.primitives.dlog.cryptopp;
 
 import java.math.BigInteger;
-import java.security.spec.AlgorithmParameterSpec;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.DlogGroupAbs;
 import edu.biu.scapi.primitives.dlog.DlogZpSafePrime;
 import edu.biu.scapi.primitives.dlog.GroupElement;
@@ -37,11 +35,8 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	 * Initializes the CryptoPP implementation of Dlog over Zp* with the given groupParams
 	 * @param groupParams - contains the group parameters
 	 */
-	public void init(AlgorithmParameterSpec params){
-		if (!(params instanceof ZpGroupParams)){
-			throw new IllegalArgumentException("params should be instance of ZpGroupParams");
-		}
-		ZpGroupParams groupParams = (ZpGroupParams) params;
+	public CryptoPpDlogZpSafePrime(ZpGroupParams groupParams){
+		
 		BigInteger p = groupParams.getP();
 		BigInteger q = groupParams.getQ();
 		BigInteger g = groupParams.getXg();
@@ -73,15 +68,29 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 		}
 		//create the GroupElement - generator with the pointer that return from the native function
 		generator = new ZpSafePrimeElementCryptoPp(g, p, false);
-		
-		isInitialized = true;
+	}
+	
+	/**
+	 * Initializes the CryptoPP implementation of Dlog over Zp* with the given groupParams
+	 * @param groupParams - contains the group parameters
+	 */
+	public CryptoPpDlogZpSafePrime(String q, String g, String p){
+		//creates ZpGroupParams from the given arguments and call the appropriate constructor
+		this(new ZpGroupParams(new BigInteger(q), new BigInteger(g), new BigInteger(p)));
+	}
+	
+	/**
+	 * Default constructor. Initializes this object with 1024 bit size.
+	 */
+	public CryptoPpDlogZpSafePrime(){
+		this(1024);
 	}
 	
 	/**
 	 * Initializes the CryptoPP implementation of Dlog over Zp* with random elements
 	 * @param numBits - number of the prime p bits to generate
 	 */
-	public void init(int numBits){
+	public CryptoPpDlogZpSafePrime(int numBits){
 		
 		//create random Zp dlog group 
 		pointerToGroup = createRandomDlogZp(numBits);
@@ -97,7 +106,11 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 		
 		groupParams = new ZpGroupParams(q, xG, p);
 		
-		isInitialized = true;
+	}
+	
+	public CryptoPpDlogZpSafePrime(String numBits){
+		//creates an int from the given string and call the appropriate constructor
+		this(new Integer(numBits));
 	}
 	
 	/**
@@ -110,22 +123,18 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	/**
 	 * 
 	 * @return the identity of this Zp group - 1
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getIdentity() throws UnInitializedException {
+	public GroupElement getIdentity(){
 		return new ZpSafePrimeElementCryptoPp(BigInteger.ONE, ((ZpGroupParams) groupParams).getP(), false);
 	}
 	/**
 	 * Checks if the given element is member of this Dlog group
 	 * @param element 
 	 * @return true if the given element is member of that group. false, otherwise.
-	 * @throws UnInitializedException 
 	 * @throws IllegalArgumentException
 	 */
-	public boolean isMember(GroupElement element) throws UnInitializedException {
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public boolean isMember(GroupElement element){
+		
 		//check if element is ZpElementCryptoPp
 		if (!(element instanceof ZpSafePrimeElementCryptoPp)){
 			throw new IllegalArgumentException("element type doesn't match the group type");
@@ -138,24 +147,18 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	/**
 	 * Checks if the given generator is indeed the generator of the group
 	 * @return true, is the generator is valid, false otherwise.
-	 * @throws UnInitializedException 
 	 */
-	public boolean isGenerator() throws UnInitializedException {
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public boolean isGenerator(){
+		
 		return validateZpGenerator(pointerToGroup);
 	}
 
 	/**
 	 * Checks if the parameters of the group are correct.
 	 * @return true if valid, false otherwise.
-	 * @throws UnInitializedException 
 	 */
-	public boolean validateGroup() throws UnInitializedException {
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public boolean validateGroup(){
+		
 		return validateZpGroup(pointerToGroup);
 	}
 
@@ -164,12 +167,9 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException{
+		
 		if (groupElement instanceof ZpSafePrimeElementCryptoPp){
 			//call to native inverse function
 			long invertVal = inverseElement(pointerToGroup, ((ZpSafePrimeElementCryptoPp) groupElement).getPointerToElement());
@@ -188,12 +188,9 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	 * @param base 
 	 * @return the result of the exponentiation
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement exponentiate(GroupElement base, BigInteger exponent) throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement exponentiate(GroupElement base, BigInteger exponent) throws IllegalArgumentException{
+		
 		if (base instanceof ZpSafePrimeElementCryptoPp){
 			//call to native exponentiate function
 			long exponentiateVal = exponentiateElement(pointerToGroup, ((ZpSafePrimeElementCryptoPp) base).getPointerToElement(), exponent.toByteArray());
@@ -212,13 +209,10 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	 * @param groupElement2
 	 * @return the multiplication result
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
 	public GroupElement multiplyGroupElements(GroupElement groupElement1,
-			GroupElement groupElement2) throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+			GroupElement groupElement2) throws IllegalArgumentException{
+		
 		if ((groupElement1 instanceof ZpSafePrimeElementCryptoPp) && (groupElement2 instanceof ZpSafePrimeElementCryptoPp)){
 			//call to native multiply function
 			long mulVal = multiplyElements(pointerToGroup, ((ZpSafePrimeElementCryptoPp) groupElement1).getPointerToElement(), 
@@ -232,12 +226,18 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 		}else throw new IllegalArgumentException("element type doesn't match the group type");
 	}
 
+	/**
+	 * Computes the product of several exponentiations with distinct bases 
+	 * and distinct exponents. 
+	 * Instead of computing each part separately, an optimization is used to 
+	 * compute it simultaneously. 
+	 * @param groupElements
+	 * @param exponentiations
+	 * @return the exponentiation result
+	 */
+	@Override
 	public GroupElement simultaneousMultipleExponentiations
-				(GroupElement[] groupElements, BigInteger[] exponentiations) throws UnInitializedException{
-		
-		if (!isInitialized()){
-		throw new UnInitializedException();
-		}
+				(GroupElement[] groupElements, BigInteger[] exponentiations){
 		
 		//currently, in cryptoPpDlogZpSafePrime the native algorithm is faster than the optimized one due to many calls to the JNI.
 		//Thus, we operate the native algorithm. In the future we may change this.
@@ -248,24 +248,18 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	/**
 	 * Creates a random member of this Dlog group
 	 * @return the random element
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getRandomElement() throws UnInitializedException {
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getRandomElement(){
+		
 		return new ZpSafePrimeElementCryptoPp(((ZpGroupParams) groupParams).getP());
 	}
 	
 	/**
 	 * Creates a Zp element with the given parameter
 	 * @return the created element
-	 * @throws UnInitializedException 
 	 */
-	public ZpElement getElement(BigInteger x, Boolean bCheckMembership) throws UnInitializedException {
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public ZpElement getElement(BigInteger x, Boolean bCheckMembership){
+		
 		return new ZpSafePrimeElementCryptoPp(x, ((ZpGroupParams) groupParams).getP(), bCheckMembership);
 	}
 	
@@ -273,12 +267,9 @@ public class CryptoPpDlogZpSafePrime extends DlogGroupAbs implements DlogZpSafeP
 	 * Converts a byte array to a ZpSafePrimeElementCryptoPp element.
 	 * @param binaryString the byte array to convert
 	 * @return the created group Element
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement convertByteArrayToGroupElement(byte[] binaryString) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString){
+		
 		if (binaryString.length >= ((ZpGroupParams) groupParams).getP().bitLength()){
 			throw new IllegalArgumentException("String is too long. It has to be of length less than p");
 		}
