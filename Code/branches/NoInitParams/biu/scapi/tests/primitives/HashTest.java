@@ -9,7 +9,6 @@ import java.util.logging.Level;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.hash.CryptographicHash;
 import edu.biu.scapi.tests.Test;
@@ -157,12 +156,9 @@ public abstract class HashTest extends Test {
 	protected void computeAndCompare(byte[] out, byte[] in, byte[] outBytes, PrintWriter file) {
 		
 		//computes the hash computation
-		try {
-			hash.update(in, 0, in.length);
-			hash.hashFinal(out, 0);
-		} catch (UnInitializedException e) {
-			Logging.getLogger().log(Level.WARNING, e.toString());
-		}
+		hash.update(in, 0, in.length);
+		hash.hashFinal(out, 0);
+		
 		
 		//if out is equal to the outbytes, result is set to true
 		boolean result =  Arrays.equals(out,outBytes);
