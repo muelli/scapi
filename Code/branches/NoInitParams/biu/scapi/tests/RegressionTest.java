@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.util.Vector;
 import java.util.logging.Level;
 
-
 import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.generals.Logging;
 
@@ -62,7 +61,6 @@ public class RegressionTest {
 	private Vector<Test> tests;
 	
 	/**
-	 * @throws FactoriesException 
 	 * 
 	 */
 	public RegressionTest() {
@@ -111,8 +109,7 @@ public class RegressionTest {
 
 	/**
 	 * 
-	 * fillTestVector
-	 * @throws FactoriesException 
+	 * fillTestVector 
 	 */
 
 	private void fillTestVector() {
@@ -120,38 +117,41 @@ public class RegressionTest {
 		try{	
 		tests.add(new AESTest(new BcAES()));
 		tests.add(new TripleDESTest(new BcTripleDES()));
-		tests.add(new HmacTest((Hmac) PrfFactory.getInstance().getObject("HMac(SHA224)", "BC")));
-		tests.add(new HmacTest((Hmac) PrfFactory.getInstance().getObject("HMac(SHA384)", "BC")));
-		tests.add(new HmacTest((Hmac) PrfFactory.getInstance().getObject("HMac(SHA512)", "BC")));
-		tests.add(new HmacTest((Hmac) PrfFactory.getInstance().getObject("HMac(SHA256)", "BC")));
-		tests.add(new IteratedPrfVaryingTest(new IteratedPrfVarying("HMac(SHA224)")));
-		tests.add(new LubyRackoffPrpFromPrfVaryingTest(new LubyRackoffPrpFromPrfVarying("IteratedPrfVarying(HMac(SHA224))")));
+		tests.add(new HmacTest((Hmac) PrfFactory.getInstance().getObject("HMac(SHA-224)", "BC")));
+		tests.add(new HmacTest((Hmac) PrfFactory.getInstance().getObject("HMac(SHA-384)", "BC")));
+		tests.add(new HmacTest((Hmac) PrfFactory.getInstance().getObject("HMac(SHA-512)", "BC")));
+		tests.add(new HmacTest((Hmac) PrfFactory.getInstance().getObject("HMac(SHA-256)", "BC")));
+		tests.add(new IteratedPrfVaryingTest(new IteratedPrfVarying("HMac(SHA-224)")));
+		tests.add(new LubyRackoffPrpFromPrfVaryingTest(new LubyRackoffPrpFromPrfVarying("IteratedPrfVarying(HMac(SHA-224))")));
 		tests.add(new SHA1Test(new BcSHA1()));
 		tests.add(new SHA1Test(new CryptoPpSHA1()));
-		tests.add(new SHA224Test(CryptographicHashFactory.getInstance().getObject("SHA224", "BC")));
+		tests.add(new SHA224Test(CryptographicHashFactory.getInstance().getObject("SHA-224", "BC")));
 		tests.add(new SHA224Test(new CryptoPpSHA224()));
 		tests.add(new SHA256Test(new BcSHA256()));
-		tests.add(new SHA256Test(CryptographicHashFactory.getInstance().getObject("SHA256", "CryptoPP")));
+		tests.add(new SHA256Test(CryptographicHashFactory.getInstance().getObject("SHA-256", "CryptoPP")));
 		tests.add(new SHA384Test(new BcSHA384()));
 		tests.add(new SHA384Test(new CryptoPpSHA384()));
 		tests.add(new SHA512Test(new BcSHA512()));
 		tests.add(new SHA512Test(new CryptoPpSHA512()));
-		tests.add(new EvaluationHashFunctionTest(UniversalHashFactory.getInstance().getObject("EvaluationHash")));
+		tests.add(new EvaluationHashFunctionTest(UniversalHashFactory.getInstance().getObject("EvaluationHash(NoPadding,SHA1PRNG)")));
 		tests.add(new CryptoPpRSATest(TrapdoorPermutationFactory.getInstance().getObject("RSA", "CryptoPP")));
 		tests.add(new ScRSATest(TrapdoorPermutationFactory.getInstance().getObject("RSA", "Scapi")));
 		tests.add(new CryptoPpRabinTest(TrapdoorPermutationFactory.getInstance().getObject("Rabin", "CryptoPP")));
-		tests.add(new HkdfTest(new HKDF("HMac(SHA256)")));
-		tests.add(new KdfIso18033Test(new BcKdfISO18033("SHA1")));
+		tests.add(new HkdfTest(new HKDF("HMac(SHA-256)")));
+		tests.add(new KdfIso18033Test(new BcKdfISO18033("SHA-1")));
 		tests.add(new RC4Test(PrgFactory.getInstance().getObject("RC4")));
 		tests.add(new DlogZpTest(DlogGroupFactory.getInstance().getObject("DlogZpSafePrime", "CryptoPP")));
 		tests.add(new DlogECFpTest(new MiraclDlogECFp()));
 		tests.add(new DlogECFpTest(new BcDlogECFp()));
-		tests.add(new DlogECF2mTest(DlogGroupFactory.getInstance().getObject("DlogECF2m", "BC")));
-		tests.add(new DlogECF2mTest(DlogGroupFactory.getInstance().getObject("DlogECF2m", "Miracl")));
-		tests.add(new HkdfTest(KdfFactory.getInstance().getObject("HKDF(HMac(SHA256))", "Scapi")));
+		tests.add(new DlogECF2mTest(DlogGroupFactory.getInstance().getObject("DlogECF2m(B-163)", "BC")));
+		tests.add(new DlogECF2mTest(DlogGroupFactory.getInstance().getObject("DlogECF2m(B-163)", "Miracl")));
+		tests.add(new HkdfTest(KdfFactory.getInstance().getObject("HKDF(HMac(SHA-256))", "Scapi")));
 		
 		}catch (FactoriesException e) {
 			Logging.getLogger().log(Level.INFO, "Some tests could not be run. Exception:", e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
