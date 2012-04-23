@@ -2,9 +2,6 @@ package edu.biu.scapi.primitives.prf;
 
 import javax.crypto.IllegalBlockSizeException;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-
-
 /** 
  * General interface for pseudorandom permutations which is sub-interface of pseudorandon function. Every prp class should implement this interface. <p>
  * Pseudorandom permutations are bijective pseudorandom functions that are efficiently invertible. 
@@ -23,9 +20,8 @@ public interface PseudorandomPermutation extends PseudorandomFunction {
 	 * @param outBytes output bytes. The resulted bytes of invert
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException, UnInitializedException;
+	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException;
 	
 	/** 
 	 * Inverts the permutation using the given key. <p>
@@ -37,7 +33,6 @@ public interface PseudorandomPermutation extends PseudorandomFunction {
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param len the length of the input and the output
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff, int len) throws IllegalBlockSizeException, UnInitializedException;
+	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff, int len) throws IllegalBlockSizeException;
 }
