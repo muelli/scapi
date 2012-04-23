@@ -3,15 +3,11 @@ package edu.biu.scapi.primitives.dlog.bc;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Properties;
-import java.util.logging.Level;
 
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 
-
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogECF2m;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.GroupElement;
@@ -29,33 +25,40 @@ import edu.biu.scapi.securityLevel.DDH;
 public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m, DDH{
 
 	/**
-	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
+	 * Default constructor. Initializes this object with K-163 NIST curve.
+	 */
+	public BcDlogECF2m() throws IOException{
+		this("K-163");
+	}
+	
+	public BcDlogECF2m(String fileName, String curveName) throws IOException{
+		super(fileName, curveName);
+	}
+	
+	/**
+	 * Constructor that initialize this DlogGroup with one of NIST recommended elliptic curve
 	 * @param curveName - name of NIST curve to initialized
+	 * @throws IOException 
 	 * @throws IllegalAccessException
 	 */
-	public void init(String curveName) throws IllegalArgumentException{
+	public BcDlogECF2m(String curveName) throws IllegalArgumentException, IOException{
 		
-		try {
-			Properties ecProperties;
+		Properties ecProperties;
+	
+		ecProperties = getProperties(PROPERTIES_FILES_PATH); //get properties object containing the curve data
+	
+		//checks that the curveName is in the file 
+		if(!ecProperties.containsKey(curveName)) { 
+			throw new IllegalArgumentException("no such NIST elliptic curve"); 
+		} 
 		
-			ecProperties = getProperties(PROPERTIES_FILES_PATH); //get properties object containing the curve data
-		
-			//checks that the curveName is in the file 
-			if(!ecProperties.containsKey(curveName)) { 
-				throw new IllegalArgumentException("no such NIST elliptic curve"); 
-			} 
-			
-			//check that the given curve is in the field that matches the group
-			if (!curveName.startsWith("B-") && !curveName.startsWith("K-")){
-				throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match this DlogGroup type"); 
-			}
-			isInitialized = true; 
-			doInit(ecProperties, curveName);  // set the data and initialize the curve
-			
-			
-		} catch (IOException e) {
-			Logging.getLogger().log(Level.WARNING, "error while loading the NIST elliptic curves file");
+		//check that the given curve is in the field that matches the group
+		if (!curveName.startsWith("B-") && !curveName.startsWith("K-")){
+			throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match this DlogGroup type"); 
 		}
+		
+		doInit(ecProperties, curveName);  // set the data and initialize the curve
+		
 	}
 	
 	
@@ -64,7 +67,6 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m, DDH{
 	 * generator and the underlying curve
 	 * @param ecProperties - properties object contains the curve file data
 	 * @param curveName - the curve name as it called in the file
-	 * @throws UnInitializedException 
 	 */
 	protected void doInit(Properties ecProperties, String curveName) {
 		//get the curve parameters
@@ -111,11 +113,8 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m, DDH{
 		}
 		
 		//create the generator
-		try {
-			generator = new ECF2mPointBc(x,y, this);
-		} catch (UnInitializedException e) {
-			//creation of the generator is done after initialization of the DlogGroup so this exception shouldn't occur
-		}	
+		generator = new ECF2mPointBc(x,y, this);
+			
 	}
 	
 	/**
@@ -128,24 +127,17 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m, DDH{
 	/**
 	 * Creates a random member of this Dlog group
 	 * @return the random element
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getRandomElement() throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getRandomElement(){
+		
 		return new ECF2mPointBc(this);
 	}
 	
 	/**
 	 * Creates a point over F2m field with the given parameters
 	 * @return the created point
-	 * @throws UnInitializedException 
 	 */
-	public ECElement getElement(BigInteger x, BigInteger y) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public ECElement getElement(BigInteger x, BigInteger y){
 		return new ECF2mPointBc(x, y, this);
 	}
 	
@@ -168,9 +160,8 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m, DDH{
 	 * Converts a byte array to an ECF2mPointBc.
 	 * @param binaryString the byte array to convert
 	 * @return the created group Element
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement convertByteArrayToGroupElement(byte[] binaryString) throws UnInitializedException{
+	public GroupElement convertByteArrayToGroupElement(byte[] binaryString){
 		if (binaryString.length >= ((ECF2mGroupParams) groupParams).getM()){
 			throw new IllegalArgumentException("String is too long. It has to be of length less than log p");
 		}
