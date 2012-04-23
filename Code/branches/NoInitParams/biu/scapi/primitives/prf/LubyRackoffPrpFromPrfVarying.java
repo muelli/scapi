@@ -1,10 +1,15 @@
 package edu.biu.scapi.primitives.prf;
 
-import javax.crypto.IllegalBlockSizeException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
@@ -18,6 +23,14 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
  */
 public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	
+	private SecureRandom random;
+	
+	public LubyRackoffPrpFromPrfVarying() throws FactoriesException {
+
+		//gets the requested prpVarying from the factory, creates random and call the extended constructor 
+		this(new IteratedPrfVarying(), new SecureRandom());
+	}
+	
 	/**
 	 * Constructor that accepts a name of a prfVaryingIOLength to be the underlying prf.
 	 * @param prfVaringIOLengthName the underlying prf name
@@ -25,27 +38,81 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 */
 	public LubyRackoffPrpFromPrfVarying(String prfVaringIOLengthName) throws FactoriesException {
 
-		//gets the requested prpVarying from the factory. 
-		prfVaryingIOLength = (PrfVaryingIOLength) PrfFactory.getInstance().getObject(prfVaringIOLengthName);
+		//gets the requested prpVarying from the factory, creates random and call the extended constructor 
+		this((PrfVaryingIOLength) PrfFactory.getInstance().getObject(prfVaringIOLengthName), new SecureRandom());
+	}
+	
+	/**
+	 * Constructor that accepts a name of a prfVaryingIOLength to be the underlying prf.
+	 * @param prfVaringIOLengthName the underlying prf name
+	 * @param randNumGenAlg algorithm of randomness to use 
+	 * @throws FactoriesException
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public LubyRackoffPrpFromPrfVarying(String prfVaringIOLengthName, String randNumGenAlg) throws FactoriesException, NoSuchAlgorithmException {
+
+		//gets the requested prpVarying and random from the factories. 
+		//then call the extended constructor
+		this((PrfVaryingIOLength) PrfFactory.getInstance().getObject(prfVaringIOLengthName), SecureRandom.getInstance(randNumGenAlg));
 	}
 	
 	/**
 	 * Constructor that accepts a prfVaryingIOLength to be the underlying prf.
-	 * @param prfVaryingIOLength the underlying prf varying. MUST be initialized.
-	 * @throws UnInitializedException if the given prfVaryingIOLength is not initialized
+	 * @param prfVaryingIOLength the underlying prf varying.
 	 */
-	public LubyRackoffPrpFromPrfVarying(PrfVaryingIOLength prfVaryingIOLength) throws UnInitializedException{
-		
-		//first checks that the prp fixed is initialized.
-		if(prfVaryingIOLength.isInitialized()){
-			//assigns the prf varying input.
-			this.prfVaryingIOLength = prfVaryingIOLength;
-		}
-		else{//the user must pass an initialized object, otherwise throws an exception
-			throw new UnInitializedException("The input variable must be initialized");
-		}
+	public LubyRackoffPrpFromPrfVarying(PrfVaryingIOLength prfVaryingIOLength){
+		//creates random and call the extended constructor
+		this(prfVaryingIOLength, new SecureRandom());
 		
 	}
+	
+	/**
+	 * Constructor that accepts a prfVaryingIOLength to be the underlying prf and a secureRandom object to use.
+	 * @param prfVaryingIOLength the underlying prf varying.
+	 * @param random secureRandom object to use
+	 */
+	public LubyRackoffPrpFromPrfVarying(PrfVaryingIOLength prfVaryingIOLength, SecureRandom random){
+		
+		this.prfVaryingIOLength = prfVaryingIOLength;
+		this.random = random;
+		
+	}
+	
+	/**
+	 * Generates a secret key to initialize this prf object.
+	 * @param keySize algorithmParameterSpec contains the required secret key size in bits 
+	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
+	 */
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException{
+		throw new UnsupportedOperationException("To generate a key for this HMAC object use the generateKey(int keySize) function");
+	}
+	
+	/**
+	 * Generates a secret key to initialize this LubyRackoff object.
+	 * @param keySize is the required secret key size in bits 
+	 * @return the generated secret key 
+	 */
+	public SecretKey generateKey(int keySize){
+		//generate a random string of bits of length keySize, which has to be greater that zero. 
+		
+		//if the key size is zero or less - throw exception
+		if (keySize < 0){
+			throw new NegativeArraySizeException("key size must be greater than 0");
+		}
+		//creates a byte array of size keySize
+		byte[] genBytes = new byte[keySize];
+
+		//generates the bytes using the random
+		//Do we need to seed random??
+		random.nextBytes(genBytes);
+		//creates a secretKey from the generated bytes
+		SecretKey generatedKey = new SecretKeySpec(genBytes, "");
+		
+		return generatedKey;
+		
+	}
+	
 	/** 
 	 * Computes the LubyRackoff permutation.
 	 * the algorithm pseudocode is: 
@@ -67,12 +134,10 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 * @param outBytes output bytes. The resulted bytes of compute
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff) throws IllegalBlockSizeException, UnInitializedException {
-		//checks that the object is initialized
-		if(!isInitialized()){
-			throw new UnInitializedException();
+	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offsets and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
@@ -161,12 +226,11 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param len the length of the input and the output
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
 	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff, int len) throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			int outOff, int len) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+len > inBytes.length)){
