@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.logging.Level;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.ECElement;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
@@ -52,9 +51,8 @@ public class ECF2mPointMiracl implements ECElement{
 	/**
 	 *  Constructor that gets DlogGroup and chooses a random point in the group
 	 * @param curve
-	 * @throws UnInitializedException 
 	 */
-	public ECF2mPointMiracl(MiraclDlogECF2m curve) throws UnInitializedException{
+	public ECF2mPointMiracl(MiraclDlogECF2m curve){
 	
 		mip = curve.getMip();
 		
@@ -77,9 +75,8 @@ public class ECF2mPointMiracl implements ECElement{
 	 * Constructor that gets a x coordinates , calculates its corresponding y and set the point with these arguments
 	 * @param x the x coordinate
 	 * @param curve
-	 * @throws UnInitializedException 
 	 */
-	ECF2mPointMiracl(BigInteger x, MiraclDlogECF2m curve) throws UnInitializedException{
+	ECF2mPointMiracl(BigInteger x, MiraclDlogECF2m curve){
 		mip = curve.getMip();
 		
 		boolean validity[] = new boolean[1];
