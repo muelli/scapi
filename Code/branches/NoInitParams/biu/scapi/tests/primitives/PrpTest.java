@@ -13,10 +13,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-
 import org.bouncycastle.util.encoders.Hex;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.prf.PseudorandomPermutation;
 
@@ -97,7 +95,7 @@ public abstract class PrpTest extends PrfTest {
 		
 		try {
 			//init the prp with the new secret key
-			prf.init(secretKey);
+			prf.setKey(secretKey);
 		
 			//computes the function to get the output array.
 			prf.computeBlock(input, 0, input.length, out, 0, out.length);
@@ -108,11 +106,7 @@ public abstract class PrpTest extends PrfTest {
 			// should not happen since the offsets and length are correct
 			e.printStackTrace();
 			Logging.getLogger().log(Level.WARNING, e.toString());
-		} catch (UnInitializedException e) {
-			// should not happen since the object is initialized
-			e.printStackTrace();
-			Logging.getLogger().log(Level.WARNING, e.toString());
-		}catch (InvalidKeyException e) {
+		} catch (InvalidKeyException e) {
 			//shouldn't happen since the key in the test vector is known and correct
 			Logging.getLogger().log(Level.WARNING, e.toString());
 		}
@@ -177,7 +171,7 @@ public abstract class PrpTest extends PrfTest {
 			SecretKey secretKey = new SecretKeySpec(testDataVector.get(0).key, "");
 			
 			//init the prf with the new secret key
-			prf.init(secretKey);
+			prf.setKey(secretKey);
 			
 			byte[] out = new byte[(testDataVector.get(0).output).length];
 			//inverts the function with offsets out of the arrays length
@@ -207,7 +201,7 @@ public abstract class PrpTest extends PrfTest {
 			SecretKey secretKey = new SecretKeySpec(testDataVector.get(0).key, "");
 			
 			//init the prf with the new secret key
-			prf.init(secretKey);
+			prf.setKey(secretKey);
 			
 			byte[] out = new byte[(testDataVector.get(0).output).length];
 			//inverts the function with lengths out of the arrays length
