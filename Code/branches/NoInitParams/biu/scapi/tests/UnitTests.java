@@ -18,27 +18,17 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Date;
-import java.util.Vector;
 
 import org.bouncycastle.util.BigIntegers;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.DlogECFp;
 import edu.biu.scapi.primitives.dlog.DlogEllipticCurve;
 import edu.biu.scapi.primitives.dlog.DlogGroup;
-import edu.biu.scapi.primitives.dlog.DlogZp;
-import edu.biu.scapi.primitives.dlog.ECParameterSpec;
 import edu.biu.scapi.primitives.dlog.GroupElement;
-import edu.biu.scapi.primitives.dlog.bc.BcDlogECFp;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ECFpGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ZpGroupParams;
-import edu.biu.scapi.primitives.dlog.miracl.MiraclDlogECFp;
-import edu.biu.scapi.tests.primitives.DlogECF2mTest;
-import edu.biu.scapi.tests.primitives.DlogECFpTest;
-import edu.biu.scapi.tests.primitives.DlogGroupTest;
-import edu.biu.scapi.tests.primitives.DlogZpTest;
 import edu.biu.scapi.tools.Factories.DlogGroupFactory;
 
 /**
@@ -130,20 +120,17 @@ public class UnitTests {
 		DlogGroup dlog;
 		try {
 			//create the dlog via the dlog factory using the dlog name and provider name
-			dlog = DlogGroupFactory.getInstance().getObject(dlogGroup, dlogProvider);
+			dlog = DlogGroupFactory.getInstance().getObject(dlogGroup+"("+initParams+")", dlogProvider);
 			BigInteger max;
 			//init the dlog. there is a difference between EC groups and Zp group.
 			if(dlog instanceof DlogEllipticCurve){
-				dlog.init(new ECParameterSpec(initParams)); 
 				if (dlog instanceof DlogECFp){
 					max = ((ECFpGroupParams) dlog.getGroupParams()).getP();
 				} else {
 					max = new BigInteger("2").pow(((ECF2mGroupParams) dlog.getGroupParams()).getM());
 				}
 			}
-			else {
-				DlogZp dlogZp = (DlogZp)dlog;
-				dlogZp.init(new Integer(initParams).intValue());
+			else{
 				max = ((ZpGroupParams) dlog.getGroupParams()).getP();
 			}
 			SecureRandom random = new SecureRandom();
@@ -208,13 +195,7 @@ public class UnitTests {
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnInitializedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 	}
 
 }
