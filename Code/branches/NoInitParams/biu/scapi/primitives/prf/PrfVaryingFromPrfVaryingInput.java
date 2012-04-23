@@ -1,13 +1,9 @@
 package edu.biu.scapi.primitives.prf;
 
 import java.security.InvalidKeyException;
-import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
-
-import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
  * This class implements some common functionality of varying input and output length prf classes.
@@ -31,33 +27,16 @@ public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLengt
 	 * @param secretKey secret key
 	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey) throws InvalidKeyException {
+	public void setKey(SecretKey secretKey) throws InvalidKeyException {
 
-		prfVaryingInputLength.init(secretKey); //initializes the underlying prf
+		prfVaryingInputLength.setKey(secretKey); //initializes the underlying prf
 		
 	}
 
-	/**
-	 * Initializes this PrfVaryingFromPrfVaryingInput with the secret key and the auxiliary parameters
-	 * @param secretKey the secrete key
-	 * @param params algorithm parameters
-	 * @throws InvalidParameterSpecException 
-	 * @throws InvalidKeyException 
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException, InvalidKeyException {
-
-		prfVaryingInputLength.init(secretKey, params); //initializes the underlying prf
-		
+	public boolean isKeySet(){
+		return prfVaryingInputLength.isKeySet();
 	}
 	
-	public boolean isInitialized(){
-		return prfVaryingInputLength.isInitialized();
-	}
-	
-	public AlgorithmParameterSpec getParams() throws UnInitializedException {
-	
-		return prfVaryingInputLength.getParams();
-	}
 
 	/** 
 	 * Since both input and output variables are varying this function should not be call. Throws an exception.
@@ -67,10 +46,11 @@ public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLengt
 	 */
 
 	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff) throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			int outOff) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
+		
 		throw new IllegalBlockSizeException("Input and output sizes are not specified");
 		
 	}
@@ -84,11 +64,12 @@ public abstract class PrfVaryingFromPrfVaryingInput implements PrfVaryingIOLengt
 	 * @throws UnInitializedException 
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen,
-			byte[] outBytes, int outOff)
-			throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			byte[] outBytes, int outOff) throws IllegalBlockSizeException{
+		
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
+		
 		throw new IllegalBlockSizeException("Output size is not specified");
 		
 	}
