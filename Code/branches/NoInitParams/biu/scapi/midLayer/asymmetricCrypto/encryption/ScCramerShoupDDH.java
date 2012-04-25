@@ -319,7 +319,7 @@ public class ScCramerShoupDDH implements CramerShoupDDHEnc {
 		GroupElement m = dlogGroup.multiplyGroupElements(cipher.getE(), invOfU1ExpZ);
 		
 		//convert the plaintext element to a byte[], create a plaintext object with the bytes and return it
-		byte[] text = dlog.convertGroupElementToByteArray(m);
+		byte[] text = dlogGroup.convertGroupElementToByteArray(m);
 		plaintext = new BasicPlaintext(text);
 		
 		return plaintext;
