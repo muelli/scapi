@@ -17,6 +17,7 @@ public abstract class DlogGroupEC extends DlogGroupAbs implements DlogEllipticCu
 
 	private  Properties nistProperties; // properties object to hold nist parameters
 	protected String PROPERTIES_FILES_PATH = System.getProperty("java.class.path").toString().split(";")[0]+"\\propertiesFiles\\NISTEC.properties";
+	protected String curveName;
 	
 	protected DlogGroupEC(){};
 	
@@ -30,11 +31,12 @@ public abstract class DlogGroupEC extends DlogGroupAbs implements DlogEllipticCu
 		Properties ecProperties;
 		
 		ecProperties = getProperties(fileName); //get properties object containing the curve data
-		
+		PROPERTIES_FILES_PATH = fileName;
 		//checks that the curveName is in the file 
 		if(!ecProperties.containsKey(curveName)) { 
 			throw new IllegalArgumentException("no such elliptic curve in the given file");
 		}
+		this.curveName = curveName;
 		
 		doInit(ecProperties, curveName); // set the data and initialize the curve
 	}
@@ -61,6 +63,14 @@ public abstract class DlogGroupEC extends DlogGroupAbs implements DlogEllipticCu
 		}
 
 		return ecProperties;
+	}
+	
+	public String getCurveName(){
+		return curveName;
+	}
+	
+	public String getFileName(){
+		return PROPERTIES_FILES_PATH;
 	}
 	
 	/*
