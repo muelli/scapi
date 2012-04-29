@@ -46,7 +46,7 @@ public class BcDlogECFp extends BcAdapterDlogEC implements DlogECFp, DDH{
 		if(!ecProperties.containsKey(curveName)) { 
 			throw new IllegalArgumentException("no such NIST elliptic curve"); 
 		} 
-		
+			this.curveName = curveName;
 		//check that the given curve is in the field that matches the group
 		if (!curveName.startsWith("P-")){
 			throw new IllegalArgumentException("curveName is not a curve over Fp field and doesn't match the DlogGroup type"); 
