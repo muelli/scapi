@@ -489,7 +489,7 @@ public abstract class DlogGroupAbs implements DlogGroup{
 	 * @return the exponentiation result
 	 */
 	public GroupElement exponentiateWithPreComputedValues
-					(GroupElement groupElement, int exponent){
+					(GroupElement groupElement, BigInteger exponent){
 		
 		//extracts from the map the GroupElementsExponentiations object corresponding to the accepted base
 		GroupElementsExponentiations exponentiations = exponentiationsMap.get(groupElement);
@@ -539,10 +539,9 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		 * @param size - the required exponent
 		 * @throws IllegalArgumentException 
 		 */
-		private void prepareExponentiations(int size) {
-			//find the the closest power 2 exponent 
-			double log = Math.log10(size)/Math.log10(2); //log_2(size)
-			int index = (int) Math.floor(log); 
+		private void prepareExponentiations(BigInteger size) {
+			//find log of the number - this is the index of the size-exponent in the exponentiation array 
+			int index = size.bitLength()-1; 
 			
 			/* calculates the necessary exponentiations and put them in the exponentiations vector */
 			for (int i=exponentiations.size(); i<=index; i++){
@@ -560,15 +559,14 @@ public abstract class DlogGroupAbs implements DlogGroup{
 		 * @param size - the required exponent
 		 * @return groupElement - the exponentiate result
 		 */
-		public GroupElement getExponentiation(int size) {
+		public GroupElement getExponentiation(BigInteger size) {
 			/**
 			 * The exponents in the exponents vector are all power of 2.
 			 * In order to achieve the exponent size, we calculate its closest power 2 in the exponents vector 
 			 * and continue the calculations from there.
 			 */
 			//find the the closest power 2 exponent 
-			double log = Math.log10(size)/Math.log10(2); //log_2(size)
-			int index = (int) Math.floor(log); 
+			int index = size.bitLength()-1; 
 			
 			GroupElement exponent = null;
 			/* if the requested index out of the vector bounds, the exponents have not been calculated yet, so calculates them.*/
@@ -577,11 +575,13 @@ public abstract class DlogGroupAbs implements DlogGroup{
 			
 			exponent = exponentiations.get(index); //get the closest exponent in the exponentiations vector
 			/* if size is not power 2, calculates the additional multiplications */
-			if ((double) index != log){
-				for (int i=(int) Math.pow(2, index); i<size; i++){
-					exponent = multiplyGroupElements(base, exponent);
-				}
+			BigInteger lastExp = new BigInteger("2").pow(index);
+			BigInteger difference = size.subtract(lastExp);
+			if (difference.compareTo(BigInteger.ZERO) > 0){
+				GroupElement diff = getExponentiation(size.subtract(lastExp));
+				exponent = multiplyGroupElements(diff, exponent);
 			}
+			
 			return exponent;		
 		}
 	}
