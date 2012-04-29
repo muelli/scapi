@@ -628,26 +628,12 @@ public class ForumUser {
 			UnInitializedException {
 		int n = new Integer(config.numOfusers).intValue();
 		int d = new Integer(config.polynomialDegree).intValue();
-		DlogGroup dlogGroup = DlogGroupFactory.getInstance().getObject(config.dlogGroup, config.dlogProvider);
+		DlogGroup dlogGroup = DlogGroupFactory.getInstance().getObject(config.dlogGroup+"("+config.algorithmParameterSpec+")", config.dlogProvider);
 		// DlogGroup dlogGroup = new MiraclDlogECFp();
 		// DlogGroup dlogGroup = new BcDlogECFp();
 		// dlogGroup.init(new ECParameterSpec("P-224"));
 		// dlogGroup.init(new ECParameterSpec("B-233"));
-		if(dlogGroup instanceof DlogEllipticCurve)
-			dlogGroup.init(new ECParameterSpec(config.algorithmParameterSpec)); // Need to fix this
-																			// so
-																			// it
-																			// works
-																			// for
-																			// all
-																			// specs
-																			// not
-																			// jut
-																			// EC
-		else {
-			DlogZp dlogZp = (DlogZp)dlogGroup;
-			dlogZp.init(new Integer(config.algorithmParameterSpec).intValue());
-		}
+		
 
 		// CryptographicHash hashH = new BcSHA224();
 		// CryptographicHash hashG = new BcSHA224();
