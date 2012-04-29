@@ -97,9 +97,9 @@ public class ECFpPointMiracl implements ECElement{
 	 * The ptr is a result of our DlogGroup functions, such as multiply.
 	 * @param ptr - pointer to native point
 	 */
-	ECFpPointMiracl(long ptr, long mip){
+	ECFpPointMiracl(long ptr, MiraclDlogECFp curve){
 		this.point = ptr;
-		this.mip = mip;
+		mip = curve.getMip();
 	}
 	
 	public boolean isInfinity(){
@@ -136,7 +136,7 @@ public class ECFpPointMiracl implements ECElement{
 	
 	public boolean equals(Object elementToCompare){
 		if (!(elementToCompare instanceof ECFpPointMiracl)){
-			throw new IllegalArgumentException("element type doesn't match the group type");
+			return false;
 		}
 		ECFpPointMiracl element = (ECFpPointMiracl) elementToCompare;
 		if ((element.getX().compareTo(getX()) ==0) && (element.getY().compareTo(getY()) == 0)){
