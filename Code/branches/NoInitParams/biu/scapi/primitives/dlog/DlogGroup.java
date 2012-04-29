@@ -146,7 +146,7 @@ public interface DlogGroup {
 	 * @param exponent
 	 * @return the exponentiation result
 	 */
-	public GroupElement exponentiateWithPreComputedValues(GroupElement groupElement, int exponent);
+	public GroupElement exponentiateWithPreComputedValues(GroupElement groupElement, BigInteger exponent);
 	
 	/**
 	 * Converts a byte array to a GroupElement.
