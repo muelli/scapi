@@ -25,4 +25,7 @@ public interface DlogEllipticCurve extends DlogGroup{
 	 * @return the infinity point of this dlog group
 	 */
 	public ECElement getInfinity();
+	public String getCurveName();
+	
+	public String getFileName();
 }
