@@ -158,14 +158,17 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_createInfinityF2mPoint
   (JNIEnv *, jobject, jlong);
 
-/*JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclAdapterDlogEC_createExponentiationsMap
-  (JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_createECFpObject
+  (JNIEnv *, jobject, jlong m, jbyteArray, jbyteArray, jbyteArray);
+
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_createECF2mObject
+  (JNIEnv *, jobject, jlong m, jint, jint, jint, jint, jbyteArray, jbyteArray);
 
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_exponentiateFpWithPreComputed
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jbyteArray);
+  (JNIEnv *, jobject, jlong, jlong, jlong, jbyteArray);
 
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_exponentiateF2mWithPreComputed
-  (JNIEnv *, jobject, jlong, jlong, jlong, jint, jbyteArray);*/
+  (JNIEnv *, jobject, jlong, jlong, jlong, jbyteArray);
   
 #ifdef __cplusplus
 }
@@ -178,11 +181,35 @@ epoint* computeLoop(miracl* mip, big* exponentiations, int w, int h, epoint*** p
 epoint*** createLLPreCompTable(miracl* mip, epoint** points, int w, int h, int n, int field);
 epoint* getIdentity(miracl* mip, int field);
 
+class ECFp{
 
-/*
-class GroupElementsExponentiations{
-	vector<epoint*> exponentiations;
+private:
+	big p, a, b;
 	miracl* mip;
+	map<epoint*, ebrick*>* exponentiationsMap;
+
+public:
+	ECFp(miracl* mip, big p, big a, big b);
+	~ECFp();
+	long exponentiateWithPreComputedValues(epoint* base, big exponent);
+};
+
+class ECF2m{
+
+private:
+	int m, k1, k2, k3;
+	big a, b;
+	miracl* mip;
+	map<epoint*, ebrick2*>* exponentiationsMap;
+
+public:
+	ECF2m(miracl* mip, int m, int k1, int k2, int k3, big a, big b);
+	~ECF2m();
+	long exponentiateWithPreComputedValues(epoint* base, big exponent);
+};
+
+/*class GroupElementsExponentiations{
+	vector<epoint*> exponentiations;
 	int fp;
 public:
 	GroupElementsExponentiations(miracl* mip, epoint* base, bool fp);
@@ -190,3 +217,4 @@ public:
 	void prepareExponentiations(big size);
 	epoint* getExponentiation(big size);
 };*/
+

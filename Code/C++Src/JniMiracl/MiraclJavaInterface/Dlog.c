@@ -32,7 +32,7 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_
 	  b = byteArrayToMiraclBig(env, mip, bVal);
 		  
 	  /* initialize the curve */
-	  ecurve_init(mip, a, b, p, MR_PROJECTIVE);
+	  ecurve_init(mip, a, b, p, 2);
 
 	  mirkill(a);
 	  mirkill(b);
@@ -673,86 +673,6 @@ epoint*** createLLPreCompTable(miracl* mip, epoint** points, int w, int h, int n
 }
 
 /*
- * Creates the exponentiations map in the first time it required
- */
-/*JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclAdapterDlogEC_createExponentiationsMap
-  (JNIEnv *, jobject){
-	  
-
-	  map<epoint*, GroupElementsExponentiations*>* exponentiationsMap = new map<epoint*, GroupElementsExponentiations*>;
-	 
-	  return (jlong)exponentiationsMap;
-	  
-
-
-}
-
-/*
- * Computes the product of several exponentiations of the same base
- * and distinct exponents for Fp curves. 
- * An optimization is used to compute it more quickly by keeping in memory 
- * the result of h1, h2, h4,h8,... and using it in the calculation.
- * Note that if we want a one-time exponentiation of h it is preferable to use the basic exponentiation function 
- * since there is no point to keep anything in memory if we have no intention to use it. 
- */
-/*JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_exponentiateFpWithPreComputed
-  (JNIEnv *env, jobject obj, jlong m, jlong expMap, jlong base, jint bits, jbyteArray size){
-	   
-	  //translate parameters  to miracl notation
-	  miracl* mip = (miracl*)m;
-	  big exponent = byteArrayToMiraclBig(env, mip, size);
-	  map<epoint*, GroupElementsExponentiations*>* exponentiationsMap = (map<epoint*, GroupElementsExponentiations*>*) expMap; //cast the given map to the right type
-	  map<epoint*, GroupElementsExponentiations*>::iterator it;
-
-	  //get the base exponentiations from the map
-	  it=exponentiationsMap->find((epoint*)base);
-	  GroupElementsExponentiations* exponentiations = (*it).second;
-	  //if there is no exponentiations in the map for this base - creates them
-	  if (it == exponentiationsMap->end()){
-		  exponentiations = new GroupElementsExponentiations(mip, (epoint*)base, true);
-		  exponentiationsMap->insert(pair<epoint*, GroupElementsExponentiations*>((epoint*)base, exponentiations));
-	  }
-	  //calculates the required exponent 
-	  return (jlong)exponentiations->getExponentiation(exponent);
-	  //translate parameters  to miracl notation
-	  
-	 
-}
-
-
-/*
- * Computes the product of several exponentiations of the same base
- * and distinct exponents for F2m curves. 
- * An optimization is used to compute it more quickly by keeping in memory 
- * the result of h1, h2, h4,h8,... and using it in the calculation.
- * Note that if we want a one-time exponentiation of h it is preferable to use the basic exponentiation function 
- * since there is no point to keep anything in memory if we have no intention to use it. 
- */
-/*JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_exponentiateF2mWithPreComputed
-  (JNIEnv *env, jobject obj, jlong m, jlong expMap, jlong base, jint bits, jbyteArray size){
-	  //translate parameters  to miracl notation
-	  miracl* mip = (miracl*)m;
-	  big exponent = byteArrayToMiraclBig(env, mip, size);
-	  map<epoint*, GroupElementsExponentiations*>* exponentiationsMap = (map<epoint*, GroupElementsExponentiations*>*) expMap; //cast the given map to the right type
-	  map<epoint*, GroupElementsExponentiations*>::iterator it;
-
-	  //get the base exponentiations from the map
-	  it=exponentiationsMap->find((epoint*)base);
-	  GroupElementsExponentiations* exponentiations = (*it).second;;
-	  
-	  //if there is no exponentiations in the map for this base - creates them
-	  if (it == exponentiationsMap->end()){
-		  exponentiations = new GroupElementsExponentiations(mip, (epoint*)base, false);
-		  exponentiationsMap->insert(pair<epoint*, GroupElementsExponentiations*>((epoint*)base, exponentiations));
-	  }
-	  //calculates the required exponent 
-	  return (jlong)exponentiations->getExponentiation(exponent);
-	  
-}*/
-
-
-
-/*
  * Returns the identity point
  */
 epoint* getIdentity(miracl* mip, int field){
@@ -770,6 +690,187 @@ epoint* getIdentity(miracl* mip, int field){
 	mirkill(x);
 	mirkill(y);
 	return identity;
+}
+
+/*
+ * Creates the exponentiations map in the first time it required
+ */
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_createECFpObject
+  (JNIEnv *env, jobject, jlong m, jbyteArray p, jbyteArray a, jbyteArray b){
+	  
+	  //translate parameters  to miracl notation
+	  miracl* mip = (miracl*)m;
+	  big pB = byteArrayToMiraclBig(env, mip, p);
+	  big aB = byteArrayToMiraclBig(env, mip, a);
+	  big bB = byteArrayToMiraclBig(env, mip, b);
+	  ECFp* dlog = new ECFp(mip, pB, aB, bB);
+
+	  return (jlong)dlog;
+	 
+}
+
+/*
+ * Computes the product of several exponentiations of the same base
+ * and distinct exponents for Fp curves. 
+ * An optimization is used to compute it more quickly by keeping in memory 
+ * the result of h1, h2, h4,h8,... and using it in the calculation.
+ * Note that if we want a one-time exponentiation of h it is preferable to use the basic exponentiation function 
+ * since there is no point to keep anything in memory if we have no intention to use it. 
+ */
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_exponentiateFpWithPreComputed
+  (JNIEnv *env, jobject obj, jlong m, jlong dlog, jlong base, jbyteArray size){
+	   
+	  //translate parameters  to miracl notation
+	  miracl* mip = (miracl*)m;
+	  big exponent = byteArrayToMiraclBig(env, mip, size);
+
+	  ECFp* dlogGroup = (ECFp*) dlog;
+
+	  jlong result =  dlogGroup->exponentiateWithPreComputedValues((epoint*)base, exponent);
+	  
+	  mirkill(exponent);
+	
+	  return result;
+	 
+}
+
+ECFp::ECFp(miracl* mip, big p, big a, big b){
+	this->p = p;
+	this->a = a;
+	this->b = b;
+	exponentiationsMap = new map<epoint*, ebrick*>;
+	this->mip = mip;
+}
+
+ECFp::~ECFp(){
+	exponentiationsMap->clear();
+	delete(exponentiationsMap);
+	mirkill(p);
+	mirkill(a);
+	mirkill(b);
+}
+
+long ECFp::exponentiateWithPreComputedValues(epoint* base, big exponent){
+	map<epoint*, ebrick*>::iterator it;
+	big x, y;
+	x = mirvar(mip, 0);
+	y = mirvar(mip, 0);
+
+	//get the base exponentiations from the map
+	it=exponentiationsMap->find((epoint*)base);
+	ebrick* exponentiations = (*it).second;
+	//if there is no exponentiations in the map for this base - creates them
+	if (it == exponentiationsMap->end()){
+		exponentiations = new ebrick();
+		  
+		epoint_get(mip, base, x, y);
+		ebrick_init(mip, exponentiations, x, y, a, b, p, 8, 1024/*logb2(mip, mip->modulus)+1)*/);
+		exponentiationsMap->insert(pair<epoint*, ebrick*>((epoint*)base, exponentiations));
+	}
+
+	//calculates the required exponent
+	mul_brick(mip, exponentiations, exponent, x, y);
+
+	epoint* p = new epoint();
+	p = epoint_init(mip);
+	bool valid = epoint_set(mip, x, y, 0, p);
+	
+	mirkill(x);
+	mirkill(y);
+
+	return (jlong)p;
+}
+
+
+/*
+ * Creates the exponentiations map in the first time it required
+ */
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_createECF2mObject
+  (JNIEnv *env, jobject, jlong m, jint mod, jint k1, jint k2, jint k3, jbyteArray a, jbyteArray b){
+	  
+	  //translate parameters  to miracl notation
+	  miracl* mip = (miracl*)m;
+	  big aB = byteArrayToMiraclBig(env, mip, a);
+	  big bB = byteArrayToMiraclBig(env, mip, b);
+	  ECF2m* dlog = new ECF2m(mip, mod, k1, k2, k3, aB, bB);
+	 
+	  return (jlong)dlog;
+	 
+}
+
+/*
+ * Computes the product of several exponentiations of the same base
+ * and distinct exponents for Fp curves. 
+ * An optimization is used to compute it more quickly by keeping in memory 
+ * the result of h1, h2, h4,h8,... and using it in the calculation.
+ * Note that if we want a one-time exponentiation of h it is preferable to use the basic exponentiation function 
+ * since there is no point to keep anything in memory if we have no intention to use it. 
+ */
+JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_exponentiateF2mWithPreComputed
+  (JNIEnv *env, jobject obj, jlong m, jlong dlog, jlong base, jbyteArray size){
+	   
+	  //translate parameters  to miracl notation
+	  miracl* mip = (miracl*)m;
+	  big exponent = byteArrayToMiraclBig(env, mip, size);
+
+	  ECF2m* dlogGroup = (ECF2m*) dlog;
+
+	  jlong result =  dlogGroup->exponentiateWithPreComputedValues((epoint*)base, exponent);
+
+	  mirkill(exponent);
+
+	  return result;
+	 
+}
+
+ECF2m::ECF2m(miracl* mip, int mod, int k1, int k2, int k3, big a, big b){
+	this->m = mod;
+	this->a = a;
+	this->b = b;
+	this->k1 = k1;
+	this->k2 = k2;
+	this->k3 = k3;
+	exponentiationsMap = new map<epoint*, ebrick2*>;
+	this->mip = mip;
+}
+
+ECF2m::~ECF2m(){
+	exponentiationsMap->clear();
+	delete(exponentiationsMap);
+	mirkill(a);
+	mirkill(b);
+}
+
+long ECF2m::exponentiateWithPreComputedValues(epoint* base, big exponent){
+	map<epoint*, ebrick2*>::iterator it;
+	big x, y;
+	x = mirvar(mip, 0);
+	y = mirvar(mip, 0);
+
+	//get the base exponentiations from the map
+	it=exponentiationsMap->find((epoint*)base);
+	ebrick2* exponentiations = (*it).second;
+	//if there is no exponentiations in the map for this base - creates them
+	if (it == exponentiationsMap->end()){
+		exponentiations = new ebrick2();
+		  
+		epoint2_get(mip, base, x, y);
+
+		ebrick2_init(mip, exponentiations, x, y, a, b, m, k1, k2, k3, 8, 1024/*logb2(mip, mip->modulus)+1)*/);
+		exponentiationsMap->insert(pair<epoint*, ebrick2*>((epoint*)base, exponentiations));
+	}
+
+	//calculates the required exponent
+	mul2_brick(mip, exponentiations, exponent, x, y);
+
+	epoint* p = new epoint();
+	p = epoint_init(mip);
+	bool valid = epoint2_set(mip, x, y, 0, p);
+	
+	mirkill(x);
+	mirkill(y);
+
+	return (jlong)p;
 }
 
 /*
