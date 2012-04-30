@@ -3,15 +3,12 @@
  */
 package edu.biu.scapi.anonymousForums;
 
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
-import edu.biu.scapi.anonymousForums.ForumUser.GroupElementPair;
 import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.DlogEllipticCurve;
@@ -19,11 +16,7 @@ import edu.biu.scapi.primitives.dlog.DlogGroup;
 import edu.biu.scapi.primitives.dlog.DlogZp;
 import edu.biu.scapi.primitives.dlog.ECParameterSpec;
 import edu.biu.scapi.primitives.dlog.GroupElement;
-import edu.biu.scapi.primitives.dlog.bc.BcDlogECFp;
-import edu.biu.scapi.primitives.dlog.miracl.ECFpPointMiracl;
-import edu.biu.scapi.primitives.dlog.miracl.MiraclDlogECFp;
 import edu.biu.scapi.primitives.hash.CryptographicHash;
-import edu.biu.scapi.primitives.hash.bc.BcSHA224;
 import edu.biu.scapi.tools.Factories.CryptographicHashFactory;
 import edu.biu.scapi.tools.Factories.DlogGroupFactory;
 
@@ -78,72 +71,6 @@ public class ForumUser {
 		this.random = random;
 	}
 
-	class GroupElementPair {
-		GroupElement first;
-		GroupElement second;
-
-		public GroupElementPair(GroupElement first, GroupElement second) {
-			this.first = first;
-			this.second = second;
-		}
-
-		public GroupElement getFirst() {
-			return first;
-		}
-
-		public GroupElement getSecond() {
-			return second;
-		}
-
-		public void release() {
-			first.release();
-			second.release();
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + ((first == null) ? 0 : first.hashCode());
-			result = prime * result
-					+ ((second == null) ? 0 : second.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			GroupElementPair other = (GroupElementPair) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (first == null) {
-				if (other.first != null)
-					return false;
-			} else if (!first.equals(other.first))
-				return false;
-			if (second == null) {
-				if (other.second != null)
-					return false;
-			} else if (!second.equals(other.second))
-				return false;
-			if(this.first.equals(other.first) && this.second.equals(other.second))
-				return true;
-			return false;
-		}
-
-		private ForumUser getOuterType() {
-			return ForumUser.this;
-		}
-		
-		
-	}
-
 	void generateLongTermKeys() throws IllegalArgumentException,
 			UnInitializedException {
 		// First generate and set long term public/private keys
@@ -154,8 +81,51 @@ public class ForumUser {
 		// Calculate h
 		GroupElement h = dlogGroup
 				.exponentiate(dlogGroup.getGenerator(), alpha);
-		longTermPublicKey = new AnonymousForumLongTermPublicKey(h);
+		
+		//calculates ZKProof of long term public key
+		BigInteger tao = BigIntegers.createRandomInRange(BigInteger.ZERO, qMinusOne, random);
+		GroupElement a = dlogGroup.exponentiate(dlogGroup.getGenerator(), tao);
+		
+		byte[] hashGResult = computeHashForLongTermProof(h, a);
+		BigInteger e = new BigInteger(hashGResult).mod(q);
+		BigInteger z = tao.add(e.multiply(alpha)).mod(q);
+		ZKProof proof = new ZKProof(new GroupElementPair(a, null),e , z);
+		
+		System.out.println("verifing ZKProof of long term public key...");
+		GroupElement left = dlogGroup.exponentiate(dlogGroup.getGenerator(), z);
+		GroupElement right = dlogGroup.multiplyGroupElements(a, dlogGroup.exponentiate(h, e));
+		if (left.equals(right) == true)
+			System.out.println("verified!");
+		else
+			System.out.println("not verified!");
+		longTermPublicKey = new AnonymousForumLongTermPublicKey(h, proof);
 		longTermPrivateKey = new AnonymousForumLongTermPrivateKey(alpha);
+		
+		// Serialize data object to a file
+		/*File file = new File(System.getProperty("java.class.path").toString().split(";")[0]+"\\longTermPrivateKeys\\" + id + ".doc");
+		ObjectOutput out;
+		try {
+			out = new ObjectOutputStream(new FileOutputStream(file));
+			out.writeObject(longTermPrivateKey);
+			out.close();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
+	}
+
+	private byte[] computeHashForLongTermProof(GroupElement h, GroupElement a)
+			throws UnInitializedException {
+		byte[] hArray = dlogGroup.convertGroupElementToByteArray(h);
+		hashG.update(hArray, 0, hArray.length);
+		byte[] aArray = dlogGroup.convertGroupElementToByteArray(a);
+		hashG.update(aArray, 0, aArray.length);
+		byte[] hashGResult = new byte[hashG.getHashedMsgSize()];
+		hashG.hashFinal(hashGResult, 0);
+		return hashGResult;
 	}
 
 	void generateSpecificForumKeys() throws UnInitializedException {
@@ -185,10 +155,45 @@ public class ForumUser {
 			GroupElement second = dlogGroup.multiplyGroupElements(dlogGroup.exponentiate(longTermPublicKey.getH(), randomExp.elementAt(j)),
 																  dlogGroup.exponentiate(dlogGroup.getGenerator(), coeff.elementAt(j + 1)));
 
-			publicCoeff.add(j, new GroupElementPair(first, second));
+			publicCoeff.add(j, new GroupElementPair(/*this,*/ first, second));
 		}
 
-		forumPublicKey = new AnonymousForumSpecificPublicKey(longTermPublicKey.getH(), publicCoeff);
+		//calculates ZKProof of specific forum public key
+		BigInteger tao = BigIntegers.createRandomInRange(BigInteger.ZERO,	qMinusOne, random);
+		GroupElement a = dlogGroup.exponentiate(dlogGroup.getGenerator(), tao);
+		
+		byte[] hashGResult = computeHashForLocalKeyProof(publicCoeff, a);
+		BigInteger e = new BigInteger(hashGResult).mod(q);
+		BigInteger z = tao.add(e.multiply(longTermPrivateKey.alpha)).mod(q);
+		ZKProof proof = new ZKProof(new GroupElementPair(a, null),e , z);
+		
+		System.out.println("verifing ZKProof of specific forum public key...");
+		GroupElement left = dlogGroup.exponentiate(dlogGroup.getGenerator(), z);
+		GroupElement right = dlogGroup.multiplyGroupElements(a, dlogGroup.exponentiate(longTermPublicKey.getH(), e));
+		if (left.equals(right))
+			System.out.println("verified!");
+		else
+			System.out.println("not verified!");
+		
+		forumPublicKey = new AnonymousForumSpecificPublicKey(longTermPublicKey.getH(), publicCoeff, proof);
+	}
+
+	private byte[] computeHashForLocalKeyProof(
+			Vector<GroupElementPair> publicCoeff, GroupElement a)
+			throws UnInitializedException {
+		byte[] hArray = dlogGroup.convertGroupElementToByteArray(longTermPublicKey.getH());
+		hashG.update(hArray, 0, hArray.length);
+		byte[] aArray = dlogGroup.convertGroupElementToByteArray(a);
+		hashG.update(aArray, 0, aArray.length);
+		for (int i=0; i<d; i++){
+			byte[] uArray = dlogGroup.convertGroupElementToByteArray(publicCoeff.get(i).first);
+			hashG.update(uArray, 0, uArray.length);
+			byte[] vArray = dlogGroup.convertGroupElementToByteArray(publicCoeff.get(i).second);
+			hashG.update(vArray, 0, vArray.length);
+		}
+		byte[] hashGResult = new byte[hashG.getHashedMsgSize()];
+		hashG.hashFinal(hashGResult, 0);
+		return hashGResult;
 	}
 
 
@@ -237,6 +242,51 @@ public class ForumUser {
 		
 		return works;
 	}
+	
+	boolean validate(AnonymousForumLongTermPublicKey longTermKey, AnonymousForumSpecificPublicKey specificKey) throws UnInitializedException{
+		
+		if ((longTermKey.h.equals(specificKey.h)) == false){
+			return false;
+		}
+		if (!dlogGroup.isMember(longTermKey.h)){
+			return false;
+		}
+		Vector<GroupElementPair> c = specificKey.publicCoefficients;
+		for (int i=0; i<c.size(); i++){
+			if (!dlogGroup.isMember(c.get(i).first)){
+				return false;
+			}
+			if (!dlogGroup.isMember(c.get(i).second)){
+				return false;
+			}
+		}
+		boolean longTermProofValidity = CheckProofValidity(longTermKey.h, longTermKey.getProof());
+		if (longTermProofValidity == false){
+			return false;
+		}
+		boolean specificKeyProofValidity = CheckProofValidity(specificKey.h, specificKey.getProof());
+		if (specificKeyProofValidity == false){
+			return false;
+		}
+		
+		return true;
+		
+	}
+	private boolean CheckProofValidity(GroupElement h, ZKProof proof) throws UnInitializedException {
+		GroupElement a = proof.getFirstProverMsg().first;
+		BigInteger e = proof.getChallengeMsg();
+		BigInteger z = proof.getSecondProverMag();
+		
+		//check if g^z = a*h^e
+		GroupElement left = dlogGroup.exponentiate(dlogGroup.getGenerator(), z);
+		GroupElement right = dlogGroup.multiplyGroupElements(a, dlogGroup.exponentiate(h, e));
+		
+		if (left.equals(right)){
+			return true;
+		} else
+			return false;
+	}
+
 	PostedMessage post(byte[] msg) throws UnInitializedException {
 		// First compute s = hashH(msg):
 		byte[] sArray = new byte[hashH.getHashedMsgSize()];
@@ -250,6 +300,9 @@ public class ForumUser {
 		// Calculate the El Gamal encryption of polynomial(s) using the public
 		// key for each participant of the forum:
 		GroupElementPair[] cipherArray = new GroupElementPair[n];
+		for (int i=0; i<n; i++){
+			System.out.println(allParticipantsPublicKey[i]);
+		}
 		for (int k = 0; k < n; k++) {
 			cipherArray[k] = calculateElGamalOfPolynomialEval(allParticipantsPublicKey[k], s, polynomialEval);
 		}
@@ -294,7 +347,7 @@ public class ForumUser {
 															  dlogGroup.exponentiate(cipherArray[k].second, qMinusE));
 			// hkToPowerOfZk.release();
 			bKByteArray[k] = dlogGroup.convertGroupElementToByteArray(bK);
-			arrayOfProofs[k] = new ZKProof(new GroupElementPair(aK, bK), e, z);
+			arrayOfProofs[k] = new ZKProof(new GroupElementPair(/*this,*/ aK, bK), e, z);
 		}
 		//System.out.println("Finished preparing all simulated proofs for " + n	+ " users");
 		byte[] hashGResult = computeHashG(cipherArray, aKByteArray,	bKByteArray, polynomialEval);
@@ -305,7 +358,7 @@ public class ForumUser {
 		// Complete real proof. We have calculated the first prover msg (a,b)
 		// and the challenge. Now calculate the second prover message
 		BigInteger z = completeRealProof(s, ro, challenge);
-		arrayOfProofs[id] = new ZKProof(new GroupElementPair(a, b), challenge, z);
+		arrayOfProofs[id] = new ZKProof(new GroupElementPair(/*this,*/ a, b), challenge, z);
 		//System.out.println("Finish computeChallenge");
 		return new PostedMessage(msg, polynomialEval, arrayOfProofs);
 	}
@@ -438,7 +491,7 @@ public class ForumUser {
 		GroupElement inverseGExpPolynomialEval = dlogGroup.getInverse(gExpPolynomialEval);
 		v = dlogGroup.multiplyGroupElements(vTag, inverseGExpPolynomialEval);
 		// vTag.release();
-		return new GroupElementPair(u, v);
+		return new GroupElementPair(/*this,*/ u, v);
 	}
 
 	BigInteger evaluatePolynomial(AnonymousForumSpecificPrivateKey forumPrivateKey, BigInteger s) {
@@ -454,8 +507,19 @@ public class ForumUser {
 		return result;
 	}
 
-	boolean verifyPost(PostedMessage postedMsg) throws UnInitializedException {
+	boolean verifyPost(PostedMessage postedMsg, byte[] message) throws UnInitializedException {
 		boolean verified = true;
+		byte[] postedBytes = postedMsg.getMsg();
+		if (postedBytes.length != message.length){
+			return false;
+		}
+		int len = message.length;
+		for (int i=0; i<len; i++){
+			if (postedBytes[i] != message[i]){
+				return false;
+			}
+		}
+		
 		// First compute s = hashH(msg):
 		byte[] sArray = new byte[hashH.getHashedMsgSize()];
 		hashH.update(postedMsg.getMsg(), 0, postedMsg.getMsg().length);
@@ -540,7 +604,7 @@ public class ForumUser {
 		try {
 			BufferedReader bf = new BufferedReader(
 					new FileReader(
-							"C:\\work\\LAST_Project\\SDK\\Code\\JavaSrc\\edu\\biu\\scapi\\anonymousForums\\AnonymousConfig.ini"));
+							"C:\\development\\SDK\\Code\\JavaSrc\\edu\\biu\\scapi\\anonymousForums\\AnonymousConfig.ini"));
 			String line;
 			String[] tokens;
 			line = bf.readLine();
@@ -614,7 +678,7 @@ public class ForumUser {
 			long msgPostingTime, long msgVerifyingTime)
 			throws FileNotFoundException {
 		PrintWriter out = new PrintWriter(
-				"C:\\work\\LAST_Project\\SDK\\Code\\JavaSrc\\edu\\biu\\scapi\\anonymousForums\\testResults.csv");
+				"C:\\development\\SDK\\Code\\JavaSrc\\edu\\biu\\scapi\\anonymousForums\\testResults.csv");
 		String str = config.dlogGroup + "," + config.dlogProvider + ","
 				+ config.algorithmParameterSpec + "," + config.hashH + ","
 				+ config.hashHProvider;
@@ -685,7 +749,7 @@ public class ForumUser {
 		//System.out.println("The posted message is: " + new String(postedMsg.getMsg()));
 
 		Date startVerify = new Date();
-		boolean isTrue = arrayOfUsers[1].verifyPost(postedMsg);
+		boolean isTrue = arrayOfUsers[1].verifyPost(postedMsg, myMessage.getBytes());
 		Date endVerify = new Date();
 		String success;
 		if (isTrue){
@@ -721,7 +785,7 @@ public class ForumUser {
 			// Get parameters from config file:
 			AnonymousForumConfig[] config = readConfigFile();
 			Date now = new Date();
-			String testName = "C:\\work\\LAST_Project\\SDK\\Code\\JavaSrc\\edu\\biu\\scapi\\anonymousForums\\testResults.csv";
+			String testName = "C:\\development\\SDK\\Code\\JavaSrc\\edu\\biu\\scapi\\anonymousForums\\testResults.csv";
 			PrintWriter out = new PrintWriter(testName);
 			out.println("dlogGroup,dlogProvide,algorithmParameterSpec,hashH,hashHProvider,hashG,hashGProvider,polynomialDegree,numOfusers,usersCreationTime, postingTime, verifyingTime, Result");
 			out.flush();
@@ -746,6 +810,13 @@ public class ForumUser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void setLongTermKeys(
+			AnonymousForumLongTermPublicKey pubKey, AnonymousForumLongTermPrivateKey privKey) {
+		longTermPublicKey = pubKey;
+		longTermPrivateKey = privKey;
+		
 	}
 
 }
