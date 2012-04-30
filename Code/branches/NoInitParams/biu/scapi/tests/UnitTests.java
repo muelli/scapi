@@ -49,20 +49,18 @@ public class UnitTests {
 		
 		String str = sha1.getAlgorithmName();
 		
-		try {
-			sha1.update(in, 0, 2);
-		} catch (UnInitializedException e) {
-			Logging.getLogger().log(Level.WARNING, e.toString());
-		}
+		
+		sha1.update(in, 0, 2); 
 		
 		System.out.println(str);
 		*/
 		//correctionTest();
-		loadTest();
+		//loadSimultaneousMultipleExponentiationsTest();
+		loadExponentiateWithPreComputedValuesTest();
 	}
 	
 	
-	public static void loadTest(){
+	public static void loadSimultaneousMultipleExponentiationsTest(){
 		BufferedReader bf;
 		//read the load test data from a config file
 		try {
@@ -115,7 +113,54 @@ public class UnitTests {
 			e.printStackTrace();
 		}
 	}
-	
+	public static void loadExponentiateWithPreComputedValuesTest(){
+		BufferedReader bf;
+		//read the load test data from a config file
+		try {
+			bf = new BufferedReader(new FileReader("C:\\development\\SDK\\Code\\JavaSrc\\edu\\biu\\scapi\\tests\\DlogUnitTestConfig_exponentiateWithPreComp.txt"));
+			String line;
+			String[] tokens;
+			String dlogGroup = null;
+			String dlogProvider = null;
+			String initParams = null;
+			int count = 0;
+			//prepare an output file
+			PrintWriter out = new PrintWriter("C:\\development\\SDK\\Code\\JavaSrc\\edu\\biu\\scapi\\tests\\exponentiateWithPreComputedValuesTestResults.csv");
+			out.println("dlogGroup,dlogProvide,initParams,exponent,ExponentiateWithPreComputedValuesTime,naiveComputationTime");
+			out.flush();
+			
+			//read each line of the config file and set the data
+			while ((line = bf.readLine()) != null) {
+				 System.out.println(line);
+				if (line.startsWith("DlogGroup")) {
+					tokens = line.split("=");
+					dlogGroup = tokens[1].trim();
+				} else if (line.startsWith("DlogProvider")) {
+					tokens = line.split("=");
+					dlogProvider = tokens[1].trim();
+				} else if (line.startsWith("InitParams")) {
+					tokens = line.split("=");
+					initParams = tokens[1].trim();
+				} 
+				count++;
+				//after we read one test data, compute the test
+				if (count == 3) {
+					computeExponentiationWitPreComputedValues(dlogGroup, dlogProvider, initParams, out);
+					count = 0;
+				}
+			}
+			out.close();
+			
+			
+			
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	private static void compute(String dlogGroup, String dlogProvider, String initParams, int numOfElements, PrintWriter out){
 		DlogGroup dlog;
 		try {
@@ -198,4 +243,65 @@ public class UnitTests {
 		} 
 	}
 
+	private static void computeExponentiationWitPreComputedValues(String dlogGroup, String dlogProvider, String initParams, PrintWriter out){
+		DlogGroup dlog;
+		try {
+			//create the dlog via the dlog factory using the dlog name and provider name
+			dlog = DlogGroupFactory.getInstance().getObject(dlogGroup+"("+initParams+")", dlogProvider);
+			BigInteger max;
+			//init the dlog. there is a difference between EC groups and Zp group.
+			if(dlog instanceof DlogEllipticCurve){
+				if (dlog instanceof DlogECFp){
+					max = ((ECFpGroupParams) dlog.getGroupParams()).getP();
+				} else {
+					max = new BigInteger("2").pow(((ECF2mGroupParams) dlog.getGroupParams()).getM());
+				}
+			}
+			else {
+				max = ((ZpGroupParams) dlog.getGroupParams()).getP();
+			}
+			
+			SecureRandom random = new SecureRandom();
+			BigInteger exponent = BigIntegers.createRandomInRange(BigInteger.ONE, max, random);
+			System.out.println("java exponent: ");
+			System.out.println(exponent);
+			//create an elements array and fill it with random elements
+			GroupElement groupElement = dlog.getRandomElement();
+			
+			for(int i=0; i<10; i++){
+				
+				//operate the exponentiate via the optimization function and calculate the computation time 
+				Date startCompute = new Date();
+				GroupElement preComputedResult = dlog.exponentiateWithPreComputedValues(groupElement, exponent);
+				Date endCompute = new Date();
+				long computeExponentiateTime = (endCompute.getTime() - startCompute.getTime());
+				System.out.println("exponentiate with pre computd values succedded in "+ computeExponentiateTime + " milis");
+				
+				//operate the exponentiate via the naive way and calculate the computation time 
+				startCompute = new Date();
+				GroupElement naiveResult = dlog.exponentiate(groupElement, exponent);
+				endCompute = new Date();
+				long computeNaiveTime = (endCompute.getTime() - startCompute.getTime());
+				System.out.println("naive computation succedded in "+ computeNaiveTime + " milis");
+				//check if the optimization result and the naive result are the same
+				if (preComputedResult.equals(naiveResult)){
+					System.out.println("naive result and simultaneous are equal!");
+				} else{
+					System.out.println("error!!!!! naive result and simultaneous are not equal!");
+				}
+				//write the output to the output file
+				String str = dlogGroup + "," + dlogProvider + "," + initParams + "," + exponent.toString() +"," + computeExponentiateTime + "," + computeNaiveTime;
+				out.println(str);
+				out.flush();
+				BigInteger randNum = BigIntegers.createRandomInRange(new BigInteger("2"), new BigInteger("50"), random);
+				exponent = exponent.multiply(randNum);
+			}
+		} catch (FactoriesException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
 }
