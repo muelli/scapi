@@ -6,6 +6,10 @@ import java.util.Vector;
 
 public class AnonymousForumSpecificPrivateKey implements PrivateKey {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8320560961565124528L;
 	Vector<BigInteger> coefficients;
 	Vector<BigInteger> randomExponents;
 	
