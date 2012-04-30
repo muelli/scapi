@@ -1,10 +1,15 @@
 package edu.biu.scapi.anonymousForums;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.PrivateKey;
 
-public class AnonymousForumLongTermPrivateKey implements PrivateKey {
+public class AnonymousForumLongTermPrivateKey implements PrivateKey, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6754986836509019307L;
 	BigInteger alpha;
 	
 	public AnonymousForumLongTermPrivateKey(BigInteger alpha) {
