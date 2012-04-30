@@ -26,7 +26,10 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	private native boolean validateFpGenerator(long mip, long generator, byte[] x, byte[] y);
 	private native boolean isFpMember(long mip, long point);
 	private native long createInfinityFpPoint(long mip);
-	//private native long exponentiateFpWithPreComputed(long mip, long exponentiationsMap, long base, int bits, byte[] size);
+	private native long createECFpObject(long mip, byte[] p, byte[] a, byte[] b);
+	private native long exponentiateFpWithPreComputed(long mip, long dlogGroup, long base, byte[] size);
+	
+	private long nativeDlog = 0;
 	/**
 	 * Default constructor. Initializes this object with P-192 NIST curve.
 	 */
@@ -225,13 +228,11 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 			(GroupElement groupElement, BigInteger exponent){
 		
 		//tests showed that the naive algorithm is faster than the optimized.
-		return exponentiate(groupElement, exponent);
+		//return exponentiate(groupElement, exponent);
 		
 		//override of the function exponentiateWithPreComputedValues that uses the same algorithm as the ABS but in native.
 		//Results showed that the naive algorithm is faster so we dicide not to use this algorithm but the naive
-		/*if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+		
 		//if the GroupElements don't match the DlogGroup, throw exception
 		if (!(groupElement instanceof ECFpPointMiracl)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
@@ -244,16 +245,17 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 			return base;
 		}
 		
-		if (exponentiationsMap == 0){
-			exponentiationsMap = createExponentiationsMap();
-			System.out.println("created map");
+		if (nativeDlog == 0){
+			ECFpGroupParams params = (ECFpGroupParams) getGroupParams();
+			nativeDlog = createECFpObject(mip, params.getP().toByteArray(), params.getA().mod(params.getP()).toByteArray(), params.getB().toByteArray());
+			System.out.println("created native object");
 		}
 		
 		//call to native exponentiate function
-		long result = exponentiateFpWithPreComputed(mip, exponentiationsMap, base.getPoint(), ((ECFpGroupParams) groupParams).getP().bitLength()+1, exponent.toByteArray());
-		System.out.println("java result is "+result);
+		long result = exponentiateFpWithPreComputed(mip, nativeDlog, base.getPoint(), exponent.toByteArray());
+		System.out.println("java pointer is "+result);
 		//build a ECF2mPointMiracl element from the result value
-		return new ECFpPointMiracl(result, this);*/
+		return new ECFpPointMiracl(result, this);
 	}
 	/**
 	 * Create a random member of that Dlog group
