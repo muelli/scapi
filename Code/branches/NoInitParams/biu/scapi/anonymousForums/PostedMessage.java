@@ -1,12 +1,18 @@
 package edu.biu.scapi.anonymousForums;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class PostedMessage {
+public class PostedMessage implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2720288007317496827L;
 	byte[] msg;
 	BigInteger polynomialEval;
 	ZKProof[] arrayOfProofs;
+	
 	public PostedMessage(byte[] msg, BigInteger polynomialEval,
 			ZKProof[] arrayOfProofs) {
 		super();

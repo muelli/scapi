@@ -1,10 +1,14 @@
 package edu.biu.scapi.anonymousForums;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-import edu.biu.scapi.anonymousForums.ForumUser.GroupElementPair;
 
-public class ZKProof {
+public class ZKProof implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 478846297872692501L;
 	GroupElementPair firstProverMsg;  //(A,B)
 	BigInteger challengeMsg; //e
 	BigInteger secondProverMsg; //z
