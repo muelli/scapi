@@ -13,6 +13,7 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mKoblitz;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mPentanomialBasis;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mTrinomialBasis;
+import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 import edu.biu.scapi.securityLevel.DDH;
 
 /**This class implements a Dlog group over F2m utilizing Miracl++'s implementation.<p>
@@ -29,7 +30,11 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	private native boolean validateF2mGenerator(long mip, long generator, byte[] x, byte[] y);
 	private native boolean isF2mMember(long mip, long point);
 	private native long createInfinityF2mPoint(long mip);
-	//private native long exponentiateF2mWithPreComputed(long mip, long exponentiationsMap, long base, int bits, byte[] size);
+	private native long createECF2mObject(long mip, int m, int k1, int k2, int k3, byte[] a, byte[] b);
+	private native long exponentiateF2mWithPreComputed(long mip, long dlogGroup, long base, byte[] size);
+	
+	private long nativeDlog = 0;
+	
 	/**
 	 * Default constructor. Initializes this object with K-163 NIST curve.
 	 */
@@ -264,17 +269,13 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 			(GroupElement groupElement, BigInteger exponent){
 		
 		//tests showed that the naive algorithm is faster than the optimized.
-		return exponentiate(groupElement, exponent);
+		//return exponentiate(groupElement, exponent);
 		
-		//override of the function exponentiateWithPreComputedValues that uses the same algorithm as the ABS but in native.
-		//Results showed that the naive algorithm is faster so we dicide not to use this algorithm but the naive
-		/*if (!isInitialized()){
-			throw new UnInitializedException();
-		}
 		//if the GroupElements don't match the DlogGroup, throw exception
 		if (!(groupElement instanceof ECF2mPointMiracl)){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
+		
 		ECF2mPointMiracl base = (ECF2mPointMiracl)groupElement;
 		
 		//infinity remains the same after any exponentiate
@@ -282,15 +283,44 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 			return base;
 		}
 		
-		if (exponentiationsMap == 0){
-			exponentiationsMap = createExponentiationsMap();
+		if (nativeDlog == 0){
+			
+			int m, k1 = 0, k2 = 0, k3 = 0;
+			boolean trinomial = false;
+			ECF2mGroupParams params = (ECF2mGroupParams)groupParams;
+			BigInteger a, b;
+			m = params.getM();
+			a = params.getA();
+			b = params.getB();
+			//create the curve
+			if (params instanceof ECF2mKoblitz){
+				params = ((ECF2mKoblitz) params).getCurve();
+			}
+			if (params instanceof ECF2mTrinomialBasis){
+				ECF2mTrinomialBasis paramsT = (ECF2mTrinomialBasis) params;
+				k1 = paramsT.getK1();
+				trinomial = true;
+			} else if (params instanceof ECF2mPentanomialBasis){
+				ECF2mPentanomialBasis paramsP = (ECF2mPentanomialBasis) params;
+				k1 = paramsP.getK1();
+				k2 = paramsP.getK2();
+				k3 = paramsP.getK3();
+				trinomial = false;
+			}
+			
+			if (trinomial){
+				nativeDlog = createECF2mObject(mip, m, k1, 0, 0, a.toByteArray(), b.toByteArray());
+			} else{
+				nativeDlog = createECF2mObject(mip, m, k3, k2, k1, a.toByteArray(), b.toByteArray());
+			}
+			System.out.println("created native object");
 		}
+		
 		//call to native exponentiate function
-		long result = exponentiateF2mWithPreComputed(mip, exponentiationsMap, base.getPoint(), ((ECF2mGroupParams) groupParams).getM(), exponent.toByteArray());
-		
+		long result = exponentiateF2mWithPreComputed(mip, nativeDlog, base.getPoint(), exponent.toByteArray());
+		System.out.println("java pointer is "+result);
 		//build a ECF2mPointMiracl element from the result value
-		return new ECF2mPointMiracl(result, this);*/
-		
+		return new ECF2mPointMiracl(result, this);
 	}
 	
 	/**
