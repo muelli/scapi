@@ -45,10 +45,8 @@ public interface AsymmetricEnc {
 	public void setKey(PublicKey publicKey)throws InvalidKeyException;
 	
 	/**
-	 * Checks if this AsymmetricEnc object has been previously initialized.<p> 
-	 * To initialize the object the init function has to be called with corresponding parameters after construction.
-	 * 
-	 * @return <code>true<code> if the object was initialized;
+	 * Checks if this AsymmetricEnc object has been previously initialized with corresponding keys.<p> 
+	 * @return <code>true<code> if either the Public Key has been set or the key pair (Public Key, Private Key) has been set;<P>
 	 * 		   <code>false</code> otherwise.
 	 */
 	public boolean isKeySet();
@@ -75,8 +73,8 @@ public interface AsymmetricEnc {
 	
 	/**
 	 * Generates public and private keys for this asymmetric encryption.
-	 * @param keyParams hold the required key size
-	 * @return KeyPair holding the public and private keys
+	 * @param keyParams hold the required parameters to generate the encryption scheme's keys
+	 * @return KeyPair holding the public and private keys relevant to the encryption scheme
 	 * @throws InvalidParameterSpecException 
 	 */
 	public KeyPair generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException;
