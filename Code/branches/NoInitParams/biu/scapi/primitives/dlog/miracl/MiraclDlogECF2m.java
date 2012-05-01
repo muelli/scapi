@@ -13,7 +13,6 @@ import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mKoblitz;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mPentanomialBasis;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mTrinomialBasis;
-import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 import edu.biu.scapi.securityLevel.DDH;
 
 /**This class implements a Dlog group over F2m utilizing Miracl++'s implementation.<p>
@@ -31,7 +30,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	private native boolean isF2mMember(long mip, long point);
 	private native long createInfinityF2mPoint(long mip);
 	private native long createECF2mObject(long mip, int m, int k1, int k2, int k3, byte[] a, byte[] b);
-	private native long exponentiateF2mWithPreComputed(long mip, long dlogGroup, long base, byte[] size);
+	private native long exponentiateF2mWithPreComputed(long mip, long dlogGroup, long base, byte[] size, int maxBits);
 	
 	private long nativeDlog = 0;
 	
@@ -313,12 +312,11 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 			} else{
 				nativeDlog = createECF2mObject(mip, m, k3, k2, k1, a.toByteArray(), b.toByteArray());
 			}
-			System.out.println("created native object");
 		}
 		
 		//call to native exponentiate function
-		long result = exponentiateF2mWithPreComputed(mip, nativeDlog, base.getPoint(), exponent.toByteArray());
-		System.out.println("java pointer is "+result);
+		long result = exponentiateF2mWithPreComputed(mip, nativeDlog, base.getPoint(), exponent.toByteArray(), getOrder().bitLength());
+		
 		//build a ECF2mPointMiracl element from the result value
 		return new ECF2mPointMiracl(result, this);
 	}
