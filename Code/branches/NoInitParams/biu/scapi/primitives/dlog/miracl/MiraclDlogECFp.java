@@ -27,7 +27,7 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	private native boolean isFpMember(long mip, long point);
 	private native long createInfinityFpPoint(long mip);
 	private native long createECFpObject(long mip, byte[] p, byte[] a, byte[] b);
-	private native long exponentiateFpWithPreComputed(long mip, long dlogGroup, long base, byte[] size);
+	private native long exponentiateFpWithPreComputed(long mip, long dlogGroup, long base, byte[] size, int maxBits);
 	
 	private long nativeDlog = 0;
 	/**
@@ -248,13 +248,12 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 		if (nativeDlog == 0){
 			ECFpGroupParams params = (ECFpGroupParams) getGroupParams();
 			nativeDlog = createECFpObject(mip, params.getP().toByteArray(), params.getA().mod(params.getP()).toByteArray(), params.getB().toByteArray());
-			System.out.println("created native object");
 		}
 		
 		//call to native exponentiate function
-		long result = exponentiateFpWithPreComputed(mip, nativeDlog, base.getPoint(), exponent.toByteArray());
-		System.out.println("java pointer is "+result);
-		//build a ECF2mPointMiracl element from the result value
+		long result = exponentiateFpWithPreComputed(mip, nativeDlog, base.getPoint(), exponent.toByteArray(), getOrder().bitLength());
+		
+		//build a ECFpPointMiracl element from the result value
 		return new ECFpPointMiracl(result, this);
 	}
 	/**
