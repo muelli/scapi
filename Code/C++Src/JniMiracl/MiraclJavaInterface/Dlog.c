@@ -718,7 +718,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp
  * since there is no point to keep anything in memory if we have no intention to use it. 
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_exponentiateFpWithPreComputed
-  (JNIEnv *env, jobject obj, jlong m, jlong dlog, jlong base, jbyteArray size){
+  (JNIEnv *env, jobject obj, jlong m, jlong dlog, jlong base, jbyteArray size, jint window, jint maxBits){
 	   
 	  //translate parameters  to miracl notation
 	  miracl* mip = (miracl*)m;
@@ -726,7 +726,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp
 
 	  ECFp* dlogGroup = (ECFp*) dlog;
 
-	  jlong result =  dlogGroup->exponentiateWithPreComputedValues((epoint*)base, exponent);
+	  jlong result =  dlogGroup->exponentiateWithPreComputedValues((epoint*)base, exponent, window, maxBits);
 	  
 	  mirkill(exponent);
 	
@@ -750,7 +750,7 @@ ECFp::~ECFp(){
 	mirkill(b);
 }
 
-long ECFp::exponentiateWithPreComputedValues(epoint* base, big exponent){
+long ECFp::exponentiateWithPreComputedValues(epoint* base, big exponent, int window, int maxBits){
 	map<epoint*, ebrick*>::iterator it;
 	big x, y;
 	x = mirvar(mip, 0);
@@ -764,7 +764,7 @@ long ECFp::exponentiateWithPreComputedValues(epoint* base, big exponent){
 		exponentiations = new ebrick();
 		  
 		epoint_get(mip, base, x, y);
-		ebrick_init(mip, exponentiations, x, y, a, b, p, 8, 1024/*logb2(mip, mip->modulus)+1)*/);
+		ebrick_init(mip, exponentiations, x, y, a, b, p, window, maxBits);
 		exponentiationsMap->insert(pair<epoint*, ebrick*>((epoint*)base, exponentiations));
 	}
 
@@ -773,8 +773,8 @@ long ECFp::exponentiateWithPreComputedValues(epoint* base, big exponent){
 
 	epoint* p = new epoint();
 	p = epoint_init(mip);
-	bool valid = epoint_set(mip, x, y, 0, p);
-	
+	epoint_set(mip, x, y, 0, p);
+
 	mirkill(x);
 	mirkill(y);
 
@@ -807,7 +807,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2
  * since there is no point to keep anything in memory if we have no intention to use it. 
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_exponentiateF2mWithPreComputed
-  (JNIEnv *env, jobject obj, jlong m, jlong dlog, jlong base, jbyteArray size){
+  (JNIEnv *env, jobject obj, jlong m, jlong dlog, jlong base, jbyteArray size, jint window, int maxBits){
 	   
 	  //translate parameters  to miracl notation
 	  miracl* mip = (miracl*)m;
@@ -815,7 +815,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2
 
 	  ECF2m* dlogGroup = (ECF2m*) dlog;
 
-	  jlong result =  dlogGroup->exponentiateWithPreComputedValues((epoint*)base, exponent);
+	  jlong result =  dlogGroup->exponentiateWithPreComputedValues((epoint*)base, exponent, window, maxBits);
 
 	  mirkill(exponent);
 
@@ -841,7 +841,7 @@ ECF2m::~ECF2m(){
 	mirkill(b);
 }
 
-long ECF2m::exponentiateWithPreComputedValues(epoint* base, big exponent){
+long ECF2m::exponentiateWithPreComputedValues(epoint* base, big exponent, int window, int maxBits){
 	map<epoint*, ebrick2*>::iterator it;
 	big x, y;
 	x = mirvar(mip, 0);
@@ -856,7 +856,7 @@ long ECF2m::exponentiateWithPreComputedValues(epoint* base, big exponent){
 		  
 		epoint2_get(mip, base, x, y);
 
-		ebrick2_init(mip, exponentiations, x, y, a, b, m, k1, k2, k3, 8, 1024/*logb2(mip, mip->modulus)+1)*/);
+		ebrick2_init(mip, exponentiations, x, y, a, b, m, k1, k2, k3, window, maxBits);
 		exponentiationsMap->insert(pair<epoint*, ebrick2*>((epoint*)base, exponentiations));
 	}
 

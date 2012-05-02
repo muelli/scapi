@@ -165,10 +165,10 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2
   (JNIEnv *, jobject, jlong m, jint, jint, jint, jint, jbyteArray, jbyteArray);
 
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECFp_exponentiateFpWithPreComputed
-  (JNIEnv *, jobject, jlong, jlong, jlong, jbyteArray);
+  (JNIEnv *, jobject, jlong, jlong, jlong, jbyteArray, jint, jint);
 
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_dlog_miracl_MiraclDlogECF2m_exponentiateF2mWithPreComputed
-  (JNIEnv *, jobject, jlong, jlong, jlong, jbyteArray);
+  (JNIEnv *, jobject, jlong, jlong, jlong, jbyteArray, jint, jint);
   
 #ifdef __cplusplus
 }
@@ -191,7 +191,7 @@ private:
 public:
 	ECFp(miracl* mip, big p, big a, big b);
 	~ECFp();
-	long exponentiateWithPreComputedValues(epoint* base, big exponent);
+	long exponentiateWithPreComputedValues(epoint* base, big exponent, int window, int maxBits);
 };
 
 class ECF2m{
@@ -205,7 +205,7 @@ private:
 public:
 	ECF2m(miracl* mip, int m, int k1, int k2, int k3, big a, big b);
 	~ECF2m();
-	long exponentiateWithPreComputedValues(epoint* base, big exponent);
+	long exponentiateWithPreComputedValues(epoint* base, big exponent, int window, int maxBits);
 };
 
 /*class GroupElementsExponentiations{
