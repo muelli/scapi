@@ -30,7 +30,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 	private native boolean isF2mMember(long mip, long point);
 	private native long createInfinityF2mPoint(long mip);
 	private native long createECF2mObject(long mip, int m, int k1, int k2, int k3, byte[] a, byte[] b);
-	private native long exponentiateF2mWithPreComputed(long mip, long dlogGroup, long base, byte[] size, int maxBits);
+	private native long exponentiateF2mWithPreComputed(long mip, long dlogGroup, long base, byte[] size, int window, int maxBits);
 	
 	private long nativeDlog = 0;
 	
@@ -315,7 +315,7 @@ public class MiraclDlogECF2m extends MiraclAdapterDlogEC implements DlogECF2m, D
 		}
 		
 		//call to native exponentiate function
-		long result = exponentiateF2mWithPreComputed(mip, nativeDlog, base.getPoint(), exponent.toByteArray(), getOrder().bitLength());
+		long result = exponentiateF2mWithPreComputed(mip, nativeDlog, base.getPoint(), exponent.toByteArray(), getWindow(), getOrder().bitLength());
 		
 		//build a ECF2mPointMiracl element from the result value
 		return new ECF2mPointMiracl(result, this);
