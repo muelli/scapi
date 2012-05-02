@@ -27,9 +27,10 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 	private native boolean isFpMember(long mip, long point);
 	private native long createInfinityFpPoint(long mip);
 	private native long createECFpObject(long mip, byte[] p, byte[] a, byte[] b);
-	private native long exponentiateFpWithPreComputed(long mip, long dlogGroup, long base, byte[] size, int maxBits);
+	private native long exponentiateFpWithPreComputed(long mip, long dlogGroup, long base, byte[] size, int window, int maxBits);
 	
 	private long nativeDlog = 0;
+	
 	/**
 	 * Default constructor. Initializes this object with P-192 NIST curve.
 	 */
@@ -251,11 +252,14 @@ public class MiraclDlogECFp extends MiraclAdapterDlogEC implements DlogECFp, DDH
 		}
 		
 		//call to native exponentiate function
-		long result = exponentiateFpWithPreComputed(mip, nativeDlog, base.getPoint(), exponent.toByteArray(), getOrder().bitLength());
+		long result = exponentiateFpWithPreComputed(mip, nativeDlog, base.getPoint(), exponent.toByteArray(), getWindow(), getOrder().bitLength());
 		
 		//build a ECFpPointMiracl element from the result value
 		return new ECFpPointMiracl(result, this);
 	}
+	
+	
+	
 	/**
 	 * Create a random member of that Dlog group
 	 * @return the random element 
