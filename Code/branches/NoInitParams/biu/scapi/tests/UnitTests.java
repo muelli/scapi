@@ -123,10 +123,11 @@ public class UnitTests {
 			String dlogGroup = null;
 			String dlogProvider = null;
 			String initParams = null;
+			int iterations = 0;
 			int count = 0;
 			//prepare an output file
 			PrintWriter out = new PrintWriter("C:\\development\\SDK\\Code\\JavaSrc\\edu\\biu\\scapi\\tests\\exponentiateWithPreComputedValuesTestResults.csv");
-			out.println("dlogGroup,dlogProvide,initParams,exponent,ExponentiateWithPreComputedValuesTime,naiveComputationTime");
+			out.println("dlogGroup,dlogProvide,initParams,num iterations,ExponentiateWithPreComputedValuesTime,naiveComputationTime");
 			out.flush();
 			
 			//read each line of the config file and set the data
@@ -141,11 +142,16 @@ public class UnitTests {
 				} else if (line.startsWith("InitParams")) {
 					tokens = line.split("=");
 					initParams = tokens[1].trim();
+				} else if (line.startsWith("IterationsNum")) {
+					tokens = line.split("=");
+					String tok = tokens[1].trim();
+					iterations = new Integer(tok).intValue();
 				} 
+				
 				count++;
 				//after we read one test data, compute the test
-				if (count == 3) {
-					computeExponentiationWitPreComputedValues(dlogGroup, dlogProvider, initParams, out);
+				if (count == 4) {
+					computeExponentiationWitPreComputedValues(dlogGroup, dlogProvider, initParams, iterations, out);
 					count = 0;
 				}
 			}
@@ -243,59 +249,60 @@ public class UnitTests {
 		} 
 	}
 
-	private static void computeExponentiationWitPreComputedValues(String dlogGroup, String dlogProvider, String initParams, PrintWriter out){
+	private static void computeExponentiationWitPreComputedValues(String dlogGroup, String dlogProvider, String initParams, int iterations, PrintWriter out){
 		DlogGroup dlog;
 		try {
 			//create the dlog via the dlog factory using the dlog name and provider name
 			dlog = DlogGroupFactory.getInstance().getObject(dlogGroup+"("+initParams+")", dlogProvider);
-			BigInteger max;
 			//init the dlog. there is a difference between EC groups and Zp group.
-			if(dlog instanceof DlogEllipticCurve){
-				if (dlog instanceof DlogECFp){
-					max = ((ECFpGroupParams) dlog.getGroupParams()).getP();
-				} else {
-					max = new BigInteger("2").pow(((ECF2mGroupParams) dlog.getGroupParams()).getM());
-				}
-			}
-			else {
-				max = ((ZpGroupParams) dlog.getGroupParams()).getP();
-			}
+			
 			
 			SecureRandom random = new SecureRandom();
-			BigInteger exponent = BigIntegers.createRandomInRange(BigInteger.ONE, max, random);
-			System.out.println("java exponent: ");
-			System.out.println(exponent);
+			BigInteger exponent = BigIntegers.createRandomInRange(BigInteger.ONE, dlog.getOrder(), random);
 			//create an elements array and fill it with random elements
 			GroupElement groupElement = dlog.getRandomElement();
+			BigInteger seven = new BigInteger("7");
+			GroupElement preComputedResult = null;
+			GroupElement naiveResult = null;
+			BigInteger temp = exponent;
 			
-			for(int i=0; i<10; i++){
+			Date startCompute = new Date();
+			for(int i=0; i<iterations; i++){
 				
 				//operate the exponentiate via the optimization function and calculate the computation time 
-				Date startCompute = new Date();
-				GroupElement preComputedResult = dlog.exponentiateWithPreComputedValues(groupElement, exponent);
-				Date endCompute = new Date();
-				long computeExponentiateTime = (endCompute.getTime() - startCompute.getTime());
-				System.out.println("exponentiate with pre computd values succedded in "+ computeExponentiateTime + " milis");
+				preComputedResult = dlog.exponentiateWithPreComputedValues(groupElement, exponent);
+				exponent = exponent.multiply(seven).mod(dlog.getOrder());
 				
-				//operate the exponentiate via the naive way and calculate the computation time 
-				startCompute = new Date();
-				GroupElement naiveResult = dlog.exponentiate(groupElement, exponent);
-				endCompute = new Date();
-				long computeNaiveTime = (endCompute.getTime() - startCompute.getTime());
-				System.out.println("naive computation succedded in "+ computeNaiveTime + " milis");
-				//check if the optimization result and the naive result are the same
-				if (preComputedResult.equals(naiveResult)){
-					System.out.println("naive result and simultaneous are equal!");
-				} else{
-					System.out.println("error!!!!! naive result and simultaneous are not equal!");
-				}
-				//write the output to the output file
-				String str = dlogGroup + "," + dlogProvider + "," + initParams + "," + exponent.toString() +"," + computeExponentiateTime + "," + computeNaiveTime;
-				out.println(str);
-				out.flush();
-				BigInteger randNum = BigIntegers.createRandomInRange(new BigInteger("2"), new BigInteger("50"), random);
-				exponent = exponent.multiply(randNum);
 			}
+			
+			Date endCompute = new Date();
+			long computeExponentiateTime = (endCompute.getTime() - startCompute.getTime());
+			System.out.println("exponentiate with pre computd values succedded in "+ computeExponentiateTime + " milis");
+			
+			exponent = temp;
+			//operate the exponentiate via the naive way and calculate the computation time 
+			startCompute = new Date();
+			for(int i=0; i<iterations; i++){
+				naiveResult = dlog.exponentiate(groupElement, exponent);
+				exponent = exponent.multiply(seven).mod(dlog.getOrder());
+				
+			}
+			
+			endCompute = new Date();
+			long computeNaiveTime = (endCompute.getTime() - startCompute.getTime());
+			System.out.println("naive computation succedded in "+ computeNaiveTime + " milis");
+			
+			//check if the optimization result and the naive result are the same
+			if (preComputedResult.equals(naiveResult)){
+				System.out.println("naive result and simultaneous are equal!");
+			} else{
+				System.out.println("error!!!!! naive result and simultaneous are not equal!");
+			}
+			//write the output to the output file
+			String str = dlogGroup + "," + dlogProvider + "," + initParams + "," + iterations +"," + computeExponentiateTime + "," + computeNaiveTime;
+			out.println(str);
+			out.flush();
+			
 		} catch (FactoriesException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
