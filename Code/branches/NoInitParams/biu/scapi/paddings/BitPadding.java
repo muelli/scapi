@@ -12,6 +12,13 @@ package edu.biu.scapi.paddings;
 public class BitPadding implements PaddingScheme {
 
 	/**
+	 * Default constructor
+	 */
+	public BitPadding(){
+	//
+	}
+	
+	/**
 	 * Pads the given byte array with padSize bytes according to BitPadding padding scheme, but instead of add 10...0 bit, we add 10...0 bytes. <p>
 	 * The value of the first added byte is 1 and the values if the nest added bytes are 0.
 	 * @param padInput array to pad
