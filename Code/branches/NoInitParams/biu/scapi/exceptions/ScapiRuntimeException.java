@@ -2,6 +2,11 @@ package edu.biu.scapi.exceptions;
 
 public class ScapiRuntimeException extends RuntimeException {
 	  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8883358405605726578L;
+
+	/**
      * base constructor.
      */
     public ScapiRuntimeException()
