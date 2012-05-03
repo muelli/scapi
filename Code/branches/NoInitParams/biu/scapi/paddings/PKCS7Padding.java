@@ -19,6 +19,13 @@ package edu.biu.scapi.paddings;
 public class PKCS7Padding implements PaddingScheme {
 
 	/**
+	 * Default constructor
+	 */
+	public PKCS7Padding(){
+		//
+	}
+	
+	/**
 	 * Pads the given byte array with padSize bytes according to PKCS7 padding scheme. <p>
 	 * The value of each added byte is the number of bytes that are added, 
 	 * i.e. N bytes, each of value N are added.
