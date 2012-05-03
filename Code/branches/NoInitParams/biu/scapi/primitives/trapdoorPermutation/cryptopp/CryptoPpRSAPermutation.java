@@ -119,7 +119,7 @@ public final class CryptoPpRSAPermutation extends TrapdoorPermutationAbs impleme
 	 * @param publicKey - public key
 	 * @throws InvalidKeyException if the key is not RSA key
 	 */
-	public void init(PublicKey publicKey) throws InvalidKeyException {
+	public void setKey(PublicKey publicKey) throws InvalidKeyException {
 			
 		if (!(publicKey instanceof RSAPublicKey)) {
 			throw new InvalidKeyException("Key type doesn't match the trapdoor permutation type");
