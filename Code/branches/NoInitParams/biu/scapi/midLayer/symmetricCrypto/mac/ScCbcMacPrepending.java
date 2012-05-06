@@ -14,7 +14,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.prf.PrpFixed;
 import edu.biu.scapi.primitives.prf.PseudorandomFunction;
@@ -94,7 +93,6 @@ public class ScCbcMacPrepending implements CbcMac {
 	/**
 	 * Constructor that gets an initialized prp object and sets it as the underlying prp. 
 	 * @param prpName the name of the underlying prp
-	 * @throws UnInitializedException if the given prp is not initialized
 	 */
 	public ScCbcMacPrepending(PrpFixed prp){
 		//Call other constructor using default implementation of SecureRandom
@@ -105,7 +103,6 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * Constructor that gets an initialized prp object and set it as the underlying prp. 
 	 * After using this constructor, there is no need to call init.
 	 * @param prpName the name of the underlying prp
-	 * @throws UnInitializedException if the given prp is not initialized
 	 */
 	public ScCbcMacPrepending(PrpFixed prp, SecureRandom random) {
 		// sets the class member prp to the given object.
@@ -205,12 +202,9 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * As a result, the mac will be calculated on [msgLength||msg].
 	 * 
 	 * @param msgLength the length of the message
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public void startMac(int msgLength) throws UnInitializedException {
-		if (!isInitialized()) {
-			throw new UnInitializedException("this object is not initialized");
-		}
+	public void startMac(int msgLength){
+		
 		try {
 			actualMsgLength = 0; // resets the msg
 			expectedMsgLength = msgLength; // saves the msg length
@@ -244,10 +238,8 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * @param offset the offset within the message array to take the bytes from
 	 * @param msgLen the length of the message
 	 * @return byte[] the return tag from the mac operation
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public byte[] mac(byte[] msg, int offset, int msgLen)
-			throws UnInitializedException {
+	public byte[] mac(byte[] msg, int offset, int msgLen) {
 		// calls start mac to pre- pend the length
 		startMac(msgLen);
 		// computes the mac operation of the msg
@@ -261,10 +253,8 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * @param msgLength the length of the message
 	 * @param tag the tag to verify
 	 * @return true if the tag is the result of computing mac on the message. false, otherwise.
-	 * @throws UnInitializedException if this object is not initialized
 	 */
-	public boolean verify(byte[] msg, int offset, int msgLength, byte[] tag)
-			throws UnInitializedException {
+	public boolean verify(byte[] msg, int offset, int msgLength, byte[] tag){
 		// if the tag size is not the mac size - returns false
 		if (tag.length != getMacSize()) {
 			return false;
@@ -325,10 +315,6 @@ public class ScCbcMacPrepending implements CbcMac {
 				// shoudn't occur since the arguments are of size block size
 				e.printStackTrace();
 				Logging.getLogger().log(Level.WARNING, e.toString());
-			} catch (UnInitializedException e) {
-				// shoudn't occur since the object is initialized
-				e.printStackTrace();
-				Logging.getLogger().log(Level.WARNING, e.toString());
 			}
 		}
 	}
@@ -384,11 +370,7 @@ public class ScCbcMacPrepending implements CbcMac {
 				// shoudn't occur since the arguments are of size block size
 				e.printStackTrace();
 				Logging.getLogger().log(Level.WARNING, e.toString());
-			} catch (UnInitializedException e) {
-				// shoudn't occur since the object is initialized
-				e.printStackTrace();
-				Logging.getLogger().log(Level.WARNING, e.toString());
-			}
+			} 
 		}
 		//increases the actual message size
 		actualMsgLength += msgLen;
@@ -411,8 +393,7 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * @param outOff the offset within the out array to put the result from
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff) throws IllegalBlockSizeException,
-			UnInitializedException {
+			int outOff) throws IllegalBlockSizeException{
 		// calls the mac operation
 		byte[] tag = mac(inBytes, inOff, getMacSize());
 		// copies the return tag to the output array
@@ -430,7 +411,7 @@ public class ScCbcMacPrepending implements CbcMac {
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen,
 			byte[] outBytes, int outOff, int outLen)
-			throws IllegalBlockSizeException, UnInitializedException {
+			throws IllegalBlockSizeException{
 		// if the required length of the output array is not the mac size -
 		// throws exception
 		if (outLen != getMacSize()) {
@@ -452,8 +433,7 @@ public class ScCbcMacPrepending implements CbcMac {
 	 * @param outOff the offset within the out array to put the result from
 	 */
 	public void computeBlock(byte[] inBytes, int inOff, int inLen,
-			byte[] outBytes, int outOff) throws IllegalBlockSizeException,
-			UnInitializedException {
+			byte[] outBytes, int outOff) throws IllegalBlockSizeException{
 		// calls the mac operation
 		byte[] tag = mac(inBytes, inOff, inLen);
 		// copies the return tag to the output array
