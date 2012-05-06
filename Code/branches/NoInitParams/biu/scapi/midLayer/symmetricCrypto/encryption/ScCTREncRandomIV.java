@@ -6,7 +6,6 @@ import java.math.BigInteger;
 import javax.crypto.IllegalBlockSizeException;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.midLayer.ciphertext.BasicSymCiphertext;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
 import edu.biu.scapi.midLayer.ciphertext.IVCiphertext;
@@ -36,9 +35,8 @@ public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 	 * The Pseudorandom Permutation passed to the constructor of this class determines the type of encryption that will be performed.
 	 * For ex: if the PRP is TripleDes, the after constructing this object we hole a CTR-TripleDes encryption scheme.
 	 * @param prp
-	 * @throws UnInitializedException 
 	 */
-	public ScCTREncRandomIV(PseudorandomPermutation prp) throws UnInitializedException{
+	public ScCTREncRandomIV(PseudorandomPermutation prp){
 		super(prp);
 	}
 	
@@ -65,7 +63,6 @@ public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 	 * 
 	 * @param ciphertext The Ciphertext to decrypt
 	 * @return the decrypted plaintext
-	 * @throws UnInitializedException if this object has not been initialized
 	 * @throws IllegalArgumentException if the argument ciphertext is not specifically of type IVCiphertext
 	 */
 	@Override
@@ -130,7 +127,6 @@ public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 	 * @param plaintext a byte array containing the bytes to encrypt
 	 * @param iv 		a byte array containing a (random) IV used by CTR- mode to encrypt.
 	 * 
-	 * @throws UnInitializedException if this object has not been initialized
 	 */
 	@Override
 	protected IVCiphertext encAlg(byte[] plaintext, byte[] iv) {
@@ -194,10 +190,7 @@ public class ScCTREncRandomIV extends EncWithIVAbs implements CTREnc {
 		} catch (IllegalBlockSizeException e) {
 			//We catch this exception here because there is no chance that the ctr will have the wrong the size.
 			e.printStackTrace();
-		} catch (UnInitializedException e) {
-			//We catch this exception here because if the object had not been initialized we would have known already by now
-			e.printStackTrace();
-		}
+		} 
 
 		if(isFullBlock) {
 			for(int i = 0 ; i < blockSize; i++){
