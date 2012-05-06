@@ -1,15 +1,12 @@
 package edu.biu.scapi.midLayer.symmetricCrypto.encryption;
 
 import java.security.InvalidKeyException;
-import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
-import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
 import edu.biu.scapi.midLayer.ciphertext.SymmetricCiphertext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
