@@ -9,10 +9,8 @@ import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidParameterSpecException;
 
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.midLayer.ciphertext.IVCiphertext;
 import edu.biu.scapi.midLayer.plaintext.BasicPlaintext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
@@ -135,12 +133,8 @@ public class CTREncTest {
 
 
 		ScCTREncRandomIV enc = null;
-		try {
-			enc = new ScCTREncRandomIV(new BcAES());
-		} catch (UnInitializedException e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
-		}
+		enc = new ScCTREncRandomIV(new BcAES());
+		
 		
 		SymKeyGenParameterSpec keySpec = new SymKeyGenParameterSpec(128);
 		SecretKey secretKey = null;
@@ -153,7 +147,7 @@ public class CTREncTest {
 
 		//init the encryptor with the new secret key
 		try {
-			enc.init(secretKey);
+			enc.setKey(secretKey);
 		} catch (InvalidKeyException e1) {
 
 			e1.printStackTrace();
@@ -161,22 +155,16 @@ public class CTREncTest {
 
 		Plaintext plain = new BasicPlaintext(text.getBytes());
 		IVCiphertext cipher;
-		try {
-			SecureRandom random = new SecureRandom();
-			byte[] IV = new byte[16]; 
-			random.nextBytes(IV);
-			//cipher = (IVCiphertext) enc.encrypt(plain, IV);
-			cipher = (IVCiphertext) enc.encrypt(plain);
-			System.out.println("The cipher is: " + new String(cipher.getBytes()));
-			BasicPlaintext revertedPlain = (BasicPlaintext) enc.decrypt(cipher);
-			System.out.println("The reverted string is: " + new String(revertedPlain.getText()));
-		} catch (UnInitializedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}/* catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+		
+		SecureRandom random = new SecureRandom();
+		byte[] IV = new byte[16]; 
+		random.nextBytes(IV);
+		//cipher = (IVCiphertext) enc.encrypt(plain, IV);
+		cipher = (IVCiphertext) enc.encrypt(plain);
+		System.out.println("The cipher is: " + new String(cipher.getBytes()));
+		BasicPlaintext revertedPlain = (BasicPlaintext) enc.decrypt(cipher);
+		System.out.println("The reverted string is: " + new String(revertedPlain.getText()));
+		
 
 
 	}
