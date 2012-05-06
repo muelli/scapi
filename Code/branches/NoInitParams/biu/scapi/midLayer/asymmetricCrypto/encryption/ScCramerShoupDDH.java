@@ -3,9 +3,7 @@
  */
 package edu.biu.scapi.midLayer.asymmetricCrypto.encryption;
 
-import java.io.IOException;
 import java.math.BigInteger;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyException;
 import java.security.KeyPair;
@@ -20,8 +18,6 @@ import org.bouncycastle.util.BigIntegers;
 
 import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.ScapiRuntimeException;
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.midLayer.asymmetricCrypto.CramerShoupParameterSpec;
 import edu.biu.scapi.midLayer.asymmetricCrypto.keys.*;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
 import edu.biu.scapi.midLayer.ciphertext.CramerShoupCiphertext;
@@ -29,7 +25,6 @@ import edu.biu.scapi.midLayer.plaintext.BasicPlaintext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
 import edu.biu.scapi.primitives.dlog.*;
 import edu.biu.scapi.primitives.dlog.cryptopp.CryptoPpDlogZpSafePrime;
-import edu.biu.scapi.primitives.dlog.groupParams.ZpGroupParams;
 import edu.biu.scapi.primitives.hash.CryptographicHash;
 import edu.biu.scapi.primitives.hash.cryptopp.CryptoPpSHA1;
 import edu.biu.scapi.securityLevel.DDH;
