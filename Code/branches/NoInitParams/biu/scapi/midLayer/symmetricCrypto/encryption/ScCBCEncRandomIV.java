@@ -2,13 +2,11 @@ package edu.biu.scapi.midLayer.symmetricCrypto.encryption;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.AlgorithmParameterSpec;
 import java.util.logging.Level;
 
 import javax.crypto.IllegalBlockSizeException;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.midLayer.ciphertext.BasicSymCiphertext;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
@@ -184,10 +182,7 @@ public class ScCBCEncRandomIV extends EncWithIVAbs implements CBCEnc {
 		} catch (IllegalBlockSizeException e) {
 			// shouldn't occur since the arrays are of block size
 			Logging.getLogger().log(Level.WARNING, e.toString());
-		} catch (UnInitializedException e) {
-			// shouldn't occur since this function can be called just after initialization
-			Logging.getLogger().log(Level.WARNING, e.toString());
-		}
+		} 
 		
 	}
 
@@ -266,10 +261,7 @@ public class ScCBCEncRandomIV extends EncWithIVAbs implements CBCEnc {
 		} catch (IllegalBlockSizeException e) {
 			// shouldn't occur since the arrays are of block size
 			Logging.getLogger().log(Level.WARNING, e.toString());
-		} catch (UnInitializedException e) {
-			// shouldn't occur since this function can be called just after initialization
-			Logging.getLogger().log(Level.WARNING, e.toString());
-		}
+		} 
 	}
 
 	/**
