@@ -6,7 +6,6 @@ package edu.biu.scapi.midLayer.asymmetricCrypto.encryption;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyException;
-import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -14,8 +13,6 @@ import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
 
 import edu.biu.scapi.midLayer.ciphertext.BasicAsymCiphertext;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
