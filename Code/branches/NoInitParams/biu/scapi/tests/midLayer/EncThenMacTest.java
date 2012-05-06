@@ -14,9 +14,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.midLayer.SecretKeyGeneratorUtil;
-import edu.biu.scapi.midLayer.ciphertext.IVCiphertext;
 import edu.biu.scapi.midLayer.ciphertext.SymmetricCiphertext;
 import edu.biu.scapi.midLayer.plaintext.BasicPlaintext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
@@ -63,17 +61,15 @@ public class EncThenMacTest {
 		try {
 			//Create and initialize the PRP that is used by the encryption object.
 			AES aes = new BcAES();
-			aes.init(encKey);
+			aes.setKey(encKey);
 			//Create encryption object. There's no need to initialize. (Hmmm...)
 			enc = new ScCTREncRandomIV(aes);
 
 			//Create and initialize the PRP that is used by the Mac object.
 			TripleDES tripleDes = new BcTripleDES();		
-			tripleDes.init(macKey);
+			tripleDes.setKey(macKey);
 			//Create Mac object. There is no need to initialize.
 			cbcMac = new ScCbcMacPrepending(tripleDes);
-		} catch (UnInitializedException e3) {
-			e3.printStackTrace();
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 		}
@@ -82,13 +78,8 @@ public class EncThenMacTest {
 		//Create the encrypt-then-mac object using initialized encryption and authentication objects. 
 		//There is no need to initialize the encrypt-then-mac object. (Hmmm...)
 		ScEncryptThenMac encThenMac = null;
-		try {
-			encThenMac = new ScEncryptThenMac(enc, cbcMac);
-		} catch (UnInitializedException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-				
+		encThenMac = new ScEncryptThenMac(enc, cbcMac);
+			
 		return encThenMac;
 		
 	}
@@ -113,7 +104,7 @@ public class EncThenMacTest {
 			e2.printStackTrace();
 		}
 		try {
-			enc.init(encKey);
+			enc.setKey(encKey);
 		} catch (InvalidKeyException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -137,7 +128,7 @@ public class EncThenMacTest {
 		}
 		System.out.println("Mac key is: " + new BigInteger(macKey.getEncoded()));
 		try {
-			cbcMac.init(macKey);
+			cbcMac.setKey(macKey);
 		} catch (InvalidKeyException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -146,13 +137,8 @@ public class EncThenMacTest {
 		//EncThenMacKey encThenMacKey = new EncThenMacKey(encKey, macKey);
 		
 		ScEncryptThenMac encThenMac = null;
-		try {
-			encThenMac = new ScEncryptThenMac(enc, cbcMac);
-			
-		} catch (UnInitializedException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+		encThenMac = new ScEncryptThenMac(enc, cbcMac);
+		
 		
 		return encThenMac;
 	}
@@ -174,7 +160,7 @@ public class EncThenMacTest {
 		
 		//init the encryptor with the new secret key
 		try {
-			encThenMac.init(encThenMacKey);
+			encThenMac.setKey(encThenMacKey);
 		} catch (InvalidKeyException e1) {
 
 			e1.printStackTrace();
@@ -198,9 +184,6 @@ public class EncThenMacTest {
 			BasicPlaintext revertedPlain = (BasicPlaintext) encThenMac.decrypt(cipher);
 			System.out.println();
 			System.out.println("The reverted string is: " + new String(revertedPlain.getText()));
-		} catch (UnInitializedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IllegalBlockSizeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
