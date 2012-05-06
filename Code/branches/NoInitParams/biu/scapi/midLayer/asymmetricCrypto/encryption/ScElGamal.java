@@ -2,7 +2,6 @@ package edu.biu.scapi.midLayer.asymmetricCrypto.encryption;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
 import java.security.KeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
@@ -11,26 +10,20 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
-import java.util.logging.Level;
 
 import org.bouncycastle.util.BigIntegers;
 
 import edu.biu.scapi.exceptions.FactoriesException;
 import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.midLayer.asymmetricCrypto.keys.ScElGamalPrivateKey;
 import edu.biu.scapi.midLayer.asymmetricCrypto.keys.ScElGamalPublicKey;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
 import edu.biu.scapi.midLayer.ciphertext.ElGamalCiphertext;
 import edu.biu.scapi.midLayer.plaintext.BasicPlaintext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
-import edu.biu.scapi.primitives.dlog.DlogECF2m;
-import edu.biu.scapi.primitives.dlog.DlogECFp;
 import edu.biu.scapi.primitives.dlog.DlogGroup;
-import edu.biu.scapi.primitives.dlog.DlogZp;
 import edu.biu.scapi.primitives.dlog.GroupElement;
 import edu.biu.scapi.primitives.dlog.bc.BcDlogECFp;
-import edu.biu.scapi.primitives.dlog.groupParams.ZpGroupParams;
 import edu.biu.scapi.securityLevel.DDH;
 import edu.biu.scapi.tools.Factories.DlogGroupFactory;
 
@@ -54,8 +47,10 @@ public class ScElGamal implements ElGamalEnc{
 	
 	/**
 	 * Default constructor. The default DlogGroup is BcDlogECFp and is initialized with P-192 NIST's curve.
+	 * @throws IOException 
+	 * @throws IllegalArgumentException 
 	 */
-	public ScElGamal() {
+	public ScElGamal() throws IllegalArgumentException, IOException {
 		this(new BcDlogECFp("P-192"));
 	}
 
