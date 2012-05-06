@@ -1,6 +1,5 @@
 package edu.biu.scapi.midLayer.symmetricCrypto.mac;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.prf.PrfVaryingInputLength;
 
 /**
