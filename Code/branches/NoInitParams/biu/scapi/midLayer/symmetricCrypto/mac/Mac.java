@@ -1,12 +1,10 @@
 package edu.biu.scapi.midLayer.symmetricCrypto.mac;
 
 import java.security.InvalidKeyException;
-import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 import javax.crypto.SecretKey;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 
 /**
  * General interface for Mac. Every class in this family must implement this interface. <p>
