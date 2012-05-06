@@ -1,21 +1,17 @@
 package edu.biu.scapi.midLayer.asymmetricCrypto.encryption;
 
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 
-import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.InitializationException;
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.midLayer.ciphertext.Ciphertext;
 import edu.biu.scapi.midLayer.plaintext.Plaintext;
+import edu.biu.scapi.securityLevel.Cpa;
+import edu.biu.scapi.securityLevel.Indistinguishable;
 
 /**
  * General interface for asymmetric encryption. Each class of this family must implement this interface. <p>
@@ -28,7 +24,7 @@ import edu.biu.scapi.midLayer.plaintext.Plaintext;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public interface AsymmetricEnc {
+public interface AsymmetricEnc extends Cpa, Indistinguishable{
 
 	/**
 	 * Sets this asymmetric encryption with public key and private key.
