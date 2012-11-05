@@ -62,7 +62,7 @@ JNIEXPORT jlong JNICALL Java_edu_biu_scapi_primitives_trapdoorPermutation_crypto
 	  m_s=utils.jbyteArrayToCryptoPPInteger(env, s);
 	 
 	  //create pointer to RabinFunction object
-	  TrapdoorFunction* tpPtr =  new RabinFunction;  //assign RSAFunction to the pointer
+	  TrapdoorFunction* tpPtr =  new RabinFunction;  //assign RabinFunction to the pointer
 
 	  //initialize the Rabin object with the parameters
 	  ((RabinFunction *) tpPtr) -> Initialize(m_n, m_r, m_s);
