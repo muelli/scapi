@@ -11,7 +11,7 @@ using namespace std;
  */
 Utils::Utils() {}
 
-/* function jbyteArrayToCryptoPPInteger : This function converting from jbyteArray to Integer
+/* function jbyteArrayToCryptoPPInteger : This function converts from jbyteArray to Integer
  * param env							: the jni pointer
  * param byteArrToInteger				: the byte array to convert
  * return								: the result
@@ -34,7 +34,7 @@ Integer Utils::jbyteArrayToCryptoPPInteger (JNIEnv *env, jbyteArray byteArrToCon
 	return result;
 }
 
-/* function jbyteArrayToCryptoPPIntegerPointer  : This function converting from jbyteArray to Integer and return pointer to the result integer
+/* function jbyteArrayToCryptoPPIntegerPointer  : This function converts from jbyteArray to Integer and returns a pointer to the resulting integer
  * param env									: the jni pointer
  * param byteArrToInteger						: the byte array to convert
  * return										: the pointer to the Integer 
@@ -47,7 +47,7 @@ Integer* Utils::jbyteArrayToCryptoPPIntegerPointer (JNIEnv *env, jbyteArray byte
 	return returnInt;
 }
 
-/* function getIntegerPointer : This function return pointer to the accepted integer
+/* function getIntegerPointer : This function returns a pointer to the accepted integer
  * param integerToPointer	  : the integer
  * return					  : the pointer to the integer
  */
@@ -60,7 +60,7 @@ Integer* Utils::getPointerToInteger (Integer integerToPointer) {
 	return returnInt;
 }
 
-/* function CryptoPPIntegerTojbyteArray : This function converting from Integer to jbyteArray
+/* function CryptoPPIntegerTojbyteArray : This function converts from Integer to jbyteArray
  * param env							: the jni pointer
  * param byteArrToInteger				: the Integer to convert
  * return								: the result jbyteArray
@@ -70,7 +70,7 @@ jbyteArray Utils::CryptoPPIntegerTojbyteArray (JNIEnv *env, Integer integerToCon
 	/* The translation of BigInteger to byte[] sometimes result in 0/-1 at the first byte in the array.
 	 * Converting that array to Integer and back to jbyteArray delete this first byte and cause problems with the 
 	 * building of the new BigInteger from that jbyteArray.
-	 * So, we add one more byte to the byteArray and the function Encode of Integer know how to do the padding to get the right byte Array.
+	 * So, we add one more byte to the byteArray and the function Encode of Integer knows how to do the padding to get the right byte Array.
 	 */
 	int size = integerToConvert.ByteCount()+1;
 	
@@ -91,7 +91,7 @@ jbyteArray Utils::CryptoPPIntegerTojbyteArray (JNIEnv *env, Integer integerToCon
 
 }
 
-/* function extendedEuclideanAlg : This function do the extendedEuclidean algorithm
+/* function extendedEuclideanAlg : This function does the extendedEuclidean algorithm
  * param a						 : the bigger number between the two numbers
  * param b						 : the smaller number between the two numbers
  * param gcd					 : the GCD of the two numbers
@@ -111,7 +111,7 @@ void Utils::extendedEuclideanAlg(Integer a, Integer b, Integer & gcd, Integer & 
 }
 
 
-/* function SquareRoot : This function return the square root of a value mod(N)
+/* function SquareRoot : This function returns the square root of a value mod(N)
  * param value		   : the number to calculate its square root
  * param mod		   : mod(N)
  * param p			   : prime 1
