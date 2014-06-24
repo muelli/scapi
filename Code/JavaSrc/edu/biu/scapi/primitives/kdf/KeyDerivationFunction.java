@@ -1,11 +1,32 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.primitives.kdf;
 
-import java.security.InvalidKeyException;
-import java.security.spec.AlgorithmParameterSpec;
-
 import javax.crypto.SecretKey;
-
-import edu.biu.scapi.exceptions.UnInitializedException;
 
 /** 
  * General interface of key derivation function. Every class in this family should implement this interface. <p>
@@ -16,68 +37,24 @@ import edu.biu.scapi.exceptions.UnInitializedException;
  */
 public interface KeyDerivationFunction {
 	
-	/**
-	 * Initializes this kdf with the secret key. The initialization is for the underlying object the KDF used.
-	 * @param secretKey the secret key
-	 * @throws InvalidKeyException 
-	 *  */
-	public void init(SecretKey secretKey) throws InvalidKeyException;
-
-	/** 
-	 * Initializes this kdf with the secret key and the auxiliary parameters. The initialization is for the underlying object the KDF used.
-	 * @param secretKey secret key
-	 * @param params algorithm parameters
-	 * @throws InvalidKeyException 
-	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidKeyException;
-	
-	/**
-	 * An object trying to use an instance of kdf needs to check if it has already been initialized.
-	 * @return true if the object was initialized by calling the function init.
-	 */
-	public boolean isInitialized();
-	
-	/** 
-	 * Generates a new secret key from the given seed and IV.
-	 * @param seedForGeneration the secret key that is the seed for the key generation
-	 * @param len the required output key length
-	 * @param iv info for the key generation
-	 * @return secret key the generated key
-	 * @throws UnInitializedException if this object is not initialized
-	 */
-	public SecretKey generateKey(SecretKey seedForGeneration, int outLen,  byte[] iv) throws UnInitializedException;
-	
 	/** 
 	 * Generates a new secret key from the given seed.
-	 * @param seedForGeneration the secret key that is the seed for the key generation
-	 * @param len the required output key length
-	 * @return secret key the generated key
-	 * @throws UnInitializedException if this object is not initialized
-	 */
-	public SecretKey generateKey(SecretKey seedForGeneration, int outLen) throws UnInitializedException;
-	
-	/** 
-	 * Generates a new secret key from the given seed.
-	 * @param seedForGeneration the secret key that is the seed for the key generation
-	 * @param inOff the offset within the seedForGeneration to take the bytes from
+	 * @param entropySource the secret key that is the seed for the key generation
+	 * @param inOff the offset within the entropySource to take the bytes from
 	 * @param inLen the length of the seed
-	 * @param outKey the array to put the generated key bytes
-	 * @param outoff the offset within the output array to put the generated key bytes from
-	 * @param outlen the required output key length
-	 * @throws UnInitializedException if this object is not initialized
+	 * @param outLen the required output key length
+	 * @return SecretKey the derivated key.
 	 */
-	public void generateKey(byte[] seedForGeneration, int inOff, int inLen, byte[] outKey, int outOff, int outLen) throws UnInitializedException;
+	public SecretKey deriveKey(byte[] entropySource, int inOff, int inLen, int outLen);
 	
 	/** 
 	 * Generates a new secret key from the given seed and iv.
-	 * @param seedForGeneration the secret key that is the seed for the key generation
-	 * @param inOff the offset within the seedForGeneration to take the bytes from
+	 * @param entropySource the secret key that is the seed for the key generation
+	 * @param inOff the offset within the entropySource to take the bytes from
 	 * @param inLen the length of the seed
-	 * @param outKey the array to put the generated key bytes
-	 * @param outoff the offset within the output array to put the generated key bytes from
-	 * @param outlen the required output key length
+	 * @param outLen the required output key length
 	 * @param iv info for the key generation
-	 * @throws UnInitializedException if this object is not initialized
+	 * @return SecretKey the derivated key.
 	 */
-	public void generateKey(byte[] seedForGeneration, int inOff, int inLen, byte[] outKey, int outOff, int outLen, byte[] iv) throws UnInitializedException;
+	public SecretKey deriveKey(byte[] entropySource, int inOff, int inLen, int outLen, byte[] iv);
 }

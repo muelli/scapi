@@ -1,30 +1,45 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.primitives.dlog.miracl;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.logging.Level;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.ECElement;
-import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
+import edu.biu.scapi.primitives.dlog.ECElementSendableData;
+import edu.biu.scapi.primitives.dlog.ECF2mPoint;
+import edu.biu.scapi.primitives.dlog.GroupElementSendableData;
 /**
  * This class is an adapter for F2m points of miracl
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public class ECF2mPointMiracl implements ECElement, Serializable{
+public class ECF2mPointMiracl implements ECElement, ECF2mPoint{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5263481969362114289L;
-
-	private native long createF2mPoint(long mip, byte[] x, byte[] y, boolean[] validity);
+	private native long createF2mPoint(long mip, byte[] x, byte[] y);
 	private native long createF2mPointFromX(long mip, byte[] x, boolean[] validity);
 	private native long createRandomF2mPoint(long mip, int m, int seed, boolean[] validity);
 	private native boolean checkInfinityF2m(long point);
@@ -33,85 +48,51 @@ public class ECF2mPointMiracl implements ECElement, Serializable{
 	private native void deletePointF2m(long p);
 	
 	private long point = 0;
+	//For performance reasons we decided to keep redundant information about the point. Once we have the member long point which is a pointer
+	//to the actual point generated in the native code we do not really have a need to keep the BigIntegers x and y, since this data can be retrieved from the point.
+	//However, to retrieve these values we need to perform an extra JNI call for each one plus we need to create a new BigInteger each time. It follows that each time
+	//anywhere in the code the function ECFpPointMiracl::getX() gets called the following code would occur:
+	//...
+	//return new BigInteger(getXValueFpPoint(mip, point))
+	//This seems to be very wasteful performance-wise, so we decided to keep the redundant data here. We think that it is not that terrible since this class is
+	//immutable and once it is constructed there is not external way of re-setting the X and Y coordinates.
+	private BigInteger x;
+	private BigInteger y;
 	private long mip = 0;
 	private String curveName;
 	private String fileName;
 	
 	/**
 	 * Constructor that accepts x,y values of a point. 
-	 * if the values are valid - set the point.
-	 * @param x
-	 * @param y
+	 * Miracl always checks validity of coordinates before creating the point.
+	 * If the values are valid - set the point, else throw IllegalArgumentException.
+	 * @param x the x coordinate of the candidate point
+	 * @param y the y coordinate of the candidate point
 	 * @param curve - DlogGroup
+	 * @throws IllegalArgumentException if the (x,y) coordinates do not represent a valid point on the curve
+	 * 
 	 */
-	public ECF2mPointMiracl(BigInteger x, BigInteger y, MiraclDlogECF2m curve){
+	ECF2mPointMiracl(BigInteger x, BigInteger y, MiraclDlogECF2m curve){
 		
 		mip = curve.getMip();
-		boolean validity[] = new boolean[1];
 		curveName = curve.getCurveName();
 		fileName = curve.getFileName();
 		
-		//creates a point in the field with the given parameters
-		point = createF2mPoint(mip, x.toByteArray(), y.toByteArray(), validity);
-		
-		//if the creation failed - throws exception
-		if (validity[0]==false){
-			point = 0;
+		//Create a point in the field with the given parameters, done by Miracl's native code.
+		//Miracl always checks validity of (x,y).
+		point = createF2mPoint(mip, x.toByteArray(), y.toByteArray());
+		//If the validity check done by Miracl did not succeed, then createF2mPoint returns 0,
+		//indicating that this is not a valid point
+		if (point == 0)
 			throw new IllegalArgumentException("x, y values are not a point on this curve");
-		}
+		this.x = x;
+		this.y = y;
+	
 	}
 	
-	/**
-	 *  Constructor that gets DlogGroup and chooses a random point in the group
-	 * @param curve
-	 * @throws UnInitializedException 
-	 */
-	public ECF2mPointMiracl(MiraclDlogECF2m curve) throws UnInitializedException{
-	
-		mip = curve.getMip();
-		curveName = curve.getCurveName();
-		fileName = curve.getFileName();
-		
-		boolean validity[] = new boolean[1];
-		
-		//generates a seed to initiate the random number generator of miracl
-		int seed = new BigInteger(new SecureRandom().generateSeed(20)).intValue();
-		
-		//call for native function that creates random point in the field.
-		point = createRandomF2mPoint(mip, ((ECF2mGroupParams)curve.getGroupParams()).getM(), seed, validity);
-		
-		//if the algorithm for random element failed - throws exception
-		if(validity[0]==false){
-			point = 0;
-			Logging.getLogger().log(Level.WARNING, "couldn't find random element");
-		}
-	}
 	
 	/**
-	 * Constructor that gets a x coordinates , calculates its corresponding y and set the point with these arguments
-	 * @param x the x coordinate
-	 * @param curve
-	 * @throws UnInitializedException 
-	 */
-	ECF2mPointMiracl(BigInteger x, MiraclDlogECF2m curve) throws UnInitializedException{
-		mip = curve.getMip();
-		curveName = curve.getCurveName();
-		fileName = curve.getFileName();
-		
-		boolean validity[] = new boolean[1];
-		
-		//call for native function that creates random point in the field.
-		point = createF2mPointFromX(mip, x.toByteArray(), validity);
-		
-		//if the algorithm for random element failed - throws exception
-		if(validity[0]==false){
-			point = 0;
-			throw new IllegalArgumentException("the given x has no corresponding y in the current curve");
-		}
-	}
-	
-	/**
-	 * Constructor that gets pointer to element and sets it.
+	 * Constructor that gets a pointer to an existing element and sets it.
 	 * Only our inner functions use this constructor to set an element. 
 	 * The ptr is a result of our DlogGroup functions, such as multiply.
 	 * @param ptr - pointer to native point
@@ -121,35 +102,18 @@ public class ECF2mPointMiracl implements ECElement, Serializable{
 		mip = curve.getMip();
 		curveName = curve.getCurveName();
 		fileName = curve.getFileName();
-	}
-	
-	private void writeObject(ObjectOutputStream out) throws IOException{ 
-		out.writeObject(curveName); 
-		out.writeObject(fileName);
-		byte[] x = getXValueF2mPoint(mip, point);
-		byte[] y = getYValueF2mPoint(mip, point);
-		out.writeObject(x);
-		out.writeObject(y);
-	}
-	
-	private void readObject(ObjectInputStream in) throws IOException { 
-		byte [] x = null, y = null;
-		try {
-			curveName = (String) in.readObject();
-			fileName = (String) in.readObject();
-			x = (byte[]) in.readObject();
-			y = (byte[]) in.readObject();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		//Set X and Y coordinates:
+		//in case of infinity, there are no coordinates and we set them to null
+		if (checkInfinityF2m(ptr)){
+			this.x = null;
+			this.y  =null;
+		}else{
+			this.x = new BigInteger(getXValueF2mPoint(mip, point));
+			this.y = new BigInteger(getYValueF2mPoint(mip, point));
 		}
-		MiraclDlogECF2m dlog = new MiraclDlogECF2m();
-		dlog.init(fileName, curveName);
-		mip = dlog.getMip();
-		boolean validity[] = new boolean[1];
-		point = createF2mPoint(mip, x, y, validity);
+
 	}
-	
+
 	/**
 	 * 
 	 * @return the pointer to the point
@@ -158,28 +122,43 @@ public class ECF2mPointMiracl implements ECElement, Serializable{
 		return point;
 	}
 	
+	public boolean isIdentity(){
+		return isInfinity();
+	}
+	
 	public boolean isInfinity(){
 		return checkInfinityF2m(point);
 	}
 	
 	public BigInteger getX(){
-		//in case of infinity, there is no coordinates and returns null
-		if (isInfinity()){
-			return null;
-		}
-		
-		return new BigInteger(getXValueF2mPoint(mip, point));
+		return x;
 	}
 	
 	public BigInteger getY(){
-		//in case of infinity, there is no coordinates and returns null
-		if (isInfinity()){
-			return null;
-		}
-		
-		return new BigInteger(getYValueF2mPoint(mip, point));
+		return y;
 	}
 	
+	
+	/** 
+	 * @see edu.biu.scapi.primitives.dlog.GroupElement#generateSendableData()
+	 */
+	@Override
+	public GroupElementSendableData generateSendableData() {
+		return new ECElementSendableData(getX(), getY());
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 17;
+		int hashCodeX = getX().hashCode();
+		int hashCodeY = getY().hashCode();
+		result = prime * result + hashCodeX;
+		result = prime * result + hashCodeY;
+		return result;
+	}
+	
+	@Override
 	public boolean equals(Object elementToCompare){
 		if (!(elementToCompare instanceof ECF2mPointMiracl)){
 			return false;
@@ -191,11 +170,10 @@ public class ECF2mPointMiracl implements ECElement, Serializable{
 		return false;
 	}
 	
-	public void release(){
-		//delete from the dll the dynamic allocation of the point.
-		deletePointF2m(point);
+	@Override
+	public String toString() {
+		return "ECF2mPointMiracl [point= " + getX() + "; " + getY() + "]";
 	}
-	
 	/**
 	 * delete the related point
 	 */

@@ -1,15 +1,40 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.primitives.dlog.bc;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
 import edu.biu.scapi.primitives.dlog.DlogEllipticCurve;
 import edu.biu.scapi.primitives.dlog.DlogGroupEC;
 import edu.biu.scapi.primitives.dlog.GroupElement;
-import edu.biu.scapi.primitives.dlog.groupParams.ECGroupParams;
 
 /*
  * This class is the adapter to Bouncy Castle implementation of elliptic curves.
@@ -21,45 +46,21 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 
 	protected ECCurve curve; // BC elliptic curve
 	
+	protected BcAdapterDlogEC(){}
+	
+	public BcAdapterDlogEC(String fileName, String curveName) throws IOException {
+		super(fileName, curveName);
+	}
+
 	/*
 	 * Creates an ECPoint from the given x,y
 	 * @param x
 	 * @param y
 	 * @return ECPoint - the created point
-	 * @throws UnInitializedException 
 	 */
-	public ECPoint createPoint(BigInteger x, BigInteger y) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	ECPoint createPoint(BigInteger x, BigInteger y){
+		
 		return curve.createPoint(x, y, false);
-	}
-	
-	/*
-	 * Checks if the given element is a member of this Dlog group
-	 * @param element - 
-	 * @return true if the given element is member of this group; false, otherwise.
-	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
-	 */
-	public boolean isMember(GroupElement element) throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
-		if (!(element instanceof ECPointBc)){
-			throw new IllegalArgumentException("element type doesn't match the group type");
-		}
-		
-		//infinity point is a valid member
-		if (((ECPointBc) element).isInfinity()){
-			return true;
-		}
-		
-		ECPointBc point = (ECPointBc)element;
-		//checks the validity of the point
-		return point.checkValidity(point.getPoint().getX().toBigInteger(), point.getPoint().getY().toBigInteger(), (ECGroupParams)groupParams);
-		
-		
 	}
 	
 	/*
@@ -67,14 +68,11 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param groupElement to inverse
 	 * @return the inverse element of the given GroupElement
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
-	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+	public GroupElement getInverse(GroupElement groupElement) throws IllegalArgumentException{
+		
 		//if the GroupElement doesn't match the DlogGroup, throws exception
-		if (!(groupElement instanceof ECPointBc)){
+		if (!(checkInstance(groupElement))){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
 		
@@ -103,15 +101,12 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param base 
 	 * @return the result of the exponentiation
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
 	public GroupElement exponentiate(GroupElement base, BigInteger exponent) 
-									 throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+									 throws IllegalArgumentException{
+		
 		//if the GroupElements don't match the DlogGroup, throws exception
-		if (!(base instanceof ECPointBc)){
+		if (!(checkInstance(base))){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
 		
@@ -122,6 +117,11 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 		
 		//gets the ECPoint
 		ECPoint point = ((ECPointBc)base).getPoint();
+		
+		//If the exponent is negative, convert it to be the exponent modulus q.
+		if (exponent.compareTo(BigInteger.ZERO) < 0){
+			exponent = exponent.mod(getOrder());
+		}
 		
 		/* 
 		 * BC treats EC as additive group while we treat that as multiplicative group. 
@@ -140,19 +140,15 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * @param groupElement2
 	 * @return the multiplication result
 	 * @throws IllegalArgumentException
-	 * @throws UnInitializedException 
 	 */
 	public GroupElement multiplyGroupElements(GroupElement groupElement1, 
-											  GroupElement groupElement2) 
-											  throws IllegalArgumentException, UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
-		}
+						GroupElement groupElement2) throws IllegalArgumentException{
+		
 		//if the GroupElements don't match the DlogGroup, throws exception
-		if (!(groupElement1 instanceof ECPointBc)){
+		if (!(checkInstance(groupElement1))){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
-		if (!(groupElement2 instanceof ECPointBc)){
+		if (!(checkInstance(groupElement2))){
 			throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
 		}
 			
@@ -179,10 +175,22 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 		
 	}
 	
+	/**
+	 * Computes the product of several exponentiations with distinct bases 
+	 * and distinct exponents. 
+	 * Instead of computing each part separately, an optimization is used to 
+	 * compute it simultaneously. 
+	 * @param groupElements
+	 * @param exponentiations
+	 * @return the exponentiation result
+	 */
+	@Override
 	public GroupElement simultaneousMultipleExponentiations
-					(GroupElement[] groupElements, BigInteger[] exponentiations) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
+					(GroupElement[] groupElements, BigInteger[] exponentiations){
+		for (int i=0; i < groupElements.length; i++){
+			if (!checkInstance(groupElements[i])){
+				throw new IllegalArgumentException("groupElement doesn't match the DlogGroup");
+			}
 		}
 		//Our test results show that for BC elliptic curve the LL algorithm always gives the best performances
 		return computeLL(groupElements, exponentiations);
@@ -194,5 +202,10 @@ public abstract class BcAdapterDlogEC extends DlogGroupEC
 	 * BcDlogECF2m creates an ECPoint.F2m
 	 */
 	protected abstract GroupElement createPoint(ECPoint result);
+	
+	/**
+	 * Checks if the element is valid to this elliptic curve group.
+	 */
+	protected abstract boolean checkInstance(GroupElement element);
 
 }

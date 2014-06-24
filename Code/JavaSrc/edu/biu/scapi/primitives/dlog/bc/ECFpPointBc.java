@@ -1,159 +1,79 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.primitives.dlog.bc;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.logging.Level;
 
-import org.bouncycastle.math.ec.ECFieldElement;
 import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.math.ec.ECFieldElement.Fp;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
+import edu.biu.scapi.primitives.dlog.ECFpPoint;
+import edu.biu.scapi.primitives.dlog.ECFpUtility;
 import edu.biu.scapi.primitives.dlog.groupParams.ECFpGroupParams;
-import edu.biu.scapi.primitives.dlog.groupParams.ECGroupParams;
 
 /**
  * This class is an adapter for ECPoint.Fp of BC
+ * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
- *
+ * 
  */
-public class ECFpPointBc extends ECPointBc{
+public class ECFpPointBc extends ECPointBc implements ECFpPoint{
+
+	private ECFpUtility util = new ECFpUtility();
 	
 	/**
-	 * Constructor that accepts x,y values of a point. 
-	 * if the values are valid - set the point.
-	 * @param x
-	 * @param y
-	 * @param curve - DlogGroup
-	 * @throws UnInitializedException 
+	 * Constructor that accepts x,y possible values of a point on the requested curve.
+	 * If bCheckMembership is set to true it checks if the values are valid and if so, sets the point. If not valid, throws IllegalArgumentException
+	 * If bCheckMembership is set to false it creates the point without checking.
+	 * @param x coordinate of candidate point
+	 * @param y coordinate of candidate point
+	 * @param curve - DlogGroup for which we want to create the point
+	 * @param bCheckMembership whether to check if (x,y) are a valid point on curve or not 
+	 * @throws IllegalArgumentException if bCheckMembership is set to true AND if the coordinates x and y do not represent a valid point in the curve
 	 */
-	public ECFpPointBc(BigInteger x, BigInteger y, BcDlogECFp curve) throws UnInitializedException {
-		
-		//checks validity
-		if (!checkValidity(x, y, (ECFpGroupParams) curve.getGroupParams()))  //if not valid, throws exception
-			throw new IllegalArgumentException("x, y values are not a point on this curve");
-		
-		/* create  point with the given parameters */
-		point = ((BcAdapterDlogEC)curve).createPoint(x, y);
-	}
-	
-	
-	/**
-	 *  Constructor that gets DlogGroup and choose random point in the group
-	 * @param curve
-	 * @throws UnInitializedException 
-	 */
-	public ECFpPointBc(BcDlogECFp curve) throws UnInitializedException{
-		
-		ECFpGroupParams desc = (ECFpGroupParams)curve.getGroupParams();
-		
-		/*
-		 * choosing random point on the curve
-		 */
-		BigInteger p = desc.getP(); //get the prime modulus
-		int len = 2*(p.bitLength()); //get the security parameter for the algorithm
-		SecureRandom generator = new SecureRandom();
-		BigInteger x = null;
-		
-		/*find a point in the group*/
-		for(int i=0; i<len; i++){
-			x = new BigInteger(p.bitLength(), generator); //get an element
-			//if the element is in the range, calculate y value corresponding to x value
-			if (x.compareTo(p)<0){
-				ECFieldElement.Fp xElement = new ECFieldElement.Fp(p, x);
-				ECFieldElement.Fp aElement = new ECFieldElement.Fp(p, desc.getA());
-				ECFieldElement.Fp bElement = new ECFieldElement.Fp(p, desc.getB());
-				//compute x^3
-				ECFieldElement.Fp x3 = (Fp) xElement.square().multiply(xElement);
-				//compute x^3+ax+b
-				ECFieldElement.Fp result = (Fp) x3.add(aElement.multiply(xElement)).add(bElement);
-				//compute sqrt(x^3+ax+b)
-				ECFieldElement.Fp yVal = (Fp) result.sqrt();
-				if (yVal!=null){ // if there is a square root, create a point
-					BigInteger y = yVal.toBigInteger();
-					//create the point
-					point = ((BcAdapterDlogEC)curve).createPoint(x, y);
-					i=len; //stop the loop
-				}
-			}
+	ECFpPointBc(BigInteger x, BigInteger y, BcDlogECFp curve, boolean bCheckMembership) throws IllegalArgumentException{
+		if(bCheckMembership){
+			//checks if the given parameters are valid point on the curve.
+			boolean valid = util.checkCurveMembership((ECFpGroupParams) curve.getGroupParams(), x, y);
+			// checks validity
+			if (valid == false) // if not valid, throws exception
+				throw new IllegalArgumentException("x, y values are not a point on this curve");
 		}
-		//if the algorithm failed, write it to the log
-		if (x.compareTo(p)>0 || point == null)
-			Logging.getLogger().log(Level.WARNING, "couldn't find a random element");
+		/* create point with the given parameters */
+		point = curve.createPoint(x, y);
 	}
-	
-	/**
-	 * Constructor that accepts x value of a point, calculates its corresponding y value and create a point with these values. 
-	 * @param x the x coordinate of the point
-	 * @param curve - elliptic curve dlog group over Fp
-	 * @throws UnInitializedException if the given curve is not initialized
-	 */
-	ECFpPointBc(BigInteger x, BcDlogECFp curve) throws UnInitializedException{
-		
-		BigInteger p = ((ECFpGroupParams) curve.getGroupParams()).getP();
-		ECFieldElement.Fp xElement = new ECFieldElement.Fp(p, x);
-		ECFieldElement.Fp aElement = new ECFieldElement.Fp(p, ((ECGroupParams) curve.getGroupParams()).getA());
-		ECFieldElement.Fp bElement = new ECFieldElement.Fp(p, ((ECGroupParams) curve.getGroupParams()).getB());
-		//computes x^3
-		ECFieldElement.Fp x3 = (Fp) xElement.square().multiply(xElement);
-		//computes x^3+ax+b
-		ECFieldElement.Fp result = (Fp) x3.add(aElement.multiply(xElement)).add(bElement);
-		//computes sqrt(x^3+ax+b)
-		ECFieldElement.Fp yVal = (Fp) result.sqrt();
-		if (yVal!=null){ // if there is a square root, creates a point
-			BigInteger y = yVal.toBigInteger();
-			//creates the point
-			point = ((BcAdapterDlogEC)curve).createPoint(x, y);
-		}else{
-			throw new IllegalArgumentException("the given x has no corresponding y in the current curve");
-		}
-	}
-	
+
 	/*
-	 * Constructor that gets an element and sets it.
+	 * Constructor that gets an element and sets it. 
 	 * Only our inner functions use this constructor to set an element. 
 	 * The ECPoint is a result of our DlogGroup functions, such as multiply.
-	 * @param point
+	 * 	 * @param point
 	 */
-	ECFpPointBc(ECPoint point){
+	ECFpPointBc(ECPoint point) {
 		this.point = point;
 	}
-	
-	/*
-	 * Checks if the x,y values constitute a valid point in the given DlogGroup.
-	 */
-	boolean checkValidity(BigInteger x, BigInteger y, ECGroupParams params) {
-		//the GroupParams that matches this class is ECFpGroupParams
-		if (params instanceof ECFpGroupParams){
-			/* construct ECFieldElements from a,b,x,y */
-			ECFpGroupParams desc = (ECFpGroupParams) params;
-			ECFieldElement.Fp xElement = new ECFieldElement.Fp(desc.getP(), x);
-			ECFieldElement.Fp yElement = new ECFieldElement.Fp(desc.getP(), y);
-			ECFieldElement.Fp aElement = new ECFieldElement.Fp(desc.getP(), desc.getA());
-			ECFieldElement.Fp bElement = new ECFieldElement.Fp(desc.getP(), desc.getB());
-			/*
-			 * Calculates the curve equation with the given x,y.
-			 */
-			//compute x^3
-			ECFieldElement.Fp x3 = (Fp) xElement.square().multiply(xElement);
-			//compute x^3+ax+b
-			ECFieldElement.Fp result = (Fp) x3.add(aElement.multiply(xElement)).add(bElement);
-			//compute y^2
-			ECFieldElement.Fp y2 = (Fp) yElement.square();
-	
-			//if the the equation is solved - the point is in the elliptic curve and return true
-			if (y2.equals(result))
-				return true;
-			else return false;
-			//if the GroupParams is not ECFpGroupParams throw exception
-		} else throw new IllegalArgumentException("groupParams doesn't match the GroupElement");
-	}
 
-
-	@Override
-	public void release() {
-		// TODO Auto-generated method stub
-		
-	}
 }

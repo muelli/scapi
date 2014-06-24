@@ -1,3 +1,29 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.primitives.prf;
 
 import java.security.InvalidKeyException;
@@ -6,8 +32,6 @@ import java.security.spec.InvalidParameterSpecException;
 
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
-
-import edu.biu.scapi.exceptions.UnInitializedException;
 
 
 /** 
@@ -21,33 +45,20 @@ import edu.biu.scapi.exceptions.UnInitializedException;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
 public interface PseudorandomFunction {
+	
 	/**
-	 * Initializes this prf with the secret key.
-	 * @param secretKey the secrete key
-	 * @throws InvalidKeyException 
-	 *  */
-	public void init(SecretKey secretKey) throws InvalidKeyException;
-
-	/** 
-	 * Initializes this prf with the secret key and the auxiliary parameters.
+	 * Sets the secret key for this prf.
+	 * The key can be changed at any time. 
 	 * @param secretKey secret key
-	 * @param params algorithm parameters
-	 * @throws InvalidParameterSpecException 
 	 * @throws InvalidKeyException 
 	 */
-	public void init(SecretKey secretKey, AlgorithmParameterSpec params) throws InvalidParameterSpecException, InvalidKeyException;
+	public void setKey(SecretKey secretKey) throws InvalidKeyException;
 	
 	/**
 	 * An object trying to use an instance of prf needs to check if it has already been initialized.
-	 * @return true if the object was initialized by calling the function init.
+	 * @return true if the object was initialized by calling the function setKey.
 	 */
-	public boolean isInitialized();
-
-	/** 
-	 * @return the parameter spec of this prf
-	 * @throws UnInitializedException 
-	 */
-	public AlgorithmParameterSpec getParams() throws UnInitializedException;
+	public boolean isKeySet();
 
 	/** 
 	 * @return The algorithm name
@@ -57,7 +68,22 @@ public interface PseudorandomFunction {
 	/** 
 	 * @return the input block size in bytes
 	 */
-	public int getBlockSize() ;
+	public int getBlockSize();
+	
+	/**
+	 * Generates a secret key to initialize this prf object.
+	 * @param keyParams algorithmParameterSpec contains the required parameters for the key generation
+	 * @return the generated secret key
+	 * @throws InvalidParameterSpecException 
+	 */
+	public SecretKey generateKey(AlgorithmParameterSpec keyParams) throws InvalidParameterSpecException;
+	
+	/**
+	 * Generates a secret key to initialize this prf object.
+	 * @param keySize is the required secret key size in bits 
+	 * @return the generated secret key 
+	 */
+	public SecretKey generateKey(int keySize);
 
 	/** 
 	 * Computes the function using the secret key. <p>
@@ -70,9 +96,8 @@ public interface PseudorandomFunction {
 	 * @param outBytes output bytes. The resulted bytes of compute
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException, UnInitializedException;
+	public void computeBlock(byte[] inBytes, int inOff, byte[] outBytes, int outOff) throws IllegalBlockSizeException;
 	
 	/**
 	 * Computes the function using the secret key. <p>
@@ -86,9 +111,8 @@ public interface PseudorandomFunction {
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param outLen the length of the output array
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException, UnInitializedException;
+	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) throws IllegalBlockSizeException;
 	
 	/**
 	 * Computes the function using the secret key. <p>
@@ -97,14 +121,13 @@ public interface PseudorandomFunction {
 	 * such interfaces.
 	 * 
 	 * @param inBytes input bytes to compute
-	 * @param inOff input offset in the inBytes array
+	 * @param inOffset input offset in the inBytes array
 	 * @param inLen the length of the input array
 	 * @param outBytes output bytes. The resulted bytes of compute.
-	 * @param outOff output offset in the outBytes array to put the result from
+	 * @param outOffset output offset in the outBytes array to put the result from
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOffset, int inLen, byte[] outBytes, int outOffset) throws IllegalBlockSizeException, UnInitializedException;;
+	public void computeBlock(byte[] inBytes, int inOffset, int inLen, byte[] outBytes, int outOffset) throws IllegalBlockSizeException;
 
 	
 }

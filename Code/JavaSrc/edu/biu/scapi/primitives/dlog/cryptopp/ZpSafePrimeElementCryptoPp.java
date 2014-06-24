@@ -1,10 +1,38 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.primitives.dlog.cryptopp;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.logging.Level;
 
-import edu.biu.scapi.generals.Logging;
+import org.bouncycastle.util.BigIntegers;
+
+import edu.biu.scapi.primitives.dlog.GroupElementSendableData;
+import edu.biu.scapi.primitives.dlog.ZpElementSendableData;
 import edu.biu.scapi.primitives.dlog.ZpSafePrimeElement;
 
 /**
@@ -13,14 +41,14 @@ import edu.biu.scapi.primitives.dlog.ZpSafePrimeElement;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public class ZpSafePrimeElementCryptoPp implements ZpSafePrimeElement{
+public class ZpSafePrimeElementCryptoPp implements ZpSafePrimeElement {
 
 	private long pointerToElement;
-	
+
 	private native long getPointerToElement(byte[] element);
 	private native long deleteElement(long element);
 	private native byte[] getElement(long element);
-		
+
 	/**
 	 * This constructor accepts x value and DlogGroup.
 	 * If x is valid, sets it; else, throws exception 
@@ -28,7 +56,7 @@ public class ZpSafePrimeElementCryptoPp implements ZpSafePrimeElement{
 	 * @param zp
 	 * @throws IllegalArgumentException
 	 */
-	public ZpSafePrimeElementCryptoPp(BigInteger x, BigInteger p, Boolean bCheckMembership) throws IllegalArgumentException{
+	ZpSafePrimeElementCryptoPp(BigInteger x, BigInteger p, Boolean bCheckMembership) throws IllegalArgumentException{
 		if(bCheckMembership){
 			BigInteger q = p.subtract(BigInteger.ONE).divide(new BigInteger("2"));
 			//if the element is in the expected range, set it. else, throw exception
@@ -42,99 +70,109 @@ public class ZpSafePrimeElementCryptoPp implements ZpSafePrimeElement{
 			pointerToElement = getPointerToElement(x.toByteArray());
 		}
 	}
-	
+
 	/**
 	 * Constructor that gets DlogGroup and chooses random element with order q.
 	 * The algorithm is: 
-	 * input: modulus p of length len.
-     *  BigInteger x;
-     *  For i = 1 to 2*len:
-	 *  x <- {0, 1}^len
-	 *  if x<p return x^2
-     *  Return “fail"
+	 * input: modulus p 
+	 * choose a random element between 1 to p-1
+	 * calculate element^2 mod p
      *  
-	 * @param zp - dlogGroup
+	 * @param p - group modulus
 	 * @throws IllegalArgumentException
 	 */
-	public ZpSafePrimeElementCryptoPp(BigInteger p)throws IllegalArgumentException{
-		
-		int len = p.bitLength(); //get the security parameter for the algorithm
-		SecureRandom generator = new SecureRandom();
+	ZpSafePrimeElementCryptoPp(BigInteger p){
 		BigInteger element = null;
-		//find a number in the range [1, ..., p-1]
-		for(int i=0; i<(2*len); i++){
-			element = new BigInteger(len, generator); //get a number between 0 to 2^p
-			element = element.add(new BigInteger("1"));  //number in the range [1, ..., 2^p-1]
-			//if the number is in the range, calculate its power to get a number in the subgroup and set the power as the element. 
-			if (element.compareTo(p)<0){
-				element = element.pow(2).mod(p);
-				pointerToElement = getPointerToElement(element.toByteArray());
-				break;
-			}
-		}
-		//if the algorithm failed, write it to the log
-		if (element.compareTo(p.subtract(BigInteger.ONE))>0)
-			Logging.getLogger().log(Level.WARNING, "couldn't find a random element");
+		// find a number in the range [1, ..., p-1]
+		element = BigIntegers.createRandomInRange(BigInteger.ONE, p.subtract(BigInteger.ONE), new SecureRandom());
+			
+		//calculate its power to get a number in the subgroup and set the power as the element. 
+		element = element.pow(2).mod(p);
+		pointerToElement = getPointerToElement(element.toByteArray());
+					
 	}
-	
+
 	/*
 	 * Constructor that gets pointer to element and set it.
 	 * Only our inner functions uses this constructor to set an element. 
 	 * The long value is a pointer which excepted by our native functions.
 	 * @param ptr
 	 */
-	ZpSafePrimeElementCryptoPp(long ptr){
+	ZpSafePrimeElementCryptoPp(long ptr) {
 		pointerToElement = ptr;
 	}
-	
+
 	/*
 	 * return the pointer to the element
 	 * @return
 	 */
-	long getPointerToElement(){
+	long getPointerToElement() {
 		return pointerToElement;
 	}
-	
+
 	/**
 	 * @return BigInteger - value of the element
 	 */
-	public BigInteger getElementValue(){
+	public BigInteger getElementValue() {
 		return new BigInteger(getElement(pointerToElement));
 	}
 	
 	/**
+	 * This function checks if this element is the identity of the Dlog group.
+	 * @return <code>true</code> if this element is the identity of the group; <code>false</code> otherwise.
+	 */
+	public boolean isIdentity(){
+		
+		if (getElementValue().equals(BigInteger.ONE)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Checks if the given GroupElement is equal to this groupElement.
+	 * 
 	 * @param elementToCompare
 	 * @return true if the given element is equal to this element. false, otherwise.
 	 */
-	public boolean equals(Object elementToCompare){
-		if (!(elementToCompare instanceof ZpSafePrimeElementCryptoPp)){
+	public boolean equals(Object elementToCompare) {
+		if (!(elementToCompare instanceof ZpSafePrimeElementCryptoPp)) {
 			return false;
 		}
 		ZpSafePrimeElementCryptoPp element = (ZpSafePrimeElementCryptoPp) elementToCompare;
-		if (element.getElementValue().compareTo(getElementValue()) == 0){
+		if (element.getElementValue().compareTo(getElementValue()) == 0) {
 			return true;
 		}
 		return false;
 	}
-	
-	public void release(){
-		//delete from the dll the dynamic allocation of the Integer.
-		deleteElement(pointerToElement);
-		
+
+
+	@Override
+	public String toString() {
+		return "ZpSafePrimeElementCryptoPp [element value="	+  getElementValue() + "]";
 	}
+	
 	/*
 	 * delete the related Dlog element object
 	 */
 	protected void finalize() throws Throwable {
-		
-		//delete from the dll the dynamic allocation of the Integer.
+
+		// delete from the dll the dynamic allocation of the Integer.
 		deleteElement(pointerToElement);
-		
+
 		super.finalize();
 	}
-	
-	 static {
-	        System.loadLibrary("CryptoPPJavaInterface");
-	 }
+
+	static {
+		System.loadLibrary("CryptoPPJavaInterface");
+	}
+
+	/** 
+	 * @see edu.biu.scapi.primitives.dlog.GroupElement#generateSendableData()
+	 */
+	@Override
+	public GroupElementSendableData generateSendableData() {
+		return new ZpElementSendableData(getElementValue());
+	}
 }

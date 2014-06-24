@@ -1,13 +1,37 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.primitives.trapdoorPermutation;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidParameterSpecException;
 
-import edu.biu.scapi.exceptions.UnInitializedException;
+import edu.biu.scapi.exceptions.ScapiRuntimeException;
 
 /** 
  * This class implements some common functionality of trapdoor permutation.
@@ -15,65 +39,42 @@ import edu.biu.scapi.exceptions.UnInitializedException;
  */
 public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 	
-	protected AlgorithmParameterSpec params = null;    //algorithm parameters
-	protected PrivateKey privKey = null;               //private key
-	protected PublicKey pubKey = null;                 //public key
-	protected BigInteger modN = null;				   //modulus
-	protected boolean isInitialized = false;		   // indicates if this object is initialized or not. Set to false until init is called
+	protected PrivateKey privKey = null;        //private key
+	protected PublicKey pubKey = null;          //public key
+	protected BigInteger modulus = null;		//the modulus of the permutation. It must be such that modulus = p*q and p = q = 3 mod 4
+	protected boolean isKeySet = false;		    // indicates if this object is initialized or not. Set to false until init is called
 
 	
-	public void init(PublicKey publicKey, PrivateKey privateKey,
-			AlgorithmParameterSpec params) {
-		//sets the class members with the parameters
-		pubKey = publicKey;
-		privKey = privateKey;
-		this.params = params;
-		isInitialized = true; // mark this object as initialized
-	}
-
-	public void init(PublicKey publicKey, PrivateKey privateKey) throws InvalidKeyException {
+	public void setKey(PublicKey publicKey, PrivateKey privateKey) throws InvalidKeyException {
 		//sets the class members with the keys
 		pubKey = publicKey;
 		privKey = privateKey;
-		isInitialized = true; // mark this object as initialized
+		isKeySet = true; // mark this object as initialized
 	}
 
-	public void init(PublicKey publicKey) throws InvalidKeyException {
+	public void setKey(PublicKey publicKey) throws InvalidKeyException {
 		//sets the class member with the public key
 		pubKey = publicKey;
-		isInitialized = true; // mark this object as initialized
-	}
-	
-	public void init(AlgorithmParameterSpec params) throws InvalidParameterSpecException {
-		//sets the class member with the params
-		this.params = params; 
-		isInitialized = true; // mark this object as initialized
+		isKeySet = true; // mark this object as initialized
 	}
 	
 
-	public boolean IsInitialized() {
-		return isInitialized;
+	public boolean isKeySet() {
+		return isKeySet;
 	}
 
-	public AlgorithmParameterSpec getParams() throws UnInitializedException {
-		if (!IsInitialized()){
-			throw new UnInitializedException();
-		}
-		return params;
-	}
-
-	public PublicKey getPubKey() throws UnInitializedException {
-		if (!IsInitialized()){
-			throw new UnInitializedException();
+	public PublicKey getPubKey(){
+		if (!isKeySet()){
+			throw new IllegalStateException("public key isn't set");
 		}
 		return pubKey;
 	}
 	
-	public BigInteger getModulus() throws UnInitializedException{
-		if (!IsInitialized()){
-			throw new UnInitializedException();
+	public BigInteger getModulus(){
+		if (!isKeySet()){
+			throw new IllegalStateException("keys aren't set");
 		}
-		return modN;
+		return modulus;
 	}
 	
 	
@@ -86,6 +87,9 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 	 * and it will be easier with a byte than with a boolean.
 	 */
 	public byte hardCorePredicate(TPElement tpEl) {
+		if (!isKeySet()){
+			throw new IllegalStateException("keys aren't set");
+		}
 		/*
 		 *  We use this implementation both in RSA permutation and in Rabin permutation. 
 		 * Thus, We implement it in TrapdoorPermutationAbs and let derived classes override it if needed. 
@@ -105,6 +109,10 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 	 * @return byte[] - log (N) least significant bits
 	 */
 	public byte[] hardCoreFunction(TPElement tpEl) {
+		
+		if (!isKeySet()){
+			throw new IllegalStateException("keys aren't set");
+		}
 		/*
 		 * We use this implementation both in RSA permutation and in Rabin permutation. 
 		 * Thus, We implement it in TrapdoorPermutationAbs and let derived classes override it if needed. 
@@ -114,7 +122,7 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 		byte[] elementBytesValue = elementValue.toByteArray();
 		
 		//the number of bytes to get the log (N) least significant bits
-		double logBits = (modN.bitCount()/2);  //log N bits
+		double logBits = (modulus.bitCount()/2);  //log N bits
 		int logBytes = (int) Math.ceil(logBits/8); //log N bites in bytes
 		
 		//if the element length is less than log(N), the return byte[] should be all the element bytes
@@ -125,5 +133,20 @@ public abstract class TrapdoorPermutationAbs implements TrapdoorPermutation {
 		return leastSignificantBytes;
 	
 	}
+	
 
+	/** 
+	 * @see edu.biu.scapi.primitives.trapdoorPermutation.TrapdoorPermutation#generateTPElement(edu.biu.scapi.primitives.trapdoorPermutation.TPElementSendableData)
+	 * @deprecated As of SCAPI-V1-0-2-2 use reconstructTPElement(TPElementSendableData data)
+	 */
+	@Deprecated public TPElement generateTPElement(TPElementSendableData data){
+		return generateTPElement(data.getX());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public TPElement reconstructTPElement(TPElementSendableData data){
+		return generateTPElement(data.getX());
+	}
 }

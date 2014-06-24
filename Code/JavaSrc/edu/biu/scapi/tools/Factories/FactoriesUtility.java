@@ -1,3 +1,29 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.tools.Factories;
 
 import java.io.FileNotFoundException;
@@ -249,7 +275,7 @@ class FactoriesUtility {
 			for(int i=0;i<size;i++){
 				classes[i] = params[i].getClass();
 			}
-			//get the constructor that has <code>classes.length<code> number of arguments of string type  
+			//get the constructor that has <code>classes.length</code> number of arguments of string type  
 			Constructor constructor = algClass.getConstructor(classes);
 			
 			
@@ -383,8 +409,8 @@ class FactoriesUtility {
 		
 		/*
 		 * 
-		 * Retrieves the main algorithm from the String <code>algorithmCommand<code> and generates the string
-		 * <code>algorithmParamsAsOneString<code>.
+		 * Retrieves the main algorithm from the String <code>algorithmCommand</code> and generates the string
+		 * <code>algorithmParamsAsOneString</code>.
 		 */
 		void splitToNameAndParamsAsString()
 		{
@@ -418,7 +444,7 @@ class FactoriesUtility {
 		
 		/*
 		 * 
-		 * Retrieves the parameters of the algorithm from the String <code>algorithmParamsAsOneString<code>.
+		 * Retrieves the parameters of the algorithm from the String <code>algorithmParamsAsOneString</code>.
 		 * @return a vector holding each parameter
 		 */
 		Vector<String> getParsedParams(){

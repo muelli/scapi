@@ -1,10 +1,35 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.primitives.prf;
 
 import javax.crypto.IllegalBlockSizeException;
 
-
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
+import edu.biu.scapi.exceptions.NoMaxException;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
@@ -18,34 +43,41 @@ import edu.biu.scapi.tools.Factories.PrfFactory;
  */
 public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	
-	/**
-	 * Constructor that accepts a name of a prfVaryingIOLength to be the underlying prf.
-	 * @param prfVaringIOLengthName the underlying prf name
-	 * @throws FactoriesException
-	 */
-	public LubyRackoffPrpFromPrfVarying(String prfVaringIOLengthName) throws FactoriesException {
+	
+	public LubyRackoffPrpFromPrfVarying() throws FactoriesException {
 
-		//gets the requested prpVarying from the factory. 
-		prfVaryingIOLength = (PrfVaryingIOLength) PrfFactory.getInstance().getObject(prfVaringIOLengthName);
+		//default underlying PRF 
+		this(new IteratedPrfVarying());
 	}
 	
-	/**
-	 * Constructor that accepts a prfVaryingIOLength to be the underlying prf.
-	 * @param prfVaryingIOLength the underlying prf varying. MUST be initialized.
-	 * @throws UnInitializedException if the given prfVaryingIOLength is not initialized
-	 */
-	public LubyRackoffPrpFromPrfVarying(PrfVaryingIOLength prfVaryingIOLength) throws UnInitializedException{
 		
-		//first checks that the prp fixed is initialized.
-		if(prfVaryingIOLength.isInitialized()){
-			//assigns the prf varying input.
-			this.prfVaryingIOLength = prfVaryingIOLength;
+	/**
+	 * Constructor that accepts a name of a prfVaryingIOLength to be the underlying PRF.
+	 * @param prfVaryingIOLengthName the underlying PRF name 
+	 * @throws FactoriesException
+	 */
+	public LubyRackoffPrpFromPrfVarying(String prfVaryingIOLengthName) throws FactoriesException {
+
+		//gets the requested prpVarying and random from the factories. 
+		//then call the extended constructor
+		this((PrfVaryingIOLength) PrfFactory.getInstance().getObject(prfVaryingIOLengthName));
+	}
+	
+	
+	/**
+	 * Constructor that accepts a prfVaryingIOLength to be the underlying PRF.
+	 * @param prfVaryingIOLength the underlying PRF varying.
+	 */
+	public LubyRackoffPrpFromPrfVarying(PrfVaryingIOLength prfVaryingIOLength){
+		
+		if(prfVaryingIOLength instanceof LubyRackoffPrpFromPrfVarying){
+			throw new IllegalArgumentException("Cannot create a LubyRackoffPrpFromPrfVarying from a LubyRackoffPrpFromPrfVarying object!");
 		}
-		else{//the user must pass an initialized object, otherwise throws an exception
-			throw new UnInitializedException("The input variable must be initialized");
-		}
+		this.prfVaryingIOLength = prfVaryingIOLength;
 		
 	}
+	
+		
 	/** 
 	 * Computes the LubyRackoff permutation.
 	 * the algorithm pseudocode is: 
@@ -67,12 +99,10 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 * @param outBytes output bytes. The resulted bytes of compute
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff) throws IllegalBlockSizeException, UnInitializedException {
-		//checks that the object is initialized
-		if(!isInitialized()){
-			throw new UnInitializedException();
+	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offsets and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){
@@ -115,7 +145,7 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 			prfVaryingIOLength.computeBlock(rightCurrent, 0, rightCurrent.length, rightNext, 0, sideSize);
 			
 			//does Ri = Li-1 ^ PRF_VARY_INOUT(k,(Ri-1,i),L)  
-			//XOR rightNext (which is the resulting prf computation by now) with leftCurrent.
+			//XOR rightNext (which is the resulting PRF computation by now) with leftCurrent.
 			for(int j=0;j<sideSize;j++){
 				
 				rightNext[j] = (byte) (rightNext[j] ^ leftCurrent[j]); 
@@ -146,8 +176,8 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	/** 
 	 * Inverts LubyRackoff permutation using the given key. <p>
 	 * Since LubyRackoff permutation can also have varying input and output length 
-	 * (although the input and the output should be the same length), the common parameter <code>len<code> of the input and the output is needed.
-	 * LubyRackoff has a feistel structure and thus invert is possible even though the underlying prf is not invertible.
+	 * (although the input and the output should be the same length), the common parameter <code>len</code> of the input and the output is needed.
+	 * LubyRackoff has a feistel structure and thus invert is possible even though the underlying PRF is not invertible.
 	 * The pseudocode for inverting such a structure is the following
 	 * FOR i = 4 to 1
      * SET Ri-1 = Li 
@@ -161,12 +191,11 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 	 * @param outOff output offset in the outBytes array to put the result from
 	 * @param len the length of the input and the output
 	 * @throws IllegalBlockSizeException 
-	 * @throws UnInitializedException 
 	 */
 	public void invertBlock(byte[] inBytes, int inOff, byte[] outBytes,
-			int outOff, int len) throws IllegalBlockSizeException, UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+			int outOff, int len) throws IllegalBlockSizeException{
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+len > inBytes.length)){
@@ -207,7 +236,7 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 			prfVaryingIOLength.computeBlock(rightCurrent, 0, rightCurrent.length, leftCurrent, 0, sideSize);
 			
 			//does Li-1 = Ri ^ PRF_VARY_INOUT(k,(Ri-1,i),L)  
-			//XOR leftCurrent (which is the resulting prf computation by now) with rightNext.
+			//XOR leftCurrent (which is the resulting PRF computation by now) with rightNext.
 			for(int j=0;j<sideSize;j++){
 				
 				leftCurrent[j] = (byte) (leftCurrent[j] ^ rightNext[j]); 
@@ -243,10 +272,10 @@ public final class LubyRackoffPrpFromPrfVarying extends PrpFromPrfVarying {
 
 	/**
 	 * This object has varying input/output lengths, so this function shouldn't be called.
-	 * @throws IllegalStateException
+	 * @throws NoMaxException
 	 */
-	public int getBlockSize() {
-		throw new IllegalStateException("prp varying has no fixed block size");
+	public int getBlockSize() throws NoMaxException {
+		throw new NoMaxException("prp varying has no fixed block size");
 	}
 
 

@@ -1,19 +1,28 @@
-/** 
- * class CommunicationSetup:
- * 
- * An application requesting from CommunicationSetup to prepare for communication needs to provide the following information as input:
- *   •	The list of parties to connect to. As a convention, we will set the first party in the list to be the requesting party, that is, 
- * 		the party represented by the application. 
- *   •	The security level required. We assume the same security level for all connections for a given protocol. This may change.
- * 		We define four levels of security: a) plain, b) encrypted, c) authenticated d) encrypted and authenticated.
- *   •	Which type of connecting success is required.
- *   •	Which Key Exchange Protocol to use.
- *   •	What encryption and/or mac algorithm to use.
- *   •	A time-out specifying how long to wait for connections to be established and secured.
- * 
- * CommunicationSetup implements the org.apache.commons.exec.TimeoutObserver interface. 
- * This interface supplies a mechanism for notifying classes that a timeout has arrived. 
- */
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
 
 package edu.biu.scapi.comm;
 
@@ -24,7 +33,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -36,7 +44,33 @@ import edu.biu.scapi.generals.Logging;
 
 
 
-
+/** 
+ * The CommunicationSetup class is the heart of the Communications Layer. The Communications Layer package is a tool used by a client that is interested in setting up connections 
+ * between itself and other parties. As such, this layer does not initiate any independent tasks, but the opposite. Given a list of parties, it attempts to set connections to them 
+ * according to parameters given by the calling application. If succeeds, it returns these connections so that the calling client can send and receive data over them.<p>
+ * An application written for running an MPC protocol can be the client of the Communications Layer. An example of a possible usage follows:<p>
+ * <ul>
+ * <li>Instantiate an object of type CommunicationSetup.</li>
+ * <li>Call the prepareForCommunication method of that object with a list of parties to connect to and other setup parameters. (prepareForCommunication is the only public method of this class).</li>
+ * <li>Get from prepareForCommunication a container holding all ready connections.</li>
+ * <li>Start the MPC protocol.</li> 
+ * <li>Call the send and receive methods of the ready connections as needed by the MPC.</li>
+ * </ul>
+ * The application may be interested in putting each connection in a different thread but it is up to the application to do so and not the responsibility of the Communications Layer. This provides more flexibility of use.
+ * The Communications Layer encapsulates the stage of connecting to other parties. In actuality, the connection to other parties is performed in a few steps, which are not visible to the outside user.
+ * These steps are:<p>
+ * <ul> 
+ * <li>create an actual TCP connection with each party</li>
+ * <li>exchange keys between my party and other parties</li>
+ * <li>run a protocol that checks (for different types of required success) if all the necessary connections were set between my party and other parties.</li>
+ * </ul>
+ * In the end, the Communications Layer via the CommunicationSetup class returns to the calling application, a set of connected and ready channels to be used throughout a cryptographic protocol.<br/>
+ * From this point onwards, the application can send and receive messages in each connection as required by the protocol.<p>
+ * CommunicationSetup implements the org.apache.commons.exec.TimeoutObserver interface. 
+ * This interface supplies a mechanism for notifying classes that a timeout has arrived. 
+ * 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University
+ */
 
 public class CommunicationSetup implements TimeoutObserver{
 	private boolean bTimedOut = false;
@@ -45,43 +79,37 @@ public class CommunicationSetup implements TimeoutObserver{
 	private EstablishedConnections establishedConnections;
 	private KeyExchangeProtocol keyExchangeProtocol;
 	private ConnectivitySuccessVerifier connectivitySuccessVerifier;
-	private SecurityLevel securityLevel;
 	private ListeningThread listeningThread;
 	private Vector<SecuringConnectionThread> threadsVector;
 	private Map<InetSocketAddress,KeyExchangeOutput> keyExchangeMap;
-	
+	private Watchdog watchdog;
 	
 	
 	
 	/**
-	 * 
+	 * Create a CommunicationSetup instance which is the heart of the Communication Layer. 
 	 */
 	public CommunicationSetup() {
 		
 		
 	}
-
-	/** 
-	 * The main function of the class. This function is also the only public function in the class. An application that wants to use
-	 * the communication layer will call this function in order to prepare for communication after providing the required parameters. 
-	 * This function initiates the creation of the final actual socket connections between the parties. If this function succeeds, the 
+	
+	/**  
+	 * This function is package private and is called by the public prepareFunctions. It requests a KeyExchangeProtocol that has not been implemented yet.
+	 * It initiates the creation of the final actual socket connections between the parties. If this function succeeds, the 
 	 * application may use the send and receive functions of the created channels to pass messages.
-	 * @param listOfParties the original list of parties to connect to
+	 * 
+	 * @param listOfParties the original list of parties to connect to. As a convention, we will set the <B>first party</B> in the list to be the <B>requesting party</B>, that is, 
+	 * 	 					the party represented by the application.
 	 * @param keyExchange the key exchange algorithm protocol to use after a channel is connected
-	 * @param securityLevel the required security level for all the connections. E.g Plain, encrypted, authenticated or secured
 	 * @param successLevel the ConnectivitySuccessVerifier algorithm to use
 	 * @param timeOut the maximum amount of time we allow for the connection stage
-	 * @return true if the success function has succeeded and false otherwise
+	 * @return a set of connected and ready channels to be used by the parties to send and receive data, it may be null if none succeeded
 	 */
-	public Map<InetSocketAddress, Channel> prepareForCommunication(List<Party> listOfParties,
-			KeyExchangeProtocol keyExchange, SecurityLevel securityLevel,
-			ConnectivitySuccessVerifier successLevel, long timeOut) {
-		
-		
+	Map<InetSocketAddress, Channel> prepareForCommunication(List<Party> listOfParties, KeyExchangeProtocol keyExchange,	ConnectivitySuccessVerifier successLevel, long timeOut) {		
 		//set parameters
 		partiesList = listOfParties;
 		keyExchangeProtocol = keyExchange;
-		this.securityLevel = securityLevel;
 		connectivitySuccessVerifier = successLevel;
 		
 		establishedConnections = new EstablishedConnections();
@@ -91,7 +119,7 @@ public class CommunicationSetup implements TimeoutObserver{
 		keyExchangeMap = new HashMap<InetSocketAddress,KeyExchangeOutput>();
 		
 		//start the watch dog with timeout
-		Watchdog watchdog = new Watchdog(timeOut);
+		watchdog = new Watchdog(timeOut);
 		//add this instance as the observer in order to receive the event of time out.
 		watchdog.addTimeoutObserver(this);
 		
@@ -113,6 +141,11 @@ public class CommunicationSetup implements TimeoutObserver{
 		//run success function
 		if(!runSuccessAlgo()){
 			//remove connections from the list of established connections
+			//Eventually, when different ConnectivitySuccessVerifiers are implemented there might be an impact what happens to the connections that did succeed.
+			//For example, assume that only 80% of the connections requested were established but the ConnectivitySuccessVerifier specified requires 100%. Then, obviously
+			//the function didn't succeed and null should be returned. However, it would be a pity to let go (delete and remove) the 80% of connections that did succeed.
+			//It may be possible (and this will depend on the requirements of the ConnectivitySuccessVerifier) to keep the already established connections and only try 
+			//to establish what is missing. In some other cases it will be necessary to start everything over form the beginning. As a conclusion, this is left for future implementation.
 			return null;
 		}
 		
@@ -123,7 +156,7 @@ public class CommunicationSetup implements TimeoutObserver{
 		establishedConnections.enableNagle(enableNagle);
 		
 		//update the security level for each connection
-		setSecurityLevel();
+		//setSecurityLevel();
 		
 		//return the map of channels held in the established connection object.
 		return establishedConnections.getConnections();
@@ -131,26 +164,61 @@ public class CommunicationSetup implements TimeoutObserver{
 	}
 	
 	/**
+	 * This function is package private and is called by the public prepareFunctions. It requests a KeyExchangeProtocol that has not been implemented yet.
+	 * Does the same as the above prepareForCommunication function only sets the flag of enableNagle first.
 	 * 
-	 * Does the same as the other prepareForCommunication function only sets the flag of enableNagle first.
-	 * 
-	 * @param enableNagle a flag indicating weather or not to use the nagle optimization algorithm 
-	 * @return
+	 * @param enableNagle a flag indicating weather or not to use the Nagle optimization algorithm 
+	 * @return a set of connected and ready channels to be used by the parties to send and receive data, it may be null if none succeeded
 	 */
-	public Map<InetSocketAddress, Channel> prepareForCommunication(List<Party> listOfParties,
-			KeyExchangeProtocol keyExchange, SecurityLevel securityLevel,
-			ConnectivitySuccessVerifier successLevel, long timeOut, boolean enableNagle) {
+	Map<InetSocketAddress, Channel> prepareForCommunication(List<Party> listOfParties, KeyExchangeProtocol keyExchange, ConnectivitySuccessVerifier successLevel, 
+															long timeOut, boolean enableNagle) {
 		
 		this.enableNagle = enableNagle;
 		
-		return prepareForCommunication(listOfParties, keyExchange, securityLevel, successLevel, timeOut);
+		return prepareForCommunication(listOfParties, keyExchange, successLevel, timeOut);
 	}
 
+	/** 
+	 * An application that wants to use the communication layer will call this function in order to prepare for communication after providing the required parameters. 
+	 * This function initiates the creation of the final actual socket connections between the parties. If this function succeeds, the 
+	 * application may use the send and receive functions of the created channels to pass messages.<p> 
+	 * Note that using this function you can choose to use or not to use the Nagle algorithm.
+	 * 
+	 * @param listOfParties the original list of parties to connect to. As a convention, we will set the <B>first party</B> in the list to be the <B>requesting party</B>, that is, 
+	 * 	 					the party represented by the application.
+	 * @param successLevel the ConnectivitySuccessVerifier algorithm to use
+	 * @param timeOut the maximum amount of time we allow for the connection stage
+	 * @param enableNagle a flag indicating weather or not to use the Nagle optimization algorithm. For Cryptographic algorithms is better to have it disabled
+	 * @return a set of connected and ready channels to be used by the parties to send and receive data, it may be null if none succeeded
+	 */
+	public Map<InetSocketAddress, Channel> prepareForCommunication(List<Party> listOfParties,ConnectivitySuccessVerifier successLevel, 
+																	long timeOut, boolean enableNagle) {
+				
+		KeyExchangeProtocol keyExchange = new KeyExchangeProtocol();
+		return prepareForCommunication(listOfParties, keyExchange, successLevel, timeOut, enableNagle);
+	}
+	
+	/**
+	 * An application that wants to use the communication layer will call this function in order to prepare for communication after providing the required parameters. 
+	 * This function initiates the creation of the final actual socket connections between the parties. If this function succeeds, the 
+	 * application may use the send and receive functions of the created channels to pass messages.<p> 
+	 * In this function, Nagle’s algorithm is disabled; for cryptographic protocols this is typically much better.
+	 *  
+	 * @param listOfParties the original list of parties to connect to. As a convention, we will set the <B>first party</B> in the list to be the <B>requesting party</B>, that is, 
+	 * 	 					the party represented by the application.
+	 * @param successLevel the ConnectivitySuccessVerifier algorithm to use
+	 * @param timeOut the maximum amount of time we allow for the connection stage
+	 * @return a set of connected and ready channels to be used by the parties to send and receive data, it may be null if none succeeded
+	 */
+	public Map<InetSocketAddress, Channel> prepareForCommunication(List<Party> listOfParties,ConnectivitySuccessVerifier successLevel, long timeOut){
+		KeyExchangeProtocol keyExchange = new KeyExchangeProtocol();
+		return prepareForCommunication(listOfParties, keyExchange, successLevel, timeOut);
+	}
 
 	/**
 	 * 
 	 * Using the SecuringConnectionThread and the ListeningThread we connect the parties via sockets.
-	 * 								   We either connect by initiating a connection or by listening to incoming connection requests.
+	 * We either connect by initiating a connection or by listening to incoming connection requests.
 	 * @throws DuplicatePartyException This exception is for the case where there are two parties in the list of parties with the same ip+port
 	 */
 	private void establishAndSecureConnections() throws DuplicatePartyException {
@@ -162,7 +230,7 @@ public class CommunicationSetup implements TimeoutObserver{
 		int numOfIncomingConnections = 0;
 		
 		//temp map
-		Map<InetAddress, Vector<SecuringConnectionThread>> ListeningThreadMap = new HashMap<InetAddress, Vector<SecuringConnectionThread>>();
+		Map<InetAddress, Vector<SecuringConnectionThread>> listeningThreadMap = new HashMap<InetAddress, Vector<SecuringConnectionThread>>();
 		
 		//the first party is me. Other parties identity will be compared with this party
 		if(itr.hasNext()){
@@ -205,22 +273,22 @@ public class CommunicationSetup implements TimeoutObserver{
 			else{ //DOWN connection
 				
 				numOfIncomingConnections = downConnection(party,
-						numOfIncomingConnections, ListeningThreadMap,
+						numOfIncomingConnections, listeningThreadMap,
 						channel, keyExchangeOutput);
 				
 			}
 		}
 		
-		if(ListeningThreadMap.size()>0){//there are down connections need to listen to connections using the listeningThread
+		if(listeningThreadMap.size()>0){//there are down connections need to listen to connections using the listeningThread
 			//send information to the listening thread
-			listeningThread = new ListeningThread(ListeningThreadMap, firstParty.getPort(), numOfIncomingConnections);
+			listeningThread = new ListeningThread(listeningThreadMap, firstParty, numOfIncomingConnections);
 			listeningThread.start();
 		}
 		
 	}
 
 	/**
-	 * 
+	 * Connect to a party with ID less than mine.
 	 * @param party
 	 * @param numOfIncomingConnections
 	 * @param listeningThreadMap
@@ -268,7 +336,7 @@ public class CommunicationSetup implements TimeoutObserver{
 	}
 
 	/**
-	 * 
+	 * Connect to a party with ID more than mine.
 	 * @param party
 	 * @param channel
 	 * @param keyExchangeOutput
@@ -289,15 +357,14 @@ public class CommunicationSetup implements TimeoutObserver{
 		scThread.start();
 	}
 
-	/**
-	 *  
-	 * This function goal is to serve as a barrier. It is called from the prepareForCommunication function. The idea
-	 * 							is to let all the threads finish running before proceeding. 
+	/** 
+	 * This function serves as a barrier. It is called from the prepareForCommunication function. The idea
+	 * is to let all the threads finish running before proceeding. 
 	 */ 
 	private void verifyConnectingStatus() {
-
+		boolean allConnected = false;
 		//while the thread has not been stopped and not all the channels are connected
-		while(!bTimedOut && !establishedConnections.areAllConnected()){
+		while(!bTimedOut && !(allConnected = establishedConnections.areAllConnected())){
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -305,106 +372,29 @@ public class CommunicationSetup implements TimeoutObserver{
 				Logging.getLogger().log(Level.FINEST, e.toString());
 			}
 		}
+		//If we already know that all the connectios were established we can stop the watchdog.
+		if(allConnected)
+			watchdog.stop();
 	}
 
 	/** 
 	 * 
 	 * Runs the success algorithm. 
-	 * @return true if the connections in the connections in the establishedConnections and possibly connections of the other parties 
-	 * 			 has succeeded in terms of the success algorithm. Otherwise, false. If the success has failed all the connections of the 
-	 * 			 establishedConnections are removed
+	 * @return true if the level of connectivity specified by the {@link ConnectivitySuccessVerifier} was reached 
+	 * 		   false otherwise
 	 */
 	private boolean runSuccessAlgo() {
 
 		//call the relevant success algorithm
 		return connectivitySuccessVerifier.hasSucceded(establishedConnections, partiesList);
 	}
-
-	/**
-	 * 
-	 * In this function we decorate the channels to suit the requested security level. If the required security level
-	 * 					  is plain, no decoration is needed. For authenticated we decorate the channel by an authenticated channel. for encrypted, we 
-	 * 					  decorate with encrypted channel. For secured, we decorated with both authenticated and encrypted channel.
-	 * 
-	 *  Note:			  The decorated channel has a different pointer in memory, thus we need to put the newly decorated channel in the map
-	 *  				  and removing the plain channel from the map. Since we iterate on the map, we cannot remove and add in the middle of 
-	 *  				  iteration ( we would get the ConcurrentModificationException exception) and thus we create a temporary map with the decorated channels and at the end clear the map and add all
-	 *  				  the decorated channels.
-	 */
-	private void setSecurityLevel() {
-		
-		
-		if(securityLevel==SecurityLevel.PLAIN)//If it is plain there is nothing to decorate
-			return;
-		else{//Set the security level only if the security level is not plain. 
-			
-			//create a temp map since if we change the main map in the middle of iterations we will get the exception ConcurrentModificationException 
-			Map<InetSocketAddress,Channel> tempConnectionsMap = new HashMap<InetSocketAddress,Channel>();  
-			
-		
-			InetSocketAddress localInetSocketAddress = null;
-			Set<InetSocketAddress> set = establishedConnections.getConnections().keySet();
 	
-			//go over the addresses of the established connections map
-		    Iterator<InetSocketAddress> itr = set.iterator();
-		    while (itr.hasNext()) {
-		    	
-		    	//get the channel's address
-		    	localInetSocketAddress = itr.next();
-		    	
-		    	//get the channel from the collection
-		    	Channel ch = establishedConnections.getConnection(localInetSocketAddress);
-		    	
-		    	//remove the channel and save it for decoration
-		    	//Channel ch = establishedConnections.removeConnection(localInetSocketAddress);
-		    	
-		    	//get the keyExchange output
-		    	KeyExchangeOutput keyExchangeOutput = keyExchangeMap.get(localInetSocketAddress) ;
-		    	
-		    	//decorate the channel
-		    	switch(securityLevel){
-		    		case ENCRYPTED :{
-		    			
-		    			//create an encrypted channel
-		    			EncryptedChannel encChannel = new EncryptedChannel(ch, keyExchangeOutput.getEncKey());
-		    			//establishedConnections.addConnection(encChannel, localInetSocketAddress);
-		    			tempConnectionsMap.put(localInetSocketAddress,encChannel);
-		    			break;
-		    		}
-		    		case AUTHENTICATED : {
-		    			
-		    			//create an authenticated channel
-		    			AuthenticatedChannel authenChannel = new AuthenticatedChannel(ch, keyExchangeOutput.getMacKey());
-		    			//establishedConnections.addConnection(authenChannel, localInetSocketAddress);
-		    			tempConnectionsMap.put(localInetSocketAddress, authenChannel);
-		    			break;
-		    		}
-		    		case SECURE : {
-		    			
-		    			//decorate with authentication and then with encryption - order is important for security
-		    			AuthenticatedChannel authenChannel = new AuthenticatedChannel(ch, keyExchangeOutput.getMacKey());
-		    			EncryptedChannel secureChannel = new EncryptedChannel(authenChannel, keyExchangeOutput.getEncKey());
-		    			
-		    			//establishedConnections.addConnection(secureChannel, localInetSocketAddress);
-		    			tempConnectionsMap.put(localInetSocketAddress, secureChannel);
-		    			break;
-		    			
-		    		}
-		    	}		    		
-		    }
-		    
-		    establishedConnections.getConnections().clear();
-		    establishedConnections.getConnections().putAll(tempConnectionsMap);
-		}	
-	}
-
 	/**
-	 * An event called if the timeout has passed. This is called by the infrastructure of the watchdog and the fact that
-	 * 					this class is also an observer.
+	 * This function is called by the infrastructure of the Watchdog if the previously set timeout has passed. (Do not call this function).
 	 */
 	public void timeoutOccured(Watchdog w) {
 
-		Logging.getLogger().log(Level.INFO, "Timeout accured");
+		Logging.getLogger().log(Level.INFO, "Timeout occured");
 		
 		//timeout has passed set the flag
 		bTimedOut = true;
@@ -425,8 +415,4 @@ public class CommunicationSetup implements TimeoutObserver{
 			listeningThread.stopConnecting();
 	}
 	
-	public Map<InetSocketAddress, Channel> getConnections(){
-		return establishedConnections.getConnections();
-		
-	}
 }

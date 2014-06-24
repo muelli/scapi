@@ -1,3 +1,29 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.primitives.prf;
 
 import java.util.logging.Level;
@@ -5,51 +31,48 @@ import java.util.logging.Level;
 import javax.crypto.IllegalBlockSizeException;
 
 import edu.biu.scapi.exceptions.FactoriesException;
-import edu.biu.scapi.exceptions.UnInitializedException;
+import edu.biu.scapi.exceptions.NoMaxException;
 import edu.biu.scapi.generals.Logging;
+import edu.biu.scapi.primitives.prf.bc.BcHMAC;
 import edu.biu.scapi.tools.Factories.PrfFactory;
 
 /** 
  * This class is one implementation of pseudorandom function with varying IO, based on any prf with varying input length. <p>
- * The implementation is based on several calles to the prf-based and concatenation of the results.
+ * The implementation is based on several calls to the underlying Prf and concatenation of the results.
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  */
-public class IteratedPrfVarying extends
-		PrfVaryingFromPrfVaryingInput {
+public class IteratedPrfVarying extends PrfVaryingFromPrfVaryingInput {
+	
+	/**
+	 * Default constructor that uses HMac.
+	 * @throws FactoriesException 
+	 */
+	public IteratedPrfVarying() throws FactoriesException{
+		this(new BcHMAC());
+	}
 	
 	/** 
 	 * Constructor that accepts the name of the underlying prfVaryingInputLength.
 	 * @param prfVaryingInputName  the prf to use. 
 	 * @throws FactoriesException 
 	 */
-	public IteratedPrfVarying(String prfVaringInputName) throws FactoriesException {
-		/*
-		 * The initialization of this prf is in the function init of PrfVaryingFromPrfVaryingInput.
-		 */
-		//get the requested prfVaringInput from the factory. 
-		prfVaryingInputLength = (PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaringInputName);
+	public IteratedPrfVarying(String prfVaryingInputName) throws FactoriesException {	
+		//get the requested prfVaryingInput from the factory. 
+		this((PrfVaryingInputLength) PrfFactory.getInstance().getObject(prfVaryingInputName));
 	}
 	
 	/**
 	 * Constructor that accepts the underlying PrfVaryingInputLength.
-	 * @param prfVaryingInput the underlying prf varying. MUST be initialized, and there is no need to call init.
-	 * @throws UnInitializedException if the given prfVaryingInput is not initialized
+	 * @param prfVaryingInput the underlying prf varying.
 	 */
-	public IteratedPrfVarying(PrfVaryingInputLength prfVaryingInput) throws UnInitializedException {
-		
-		//first checks that the prf is initialized.
-		if(prfVaryingInput.isInitialized()){
-			//assigns the prf varying input.
-			prfVaryingInputLength = prfVaryingInput;
-		}
-		else{//the user must pass an initialized object, otherwise throws an exception
-			throw new UnInitializedException("The input variable must be initialized");
-		}
+	public IteratedPrfVarying(PrfVaryingInputLength prfVaryingInput){
+		//assigns the prf varying input.
+		prfVaryingInputLength = prfVaryingInput;
 	}
 
 	/** 
-	 * @return the algorithm name - SC_PRF_VARY_INOUT.
+	 * @return the algorithm name - ITERATED_PRF_VARY_INOUT.
 	 */
 	public String getAlgorithmName() {
 		
@@ -58,15 +81,14 @@ public class IteratedPrfVarying extends
 
 	/** 
 	 * Not relevant - the input and the output do not have a fixed size.
-	 * @throws IllegalStateException
+	 * @throws NoMaxException
 	 */
-	public int getBlockSize() {
+	public int getBlockSize() throws NoMaxException {
 		
-		throw new IllegalStateException("prp varying has no fixed block size");
+		throw new NoMaxException("prp varying has no fixed block size");
 	}
 
 
-	
 	/**
 	 * Computes the iterated permutation. <p>
 	 * 
@@ -82,17 +104,15 @@ public class IteratedPrfVarying extends
 	 * 
 	 * This function is necessary since this prf has variable input and output length.
 	 * @param inBytes - input bytes to compute
-	 * @param inLen - the length of the input array
+	 * @param inLen - the length of the input array in bytes
 	 * @param inOff - input offset in the inBytes array
 	 * @param outBytes - output bytes. The resulted bytes of compute.
 	 * @param outOff - output offset in the outBytes array to put the result from
-	 * @param outLen - the length of the output array
-	 * @throws UnInitializedException 
+	 * @param outLen - the length of the output array in bytes
 	 */
-	public void computeBlock(byte[] inBytes, int inOff, int inLen, 
-			byte[] outBytes, int outOff, int outLen) throws UnInitializedException {
-		if(!isInitialized()){
-			throw new UnInitializedException();
+	public void computeBlock(byte[] inBytes, int inOff, int inLen, byte[] outBytes, int outOff, int outLen) {
+		if (!isKeySet()){
+			throw new IllegalStateException("secret key isn't set");
 		}
 		// checks that the offset and length are correct 
 		if ((inOff > inBytes.length) || (inOff+inLen > inBytes.length)){

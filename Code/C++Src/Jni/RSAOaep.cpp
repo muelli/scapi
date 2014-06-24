@@ -1,3 +1,27 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
 #include "stdafx.h"
 #include "RSAOaep.h"
 #include "cryptlib.h"
@@ -5,6 +29,7 @@
 #include <osrng.h>
 #include <rsa.h>
 #include <assert.h>
+#include <iostream>
 
 using namespace std;
 using namespace CryptoPP;
@@ -136,6 +161,7 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_midLayer_asymmetricCrypto_encryp
 		return NULL;
 
 	size_t msgLength = env->GetArrayLength(msg);
+	
 	if(msgLength > encryptorLocal->FixedMaxPlaintextLength() )
 		return NULL;
 	
@@ -152,8 +178,11 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_midLayer_asymmetricCrypto_encryp
 	// Actually perform encryption
 	AutoSeededRandomPool randPool;
 	encryptorLocal->Encrypt( randPool, plaintext, msgLength, ciphertext );
-
-	return (jbyteArray)ciphertext;
+	
+	//create a JNI byte array from the ciphertext
+	jbyteArray retCipher= env->NewByteArray(cipherSize);
+	env->SetByteArrayRegion(retCipher, 0, cipherSize, (jbyte*)ciphertext);
+	return retCipher;
 }
 
 /*
@@ -190,27 +219,22 @@ JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_midLayer_asymmetricCrypto_encryp
     if(result.messageLength >  decryptorLocal->MaxPlaintextLength( cipherLength ) )
 		return NULL;
    
-	return (jbyteArray)recovered;
+	//create a JNI byte array from the ciphertext
+	jbyteArray retRecovered= env->NewByteArray(result.messageLength);
+	env->SetByteArrayRegion(retRecovered, 0, result.messageLength, (jbyte*)recovered);
+	return retRecovered;
 
 }
 
 
-JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_midLayer_asymmetricCrypto_encryption_CryptoPPRSAOaep_getRSAModulus
-  (JNIEnv *env, jobject, jlong encryptor){
+JNIEXPORT jint JNICALL Java_edu_biu_scapi_midLayer_asymmetricCrypto_encryption_CryptoPPRSAOaep_getPlaintextLength
+  (JNIEnv *, jobject, jlong encryptor){
 
-	RSAES_OAEP_SHA_Encryptor * encryptorLocal = (RSAES_OAEP_SHA_Encryptor * )encryptor;
-
-	Integer mod = encryptorLocal->GetKey().GetModulus();
-	Utils utils;
-	return utils.CryptoPPIntegerTojbyteArray (env, mod);
+	  return ((RSAES_OAEP_SHA_Encryptor * )encryptor)->FixedMaxPlaintextLength();
 }
 
-
-JNIEXPORT jbyteArray JNICALL Java_edu_biu_scapi_midLayer_asymmetricCrypto_encryption_CryptoPPRSAOaep_getPubExponent
-  (JNIEnv *env, jobject, jlong encryptor) {
-	RSAES_OAEP_SHA_Encryptor * encryptorLocal = (RSAES_OAEP_SHA_Encryptor * )encryptor;
-	Integer pubExp = encryptorLocal->GetKey().GetPublicExponent();
-	Utils utils;
-	return utils.CryptoPPIntegerTojbyteArray (env, pubExp);
+JNIEXPORT void JNICALL Java_edu_biu_scapi_midLayer_asymmetricCrypto_encryption_CryptoPPRSAOaep_deleteRSA
+  (JNIEnv *, jobject, jlong encryptor, jlong decryptor){
+	  delete (RSAES_OAEP_SHA_Encryptor *) encryptor;
+	  delete (RSAES_OAEP_SHA_Decryptor *) decryptor;
 }
-

@@ -1,18 +1,30 @@
 /**
- * The CommunicationSetup class holds a container of type EstablishedConnections that keeps track of the connections (channels) 
- * as they are being established. This container has a number of channels that can be in different states.
- * EstablishedConnections has regular operations of containers such as add and remove. It also has logical operations such as areAllConnected.
- * At the end of the “prepare for communication” method, the calling application receives a map of connections in the EstablishedConnections 
- * object held by the CommunicationSetup. At this stage, all the channels in EstablishedConnections object need to be in READY state. 
- * It is possible that this object will be null if the “prepare for communication” did not succeed. 
- * The key to the map is an object of type InetSocketAddress that holds the IP and the port. Since the IP and port are unique, 
- * they define a unique InetSocketAddress that can serve as a key to the map.   
- */
-package edu.biu.scapi.comm;
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
 
-import edu.biu.scapi.comm.Channel;
-import edu.biu.scapi.exceptions.InvalidChannel;
-import edu.biu.scapi.generals.Logging;
+
+package edu.biu.scapi.comm;
 
 import java.net.InetSocketAddress;
 import java.net.SocketException;
@@ -22,19 +34,32 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
+import edu.biu.scapi.exceptions.InvalidChannel;
+import edu.biu.scapi.exceptions.InvalidChannelException;
+import edu.biu.scapi.generals.Logging;
+
 
 /** 
- * @author LabTest
+ * 
+ * The CommunicationSetup class holds a container of type EstablishedConnections that keeps track of the connections (channels) 
+ * as they are being established. This container has a number of channels that can be in different states.
+ * EstablishedConnections has regular operations of containers such as add and remove. It also has logical operations such as areAllConnected.
+ * At the end of the “prepare for communication” method, the calling application receives a map of connections in the EstablishedConnections 
+ * object held by the CommunicationSetup. At this stage, all the channels in EstablishedConnections object need to be in READY state. 
+ * It is possible that this object will be null if the “prepare for communication” did not succeed. 
+ * The key to the map is an object of type InetSocketAddress that holds the IP and the port. Since the IP and port are unique, 
+ * they define a unique InetSocketAddress that can serve as a key to the map.   
+
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
   */
-public class EstablishedConnections {
+class EstablishedConnections {
 	private Map<InetSocketAddress,Channel> connectionsMap;
-	//private Set<Channel> channels;
 
 	
 	/**
 	 * 
 	 */
-	public EstablishedConnections() {
+	EstablishedConnections() {
 		//initiate the map
 		connectionsMap = new HashMap<InetSocketAddress,Channel>();
 	}
@@ -44,7 +69,7 @@ public class EstablishedConnections {
 	/**
 	 * @return the connections
 	 */
-	public Map<InetSocketAddress,Channel> getConnections() {
+	Map<InetSocketAddress,Channel> getConnections() {
 		return connectionsMap;
 	}
 	
@@ -115,7 +140,7 @@ public class EstablishedConnections {
 	 * @param state the state of the channel to update to.
 	 * @throws InvalidChannel 
 	 */
-	void updateConnectionState(InetSocketAddress address, PlainChannel.State state) throws InvalidChannel {
+	void updateConnectionState(InetSocketAddress address, PlainChannel.State state) throws InvalidChannelException {
 
 		//get the channel from the map
 		Channel channel = connectionsMap.get(address);
@@ -126,7 +151,7 @@ public class EstablishedConnections {
 			plainChannel.setState(state);
 		}
 		else
-			throw new InvalidChannel("The related channel must be a plain channel");
+			throw new InvalidChannelException("The related channel must be a plain channel");
 	}
 	
 	/**

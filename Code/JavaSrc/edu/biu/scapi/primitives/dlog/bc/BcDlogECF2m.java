@@ -1,24 +1,47 @@
+/**
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+* Copyright (c) 2012 - SCAPI (http://crypto.biu.ac.il/scapi)
+* This file is part of the SCAPI project.
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+* and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+* FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+* We request that any publication and/or code referring to and/or based on SCAPI contain an appropriate citation to SCAPI, including a reference to
+* http://crypto.biu.ac.il/SCAPI.
+* 
+* SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
+* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+* 
+*/
+
+
 package edu.biu.scapi.primitives.dlog.bc;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Properties;
-import java.util.logging.Level;
 
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.util.encoders.Hex;
 
-
-import edu.biu.scapi.exceptions.UnInitializedException;
-import edu.biu.scapi.generals.Logging;
 import edu.biu.scapi.primitives.dlog.DlogECF2m;
 import edu.biu.scapi.primitives.dlog.ECElement;
+import edu.biu.scapi.primitives.dlog.ECF2mUtility;
 import edu.biu.scapi.primitives.dlog.GroupElement;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mGroupParams;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mKoblitz;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mPentanomialBasis;
 import edu.biu.scapi.primitives.dlog.groupParams.ECF2mTrinomialBasis;
+import edu.biu.scapi.primitives.dlog.groupParams.GroupParams;
 import edu.biu.scapi.securityLevel.DDH;
 
 /**
@@ -28,132 +51,172 @@ import edu.biu.scapi.securityLevel.DDH;
  */
 public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m, DDH{
 
+	private ECF2mUtility util;
+	
 	/**
-	 * Initialize this DlogGroup with one of NIST recommended elliptic curve
+	 * Default constructor. Initializes this object with B-163 NIST curve.
+	 */
+	public BcDlogECF2m() throws IOException{
+		this("B-163");
+	}
+	
+	public BcDlogECF2m(String fileName, String curveName) throws IOException{
+		super(fileName, curveName);
+	}
+	
+	/**
+	 * Constructor that initialize this DlogGroup with one of NIST recommended elliptic curve
 	 * @param curveName - name of NIST curve to initialized
+	 * @throws IOException 
 	 * @throws IllegalAccessException
 	 */
-	public void init(String curveName) throws IllegalArgumentException{
-		
-		try {
-			Properties ecProperties;
-		
-			ecProperties = getProperties(PROPERTIES_FILES_PATH); //get properties object containing the curve data
-		
-			//checks that the curveName is in the file 
-			if(!ecProperties.containsKey(curveName)) { 
-				throw new IllegalArgumentException("no such NIST elliptic curve"); 
-			} 
-			this.curveName = curveName;
-			//check that the given curve is in the field that matches the group
-			if (!curveName.startsWith("B-") && !curveName.startsWith("K-")){
-				throw new IllegalArgumentException("curveName is not a curve over F2m field and doesn't match this DlogGroup type"); 
-			}
-			isInitialized = true; 
-			doInit(ecProperties, curveName);  // set the data and initialize the curve
-			
-			
-		} catch (IOException e) {
-			Logging.getLogger().log(Level.WARNING, "error while loading the NIST elliptic curves file");
-		}
+	public BcDlogECF2m(String curveName) throws IllegalArgumentException, IOException{
+		this(NISTEC_PROPERTIES_FILE, curveName);
 	}
 	
 	
 	/*
 	 * Extracts the parameters of the curve from the properties object and initialize the groupParams, 
-	 * generator and the underlying curve
+	 * generator and the underlying curve. 
 	 * @param ecProperties - properties object contains the curve file data
-	 * @param curveName - the curve name as it called in the file
-	 * @throws UnInitializedException 
+	 * @param curveName - the curve name as it is called in the file
 	 */
 	protected void doInit(Properties ecProperties, String curveName) {
-		//get the curve parameters
-		int m = Integer.parseInt(ecProperties.getProperty(curveName));
-		int k = Integer.parseInt(ecProperties.getProperty(curveName+"k"));
-		String k2Property = ecProperties.getProperty(curveName+"k2");
-		String k3Property = ecProperties.getProperty(curveName+"k3");
-		BigInteger a = new BigInteger(ecProperties.getProperty(curveName+"a"));
-		BigInteger b = new BigInteger(1,Hex.decode(ecProperties.getProperty(curveName+"b")));
-		BigInteger x = new BigInteger(1,Hex.decode(ecProperties.getProperty(curveName+"x")));
-		BigInteger y = new BigInteger(1,Hex.decode(ecProperties.getProperty(curveName+"y")));
-		BigInteger q = new BigInteger(ecProperties.getProperty(curveName+"r"));
-		int k2=0;
-		int k3=0;
-		boolean trinomial; //sign which basis the curve use
-		
-		if (k2Property==null && k3Property==null){ //for trinomial basis
-			groupParams = new ECF2mTrinomialBasis(q, x, y, m, k, a, b);
-			trinomial = true;
-		
-		} else { //pentanomial basis
-			k2 = Integer.parseInt(k2Property);
-			k3 = Integer.parseInt(k3Property);
-			groupParams = new ECF2mPentanomialBasis(q, x, y, m, k, k2, k3, a, b);
-			trinomial = false;
-		} 
-		BigInteger h = null;
-		//koblitz curve
-		if (curveName.contains("K-")){
-			
-			if (a.equals(BigInteger.ONE)){
-				h = new BigInteger("2");
-			} else {
-				h = new BigInteger("4");
-			}
-			groupParams = new ECF2mKoblitz((ECF2mGroupParams) groupParams, q, h);
+		//Delegate the work on the params to the ECF2mUtility since this work does not depend on BC library. 
+		util = new ECF2mUtility();
+		groupParams = util.checkAndCreateInitParams(ecProperties, curveName);
+		//Create a BC underlying curve:
+		createUnderlyingCurveAndGenerator();
+	}
+	
+	private void createUnderlyingCurveAndGenerator(){
+		BigInteger x;
+		BigInteger y;
+		GroupParams params = groupParams;
+		if (groupParams instanceof ECF2mKoblitz){
+			params = ((ECF2mKoblitz) groupParams).getCurve();
+		}
+		if(params instanceof ECF2mTrinomialBasis){
+			ECF2mTrinomialBasis triParams = (ECF2mTrinomialBasis)params;		
+			curve = new ECCurve.F2m(triParams.getM(), triParams.getK1(), triParams.getA(), triParams.getB(), triParams.getQ(), triParams.getCofactor());
+			x = triParams.getXg();
+			y = triParams.getYg();
+		}else{
+			//we assume that if it's not trinomial then it's pentanomial. We do not check.
+			ECF2mPentanomialBasis pentaParams = (ECF2mPentanomialBasis) params;
+			curve = new ECCurve.F2m(pentaParams.getM(), pentaParams.getK1(), pentaParams.getK2(), pentaParams.getK3(),  pentaParams.getA(), pentaParams.getB(), pentaParams.getQ(), pentaParams.getCofactor());		
+			x = pentaParams.getXg();
+			y = pentaParams.getYg();
 		}
 		
-		//create the curve of BC
-		if (trinomial == true){
-			curve = new ECCurve.F2m(m, k, a, b, q, h);
-		} else {
-			curve = new ECCurve.F2m(m, k, k2, k3, a, b, q, h);
-		}
-		
-		//create the generator
-		try {
-			generator = new ECF2mPointBc(x,y, this);
-		} catch (UnInitializedException e) {
-			//creation of the generator is done after initialization of the DlogGroup so this exception shouldn't occur
-		}	
+		//Create the generator
+		//Assume that (x,y) are the coordinates of a point that is indeed a generator but check that (x,y) are the coordinates of a point.
+		generator = new ECF2mPointBc(x, y, this, true);
 	}
 	
 	/**
+	 * 
 	 * @return the type of the group - ECF2m
 	 */
 	public String getGroupType(){
-		return "elliptic curve over F2m";
+		return util.getGroupType();
 	}
 	
 	/**
-	 * Creates a random member of this Dlog group
-	 * @return the random element
-	 * @throws UnInitializedException 
+	 * Checks if the given element is a member of this Dlog group
+	 * @param element 
+	 * @return true if the given element is member of this group; false, otherwise.
+	 * @throws IllegalArgumentException
 	 */
-	public GroupElement getRandomElement() throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
+	public boolean isMember(GroupElement element) throws IllegalArgumentException{
+		
+		if (!(element instanceof ECF2mPointBc)){
+			throw new IllegalArgumentException("element type doesn't match the group type");
 		}
-		return new ECF2mPointBc(this);
+		
+		ECF2mPointBc point = (ECF2mPointBc) element;
+		
+		//infinity point is a valid member
+		if (point.isInfinity()){
+			return true;
+		}
+		
+		// A point (x, y) is a member of a Dlog group with prime order q over an Elliptic Curve if it meets the following two conditions:
+		// 1)	P = (x,y) is a point in the Elliptic curve, i.e (x,y) is a solution of the curve’s equation.
+		// 2)	P = (x,y) is a point in the q-order group which is a sub-group of the Elliptic Curve.
+		// those two checks is done in two steps:
+		// 1.	Checking that the point is on the curve, performed by checkCurveMembership
+		// 2.	Checking that the point is in the Dlog group,performed by checkSubGroupMembership
+
+		boolean valid = util.checkCurveMembership((ECF2mGroupParams) groupParams, point.getX(), point.getY());
+		valid = valid && util.checkSubGroupMembership(this, point);
+		
+		return valid;
+			
 	}
 	
 	/**
-	 * Creates a point over F2m field with the given parameters
-	 * @return the created point
-	 * @throws UnInitializedException 
+	 * @deprecated As of SCAPI-V2_0_0 use generateElment(boolean bCheckMembership, BigInteger...values)
 	 */
-	public ECElement getElement(BigInteger x, BigInteger y) throws UnInitializedException{
-		if (!isInitialized()){
-			throw new UnInitializedException();
+	@Deprecated public ECElement generateElement(BigInteger x, BigInteger y) throws IllegalArgumentException{
+		//Creates element with the given values.
+		ECF2mPointBc point =  new ECF2mPointBc(x, y, this,true);
+		
+		//if the element was created, it is a point on the curve.
+		//checks if the point is in the sub-group, too.
+		boolean valid = util.checkSubGroupMembership(this, point);
+		
+		//if the point is not in the sub-group, throw exception.
+		if (valid == false){
+			throw new IllegalArgumentException("Could not generate the element. The given (x, y) is not a point in this Dlog group");
 		}
-		return new ECF2mPointBc(x, y, this);
+		
+		return point;
 	}
 	
+	
+
+	/* (non-Javadoc)
+	 * @see edu.biu.scapi.primitives.dlog.DlogGroup#generateElement(boolean, java.math.BigInteger[])
+	 */
+	@Override
+	public GroupElement generateElement(boolean bCheckMembership, BigInteger... values) throws IllegalArgumentException {
+		if(values.length != 2){
+			throw new IllegalArgumentException("To generate an ECElement you should pass the x and y coordinates of the point");
+		}
+		//Creates element with the given values.
+		ECF2mPointBc point =  new ECF2mPointBc(values[0], values[1], this, bCheckMembership);
+
+		if(bCheckMembership){
+			//if the element was created, it is a point on the curve.
+			//checks if the point is in the sub-group, too.
+			boolean valid = util.checkSubGroupMembership(this, point);
+	
+			//if the point is not in the sub-group, throw exception.
+			if (valid == false){
+				throw new IllegalArgumentException("Could not generate the element. The given (x, y) is not a point in this Dlog group");
+			}
+		}
+		return point;
+	}
+	
+		
 	/**
 	 * Creates ECPoint.F2m with the given parameters
 	 */
 	protected GroupElement createPoint(ECPoint result) {
 		return new ECF2mPointBc(result);
+	}
+	
+	/**
+	 * Check if the element is valid to this elliptic curve group
+	 */
+	protected boolean checkInstance(GroupElement element){
+		if (element instanceof ECF2mPointBc){
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**
@@ -165,36 +228,61 @@ public class BcDlogECF2m extends BcAdapterDlogEC implements DlogECF2m, DDH{
 	}
 	
 	/**
-	 * Converts a byte array to an ECF2mPointBc.
+	 * Encode a byte array to an ECF2mPointBc. Some constraints on the byte array are necessary so that it maps into an element of this group.
+	 * <B>Currently we don't support this conversion.</B> It will be implemented in the future.Meanwhile we return null.
 	 * @param binaryString the byte array to convert
-	 * @return the created group Element
-	 * @throws UnInitializedException 
+	 * @return null
 	 */
-	public GroupElement convertByteArrayToGroupElement(byte[] binaryString) throws UnInitializedException{
-		if (binaryString.length >= ((ECF2mGroupParams) groupParams).getM()){
-			throw new IllegalArgumentException("String is too long. It has to be of length less than log p");
-		}
-		BigInteger  x = new BigInteger(binaryString);
-		GroupElement point = null;
-		try {
-			point = new ECF2mPointBc(x, this);
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("The given string is not a valid point to this curve");
-		} 
-		return point;
+	public GroupElement encodeByteArrayToGroupElement(byte[] binaryString){
+		//currently we don't support this conversion. 
+		//will be implemented in the future.
+		return null;
 	}
 	
 	/**
-	 * Convert a ECF2mPointBc to a byte array.
+	 * Decode an ECF2mPointBc that was obtained through the encodeByteArrayToGroupElement function to the original byte array.
+	 * <B>Currently we don't support this conversion.</B> It will be implemented in the future.Meanwhile we return null.
 	 * @param groupElement the element to convert
 	 * @return the created byte array
 	 */
-	public byte[] convertGroupElementToByteArray(GroupElement groupElement){
+	public byte[] decodeGroupElementToByteArray(GroupElement groupElement){
 		if (!(groupElement instanceof ECF2mPointBc)){
 			throw new IllegalArgumentException("element type doesn't match the group type");
 		}
-		return ((ECElement) groupElement).getX().toByteArray();
+		//currently we don't support this conversion. 
+		//will be implemented in the future.
+		return null;
 	}
-	
+
+	/**
+	 * This function returns the value k which is the maximum length of a string to be converted to a Group Element of this group.<p>
+	 * If a string exceeds the k length it cannot be converted
+	 * <B>Currently we do not have a proper algorithm for this therefore we return 0.</B>
+	 * 
+	 * @return k the maximum length of a string to be converted to a Group Element of this group
+	 */
+	public int getMaxLengthOfByteArrayForEncoding() {
+		//Currently we do not have a proper algorithm for this.
+		//Return 0
+		return 0;
+	}
+
+	/**
+	 * This function maps a group element of this dlog group to a byte array.<p>
+	 * This function does not have an inverse function, that is, it is not possible to re-construct the original group element from the resulting byte array. 
+	 * @param groupElement the element to convert
+	 * @return the byte array representation
+	 */
+	public byte[] mapAnyGroupElementToByteArray(GroupElement groupElement) {
+		//This function simply returns an array which is the result of concatenating 
+		//the byte array representation of x with the byte array representation of y.
+		if (!(groupElement instanceof ECF2mPointBc)) {
+			throw new IllegalArgumentException("element type doesn't match the group type");
+		}
+		ECF2mPointBc point = (ECF2mPointBc) groupElement;
+		//The actual work is implemented in ECF2mUtility since it is independent of the underlying library (BC, Miracl, or other)
+		//If we ever decide to change the implementation there will only one place to change it.
+		return util.mapAnyGroupElementToByteArray(point.getX(), point.getY());
+	}
 
 }
