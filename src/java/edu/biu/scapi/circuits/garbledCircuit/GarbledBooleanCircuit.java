@@ -167,14 +167,14 @@ public interface GarbledBooleanCircuit {
      * and needs the translation table as well to complete the construction of the circuit.
      * @return the translation table of the circuit.  
      */
-	public HashMap<Integer, Byte> getTranslationTable();
+	public HashMap<Integer, Boolean> getTranslationTable();
   
 	/**
 	 * Sets the translation table of the circuit. <p>
 	 * This is necessary when the garbled tables where set and we would like to compute the circuit later on. 
 	 * @param translationTable This value should match the garbled tables of the circuit.
 	 */
-	public void setTranslationTable(HashMap<Integer, Byte> translationTable);
+	public void setTranslationTable(HashMap<Integer, Boolean> translationTable);
 	
 	/**
 	 * Returns the input wires' indices of the given party.

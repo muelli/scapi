@@ -133,7 +133,7 @@ class FreeXORGarbledBooleanCircuitUtil implements CircuitTypeUtil {
 		Map<Integer, SecretKey[]> allWireValues = new HashMap<Integer, SecretKey[]>();
 		Map<Integer, SecretKey[]> allInputWireValues = null;
 		Map<Integer, SecretKey[]> allOutputWireValues = null;
-		HashMap<Integer, Byte> translationTable = new HashMap<Integer, Byte>();
+		HashMap<Integer, Boolean> translationTable = new HashMap<>();
 		Gate[] ungarbledGates = ungarbledCircuit.getGates();
 		byte[] globalKeyOffset = null;
 		
@@ -172,7 +172,7 @@ class FreeXORGarbledBooleanCircuitUtil implements CircuitTypeUtil {
 		allWireValues.putAll(allInputWireValues);
 			
 		allOutputWireValues = new HashMap<Integer, SecretKey[]>();
-		translationTable = new HashMap<Integer, Byte>();
+		translationTable = new HashMap<>();
 			
 		//Create the keys of the non-input wires.
 		createNonInputWireValues(ungarbledGates, allWireValues, globalKeyOffset);
@@ -185,7 +185,7 @@ class FreeXORGarbledBooleanCircuitUtil implements CircuitTypeUtil {
 			
 			//Signal bit is the last bit of k0.
 			byte[] k0 = allWireValues.get(n)[0].getEncoded();
-			translationTable.put(n, (byte) (k0[k0.length-1] & 1));			
+			translationTable.put(n, ((k0[k0.length-1] & 1) == 1) ? true: false);			
 		}
 		
 		//now that we have all keys, we can create the garbled tables.
@@ -456,7 +456,7 @@ class FreeXORGarbledBooleanCircuitUtil implements CircuitTypeUtil {
 	private CircuitCreationValues sampleSeedKeys(BooleanCircuit ungarbledCircuit, PseudorandomGenerator prg, byte[] seed, Map<Integer, SecretKey[]> allWireValues) throws InvalidKeyException {
 		Map<Integer, SecretKey[]> allInputWireValues = new HashMap<Integer, SecretKey[]>();
 		Map<Integer, SecretKey[]> outputGarbledValues = new HashMap<Integer, SecretKey[]>();
-		HashMap<Integer, Byte> translationTable = new HashMap<Integer, Byte>();
+		HashMap<Integer, Boolean> translationTable = new HashMap<>();
 		
 		//Sets the given seed as the prg key.
 		prg.setKey(new SecretKeySpec(seed, ""));
@@ -504,7 +504,7 @@ class FreeXORGarbledBooleanCircuitUtil implements CircuitTypeUtil {
 			
 			//Signal bit is the last bit of k0.
 			byte[] k0 = allWireValues.get(n)[0].getEncoded();
-			translationTable.put(n, (byte) (k0[k0.length-1] & 1));	
+			translationTable.put(n, ((k0[k0.length-1] & 1) == 1 ? true: false));	
 		}
 		
 		return new CircuitCreationValues(allInputWireValues, outputGarbledValues, translationTable);

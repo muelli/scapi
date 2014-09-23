@@ -163,7 +163,7 @@ class StandardRowReductionGarbledGate extends StandardGarbledGate{
 			}
 			kdfBytes.putInt(gateNumber);
 			for (int i = 0; i < numberOfInputs; i++) {
-				kdfBytes.putInt(computedWires.get(inputWireIndices[i]).getSignalBit());
+				kdfBytes.putInt(computedWires.get(inputWireIndices[i]).getSignalBit() ? 1 : 0);
 			}
 			wireValue = kdf.deriveKey(kdfBytes.array(), 0, mes.getCipherSize()*numberOfInputs +16, mes.getCipherSize());
 			

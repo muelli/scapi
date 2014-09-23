@@ -107,7 +107,7 @@ class StandardGarbledBooleanCircuitUtil implements CircuitTypeUtil{
 		Map<Integer, SecretKey[]> allWireValues = new HashMap<Integer, SecretKey[]>();
 		Map<Integer, SecretKey[]> allInputWireValues = null;
 		Map<Integer, SecretKey[]> allOutputWireValues = null;
-		HashMap<Integer, Byte> translationTable = new HashMap<Integer, Byte>();
+		HashMap<Integer, Boolean> translationTable = new HashMap<Integer, Boolean>();
 		Gate[] ungarbledGates = ungarbledCircuit.getGates();
 		
 		//Sample the input keys.
@@ -192,7 +192,7 @@ class StandardGarbledBooleanCircuitUtil implements CircuitTypeUtil{
 	 * @param translationTable A map to fill with the output wires' signal bits.
 	 */
 	private void fillOutputWiresValues(int[] outputWireIndices, Map<Integer, SecretKey[]> allOutputWireValues, Map<Integer, SecretKey[]> allWireValues,
-			Map<Integer, Byte> translationTable) {
+			HashMap<Integer, Boolean> translationTable) {
 		/*
 		 * Add the output wire indices' signal bits to the translation table. For a full understanding on why we chose to 
 		 * implement the translation table this way, see the documentation to the translationTable field of
@@ -201,7 +201,7 @@ class StandardGarbledBooleanCircuitUtil implements CircuitTypeUtil{
 		for (int n : outputWireIndices) {
 			//Signal bit is the last bit of k0.
 			byte[] k0 = allWireValues.get(n)[0].getEncoded();
-			translationTable.put(n, (byte) (k0[k0.length-1] & 1));	
+			translationTable.put(n, (k0[k0.length-1] & 1) == 0 ? false : true);	
 			
 			//Add both values of output wire to the allOutputWireValues Map that was passed as a parameter.
 			allOutputWireValues.put(n, allWireValues.get(n));
@@ -279,7 +279,7 @@ class StandardGarbledBooleanCircuitUtil implements CircuitTypeUtil{
 		Map<Integer, SecretKey[]> allInputWireValues = new HashMap<Integer, SecretKey[]>();
 		Map<Integer, SecretKey[]> outputGarbledValues = new HashMap<Integer, SecretKey[]>();
 		
-		HashMap<Integer, Byte> translationTable = new HashMap<Integer, Byte>();
+		HashMap<Integer, Boolean> translationTable = new HashMap<>();
 		
 		//Sets the given seed as the prg key.
 		prg.setKey(new SecretKeySpec(seed, ""));

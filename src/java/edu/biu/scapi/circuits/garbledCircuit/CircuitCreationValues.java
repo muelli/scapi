@@ -41,7 +41,7 @@ import javax.crypto.SecretKey;
 public class CircuitCreationValues {
 	private Map<Integer, SecretKey[]> allInputWireValues;
 	private Map<Integer, SecretKey[]> allOutputWireValues;
-	private HashMap<Integer, Byte> translationTable;
+	private HashMap<Integer, Boolean> translationTable;
 	
 	/**
 	 * Sets the given arguments.
@@ -50,7 +50,7 @@ public class CircuitCreationValues {
 	 * @param translationTable Signal bits of all output wires.
 	 */
 	public CircuitCreationValues(Map<Integer, SecretKey[]> allInputWireValues, Map<Integer, SecretKey[]> allOutputWireValues, 
-			HashMap<Integer, Byte> translationTable) {
+			HashMap<Integer, Boolean> translationTable) {
 		this.allInputWireValues = allInputWireValues;
 		this.allOutputWireValues = allOutputWireValues;
 		this.translationTable = translationTable;
@@ -64,7 +64,7 @@ public class CircuitCreationValues {
 		return allOutputWireValues;
 	}
 
-	public HashMap<Integer, Byte> getTranslationTable() {
+	public HashMap<Integer, Boolean> getTranslationTable() {
 		return translationTable;
 	}
 }

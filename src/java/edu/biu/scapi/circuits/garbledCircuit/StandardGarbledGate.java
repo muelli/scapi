@@ -135,7 +135,7 @@ class StandardGarbledGate implements GarbledGate {
 		  		/*
 	    		 * The signal bits tell us the position on the garbled truth table for the given row of an ungarbled truth table.
 	    		 * The signal bit of wire i is the last bit of wire i's k0. 
-	    		 * See Fairplay — A Secure Two-Party Computation System by Dahlia Malkhi, Noam Nisan1, Benny Pinkas, and Yaron Sella for more on signal bits.
+	    		 * See Fairplay ï¿½ A Secure Two-Party Computation System by Dahlia Malkhi, Noam Nisan1, Benny Pinkas, and Yaron Sella for more on signal bits.
 	    		 */
 		  		byte[] k0 = allWireValues.get(inputWireIndices[i])[0].getEncoded();
 		  		byte signalBit =  (byte) (k0[k0.length-1] & 1);
@@ -216,7 +216,7 @@ class StandardGarbledGate implements GarbledGate {
 			keysToDecryptOn[i] = wire.getValueAndSignalBit();
 		  
 			// Put the signal bits of the input wire values into the tweak.
-			tweak.putInt(wire.getSignalBit());
+			tweak.putInt(wire.getSignalBit() ? 1 : 0);
 		}
 		
 		mes.setKey(mes.generateMultiKey(keysToDecryptOn));
@@ -244,8 +244,10 @@ class StandardGarbledGate implements GarbledGate {
 	protected int getIndexToDecrypt(Map<Integer, GarbledWire> computedWires) {
 		int garbledTableIndex = 0;
 		int numberOfInputs = inputWireIndices.length;
-		for (int i = numberOfInputs - 1, j = 0; j < numberOfInputs; i--, j++) {
-			garbledTableIndex += computedWires.get(inputWireIndices[i]).getSignalBit() * Math.pow(2, j);
+		for (int i = numberOfInputs - 1, j = 0; j < numberOfInputs; i--, j++) {			
+			final GarbledWire garbledWire = computedWires.get(inputWireIndices[i]);
+			assert (garbledWire != null);
+			garbledTableIndex += (garbledWire.getSignalBit() ? 1 : 0) * Math.pow(2, j);
 		}
 		return garbledTableIndex;
 	}

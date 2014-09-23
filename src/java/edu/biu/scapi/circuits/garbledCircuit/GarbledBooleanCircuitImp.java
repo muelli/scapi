@@ -192,8 +192,10 @@ public class GarbledBooleanCircuitImp extends GarbledBooleanCircuitAbs implement
   		return garbledOutput;
   	}	
   	
-  	byte getKeySignalBit(SecretKey key){
-  		return (byte) ((key.getEncoded()[key.getEncoded().length - 1] & 1) == 0 ? 0 : 1);
+  	boolean getKeySignalBit(SecretKey key){
+  		final byte[] encoded = key.getEncoded();
+		final int length = encoded.length;
+		return ((encoded[length - 1] & 1) == 0) ? false : true;
   	}
   	
   	@Override

@@ -134,7 +134,7 @@ public class PartyTwo {
 		if (!(msg instanceof HashMap<?, ?>)){
 			throw new CheatAttemptException("the received message should be an instance of HashMap<Integer, Byte>");
 		}
-		HashMap<Integer, Byte> translationTable = (HashMap<Integer, Byte>) msg;
+		HashMap<Integer, Boolean> translationTable = (HashMap<Integer, Boolean>) msg;
 			
 		//Set garbled tables and translation table to the circuit.
 		circuit.setGarbledTables(garbledTables);

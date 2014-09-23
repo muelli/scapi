@@ -487,9 +487,9 @@ public class GarbledBooleanCircuitExtendedImp implements GarbledBooleanCircuitEx
 		//Check that the output wires translate correctly. 
 	    //key contains both possible values for every output wire of the inner circuit. 
 		//We check the output wire values and make sure that the 0-wire translates to a 0 and that the 1 wire translates to a 1.
-  		Map<Integer, Byte> translationTable = gbc.getTranslationTable();
+  		Map<Integer, Boolean> translationTable = gbc.getTranslationTable();
   		SecretKey zeroValue, oneValue;
-  		byte signalBit, permutationBitOnZeroWire, permutationBitOnOneWire, translatedZeroValue, translatedOneValue;
+  		boolean signalBit, permutationBitOnZeroWire, permutationBitOnOneWire, translatedZeroValue, translatedOneValue;
   		
   		for (int w : gbc.getOutputWireIndices()) {
   			zeroValue = keys.get(w)[0];
@@ -498,9 +498,9 @@ public class GarbledBooleanCircuitExtendedImp implements GarbledBooleanCircuitEx
   			signalBit = translationTable.get(w);
   			permutationBitOnZeroWire = gbc.getKeySignalBit(zeroValue);
   			permutationBitOnOneWire = gbc.getKeySignalBit(oneValue);;
-  			translatedZeroValue = (byte) (signalBit ^ permutationBitOnZeroWire);
-  			translatedOneValue = (byte) (signalBit ^ permutationBitOnOneWire);
-  			if (translatedZeroValue != 0 || translatedOneValue != 1) {
+  			translatedZeroValue = signalBit ^ permutationBitOnZeroWire;
+  			translatedOneValue = signalBit ^ permutationBitOnOneWire;
+  			if (translatedZeroValue != false || translatedOneValue != true) {
   				return false;
   			}
   		}
@@ -686,6 +686,18 @@ public class GarbledBooleanCircuitExtendedImp implements GarbledBooleanCircuitEx
   		}
 		return true;
 	}
+
+	
+	protected boolean[] bytesToBools(byte...bs) {
+		boolean[] bools = new boolean[bs.length];
+		int i = 0;
+		for (byte b : bs) {
+			assert (b == 0 || b == 1);
+			bools[i++] = b == 0 ? false : true;
+		}
+		return bools;
+		
+	}
 	
 	@Override
 	public byte[] getHashedCircuit(CryptographicHash hash){
@@ -694,19 +706,21 @@ public class GarbledBooleanCircuitExtendedImp implements GarbledBooleanCircuitEx
 		
 		//Update the hash with each gate's garbled table.
 		for (int i=0; i<tables.length; i++){
-			if (tables[i] != null){
-				hash.update(tables[i], 0, tables[i].length);
+			final byte[] tableEntry = tables[i];
+			if (tableEntry != null){
+				boolean[] booleanTable = bytesToBools(tableEntry);
+				hash.update(tableEntry, 0, tableEntry.length);
 			}
 		}
 		
-		Byte signalbit;
-		byte[] signalBitArray;
+		boolean signalbit;
+		boolean[] signalBitArray;
 		//Update the hash with each signal bit.
 		for (Object index : gbc.getOutputWireIndices()){
 			signalbit = gbc.getTranslationTable().get(index);
-			signalBitArray = new byte[1];
+			signalBitArray = new boolean[1];
 			signalBitArray[0] = signalbit;
-			hash.update(signalBitArray, 0, 1);
+			hash.update(boolstoBytes(signalBitArray), 0, 1);
 			
 		}
 		
@@ -717,6 +731,15 @@ public class GarbledBooleanCircuitExtendedImp implements GarbledBooleanCircuitEx
 		return output;
 	}
 	
+	private byte[] boolstoBytes(boolean[] signalBitArray) {
+		byte[] bs = new byte[signalBitArray.length];
+		int i  =0;
+		for (boolean b : signalBitArray) {
+			bs[i++] = (byte) (b ? 1 : 0);
+		}
+		return bs;
+	}
+
 	@Override
 	public boolean verifyHashedCircuit(CryptographicHash hash, byte[] hashedCircuit){
 		//Get the result of the hash function on the exist garbled tables and translation table.
@@ -892,13 +915,13 @@ public class GarbledBooleanCircuitExtendedImp implements GarbledBooleanCircuitEx
 	}
 
 	@Override
-	public HashMap<Integer, Byte> getTranslationTable() {
+	public HashMap<Integer, Boolean> getTranslationTable() {
 		
 		return gbc.getTranslationTable();
 	}
 
 	@Override
-	public void setTranslationTable(HashMap<Integer, Byte> translationTable) {
+	public void setTranslationTable(HashMap<Integer, Boolean> translationTable) {
 		gbc.setTranslationTable(translationTable);
 		
 	}

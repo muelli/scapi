@@ -72,7 +72,7 @@ abstract class GarbledBooleanCircuitAbs implements GarbledBooleanCircuit{
 	 * privacy and/or correctness will not be preserved. Therefore, we only reveal the signal bit, and the other
 	 * possible value for the wire is not stored on the translation table.
 	 */
-	protected HashMap<Integer, Byte> translationTable;
+	protected HashMap<Integer, Boolean> translationTable;
   	
 	
 	//A map that is used during computation to map a {@code GarbledWire}'s index to the computed and set {@code GarbledWire}.
@@ -107,7 +107,7 @@ abstract class GarbledBooleanCircuitAbs implements GarbledBooleanCircuit{
   	 * @param key to get the signal bit of.
   	 * @return the signal bit of the given key.
   	 */
-  	abstract byte getKeySignalBit(SecretKey key);
+  	abstract boolean getKeySignalBit(SecretKey key);
   	
   	@Override
   	public boolean verify(Map<Integer, SecretKey[]> allInputWireValues){
@@ -124,12 +124,12 @@ abstract class GarbledBooleanCircuitAbs implements GarbledBooleanCircuit{
   			SecretKey zeroValue = outputValues.get(w)[0];
   			SecretKey oneValue = outputValues.get(w)[1];
 
-  			byte signalBit = translationTable.get(w);
-  			byte permutationBitOnZeroWire = getKeySignalBit(zeroValue);
-  			byte permutationBitOnOneWire = getKeySignalBit(oneValue);
-  			byte translatedZeroValue = (byte) (signalBit ^ permutationBitOnZeroWire);
-  			byte translatedOneValue = (byte) (signalBit ^ permutationBitOnOneWire);
-  			if (translatedZeroValue != 0 || translatedOneValue != 1) {
+  			boolean signalBit = translationTable.get(w);
+  			boolean permutationBitOnZeroWire = getKeySignalBit(zeroValue);
+  			boolean permutationBitOnOneWire = getKeySignalBit(oneValue);
+  			boolean translatedZeroValue = (signalBit ^ permutationBitOnZeroWire);
+  			boolean translatedOneValue = (signalBit ^ permutationBitOnOneWire);
+  			if (translatedZeroValue != Boolean.FALSE || translatedOneValue != Boolean.TRUE) {
   				verified = false;
   			}
   		}
@@ -140,7 +140,7 @@ abstract class GarbledBooleanCircuitAbs implements GarbledBooleanCircuit{
   	public Map<Integer, Wire> translate(Map<Integer, GarbledWire> garbledOutput){
   		
 		Map<Integer, Wire> translatedOutput = new HashMap<Integer, Wire>();
-		byte signalBit, permutationBitOnWire, value;
+		boolean signalBit, permutationBitOnWire, value;
 		
 	    //Go through the output wires and translate it using the translation table.
 	    for (int w : outputWireIndices) {
@@ -148,7 +148,7 @@ abstract class GarbledBooleanCircuitAbs implements GarbledBooleanCircuit{
 	    	permutationBitOnWire = garbledOutput.get(w).getSignalBit();
 	      
 	    	//Calculate the resulting value.
-	    	value = (byte) (signalBit ^ permutationBitOnWire);
+	    	value = signalBit ^ permutationBitOnWire;
 	    	
 	    	//Hold the result as a wire.
 	    	Wire translated = new Wire(value);
@@ -227,13 +227,13 @@ abstract class GarbledBooleanCircuitAbs implements GarbledBooleanCircuit{
 	}
   	
 	@Override
-	public HashMap<Integer, Byte> getTranslationTable(){
+	public HashMap<Integer, Boolean> getTranslationTable(){
 	  
 		return translationTable;
 	}
   
 	@Override
-	public void setTranslationTable(HashMap<Integer, Byte> translationTable){
+	public void setTranslationTable(HashMap<Integer, Boolean> translationTable){
 		
 		this.translationTable = translationTable;
 	}

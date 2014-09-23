@@ -77,13 +77,15 @@ public class GarbledWire implements Serializable{
 	 * We are not returning the initial signal bit that determined which bit to put on each wire as this information cannot be
 	 * recovered (if it could be, we would be able to determine the actual value of a garbled wire and thus it would not be garbled.)<p>
 	 * 
-	 * See <i>Fairplay — A Secure Two-Party Computation System</i> by Dahlia Malkhi, Noam Nisan, Benny Pinkas, and Yaron Sella. 
+	 * See <i>Fairplay ï¿½ A Secure Two-Party Computation System</i> by Dahlia Malkhi, Noam Nisan, Benny Pinkas, and Yaron Sella. 
 	 * Section 4.2 describes in more detail how the signal bit works. </p>
 	 * 
 	 * @return the signal bit. <p>
   	 */
-	public byte getSignalBit() {
-		byte signalBit = (byte) ((valueAndSignalBit.getEncoded()[valueAndSignalBit.getEncoded().length - 1] & 1) == 0 ? 0 : 1);
+	public boolean getSignalBit() {
+		final byte[] encoded = valueAndSignalBit.getEncoded();
+		final byte lastByte = encoded[encoded.length - 1];
+		final boolean signalBit = (lastByte & 1) == 0 ? Boolean.FALSE  : Boolean.TRUE;
 		return signalBit;
 	}
 
