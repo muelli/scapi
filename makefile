@@ -44,6 +44,15 @@ ifeq ($(uname_S),Darwin)
 	OPENSSL_CONFIGURE=./Configure darwin64-x86_64-cc
 	LIBTOOL=glibtool
 	JNI_PATH=DYLD_LIBRARY_PATH
+	OSX_VERSION=$(shell sw_vers -productVersion)
+	ifneq (,$(findstring 10.9,$(OSX_VERSION)))
+		CC=gcc-4.9
+		CXX=g++-4.9
+		AR=gcc-ar-4.9
+		RANLIB=gcc-ranlib-4.9
+		CRYPTOPP_CXXFLAGS="-DNDEBUG -g -O2 -fPIC -DCRYPTOPP_DISABLE_ASM -pipe -Wa,-q"
+		JAVA_INCLUDES=-I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/darwin/
+	endif
 endif
 
 # export all variables that are used by child makefiles
@@ -67,7 +76,7 @@ JNI_MIRACL:=src/jni/MiraclJavaInterface/libMiraclJavaInterface$(JNI_LIB_EXT)
 JNI_OTEXTENSION:=src/jni/OtExtensionJavaInterface/libOtExtensionJavaInterface$(JNI_LIB_EXT)
 JNI_NTL:=src/jni/NTLJavaInterface/libNTLJavaInterface$(JNI_LIB_EXT)
 JNI_OPENSSL:=src/jni/OpenSSLJavaInterface/libOpenSSLJavaInterface$(JNI_LIB_EXT)
-JNI_TAGRETS=jni-cryptopp jni-miracl jni-openssl jni-otextension jni-ntl
+JNI_TARGETS=jni-cryptopp jni-miracl jni-openssl jni-otextension jni-ntl
 
 # basenames of created jars (apache commons, bouncy castle, scapi)
 #BASENAME_BOUNCYCASTLE:=bcprov-jdk15on-151b18.jar
@@ -87,7 +96,7 @@ JAR_SCAPI:=$(builddir)/scapi/$(BASENAME_SCAPI)
 NTL_CFLAGS="-fPIC -O2"
 
 # scapi install dir
-INSTALL_DIR=$(prefix)/scapi
+INSTALL_DIR=$(libdir)/scapi
 
 # scripts
 SCRIPTS:=scripts/scapi.sh scripts/scapic.sh
@@ -96,14 +105,14 @@ SCRIPTS:=scripts/scapi.sh scripts/scapic.sh
 EXTERNAL_LIBS_TARGETS:=compile-cryptopp compile-miracl compile-openssl compile-otextension compile-ntl
 
 ## targets
-all: $(JNI_TAGRETS) $(JAR_BOUNCYCASTLE) $(JAR_APACHE_COMMONS) compile-scapi
+all: $(JNI_TARGETS) $(JAR_BOUNCYCASTLE) $(JAR_APACHE_COMMONS) compile-scapi
 
 # compile and install the crypto++ lib:
 # first compile the default target (test program + static lib)
 # then also compile the dynamic lib, and finally install.
 compile-cryptopp:
 	@echo "Compiling the Crypto++ library..."
-	@cp -r lib/CryptoPP/ $(builddir)/CryptoPP/
+	cp -r lib/CryptoPP $(builddir)
 	@$(MAKE) -C $(builddir)/CryptoPP CXX=$(CXX) CXXFLAGS=$(CRYPTOPP_CXXFLAGS)
 	@$(MAKE) -C $(builddir)/CryptoPP CXX=$(CXX) CXXFLAGS=$(CRYPTOPP_CXXFLAGS) dynamic
 	@$(MAKE) -C $(builddir)/CryptoPP CXX=$(CXX) CXXFLAGS=$(CRYPTOPP_CXXFLAGS) PREFIX=$(prefix) install
@@ -126,25 +135,25 @@ compile-miracl:
 	@touch compile-miracl
 
 compile-miracl-cpp:
-	@$(MAKE) prepare-miracl MIRACL_DIR=MiraclCPP
+	@$(MAKE) prepare-miracl MIRACL_DIR=MiraclCPP CXX=$(CXX)
 	@echo "Compiling the Miracl library (C++)..."
-	@$(MAKE) -C $(builddir)/MiraclCPP MIRACL_TARGET_LANG=cpp
+	@$(MAKE) -C $(builddir)/MiraclCPP MIRACL_TARGET_LANG=cpp CXX=$(CXX)
 	@echo "Installing the Miracl library..."
-	@$(MAKE) -C $(builddir)/MiraclCPP MIRACL_TARGET_LANG=cpp install
+	@$(MAKE) -C $(builddir)/MiraclCPP MIRACL_TARGET_LANG=cpp CXX=$(CXX) install
 	@touch compile-miracl-cpp
 
 compile-otextension: compile-openssl compile-miracl-cpp
 	@echo "Compiling the OtExtension library..."
 	@cp -r lib/OTExtension $(builddir)/OTExtension
-	@$(MAKE) -C $(builddir)/OTExtension
-	@$(MAKE) -C $(builddir)/OTExtension SHARED_LIB_EXT=$(SHARED_LIB_EXT) install
+	@$(MAKE) -C $(builddir)/OTExtension CXX=$(CXX)
+	@$(MAKE) -C $(builddir)/OTExtension CXX=$(CXX) SHARED_LIB_EXT=$(SHARED_LIB_EXT) install
 	@touch compile-otextension
 
 # TODO: add GMP and GF2X
 compile-ntl:
 	@echo "Compiling the NTL library..."
 	@cp -r lib/NTL/unix $(builddir)/NTL
-	@cd $(builddir)/NTL/src/ && ./configure CFLAGS=$(NTL_CFLAGS)
+	@cd $(builddir)/NTL/src/ && ./configure CFLAGS=$(NTL_CFLAGS) CC=$(CC) CXX=$(CXX)
 	@$(MAKE) -C $(builddir)/NTL/src/
 	@$(MAKE) -C $(builddir)/NTL/src/ PREFIX=$(prefix) install
 	@touch compile-ntl
@@ -172,7 +181,7 @@ jni-openssl: $(JNI_OPENSSL)
 # jni real targets
 $(JNI_CRYPTOPP): compile-cryptopp
 	@echo "Compiling the Crypto++ jni interface..."
-	@$(MAKE) -C src/jni/CryptoPPJavaInterface
+	@$(MAKE) -C src/jni/CryptoPPJavaInterface CXX=$(CXX)
 	@cp $@ assets/
 
 $(JNI_MIRACL): compile-miracl
@@ -182,12 +191,12 @@ $(JNI_MIRACL): compile-miracl
 
 $(JNI_OTEXTENSION): compile-otextension
 	@echo "Compiling the OtExtension jni interface..."
-	@$(MAKE) -C src/jni/OtExtensionJavaInterface
+	@$(MAKE) -C src/jni/OtExtensionJavaInterface CXX=$(CXX)
 	@cp $@ assets/
 
 $(JNI_NTL): compile-ntl
 	@echo "Compiling the NTL jni interface..."
-	@$(MAKE) -C src/jni/NTLJavaInterface
+	@$(MAKE) -C src/jni/NTLJavaInterface CXX=$(CXX)
 	@cp $@ assets/
 
 $(JNI_OPENSSL): compile-openssl
@@ -226,9 +235,9 @@ install: all clean-scripts compile-scripts
 	install -d $(INSTALL_DIR)
 	install -m 0644 assets/*$(JNI_LIB_EXT) $(INSTALL_DIR)
 	install -m 0644 assets/*.jar $(INSTALL_DIR)
-	install -d /usr/bin
-	install -m 0755 scripts/scapi.sh /usr/bin/scapi
-	install -m 0755 scripts/scapic.sh /usr/bin/scapic
+	install -d $(bindir)
+	install -m 0755 scripts/scapi.sh $(bindir)/scapi
+	install -m 0755 scripts/scapic.sh $(bindir)/scapic
 	@echo "Done."
 
 # clean targets
