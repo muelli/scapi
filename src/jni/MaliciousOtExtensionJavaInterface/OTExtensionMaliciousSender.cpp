@@ -1,4 +1,5 @@
 #include "OTExtensionMaliciousSender.h"
+#include <jni.h>
 
 /*
  * Function initOtSender : This function initializes the sender object 

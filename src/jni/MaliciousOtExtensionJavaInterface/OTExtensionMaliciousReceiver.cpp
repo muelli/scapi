@@ -1,4 +1,5 @@
 #include "OTExtensionMaliciousReceiver.h"
+#include <jni.h>
 
 /*
  * Function initOtReceiver : This function initializes the receiver object and 
@@ -57,6 +58,64 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
 JNIEnv *env, jobject, jlong receiver, jbyteArray sigma, jint numOfOts, 
 jint bitLength, jbyteArray output, jstring version) {
 
+  // The masking function with which the values that are sent 
+  // in the last communication step are processed
+  // Choose OT extension version: G_OT, C_OT or R_OT
+  BYTE ver;
+  
+  // get ot version from java
+  const char* str = env->GetStringUTFChars(version, NULL);
+
+  // (supports all of the SHA hashes. 
+  // Get the name of the required hash and instantiate that hash.)
+  if(strcmp (str,"general") == 0) {
+    ver = G_OT;
+  } else if(strcmp (str,"correlated") == 0) {
+    ver = C_OT;
+  } else if(strcmp (str,"random") == 0) {
+    ver = R_OT;
+  }
+  
+  if(ver == C_OT) {
+    m_fMaskFct = new XORMasking(bitLength);
+  }
+
+  jbyte *sigmaArr = env->GetByteArrayElements(sigma, 0);
+	
+  CBitVector choices, response;
+  choices.Create(numOfOts);
+  
+  //Pre-generate the response vector for the results
+  response.Create(numOfOts, bitLength);
+
+  //copy the sigma values received from java
+  for(int i=0; i<numOfOts;i++){
+    choices.SetBit((i/8)*8 + 7-(i%8), sigmaArr[i]);
+  }
+
+  //run the ot extension as the receiver
+  ObliviouslyReceive((Mal_OTExtensionReceiver*) receiver, choices, response, numOfOts, bitLength, ver);
+
+  //prepare the out array
+  jbyte *out = env->GetByteArrayElements(output, 0);
+  int sizeResponseInBytes = numOfOts*bitLength/8;
+  for(int i = 0; i < sizeResponseInBytes; i++)
+    {
+      //copy each byte result to out
+      out[i] = response.GetByte(i);
+    }
+
+  //make sure to release the memory created in c++. The JVM will not release it automatically.
+  env->ReleaseByteArrayElements(sigma,sigmaArr,0);
+  env->ReleaseByteArrayElements(output,out,0);
+
+  //free the pointer of choises and reponse
+  choices.delCBitVector();
+  response.delCBitVector();
+
+  if(ver == C_OT){
+    delete m_fMaskFct;
+  }
 }
 
 /*
