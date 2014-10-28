@@ -15,6 +15,10 @@
 #include <iomanip>
 #include <string>
 
+#include "OtExtensionMaliciousCommonInterface.h"
+
+namespace maliciousot {
+
 /*
  * this class is the gateway class to the ot extension malicious library.
  * the original code used global variables and manipulated them via global functions,
@@ -24,9 +28,11 @@
  * code may be changed in the future to reflect the author's original intentions.
  */
 class OtExtensionMaliciousSenderInterface : public OtExtensionMaliciousCommonInterface {
-    void init_ot_sender(const char* address, int port, int nbaseots, int numOTs);
+ public:
+    OtExtensionMaliciousSenderInterface(const char* address, int port, int num_of_threads, int num_base_ots, int num_ots);
+    void init_ot_sender();
     BOOL precompute_base_ots_sender();
-    BOOL obliviously_send(CBitVector& X1, CBitVector& X2, int numOTs, int bitlength, BYTE version);
+    BOOL obliviously_send(CBitVector& X1, CBitVector& X2, int numOTs, int bitlength, BYTE version, MaskingFunction * masking_function);
 };
 
 }

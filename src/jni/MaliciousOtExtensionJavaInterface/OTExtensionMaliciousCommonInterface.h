@@ -30,9 +30,9 @@ namespace maliciousot {
 class OtExtensionMaliciousCommonInterface {
 
  public:
-    static const char* m_initial_seed = "437398417012387813714564100";
+    static const char* m_initial_seed;
 
-    OtExtensionMaliciousReceiverInterface(int role, int num_base_ots, int num_ots);
+    OtExtensionMaliciousCommonInterface(int role, int num_base_ots, int num_ots);
 
  protected:
     void init_seeds(int role);
@@ -55,7 +55,6 @@ class OtExtensionMaliciousCommonInterface {
     int m_counter;
     int m_num_checks;
     SECLVL m_security_level;
-    MaskingFunction * m_masking_function;
     
     // seeds (SHA PRG)
     BYTE m_receiver_seed[SHA1_BYTES];

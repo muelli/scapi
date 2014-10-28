@@ -15,7 +15,7 @@ namespace maliciousot {
 class ConnectionManager {
 
  public:
-    static const char * DEFAULT_ADDRESS = "localhost";
+    static const char * DEFAULT_ADDRESS;
     static const USHORT DEFAULT_PORT = 7766;
 
     // ctors
@@ -24,7 +24,7 @@ class ConnectionManager {
     
     void cleanup();
     inline CSocket * get_sockets_data() { return m_sockets.data(); };
-    inline const CSocket& get_socket(int i) { return m_sockets[i]; };
+    inline CSocket& get_socket(int i) { return m_sockets[i]; };
     inline int get_num_of_threads() { return m_num_of_threads; };
     virtual BOOL setup_connection() = 0;
     
@@ -38,6 +38,7 @@ class ConnectionManager {
 
 // server class (used by sender)
 class ConnectionManagerServer : public ConnectionManager {
+ public:
     ConnectionManagerServer(int role, int num_of_threads, const char * address, int port);
     explicit ConnectionManagerServer(int role);
     virtual BOOL setup_connection();
@@ -45,9 +46,12 @@ class ConnectionManagerServer : public ConnectionManager {
 
 // client class (used by receiver)
 class ConnectionManagerClient : public ConnectionManager {
+ public:
     ConnectionManagerClient(int role, int num_of_threads, const char * address, int port);
     explicit ConnectionManagerClient(int role);
     virtual BOOL setup_connection();
 };
+
+} // end of namespace
 
 #endif //_OTEXT_CONNECTION_MANAGER_H_

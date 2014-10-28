@@ -1,19 +1,17 @@
 #include "OTExtensionMaliciousReceiverInterface.h"
 
-namespace maliciousot {
-
-OtExtensionMaliciousReceiverInterface::OtExtensionMaliciousReceiverInterface(const char* address, 
+maliciousot::OtExtensionMaliciousReceiverInterface::OtExtensionMaliciousReceiverInterface(const char* address, 
 									     int port,
 									     int num_of_threads,
 									     int num_base_ots, 
 									     int num_ots) : 
-    OTExtensionMaliciousCommonInterface(1,
+    OtExtensionMaliciousCommonInterface(1,
 					num_base_ots, 
 					num_ots) {
-    m_connection_manager = new ConnectionManagerClient(1, num_of_threads, address, port);    
+    m_connection_manager = new ConnectionManagerClient(1, num_of_threads, address, port);
 }
 
-void OtExtensionMaliciousReceiverInterface::init_ot_receiver() {
+void maliciousot::OtExtensionMaliciousReceiverInterface::init_ot_receiver() {
     int nSndVals = 2;
     int wdsize = 1 << (CEIL_LOG2(m_num_base_ots));
     int nblocks = CEIL_DIVIDE(m_num_ots, NUMOTBLOCKS * wdsize);
@@ -63,7 +61,7 @@ void OtExtensionMaliciousReceiverInterface::init_ot_receiver() {
  * PrecomputeBaseOTsReceiver
  * (should be a member of a class instead of manipulating globals)
  */
-BOOL OtExtensionMaliciousReceiverInterface::precompute_base_ots_receiver() {
+BOOL maliciousot::OtExtensionMaliciousReceiverInterface::precompute_base_ots_receiver() {
 
   int nSndVals = 2;
   BYTE* pBuf = new BYTE[m_num_base_ots * SHA1_BYTES];
@@ -89,17 +87,18 @@ BOOL OtExtensionMaliciousReceiverInterface::precompute_base_ots_receiver() {
  * ObliviouslyReceive
  * (should be a member of a class instead of manipulating globals)
  */
-BOOL OtExtensionMaliciousReceiverInterface::obliviously_receive(CBitVector& choices, 
-								CBitVector& ret, 
-								int numOTs, 
-								int bitlength, 
-								BYTE version);
+BOOL maliciousot::OtExtensionMaliciousReceiverInterface::obliviously_receive(CBitVector& choices, 
+									     CBitVector& ret, 
+									     int numOTs, 
+									     int bitlength, 
+									     BYTE version,
+									     MaskingFunction * masking_function) {
     bool success = FALSE;
 
     // Execute OT receiver routine 	
     success = m_receiver->receive(numOTs, bitlength, choices, ret, version, 
 				  m_connection_manager->get_num_of_threads(), 
-				  m_masking_function);
+				  masking_function);
     
     return success;
 }

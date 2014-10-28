@@ -1,5 +1,8 @@
 #include "OTExtensionMaliciousSender.h"
+#include "OTExtensionMaliciousSenderInterface.h"
 #include <jni.h>
+
+using namespace maliciousot;
 
 /*
  * Function initOtSender : This function initializes the sender object 
@@ -61,6 +64,7 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
   jbyte * deltaArr;
   
   CBitVector delta, X1, X2;
+  MaskingFunction * masking_function = NULL;
   //Create X1 and X2 as two arrays with "numOTs" entries of "bitlength" bit-values
   X1.Create(numOfOts, bitLength);
   X2.Create(numOfOts, bitLength);
@@ -81,7 +85,7 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
   else if(ver == C_OT){
     //get the delta from java
     deltaArr = env->GetByteArrayElements(deltaFromJava, 0);
-    m_fMaskFct = new XORMasking(bitLength);
+    masking_function = new XORMasking(bitLength);
     delta.Create(numOfOts, bitLength);
 
     // set the delta values given from java
@@ -101,8 +105,8 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
   }
 	
   //run the ot extension as the sender
-  OtExtensionMaliciousSenderInterface * sender_interface = (OtExtensionMaliciousSenderInterface) sender;
-  sender->obliviously_send(X1, X2, numOfOts, bitLength, ver); //, delta);
+  OtExtensionMaliciousSenderInterface * sender_interface = (OtExtensionMaliciousSenderInterface *) sender;
+  sender_interface->obliviously_send(X1, X2, numOfOts, bitLength, ver, masking_function); //, delta);
 
   if(ver != G_OT){ //we need to copy x0 and x1 
 
@@ -115,7 +119,7 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
 
     if(ver==C_OT) {
       env->ReleaseByteArrayElements(deltaFromJava,deltaArr,0);
-      delete m_fMaskFct;
+      delete masking_function;
     }
   }
 

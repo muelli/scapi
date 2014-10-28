@@ -15,6 +15,8 @@
 #include <iomanip>
 #include <string>
 
+#include "OtExtensionMaliciousCommonInterface.h"
+
 namespace maliciousot {
 
 /*
@@ -26,13 +28,14 @@ namespace maliciousot {
  * code may be changed in the future to reflect the author's original intentions.
  */
 class OtExtensionMaliciousReceiverInterface : public OtExtensionMaliciousCommonInterface {
-
+ public:
     OtExtensionMaliciousReceiverInterface(const char* address, int port, int num_of_threads, 
 					  int num_base_ots, int num_ots);
     void init_ot_receiver();
-    BOOL precompute_base_ots_receiver(int num_base_ots);
-    BOOL obliviously_receive(CBitVector& choices, CBitVector& ret, 
-			    int numOTs, int bitlength, BYTE version);
+    BOOL precompute_base_ots_receiver();
+    BOOL obliviously_receive(CBitVector& choices, CBitVector& ret,
+			     int numOTs, int bitlength, BYTE version,
+			     MaskingFunction * masking_function);
 };
 
 }

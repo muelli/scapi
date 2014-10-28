@@ -1,19 +1,17 @@
 #include "OTExtensionMaliciousSenderInterface.h"
 
-namespace maliciousot {
-
-OtExtensionMaliciousSenderInterface::OtExtensionMaliciousSenderInterface(const char* address, 
-									 int port,
-									 int num_of_threads,
-									 int num_base_ots, 
-									 int num_ots) : 
-    OTExtensionMaliciousCommonInterface(1,
+maliciousot::OtExtensionMaliciousSenderInterface::OtExtensionMaliciousSenderInterface(const char* address, 
+										      int port,
+										      int num_of_threads,
+										      int num_base_ots, 
+										      int num_ots) : 
+    OtExtensionMaliciousCommonInterface(1,
 					num_base_ots, 
 					num_ots) {
     m_connection_manager = new ConnectionManagerServer(0, num_of_threads, address, port);
 }
 
-void OtExtensionMaliciousSenderInterface::init_ot_sender() {
+void maliciousot::OtExtensionMaliciousSenderInterface::init_ot_sender() {
     int nSndVals = 2;
     int wdsize = 1 << (CEIL_LOG2(m_num_base_ots));
     int nblocks = CEIL_DIVIDE(m_num_ots, NUMOTBLOCKS * wdsize);
@@ -63,7 +61,7 @@ void OtExtensionMaliciousSenderInterface::init_ot_sender() {
 /**
  * PrecomputeBaseOTsSender
  */
-BOOL OtExtensionMaliciousSenderInterface::precompute_base_ots_sender() {
+BOOL maliciousot::OtExtensionMaliciousSenderInterface::precompute_base_ots_sender() {
     int nSndVals = 2;
     // Execute NP receiver routine and obtain the key 
     BYTE* pBuf = new BYTE[SHA1_BYTES * m_num_base_ots * nSndVals];
@@ -85,20 +83,19 @@ BOOL OtExtensionMaliciousSenderInterface::precompute_base_ots_sender() {
 /**
  * ObliviouslySend
  */
-BOOL OtExtensionMaliciousSenderInterface::obliviously_send(CBitVector& X1, 
-							   CBitVector& X2, 
-							   int m_num_ots, 
-							   int bitlength, 
-							   BYTE version) {
+BOOL maliciousot::OtExtensionMaliciousSenderInterface::obliviously_send(CBitVector& X1, 
+									CBitVector& X2, 
+									int m_num_ots, 
+									int bitlength, 
+									BYTE version,
+									MaskingFunction * masking_function) {
     bool success = FALSE;
     int nSndVals = 2; //Perform 1-out-of-2 OT
     
     // Execute OT sender routine
     success = m_sender->send(m_num_ots, bitlength, X1, X2, version, 
 			     m_connection_manager->get_num_of_threads(), 
-			     m_masking_function);
+			     masking_function);
     
     return success;
-}
-
 }

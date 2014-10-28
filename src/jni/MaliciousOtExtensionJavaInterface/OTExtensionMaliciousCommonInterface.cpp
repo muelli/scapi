@@ -1,12 +1,11 @@
 #include "OTExtensionMaliciousCommonInterface.h"
 
-namespace maliciousot {
-
+const char* maliciousot::OtExtensionMaliciousCommonInterface::m_initial_seed = "437398417012387813714564100";
 
 /**
  * inits the seeds required by the ot protocol
  */
-void OTExtensionMaliciousCommonInterface::init_seeds(int role) {
+void maliciousot::OtExtensionMaliciousCommonInterface::init_seeds(int role) {
   BYTE seedtmp[SHA1_BYTES];
   HASH_CTX sha;
 
@@ -24,9 +23,9 @@ void OTExtensionMaliciousCommonInterface::init_seeds(int role) {
   memcpy(m_sender_seed, seedtmp, AES_BYTES);
 }
 
-OTExtensionMaliciousCommonInterface::OTExtensionMaliciousCommonInterface(int role,
-									 int num_base_ots, 
-									 int num_ots) {
+maliciousot::OtExtensionMaliciousCommonInterface::OtExtensionMaliciousCommonInterface(int role,
+										      int num_base_ots, 
+										      int num_ots) {
     m_num_base_ots = num_base_ots;
     m_num_ots = num_ots;
 
@@ -40,7 +39,4 @@ OTExtensionMaliciousCommonInterface::OTExtensionMaliciousCommonInterface(int rol
     
     // init base ot handler
     m_baseot_handler = new PVWDDH(m_security_level, m_receiver_seed);
-}
-
-
 }

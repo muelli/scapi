@@ -1,5 +1,8 @@
 #include "OTExtensionMaliciousReceiver.h"
+#include "OTExtensionMaliciousReceiverInterface.h"
 #include <jni.h>
+
+using namespace maliciousot;
 
 /*
  * Function initOtReceiver : This function initializes the receiver object and 
@@ -55,9 +58,9 @@ jint bitLength, jbyteArray output, jstring version) {
     ver = R_OT;
   }
   
-  if(ver == C_OT) {
-    m_fMaskFct = new XORMasking(bitLength);
-  }
+  //if(ver == C_OT) {
+  MaskingFunction * masking_function = new XORMasking(bitLength);
+  //}
 
   jbyte *sigmaArr = env->GetByteArrayElements(sigma, 0);
 	
@@ -73,8 +76,8 @@ jint bitLength, jbyteArray output, jstring version) {
   }
 
   //run the ot extension as the receiver
-  OtExtensionMaliciousReceiverInterface * receiver_interface = (OtExtensionMaliciousReceiverInterface) receiver;
-  receiver_interface->obliviously_receive(choices, response, numOfOts, bitLength, ver);
+  OtExtensionMaliciousReceiverInterface * receiver_interface = (OtExtensionMaliciousReceiverInterface *) receiver;
+  receiver_interface->obliviously_receive(choices, response, numOfOts, bitLength, ver, masking_function);
 
   //prepare the out array
   jbyte *out = env->GetByteArrayElements(output, 0);
@@ -93,7 +96,7 @@ jint bitLength, jbyteArray output, jstring version) {
   response.delCBitVector();
 
   if(ver == C_OT){
-    delete m_fMaskFct;
+    delete masking_function;
   }
 }
 

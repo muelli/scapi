@@ -1,11 +1,14 @@
 #include "ConnectionManager.h"
 
-namespace maliciousot {
+const char * maliciousot::ConnectionManager::DEFAULT_ADDRESS = "localhost";
+
+using std::cout;
+using std::endl;
 
 /*******************************************************************************
  *  Base class for server and client
  ******************************************************************************/
-ConnectionManager::ConnectionManager(int role, int num_of_threads, const char * address, int port) : 
+maliciousot::ConnectionManager::ConnectionManager(int role, int num_of_threads, const char * address, int port) : 
     m_sockets(num_of_threads+1) { //Number of threads that will be used in OT extension
     m_num_of_threads = num_of_threads;
     m_address = address;
@@ -13,7 +16,7 @@ ConnectionManager::ConnectionManager(int role, int num_of_threads, const char * 
     m_pid = role;
 }
 
-ConnectionManager::ConnectionManager(int role) : ConnectionManager(role,
+maliciousot::ConnectionManager::ConnectionManager(int role) : ConnectionManager(role,
 								   1,  // num of threads
 								   DEFAULT_ADDRESS, // address
 								   DEFAULT_PORT) { // port
@@ -23,11 +26,10 @@ ConnectionManager::ConnectionManager(int role) : ConnectionManager(role,
 /**
  * closes all the open sockets
  */
-void ConnectionManager::cleanup() {
+void maliciousot::ConnectionManager::cleanup() {
   for(int i = 0; i < m_num_of_threads; i++) {
       m_sockets[i].Close();
   }
-  return true;
 }
 
 /*******************************************************************************
@@ -36,7 +38,7 @@ void ConnectionManager::cleanup() {
 /**
  * ConnectionManagerServer ctors
  */
-ConnectionManagerServer::ConnectionManagerServer(int role, 
+maliciousot::ConnectionManagerServer::ConnectionManagerServer(int role, 
 						 int num_of_threads, 
 						 const char * address, 
 						 int port) : ConnectionManager(role,
@@ -44,19 +46,15 @@ ConnectionManagerServer::ConnectionManagerServer(int role,
 									       address,
 									       port) {}
 
-ConnectionManagerServer::ConnectionManagerServer(int role) : ConnectionManager(role) {}
+maliciousot::ConnectionManagerServer::ConnectionManagerServer(int role) : ConnectionManager(role) {}
 
 /**
  * listens and accepts connections on the server
  */
-BOOL ConnectionManagerServer::setup_connection() {
-
-#ifndef BATCH
-    cout << "Listening: " << m_address << ":" << m_port << ", with size: " << m_num_of_threads << endl;
-#endif
+BOOL maliciousot::ConnectionManagerServer::setup_connection() {
     
     int num_connections = m_num_of_threads+1;
-
+    
     // try to bind() and then listen
     if ((!m_sockets[0].Socket()) || 
 	(!m_sockets[0].Bind(m_port, m_address)) ||
@@ -84,17 +82,11 @@ BOOL ConnectionManagerServer::setup_connection() {
 	    continue;
 	}
 
-#ifndef BATCH
-	cout <<  " (" << m_pid <<") (" << threadID << ") connection accepted" << endl;
-#endif
 	// locate the socket appropriately
 	m_sockets[threadID].AttachFrom(sock);
 	sock.Detach();
     }
-
-#ifndef BATCH
-    cout << "Listening finished"  << endl;
-#endif
+    
     return TRUE;
 
  listen_failure:
@@ -109,7 +101,7 @@ BOOL ConnectionManagerServer::setup_connection() {
 /**
  * ConnectionManagerClient ctors
  */
-ConnectionManagerClient::ConnectionManagerClient(int role, 
+maliciousot::ConnectionManagerClient::ConnectionManagerClient(int role, 
 						 int num_of_threads, 
 						 const char * address, 
 						 int port) : ConnectionManager(role,
@@ -117,20 +109,16 @@ ConnectionManagerClient::ConnectionManagerClient(int role,
 									       address,
 									       port) {}
 
-ConnectionManagerClient::ConnectionManagerClient(int role) : ConnectionManager(role) {}
+maliciousot::ConnectionManagerClient::ConnectionManagerClient(int role) : ConnectionManager(role) {}
 
 /**
  * initiates a connection (via socket) for each thread on the client
  */
-BOOL ConnectionManagerClient::setup_connection() {
+BOOL maliciousot::ConnectionManagerClient::setup_connection() {
     BOOL bFail = FALSE;
     LONG lTO = CONNECT_TIMEO_MILISEC;
     int num_connections = m_num_of_threads+1;
     
-#ifndef BATCH
-    cout << "Connecting to party "<< !m_pid << ": " << m_address << ", " << m_port << endl;
-#endif
-
     // try to initiate connection for socket k
     for(int k = num_connections-1; k >= 0 ; k--) {
 	// iterate on retries
@@ -145,10 +133,6 @@ BOOL ConnectionManagerClient::setup_connection() {
 
 		// send the thread id when connected
 		m_sockets[k].Send(&k, sizeof(int));
-
-#ifndef BATCH
-		cout << " (" << !m_pid << ") (" << k << ") connected" << endl;
-#endif
 
 		if(k == 0) {
 		    //cout << "connected" << endl;
@@ -180,6 +164,4 @@ BOOL ConnectionManagerClient::setup_connection() {
  connect_failure:
     cout << " (" << !m_pid << ") connection failed" << endl;
     return FALSE;
-}
-
 }
