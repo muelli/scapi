@@ -13,7 +13,7 @@ OtExtensionMaliciousReceiverInterface::OtExtensionMaliciousReceiverInterface(con
     m_connection_manager = new ConnectionManagerClient(1, num_of_threads, address, port);    
 }
 
-void OtExtensionMaliciousReceiverInterface::InitOTReceiver() {
+void OtExtensionMaliciousReceiverInterface::init_ot_receiver() {
     int nSndVals = 2;
     int wdsize = 1 << (CEIL_LOG2(m_num_base_ots));
     int nblocks = CEIL_DIVIDE(m_num_ots, NUMOTBLOCKS * wdsize);
@@ -26,7 +26,7 @@ void OtExtensionMaliciousReceiverInterface::InitOTReceiver() {
     m_connection_manager->setup_connection();
 
     // 1st step: pre-compute the PVW base OTs
-    PrecomputeBaseOTsReceiver();
+    precompute_base_ots_receiver();
 
     assert(nblocks <= NUMOTBLOCKS);
 
@@ -63,7 +63,7 @@ void OtExtensionMaliciousReceiverInterface::InitOTReceiver() {
  * PrecomputeBaseOTsReceiver
  * (should be a member of a class instead of manipulating globals)
  */
-BOOL OtExtensionMaliciousReceiverInterface::PrecomputeBaseOTsReceiver() {
+BOOL OtExtensionMaliciousReceiverInterface::precompute_base_ots_receiver() {
 
   int nSndVals = 2;
   BYTE* pBuf = new BYTE[m_num_base_ots * SHA1_BYTES];
@@ -89,16 +89,17 @@ BOOL OtExtensionMaliciousReceiverInterface::PrecomputeBaseOTsReceiver() {
  * ObliviouslyReceive
  * (should be a member of a class instead of manipulating globals)
  */
-BOOL OtExtensionMaliciousReceiverInterface::ObliviouslyReceive(CBitVector& choices, 
-							       CBitVector& ret, 
-							       int numOTs, 
-							       int bitlength, 
-							       BYTE version);
+BOOL OtExtensionMaliciousReceiverInterface::obliviously_receive(CBitVector& choices, 
+								CBitVector& ret, 
+								int numOTs, 
+								int bitlength, 
+								BYTE version);
     bool success = FALSE;
 
     // Execute OT receiver routine 	
-    success = m_receiver->receive(numOTs, bitlength, choices, ret,
-				  version, m_num_of_threads, m_masking_function);
+    success = m_receiver->receive(numOTs, bitlength, choices, ret, version, 
+				  m_connection_manager->get_num_of_threads(), 
+				  m_masking_function);
     
     return success;
 }

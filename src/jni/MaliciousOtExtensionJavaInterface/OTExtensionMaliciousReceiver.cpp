@@ -10,38 +10,18 @@
  * returns : A pointer to the receiver object that was created and later be used to run the protcol
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otExtension_OTExtensionMaliciousReceiver_initOtReceiver(
-JNIEnv *env, jobject, jstring ipAddress, jint port, jint koblitzOrZpSize, jint numOfthreads) {
-
-  // globals that must be set:
-  // m_bUseECC = true;
-  // m_sSecLvl = LT;
-  // m_nPID = 0; // role, 0 for sender, 1 for receiver
-  // BYTE version = C_OT;//Choose OT extension version: G_OT, C_OT or R_OT
-  // m_nNumOTThreads = 1;
-  // m_nChecks = 380; //Number of checks between the base-OTs
-
-
-  // deprecated
-
-  // //use ECC koblitz
-  // if(koblitzOrZpSize==163 || koblitzOrZpSize==233 || koblitzOrZpSize==283){
-
-  //   m_bUseECC = true;
-  //   //The security parameter (163,233,283 for ECC or 1024, 2048, 3072 for FFC)
-  //   m_nSecParam = koblitzOrZpSize;
-  // }
-  // //use Zp
-  // else if(koblitzOrZpSize==1024 || koblitzOrZpSize==2048 || koblitzOrZpSize==3072) {
-
-  //   m_bUseECC = false;
-  //   //The security parameter (163,233,283 for ECC or 1024, 2048, 3072 for FFC)
-  //   m_nSecParam = koblitzOrZpSize;
-  // }
+JNIEnv *env, jobject, jstring ipAddress, jint port, jint numOfthreads, jint nbaseots, jint numOTs) {
 
   // get the ip address from java
   const char* address = env->GetStringUTFChars(ipAddress, NULL);
-  
-  return (jlong) InitOTReceiver(address, (int) port, (int) nbaseots, (int) numOTs);
+  OtExtensionMaliciousReceiverInterface * receiver_interface;
+  receiver_interface = new OtExtensionMaliciousReceiverInterface(address,
+								 (int) port,
+								 (int) numOfthreads,
+								 (int) nbaseots, 
+								 (int) numOTs);
+  receiver_interface->init_ot_receiver();
+  return (jlong) receiver_interface;
 }
 
 /*
@@ -54,8 +34,7 @@ JNIEnv *env, jobject, jstring ipAddress, jint port, jint koblitzOrZpSize, jint n
  * extension in one dimensional array. That is, 
  * The relevant i'th element x1/x2 will be placed in the position bitLength*sizeof(BYTE).
 */
-JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otExtension_OTExtensionMaliciousReceiver_runOtAsReceiver(
-JNIEnv *env, jobject, jlong receiver, jbyteArray sigma, jint numOfOts, 
+JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otExtension_OTExtensionMaliciousReceiver_runOtAsReceiver(JNIEnv *env, jobject, jlong receiver, jbyteArray sigma, jint numOfOts, 
 jint bitLength, jbyteArray output, jstring version) {
 
   // The masking function with which the values that are sent 
@@ -94,16 +73,16 @@ jint bitLength, jbyteArray output, jstring version) {
   }
 
   //run the ot extension as the receiver
-  ObliviouslyReceive((Mal_OTExtensionReceiver*) receiver, choices, response, numOfOts, bitLength, ver);
+  OtExtensionMaliciousReceiverInterface * receiver_interface = (OtExtensionMaliciousReceiverInterface) receiver;
+  receiver_interface->obliviously_receive(choices, response, numOfOts, bitLength, ver);
 
   //prepare the out array
   jbyte *out = env->GetByteArrayElements(output, 0);
   int sizeResponseInBytes = numOfOts*bitLength/8;
-  for(int i = 0; i < sizeResponseInBytes; i++)
-    {
+  for(int i = 0; i < sizeResponseInBytes; i++) {
       //copy each byte result to out
       out[i] = response.GetByte(i);
-    }
+  }
 
   //make sure to release the memory created in c++. The JVM will not release it automatically.
   env->ReleaseByteArrayElements(sigma,sigmaArr,0);
@@ -123,7 +102,5 @@ jint bitLength, jbyteArray output, jstring version) {
  * param receiver: a pointer to the receiver object.
  */
 JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otExtension_OTExtensionMaliciousReceiver_deleteReceiver(JNIEnv *env, jobject, jlong receiver) {
-
-  Cleanup();
-  delete (Mal_OTExtensionReceiver*) receiver;
+  delete (OtExtensionMaliciousReceiverInterface*) receiver;
 }

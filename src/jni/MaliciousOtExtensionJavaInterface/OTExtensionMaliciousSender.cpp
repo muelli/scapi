@@ -10,38 +10,18 @@
  * returns : A pointer to the receiver object that was created and later be used to run the protcol
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otExtension_OTExtensionMaliciousSender_initOtSender(JNIEnv *env, jobject, jstring ipAddress, jint port, 
-jint koblitzOrZpSize, jint numOfThreads) {
-
-  // globals that must be set:
-  // m_bUseECC = true;
-  // m_sSecLvl = LT;
-  // m_nPID = 0; // role, 0 for sender, 1 for receiver
-  // BYTE version = C_OT;//Choose OT extension version: G_OT, C_OT or R_OT
-  // m_nNumOTThreads = 1;
-  // m_nChecks = 380; //Number of checks between the base-OTs
-
-
-  // deprecated
-
-  // //use ECC koblitz
-  // if(koblitzOrZpSize==163 || koblitzOrZpSize==233 || koblitzOrZpSize==283){
-
-  //   m_bUseECC = true;
-  //   //The security parameter (163,233,283 for ECC or 1024, 2048, 3072 for FFC)
-  //   m_nSecParam = koblitzOrZpSize;
-  // }
-  // //use Zp
-  // else if(koblitzOrZpSize==1024 || koblitzOrZpSize==2048 || koblitzOrZpSize==3072) {
-
-  //   m_bUseECC = false;
-  //   //The security parameter (163,233,283 for ECC or 1024, 2048, 3072 for FFC)
-  //   m_nSecParam = koblitzOrZpSize;
-  // }
+jint numOfthreads, jint nbaseots, jint numOTs) {
 
   // get the ip address from java
   const char* address = env->GetStringUTFChars(ipAddress, NULL);
-  
-  return (jlong) InitOTSender(address, (int) port, (int) nbaseots, (int) numOTs);
+  OtExtensionMaliciousSenderInterface * sender_interface;
+  sender_interface = new OtExtensionMaliciousSenderInterface(address,
+							     (int) port,
+							     (int) numOfthreads,
+							     (int) nbaseots, 
+							     (int) numOTs);
+  sender_interface->init_ot_sender();
+  return (jlong) sender_interface;
 }
 
 // --------------------------------------------------------------------------------
@@ -76,7 +56,6 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
     ver = R_OT;
   }
 
-  Mal_OTExtensionSender * otsender = (Mal_OTExtensionSender *) sender;
   jbyte * x1Arr = env->GetByteArrayElements(x1, 0);
   jbyte * x2Arr = env->GetByteArrayElements(x2, 0);
   jbyte * deltaArr;
@@ -122,7 +101,8 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
   }
 	
   //run the ot extension as the sender
-  ObliviouslySend((OTExtensionSender*) sender, X1, X2, numOfOts, bitLength, ver, delta);
+  OtExtensionMaliciousSenderInterface * sender_interface = (OtExtensionMaliciousSenderInterface) sender;
+  sender->obliviously_send(X1, X2, numOfOts, bitLength, ver); //, delta);
 
   if(ver != G_OT){ //we need to copy x0 and x1 
 
@@ -153,7 +133,5 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
  * param sender: a pointer to the sender object.
  */
 JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otExtension_OTExtensionMaliciousSender_deleteSender(JNIEnv * env, jobject, jlong sender) {
-
-  Cleanup();
-  delete (Mal_OTExtensionSender*) sender;
+  delete (OtExtensionMaliciousSenderInterface*) sender;
 }

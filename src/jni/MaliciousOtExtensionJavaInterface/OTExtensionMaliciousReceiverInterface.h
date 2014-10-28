@@ -29,9 +29,9 @@ class OtExtensionMaliciousReceiverInterface : public OtExtensionMaliciousCommonI
 
     OtExtensionMaliciousReceiverInterface(const char* address, int port, int num_of_threads, 
 					  int num_base_ots, int num_ots);
-    void InitOTReceiver();
-    BOOL PrecomputeBaseOTsReceiver(int num_base_ots);
-    BOOL ObliviouslyReceive(CBitVector& choices, CBitVector& ret, 
+    void init_ot_receiver();
+    BOOL precompute_base_ots_receiver(int num_base_ots);
+    BOOL obliviously_receive(CBitVector& choices, CBitVector& ret, 
 			    int numOTs, int bitlength, BYTE version);
 };
 

@@ -13,7 +13,7 @@ OtExtensionMaliciousSenderInterface::OtExtensionMaliciousSenderInterface(const c
     m_connection_manager = new ConnectionManagerServer(0, num_of_threads, address, port);
 }
 
-void OtExtensionMaliciousSenderInterface::InitOTSender() {
+void OtExtensionMaliciousSenderInterface::init_ot_sender() {
     int nSndVals = 2;
     int wdsize = 1 << (CEIL_LOG2(m_num_base_ots));
     int nblocks = CEIL_DIVIDE(m_num_ots, NUMOTBLOCKS * wdsize);
@@ -28,7 +28,7 @@ void OtExtensionMaliciousSenderInterface::InitOTSender() {
     m_connection_manager->setup_connection();
     
     // 1st step: precompute base ot
-    PrecomputeBaseOTsSender();
+    precompute_base_ots_sender();
     
 
     CBitVector seedcbitvec;
@@ -63,7 +63,7 @@ void OtExtensionMaliciousSenderInterface::InitOTSender() {
 /**
  * PrecomputeBaseOTsSender
  */
-BOOL OtExtensionMaliciousSenderInterface::PrecomputeBaseOTsSender() {
+BOOL OtExtensionMaliciousSenderInterface::precompute_base_ots_sender() {
     int nSndVals = 2;
     // Execute NP receiver routine and obtain the key 
     BYTE* pBuf = new BYTE[SHA1_BYTES * m_num_base_ots * nSndVals];
@@ -85,17 +85,18 @@ BOOL OtExtensionMaliciousSenderInterface::PrecomputeBaseOTsSender() {
 /**
  * ObliviouslySend
  */
-BOOL OtExtensionMaliciousSenderInterface::ObliviouslySend(CBitVector& X1, 
-							  CBitVector& X2, 
-							  int m_num_ots, 
-							  int bitlength, 
-							  BYTE version) {
+BOOL OtExtensionMaliciousSenderInterface::obliviously_send(CBitVector& X1, 
+							   CBitVector& X2, 
+							   int m_num_ots, 
+							   int bitlength, 
+							   BYTE version) {
     bool success = FALSE;
     int nSndVals = 2; //Perform 1-out-of-2 OT
     
     // Execute OT sender routine
     success = m_sender->send(m_num_ots, bitlength, X1, X2, version, 
-			     m_num_of_threads, m_masking_function);
+			     m_connection_manager->get_num_of_threads(), 
+			     m_masking_function);
     
     return success;
 }

@@ -24,9 +24,9 @@
  * code may be changed in the future to reflect the author's original intentions.
  */
 class OtExtensionMaliciousSenderInterface : public OtExtensionMaliciousCommonInterface {
-    void InitOTSender(const char* address, int port, int nbaseots, int numOTs);
-    BOOL PrecomputeBaseOTsSender();
-    BOOL ObliviouslySend(CBitVector& X1, CBitVector& X2, int numOTs, int bitlength, BYTE version);
+    void init_ot_sender(const char* address, int port, int nbaseots, int numOTs);
+    BOOL precompute_base_ots_sender();
+    BOOL obliviously_send(CBitVector& X1, CBitVector& X2, int numOTs, int bitlength, BYTE version);
 };
 
 }

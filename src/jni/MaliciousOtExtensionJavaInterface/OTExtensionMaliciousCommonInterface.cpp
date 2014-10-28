@@ -29,22 +29,18 @@ OTExtensionMaliciousCommonInterface::OTExtensionMaliciousCommonInterface(int rol
 									 int num_ots) {
     m_num_base_ots = num_base_ots;
     m_num_ots = num_ots;
-    m_counter = 0;
 
+    // set to a fixed default
+    m_counter = 0;
+    m_security_level = LT;
+    m_num_checks = 380;
+
+    // init seeds
     init_seeds(role);
     
+    // init base ot handler
     m_baseot_handler = new PVWDDH(m_security_level, m_receiver_seed);
 }
 
-void OtExtensionMaliciousReceiverInterface::InitOTReceiver() {
-
-}
-
-BOOL OtExtensionMaliciousReceiverInterface::PrecomputeBaseOTsReceiver(int nbaseots);
-BOOL OtExtensionMaliciousReceiverInterface::ObliviouslyReceive(CBitVector& choices, 
-							       CBitVector& ret, 
-							       int numOTs, 
-							       int bitlength, 
-							       BYTE version);
 
 }

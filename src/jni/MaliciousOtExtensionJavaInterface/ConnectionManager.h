@@ -25,6 +25,7 @@ class ConnectionManager {
     void cleanup();
     inline CSocket * get_sockets_data() { return m_sockets.data(); };
     inline const CSocket& get_socket(int i) { return m_sockets[i]; };
+    inline int get_num_of_threads() { return m_num_of_threads; };
     virtual BOOL setup_connection() = 0;
     
  protected:
