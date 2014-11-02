@@ -30,6 +30,7 @@ namespace maliciousot {
 class OtExtensionMaliciousSenderInterface : public OtExtensionMaliciousCommonInterface {
  public:
     OtExtensionMaliciousSenderInterface(const char* address, int port, int num_of_threads, int num_base_ots, int num_ots);
+    virtual ~OtExtensionMaliciousSenderInterface();
     void init_ot_sender();
     BOOL precompute_base_ots_sender();
     BOOL obliviously_send(CBitVector& X1, CBitVector& X2, int numOTs, int bitlength, BYTE version, MaskingFunction * masking_function);

@@ -40,3 +40,7 @@ maliciousot::OtExtensionMaliciousCommonInterface::OtExtensionMaliciousCommonInte
     // init base ot handler
     m_baseot_handler = new PVWDDH(m_security_level, m_receiver_seed);
 }
+
+maliciousot::OtExtensionMaliciousCommonInterface::~OtExtensionMaliciousCommonInterface() {
+    delete m_baseot_handler;
+}

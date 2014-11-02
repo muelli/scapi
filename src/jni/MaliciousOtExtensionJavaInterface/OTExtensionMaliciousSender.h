@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;III)J
  */
 JNIEXPORT jlong JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otExtension_OTExtensionMaliciousSender_initOtSender
-  (JNIEnv *, jobject, jstring, jint, jint, jint);
+(JNIEnv *, jobject, jstring, jint, jint, jint, jint);
 
 /*
  * Class:     edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otExtension_OTExtensionMaliciousSender

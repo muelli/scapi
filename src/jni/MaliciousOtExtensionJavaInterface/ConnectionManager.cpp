@@ -32,6 +32,10 @@ void maliciousot::ConnectionManager::cleanup() {
   }
 }
 
+maliciousot::ConnectionManager::~ConnectionManager() {
+    cleanup();
+}
+
 /*******************************************************************************
  *  server class
  ******************************************************************************/

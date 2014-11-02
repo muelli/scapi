@@ -99,3 +99,9 @@ BOOL maliciousot::OtExtensionMaliciousSenderInterface::obliviously_send(CBitVect
     
     return success;
 }
+
+maliciousot::OtExtensionMaliciousSenderInterface::~OtExtensionMaliciousSenderInterface() {
+    delete m_connection_manager;
+    delete m_sender;
+    delete m_receiver;
+}

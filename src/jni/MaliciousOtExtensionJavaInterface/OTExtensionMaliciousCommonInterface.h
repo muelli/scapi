@@ -33,6 +33,7 @@ class OtExtensionMaliciousCommonInterface {
     static const char* m_initial_seed;
 
     OtExtensionMaliciousCommonInterface(int role, int num_base_ots, int num_ots);
+    virtual ~OtExtensionMaliciousCommonInterface();
 
  protected:
     void init_seeds(int role);

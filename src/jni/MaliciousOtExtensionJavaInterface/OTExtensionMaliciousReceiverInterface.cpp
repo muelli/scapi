@@ -102,3 +102,9 @@ BOOL maliciousot::OtExtensionMaliciousReceiverInterface::obliviously_receive(CBi
     
     return success;
 }
+
+maliciousot::OtExtensionMaliciousReceiverInterface::~OtExtensionMaliciousReceiverInterface() {
+    delete m_connection_manager;
+    delete m_sender;
+    delete m_receiver;
+}

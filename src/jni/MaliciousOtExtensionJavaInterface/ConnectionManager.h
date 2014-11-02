@@ -21,6 +21,9 @@ class ConnectionManager {
     // ctors
     ConnectionManager(int role, int num_of_threads, const char * address, int port);
     explicit ConnectionManager(int role);
+
+    // dtor
+    virtual ~ConnectionManager();
     
     void cleanup();
     inline CSocket * get_sockets_data() { return m_sockets.data(); };
