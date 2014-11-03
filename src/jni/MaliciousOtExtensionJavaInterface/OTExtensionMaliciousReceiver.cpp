@@ -1,8 +1,11 @@
 #include "OTExtensionMaliciousReceiver.h"
 #include "OTExtensionMaliciousReceiverInterface.h"
 #include <jni.h>
+#include <iostream>
 
 using namespace maliciousot;
+using std::cout;
+using std::endl;
 
 /*
  * Function initOtReceiver : This function initializes the receiver object and 
@@ -17,6 +20,8 @@ JNIEnv *env, jobject, jstring ipAddress, jint port, jint numOfthreads, jint nbas
 
     // get the ip address from java
     const char* address = env->GetStringUTFChars(ipAddress, NULL);
+    cout << "initOtReceiver(" << address << "," << port << ")" << endl;
+
     OtExtensionMaliciousReceiverInterface * receiver_interface;
     receiver_interface = new OtExtensionMaliciousReceiverInterface(address,
 								   (int) port,
@@ -24,6 +29,8 @@ JNIEnv *env, jobject, jstring ipAddress, jint port, jint numOfthreads, jint nbas
 								   (int) nbaseots, 
 								   (int) numOTs);
     receiver_interface->init_ot_receiver();
+
+    cout << "finished initOtReceiver." << endl;
     return (jlong) receiver_interface;
 }
 
@@ -44,6 +51,8 @@ jint bitLength, jbyteArray output, jstring version) {
     if (0 == receiver) {
 	return;
     }
+
+    cout << "Started runOtAsReceiver." << endl;
 
     // The masking function with which the values that are sent 
     // in the last communication step are processed
@@ -82,7 +91,10 @@ jint bitLength, jbyteArray output, jstring version) {
 
     //run the ot extension as the receiver
     OtExtensionMaliciousReceiverInterface * receiver_interface = (OtExtensionMaliciousReceiverInterface *) receiver;
+
+    cout << "started receiver_interface->obliviously_receive()" << endl;
     receiver_interface->obliviously_receive(choices, response, numOfOts, bitLength, ver, masking_function);
+    cout << "ended receiver_interface->obliviously_receive()" << endl;
 
     //prepare the out array
     jbyte *out = env->GetByteArrayElements(output, 0);
@@ -103,6 +115,8 @@ jint bitLength, jbyteArray output, jstring version) {
     if(ver == C_OT){
 	delete masking_function;
     }
+
+    cout << "ended runOtAsReceiver." << endl;
 }
 
 /*

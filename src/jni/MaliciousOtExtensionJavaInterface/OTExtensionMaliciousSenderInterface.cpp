@@ -85,7 +85,7 @@ BOOL maliciousot::OtExtensionMaliciousSenderInterface::precompute_base_ots_sende
  */
 BOOL maliciousot::OtExtensionMaliciousSenderInterface::obliviously_send(CBitVector& X1, 
 									CBitVector& X2, 
-									int m_num_ots, 
+									int num_ots, 
 									int bitlength, 
 									BYTE version,
 									MaskingFunction * masking_function) {
@@ -93,7 +93,7 @@ BOOL maliciousot::OtExtensionMaliciousSenderInterface::obliviously_send(CBitVect
     int nSndVals = 2; //Perform 1-out-of-2 OT
     
     // Execute OT sender routine
-    success = m_sender->send(m_num_ots, bitlength, X1, X2, version, 
+    success = m_sender->send(num_ots, bitlength, X1, X2, version, 
 			     m_connection_manager->get_num_of_threads(), 
 			     masking_function);
     

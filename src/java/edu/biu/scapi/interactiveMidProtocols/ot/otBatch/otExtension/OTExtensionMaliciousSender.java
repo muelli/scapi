@@ -59,7 +59,7 @@ public class OTExtensionMaliciousSender  implements Malicious, OTBatchSender{
 	
 	// This function initializes the sender. It creates sockets to communicate with the sender and attaches these sockets to the receiver object.
 	// It outputs the receiver object with communication abilities built in. 
-	private native long initOtSender(String ipAddress, int port, int koblitzOrZpSize, int numOfThreads);
+	private native long initOtSender(String ipAddress, int port, int numOfThreads, int numBaseOts, int numOts);
 	
 	/*
 	 * The native code that runs the OT extension as the sender.
@@ -79,15 +79,16 @@ public class OTExtensionMaliciousSender  implements Malicious, OTBatchSender{
 	/**
 	 * A constructor that creates the native sender with communication abilities. It uses the ip address and port given in the party object.<p>
 	 * The construction runs the base OT phase. Further calls to transfer function will be optimized and fast, no matter how much OTs there are.
+	 * THE SENDER ACTS AS THE SERVER!!!
 	 * @param party An object that holds the ip address and port.
 	 * @param koblitzOrZpSize An integer that determines whether the OT extension uses Zp or ECC koblitz. The optional parameters are the following.
 	 * 		  163,233,283 for ECC koblitz and 1024, 2048, 3072 for Zp.
 	 * @param numOfThreads    
 	 */
-	public OTExtensionMaliciousSender(Party party, int koblitzOrZpSize, int numOfThreads){
+	public OTExtensionMaliciousSender(String bindAddress, int listeningPort, int numOfThreads, int numBaseOts, int numOts){
 	
 		// Create the sender by passing the local host address.
-		senderPtr = initOtSender(party.getIpAddress().getHostAddress(), party.getPort(), koblitzOrZpSize, numOfThreads);
+		senderPtr = initOtSender(bindAddress, listeningPort, numOfThreads, numBaseOts, numOts);
 	}
 	
 	/**
@@ -95,9 +96,9 @@ public class OTExtensionMaliciousSender  implements Malicious, OTBatchSender{
 	 * The construction runs the base OT phase. Further calls to transfer function will be optimized and fast, no matter how much OTs there are.
 	 * @param party An object that holds the ip address and port.
 	 */
-	public OTExtensionMaliciousSender(Party party){
+	public OTExtensionMaliciousSender(String bindAddress, int listeningPort, int numOts){
 		// Create the sender by passing the local host address.
-		senderPtr = initOtSender(party.getIpAddress().getHostAddress(), party.getPort(), 163, 1);
+		senderPtr = initOtSender(bindAddress, listeningPort, 1, 190, numOts);
 	}
 
 	/**

@@ -61,7 +61,7 @@ public class OTExtensionMaliciousReceiver implements Malicious, OTBatchReceiver{
 	
 	// This function initializes the receiver. It creates sockets to communicate with the sender and attaches these sockets to the receiver object.
 	// It outputs the receiver object with communication abilities built in. 
-	private native long initOtReceiver(String ipAddress, int port, int koblitzOrZpSize, int numOfThreads);
+	private native long initOtReceiver(String ipAddress, int port, int numOfThreads, int numBaseOts, int numOts);
 	/*
 	 * The native code that runs the OT extension as the receiver.
 	 * @param receiverPtr The pointer initialized via the function initOtReceiver
@@ -86,9 +86,9 @@ public class OTExtensionMaliciousReceiver implements Malicious, OTBatchReceiver{
 	 * @param numOfThreads
 	 * 	      
 	 */
-	public OTExtensionMaliciousReceiver(Party party, int koblitzOrZpSize, int numOfThreads){
+	public OTExtensionMaliciousReceiver(String serverAddress, int serverPort, int numOfThreads, int numBaseOts, int numOts){
 		// Create the receiver by passing the local host address.
-		receiverPtr = initOtReceiver(party.getIpAddress().getHostAddress(), party.getPort(), koblitzOrZpSize, numOfThreads);
+		receiverPtr = initOtReceiver(serverAddress, serverPort, numOfThreads, numBaseOts, numOts);
 		
 	}
 	
@@ -97,10 +97,10 @@ public class OTExtensionMaliciousReceiver implements Malicious, OTBatchReceiver{
 	 * The construction runs the base OT phase. Further calls to transfer function will be optimized and fast, no matter how much OTs there are.
 	 * @param party An object that holds the ip address and port.
 	 */
-	public OTExtensionMaliciousReceiver(Party party){
+	public OTExtensionMaliciousReceiver(String serverAddress, int serverPort, int numOts){
 		
 		// Create the receiver by passing the local host address.
-		receiverPtr = initOtReceiver(party.getIpAddress().getHostAddress(), party.getPort(), 163, 1);
+		receiverPtr = initOtReceiver(serverAddress, serverPort, 1, 190, numOts);
 	}
 
 	/**

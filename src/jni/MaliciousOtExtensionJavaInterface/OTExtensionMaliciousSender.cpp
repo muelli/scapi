@@ -17,6 +17,8 @@ jint numOfthreads, jint nbaseots, jint numOTs) {
 
   // get the ip address from java
   const char* address = env->GetStringUTFChars(ipAddress, NULL);
+  cout << "initOtSender(" << address << "," << port << ")" << endl;
+
   OtExtensionMaliciousSenderInterface * sender_interface;
   sender_interface = new OtExtensionMaliciousSenderInterface(address,
 							     (int) port,
@@ -24,6 +26,8 @@ jint numOfthreads, jint nbaseots, jint numOTs) {
 							     (int) nbaseots, 
 							     (int) numOTs);
   sender_interface->init_ot_sender();
+
+  cout << "finished initOtSender." << endl;
   return (jlong) sender_interface;
 }
 
@@ -42,6 +46,8 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
     if (0 == sender) {
 	return;
     }
+
+    cout << "Started runOtAsSender." << endl;
 
     // The masking function with which the values that are sent 
     // in the last communication step are processed
@@ -108,7 +114,10 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
 	
     //run the ot extension as the sender
     OtExtensionMaliciousSenderInterface * sender_interface = (OtExtensionMaliciousSenderInterface *) sender;
+
+    cout << "started receiver_interface->obliviously_send()" << endl;
     sender_interface->obliviously_send(X1, X2, numOfOts, bitLength, ver, masking_function); //, delta);
+    cout << "ended receiver_interface->obliviously_send()" << endl;
 
     if(ver != G_OT){ //we need to copy x0 and x1 
 
@@ -132,6 +141,8 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
     X1.delCBitVector();
     X2.delCBitVector();
     delta.delCBitVector();
+
+    cout << "ended runOtAsSender." << endl;
 }
 
 /*

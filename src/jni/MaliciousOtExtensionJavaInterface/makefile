@@ -4,7 +4,7 @@
 
 # compilation options
 CXX=g++-4.9
-CXXFLAGS=-std=c++0x -fPIC
+CXXFLAGS=-std=c++0x -g -fPIC
 prefix=/usr
 includedir=/Users/asafc/projects/university
 libdir=/Users/asafc/projects/university/MaliciousOTExtension
@@ -27,7 +27,7 @@ OT_JNI_OBJECTS = ConnectionManager.o OTExtensionMaliciousCommonInterface.o OTExt
 
 # main target - linking individual *.o files
 libMaliciousOtExtensionJavaInterface$(JNI_LIB_EXT): $(OT_JNI_OBJECTS)
-	$(CXX) $(SHARED_LIB_OPT) -o $@ $< $(INCLUDES) $(LIBRARIES_DIR) $(LIBRARIES)
+	$(CXX) $(SHARED_LIB_OPT) -o $@ $(OT_JNI_OBJECTS) $(INCLUDES) $(LIBRARIES_DIR) $(LIBRARIES)
 
 ConnectionManager.o: ConnectionManager.cpp
 	$(CXX) $(CXXFLAGS) -c $< $(INCLUDES)
