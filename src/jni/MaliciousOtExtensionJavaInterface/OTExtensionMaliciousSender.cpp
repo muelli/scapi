@@ -72,7 +72,7 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
     jbyte * deltaArr;
   
     CBitVector delta, X1, X2;
-    MaskingFunction * masking_function = NULL;
+    MaskingFunction * masking_function = new XORMasking(bitLength);
     //Create X1 and X2 as two arrays with "numOTs" entries of "bitlength" bit-values
     X1.Create(numOfOts, bitLength);
     X2.Create(numOfOts, bitLength);
@@ -93,7 +93,6 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
     else if(ver == C_OT){
 	//get the delta from java
 	deltaArr = env->GetByteArrayElements(deltaFromJava, 0);
-	masking_function = new XORMasking(bitLength);
 	delta.Create(numOfOts, bitLength);
 
 	// set the delta values given from java
@@ -130,9 +129,9 @@ JNIEXPORT void JNICALL Java_edu_biu_scapi_interactiveMidProtocols_ot_otBatch_otE
 
 	if(ver==C_OT) {
 	    env->ReleaseByteArrayElements(deltaFromJava,deltaArr,0);
-	    delete masking_function;
 	}
     }
+    delete masking_function;
 
     //make sure to release the memory created in c++. The JVM will not release it automatically.
     env->ReleaseByteArrayElements(x1,x1Arr,0);

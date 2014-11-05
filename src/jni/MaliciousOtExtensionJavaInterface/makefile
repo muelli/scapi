@@ -24,6 +24,13 @@ LIBRARIES=$(INCLUDE_ARCHIVES_START) /usr/lib/libmiracl.a -lssl -lcrypto -lMalici
 OT_JNI_OBJECTS = ConnectionManager.o OTExtensionMaliciousCommonInterface.o OTExtensionMaliciousReceiverInterface.o OTExtensionMaliciousSenderInterface.o OTExtensionMaliciousReceiver.o OTExtensionMaliciousSender.o
 
 ## targets ##
+all: libMaliciousOtExtensionJavaInterface.jnilib mainSender.exe mainReceiver.exe
+
+mainSender.exe: $(OT_JNI_OBJECTS) mainSender.cpp
+	$(CXX) -o $@ $(OT_JNI_OBJECTS) mainSender.cpp $(INCLUDES) $(LIBRARIES_DIR) $(LIBRARIES)
+
+mainReceiver.exe: $(OT_JNI_OBJECTS) mainReceiver.cpp
+	$(CXX) -o $@ $(OT_JNI_OBJECTS) mainReceiver.cpp $(INCLUDES) $(LIBRARIES_DIR) $(LIBRARIES)
 
 # main target - linking individual *.o files
 libMaliciousOtExtensionJavaInterface$(JNI_LIB_EXT): $(OT_JNI_OBJECTS)
@@ -51,3 +58,4 @@ clean:
 	rm -f *~
 	rm -f *.o
 	rm -f *.jnilib
+	rm -f *.exe
