@@ -248,7 +248,7 @@ public class PlainTCPChannel extends PlainChannel{
 	 * Return the underlying socket. Used only internally.
 	 * @return the underlying socket
 	 */
-	Socket getSocket(){
+	public Socket getSocket(){
 		return socket;
 	}
 
