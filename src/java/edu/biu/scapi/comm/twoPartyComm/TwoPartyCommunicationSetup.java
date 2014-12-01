@@ -72,7 +72,7 @@ public interface TwoPartyCommunicationSetup {
 	 * in order to make it easier and more convenient to understand what is the usage of each connection.<p>
 	 * If this function succeeds, the application may use the send and receive functions of the created channels to 
 	 * pass messages.<p> 
-	 * In this function, Nagle’s algorithm is disabled; for cryptographic protocols this is typically much better.
+	 * In this function, Nagle's algorithm is disabled; for cryptographic protocols this is typically much better.
 	 * 
 	 * @param connectionsIds Each required connection's name.
 	 * @param timeOut the maximum amount of time we allow for the connection stage.
