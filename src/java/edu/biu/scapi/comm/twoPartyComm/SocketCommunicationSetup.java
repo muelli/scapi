@@ -181,10 +181,10 @@ public class SocketCommunicationSetup implements TwoPartyCommunicationSetup, Tim
 	 * This function calls each channel to connect to the other party.
 	 * @param channels between me to the other party.
 	 */
-	private void connect(PlainTCPSocketChannel[] channels){
+	protected void connect(PlainTCPSocketChannel[] channels){
 
 		//For each channel, call the connect function until the channel is actually connected.
-		for (int i=0; i<channels.length; i++){
+		for (int i=0; i<channels.length && !bTimedOut; i++){
 			
 			//while connection has not been stopped by owner and connection has failed.
 			while(!channels[i].isSendConnected() && !bTimedOut){
