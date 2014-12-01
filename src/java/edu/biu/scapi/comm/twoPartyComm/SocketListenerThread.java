@@ -49,15 +49,23 @@ class SocketListenerThread extends Thread{
 	protected boolean bStopped = false;			//A flag that indicates if to keep on listening or stop.
 	protected ServerSocket listener;		//Channel to listen on.
 
-
+	SocketListenerThread(){
+		
+	}
 	/**
 	* A constructor that open the server socket.
 	* @param channels the channels that should be set with receive socket.
 	* @param me the data of the current application.
 	* @param partyAdd The address to listen on.
 	*/
-	public SocketListenerThread(PlainTCPSocketChannel[] channels, SocketPartyData me, InetAddress partyAdd) {
+	SocketListenerThread(PlainTCPSocketChannel[] channels, SocketPartyData me, InetAddress partyAdd) {
 	
+		doConstruct(channels, me, partyAdd);
+	}
+
+
+	protected void doConstruct(PlainTCPSocketChannel[] channels, SocketPartyData me, InetAddress partyAdd) {
+		
 		this.channels = channels;
 		this.partyAddr = partyAdd;
 		
@@ -65,6 +73,10 @@ class SocketListenerThread extends Thread{
 	}
 
 
+	/**
+	 * Created the {@link ServerSocketChannel}.
+	 * @param me
+	 */
 	protected void CreateServerSocket(SocketPartyData me) {
 		//prepare the listener.
 		try {
@@ -84,7 +96,7 @@ class SocketListenerThread extends Thread{
 	* Sets the flag bStopped to false. In the run function of this thread this flag is checked - 
 	* if the flag is true the run functions returns, otherwise continues.
 	*/
-	public void stopConnecting(){
+	void stopConnecting(){
 	
 		//Set the flag to true.
 		bStopped = true;
