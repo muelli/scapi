@@ -45,7 +45,7 @@ ifeq ($(uname_S),Darwin)
 	LIBTOOL=glibtool
 	JNI_PATH=DYLD_LIBRARY_PATH
 	OSX_VERSION=$(shell sw_vers -productVersion)
-	ifneq (,$(findstring 10.9,$(OSX_VERSION)))
+	ifneq (,$(findstring $(OSX_VERSION),10.9 10.10))
 		CC=gcc-4.9
 		CXX=g++-4.9
 		AR=gcc-ar-4.9

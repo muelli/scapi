@@ -80,9 +80,13 @@ public class AESFixedKeyMultiKeyEncryption implements MultiKeyEncryptionScheme {
 	private boolean isFreeXor = false; 
 
 	public AESFixedKeyMultiKeyEncryption() {
-		aes = new CryptoPpAES();
+		this(new CryptoPpAES());
+	}
+	
+	public AESFixedKeyMultiKeyEncryption(AES aes) {
+		this.aes = aes;
 		try {
-			aes.setKey(FIXED_KEY);
+			this.aes.setKey(FIXED_KEY);
 		} catch (InvalidKeyException e) {
 			// This should not occur since the fixed key should be valid.
 		}
