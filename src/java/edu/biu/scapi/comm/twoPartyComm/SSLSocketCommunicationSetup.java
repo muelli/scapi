@@ -57,7 +57,7 @@ import edu.biu.scapi.generals.Logging;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public class SSLCommunicationSetup extends SocketCommunicationSetup{
+public class SSLSocketCommunicationSetup extends SocketCommunicationSetup{
 	
 	private SSLContext sc;	//Loaded with the keyStore and trustStore and used to get the SSLSocketFactory and SSLServerSocketFactory from.
 	
@@ -68,7 +68,7 @@ public class SSLCommunicationSetup extends SocketCommunicationSetup{
 	 * @param storePassword The password to the keyStore and trustStore
 	 * @throws DuplicatePartyException
 	 */
-	public SSLCommunicationSetup(PartyData me, PartyData party, String storePass) throws DuplicatePartyException {
+	public SSLSocketCommunicationSetup(PartyData me, PartyData party, String storePass) throws DuplicatePartyException {
 		super(me, party);
 		
 		//Creating the SSL Context to get the socket factories from.
