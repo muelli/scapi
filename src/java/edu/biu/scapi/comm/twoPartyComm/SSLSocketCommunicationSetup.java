@@ -57,7 +57,7 @@ import edu.biu.scapi.generals.Logging;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public class SSLCommunicationSetup extends SocketCommunicationSetup{
+public class SSLSocketCommunicationSetup extends SocketCommunicationSetup{
 	
 	private SSLContext sc;	//Loaded with the keyStore and trustStore and used to get the SSLSocketFactory and SSLServerSocketFactory from.
 	
