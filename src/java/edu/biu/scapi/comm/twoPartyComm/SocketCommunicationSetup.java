@@ -27,6 +27,7 @@ package edu.biu.scapi.comm.twoPartyComm;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 import org.apache.commons.exec.TimeoutObserver;
@@ -90,10 +91,10 @@ public class SocketCommunicationSetup implements TwoPartyCommunicationSetup, Tim
 	/**  
 	 * Initiates the creation of the actual sockets connections between the parties. If this function succeeds, the 
 	 * application may use the send and receive functions of the created channels to pass messages.
-	 * 
+	 * @throws TimeoutException in case a timeout has occurred before all channels have been connected.
 	 */
 	@Override
-	public Map<String, Channel> prepareForCommunication(String[] connectionsIds, long timeOut) {		
+	public Map<String, Channel> prepareForCommunication(String[] connectionsIds, long timeOut) throws TimeoutException {		
 		
 		//Start the watch dog with the given timeout.
 		watchdog = new Watchdog(timeOut);
@@ -109,14 +110,15 @@ public class SocketCommunicationSetup implements TwoPartyCommunicationSetup, Tim
 		//Verify connections.
 		verifyConnectingStatus();
 		
-		//Remove all connections with not READY state.
-		establishedConnections.removeNotReadyConnections();
-		
 		//Set Nagle algorithm.
 		establishedConnections.enableNagle(enableNagle);
 		
 		//Update the number of the created connections.
 		connectionsNumber += establishedConnections.getConnectionsCount();
+		
+		if (bTimedOut){
+			throw new TimeoutException("timeout has occurred");
+		}
 		
 		//Return the map of channels held in the established connection object.
 		return establishedConnections.getConnections();
@@ -124,7 +126,7 @@ public class SocketCommunicationSetup implements TwoPartyCommunicationSetup, Tim
 	}
 	
 	@Override
-	public Map<String, Channel> prepareForCommunication(int connectionsNum, long timeOut) {
+	public Map<String, Channel> prepareForCommunication(int connectionsNum, long timeOut) throws TimeoutException {
 		//Prepare the connections Ids using the default implementation, meaning the connections are numbered 
 		//according to their index. i.e the first connection's name is "1", the second is "2" and so on.
 		String[] names = new String[connectionsNum];
@@ -245,6 +247,10 @@ public class SocketCommunicationSetup implements TwoPartyCommunicationSetup, Tim
 		//Further stop the listening thread if it still runs. Similarly, it sets the flag of the listening thread to stopped.
 		if(listeningThread != null)
 			listeningThread.stopConnecting();
+		
+		establishedConnections.closeAllConnections();
+		establishedConnections.removeAllConnections();
+		
 	}
 
 	/**
