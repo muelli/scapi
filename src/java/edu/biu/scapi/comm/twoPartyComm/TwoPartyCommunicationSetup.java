@@ -26,6 +26,7 @@
 package edu.biu.scapi.comm.twoPartyComm;
  
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import edu.biu.scapi.comm.Channel;
 
@@ -77,8 +78,9 @@ public interface TwoPartyCommunicationSetup {
 	 * @param connectionsIds Each required connection's name.
 	 * @param timeOut the maximum amount of time we allow for the connection stage.
 	 * @return a map contains the connected channels. The key to the map is the id of the connection.
+	 * @throws TimeoutException in case a timeout has occurred before all channels have been connected.
 	 */
-	public Map<String, Channel> prepareForCommunication(String[] connectionsIds, long timeOut);
+	public Map<String, Channel> prepareForCommunication(String[] connectionsIds, long timeOut) throws TimeoutException;
 	
 	/**
 	 * An application that wants to use the communication layer will call this function in order to prepare for 
@@ -96,8 +98,9 @@ public interface TwoPartyCommunicationSetup {
 	 * @param connectionsNum The number of requested connections.
 	 * @param timeOut the maximum amount of time we allow for the connection stage.
 	 * @return a map contains the connected channels. The key to the map is the id of the connection.
+	 * @throws TimeoutException in case a timeout has occurred before all channels have been connected.
 	 */
-	public Map<String, Channel> prepareForCommunication(int connectionsNum, long timeOut);
+	public Map<String, Channel> prepareForCommunication(int connectionsNum, long timeOut) throws TimeoutException;
 	
 	/**
 	 * Enables to use Nagle algrithm in the communication. <p>
