@@ -103,7 +103,7 @@ public class SSLSocketChannel extends PlainTCPSocketChannel{
 			protocols[0] = "TLSv1.2";
 			((SSLSocket)sendSocket).setEnabledProtocols(protocols);
 			
-			//Set the enables cipher suits to .
+			//Set the enables cipherSuits.
 			String [] cipherSuits = new String[2];
 			cipherSuits[0] = "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256";
 			cipherSuits[1] = "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256";
