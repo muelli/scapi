@@ -21,97 +21,67 @@
 * SCAPI uses Crypto++, Miracl, NTL and Bouncy Castle. Please see these projects for any further licensing issues.
 * %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 * 
-*/ 
+*/
 
 package edu.biu.scapi.comm.twoPartyComm;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
+
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+
 import edu.biu.scapi.generals.Logging;
 
 /**
  * This class listen to incoming connections from the other party and set the received sockets to the channels.
+ * It uses the SSLServerSocket class and defining some parameters of the SSL protocol.
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-class SocketListenerThread extends Thread{
+public class SSLSocketListenerThread extends SocketListenerThread {
 	
-	protected InetAddress partyAddr;				//The address of the other party.
-	protected PlainTCPSocketChannel[] channels;	//All connections between me and the other party. The received sockets of each channel should be set when accepted. 
+	private SSLServerSocketFactory ssf; //Used to create the ssl server socket.
 	
-	protected boolean bStopped = false;			//A flag that indicates if to keep on listening or stop.
-	protected ServerSocket listener;		//Channel to listen on.
-
-	SocketListenerThread(){
-		
-	}
 	/**
-	* A constructor that open the server socket.
+	* A constructor that opens the server socket.
 	* @param channels the channels that should be set with receive socket.
 	* @param me the data of the current application.
 	* @param partyAdd The address to listen on.
+	* @param ssf Used to create the ssl server socket.
 	*/
-	SocketListenerThread(PlainTCPSocketChannel[] channels, SocketPartyData me, InetAddress partyAdd) {
-	
+	SSLSocketListenerThread(PlainTCPSocketChannel[] channels, SocketPartyData me, InetAddress partyAdd, SSLServerSocketFactory ssf) {
+		this.ssf = ssf;
 		doConstruct(channels, me, partyAdd);
 	}
-
-
-	protected void doConstruct(PlainTCPSocketChannel[] channels, SocketPartyData me, InetAddress partyAdd) {
-		
-		this.channels = channels;
-		this.partyAddr = partyAdd;
-		
-		CreateServerSocket(me);
-	}
-
-
+	
 	/**
-	 * Created the {@link ServerSocketChannel}.
-	 * @param me
+	 * created the {@link SSLServerSocket} using the {@link SSLServerSocketFactory} given in the constructor.
 	 */
 	protected void CreateServerSocket(SocketPartyData me) {
 		//prepare the listener.
 		try {
-			ServerSocketChannel channel = ServerSocketChannel.open();
-			channel.configureBlocking (false);
-			listener = channel.socket();
-			listener.bind (new InetSocketAddress (me.getIpAddress(), me.getPort()));
+
+			//Create the server socket.
+			listener = ssf.createServerSocket(me.getPort(), 0, me.getIpAddress());
+
 		} catch (IOException e) {
-		
 			Logging.getLogger().log(Level.WARNING, e.toString());
-	
 		}
 	}
 
-
 	/**
-	* Sets the flag bStopped to false. In the run function of this thread this flag is checked - 
-	* if the flag is true the run functions returns, otherwise continues.
-	*/
-	void stopConnecting(){
-	
-		//Set the flag to true.
-		bStopped = true;
-	}
-
-
-
-	/**
-	* This function is the main function of the SocketListenerThread. Mainly, we listen and accept valid connections 
-	* as long as the flag bStopped is false or until we have got as much connections as we should.<p>
-	* We use the ServerSocketChannel rather than the regular ServerSocket since we want the accept to be non-blocking. 
-	* If the accept function is blocking the flag bStopped will not be checked until the thread is unblocked.  
+	* This function is the main function of the SSLSocketListenerThread. 
+	* Mainly, we listen and accept valid connections as long as the flag bStopped is false or until we have 
+	* got as much connections as we should.<p>
 	*/
 	public void run() {
-	
+		
 		//Set the state of all channels to connecting.
 		int size = channels.length;
 		for (int i=0; i<size; i++){
@@ -123,13 +93,13 @@ class SocketListenerThread extends Thread{
 		//Loop for listening to incoming connections and make sure that this thread should not stopped.
 		while (i < size && !bStopped) {
 		
-			SocketChannel socketChannel = null;
+			Socket socket = null;
 			try {
 			
 				//Use the server socket to listen to incoming connections.
 				Logging.getLogger().log(Level.INFO, "Trying to listen "+ listener.getLocalPort());
 				
-				socketChannel = listener.getChannel().accept();
+				socket = listener.accept();
 			
 			}	catch (ClosedChannelException e) {
 				// TODO: handle exception
@@ -140,7 +110,7 @@ class SocketListenerThread extends Thread{
 			}
 		
 			//If there was no connection request wait a second and try again.
-			if(socketChannel==null){
+			if(socket==null){
 				try {
 					Thread.sleep (1000);
 				} catch (InterruptedException e) {
@@ -150,22 +120,38 @@ class SocketListenerThread extends Thread{
 			//If there was an incoming request, check it.
 			} else{
 				//Get the ip of the client socket.
-				InetAddress inetAddr = socketChannel.socket().getInetAddress();
+				InetAddress inetAddr = socket.getInetAddress();
 				
 				//if the accepted address is not a valid address. I.e. different from the other party's address. 
 				if(!inetAddr.equals(partyAddr)){//an unauthorized ip tried to connect
 				
 					//Close the socket.
 					try {
-						socketChannel.close();
+						socket.close();
 					} catch (IOException e) {
 					
 						Logging.getLogger().log(Level.WARNING, e.toString());
 					}
+					
 				//If the accepted address is valid, set it as the receive socket of the channel.
 				//The send socket is set in the SocketCommunicationSetup.connect function. 
 				} else{ 
-					channels[i].setReceiveSocket(socketChannel.socket());
+					//Set the enables protocol to TLS 1.2.
+					String [] protocols = new String[1];
+					protocols[0] = "TLSv1.2";
+					((SSLSocket)socket).setEnabledProtocols(protocols);
+					
+					//Set the enables cipher suits to .
+					String [] cipherSuits = new String[2];
+					cipherSuits[0] = "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256";
+					cipherSuits[1] = "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256";
+					((SSLSocket)socket).setEnabledCipherSuites(cipherSuits);
+					
+					//Configure the socket to use server mode when handshaking and to check client authentication.
+					((SSLSocket)socket).setUseClientMode(false);
+					((SSLSocket)socket).setNeedClientAuth(true);
+					
+					((SSLSocketChannel)channels[i]).setReceiveSocket(socket);
 					
 					//Increment the index of incoming connections.
 					i++;
@@ -178,10 +164,11 @@ class SocketListenerThread extends Thread{
 		//After accepting all connections, close the thread.
 		try {
 			listener.close();
-			} catch (IOException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	
 	}
+
 }

@@ -200,7 +200,7 @@ public class CommunicationSetup implements TimeoutObserver{
 	 * An application that wants to use the communication layer will call this function in order to prepare for communication after providing the required parameters. 
 	 * This function initiates the creation of the final actual socket connections between the parties. If this function succeeds, the 
 	 * application may use the send and receive functions of the created channels to pass messages.<p> 
-	 * In this function, Nagle’s algorithm is disabled; for cryptographic protocols this is typically much better.
+	 * In this function, NagleÂ’s algorithm is disabled; for cryptographic protocols this is typically much better.
 	 *  
 	 * @param listOfParties the original list of parties to connect to. As a convention, we will set the <B>first party</B> in the list to be the <B>requesting party</B>, that is, 
 	 * 	 					the party represented by the application.
@@ -405,12 +405,15 @@ public class CommunicationSetup implements TimeoutObserver{
 			
 			//sets the flag of the thread to stopped. This will make the run function of the thread to terminate if it has not finished yet.
 			thread.stopConnecting();
+            thread.interrupt();
 			
 		}	
 		
 		//further stop the listening thread if it still runs. Similarly, it sets the flag of the listening thread to stopped.
-		if(listeningThread!=null)
-			listeningThread.stopConnecting();
+		if(listeningThread!=null) {
+            listeningThread.stopConnecting();
+            listeningThread.interrupt();
+        }
 	}
 	
 }
