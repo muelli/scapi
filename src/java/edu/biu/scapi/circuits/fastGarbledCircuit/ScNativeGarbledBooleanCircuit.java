@@ -416,8 +416,8 @@ public class ScNativeGarbledBooleanCircuit implements FastGarbledBooleanCircuit{
 	
 	static {
 		 
-		 //loads the JustGarbledJavaInterface jni dll
-		 System.loadLibrary("ScapiCircuitDll");
+		 //loads the OpenGarbledJavaInterface jni dll
+		 System.loadLibrary("OpenGarbleJavaInterface");
 	}
 
 	

@@ -25,30 +25,42 @@
 package edu.biu.scapi.circuits.garbledCircuit;
 
 /**
- * This class holds the garbled tables of the garbled circuit.<p>
- * The garbled circuit will hold an instance of this class and also will the gates. <p>
+ * This class holds the garbled tables of the justGarbled circuit.<p>
+ * In just garbled the garbled tables is held in one dimensional byte array. Thus, when we wish to 
+ * relate to it as a double byte array as held in SCAPI, we use a double byte array whose first location
+ * holds the one dimensional byte array.  
+ * The garbled circuit will hold an instance of this class. <p>
  * This way, when we want to change the garbled tables, we just have to change the pointer of the tables in this class. 
- * The circuit and the gates will all get the new tables with no time.
  * 
- * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
+ * 
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Meital Levy)
  *
  */
-public class BasicGarbledTablesHolder implements GarbledTablesHolder{
+public class JustGarbledGarbledTablesHolder implements GarbledTablesHolder{
 
-	private static final long serialVersionUID = -7744399536390133399L;
-	private byte[][] garbledTables;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6520314182106273536L;
+	private byte[] garbledTables;
 	
 	/**
 	 * Sets the given garbled tables.
 	 * @param garbledTables
 	 */
-	public BasicGarbledTablesHolder(byte[][] garbledTables){
+	public JustGarbledGarbledTablesHolder(byte[] garbledTables){
 		this.garbledTables = garbledTables;
 	}
 
 	@Override
 	public byte[][] toDoubleByteArray(){
-		return garbledTables;
+		
+		byte[][] garbledTablesInZeroLocation = new byte[1][];
+		
+		garbledTablesInZeroLocation[0] = garbledTables;
+		
+		
+		return garbledTablesInZeroLocation;
 	}
 	
 	/**
@@ -56,7 +68,7 @@ public class BasicGarbledTablesHolder implements GarbledTablesHolder{
 	 * This allows changing the circuit inner content with no time.
 	 * @param garbledTables of the circuit.
 	 */
-	public void setGarbledTables(byte[][] garbledTables){
+	public void setGarbledTables(byte[] garbledTables){
 		this.garbledTables = garbledTables;
 	}
 }
