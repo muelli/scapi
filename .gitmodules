@@ -16,6 +16,3 @@
 [submodule "lib/OTExtension"]
 	path = lib/OTExtension
 	url = git://github.com/cryptobiu/OTExtension.git
-[submodule "lib/OpenGarble"]
-	path = lib/OpenGarble
-	url = https://github.com/cryptobiu/OpenGarble.git
