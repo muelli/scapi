@@ -49,6 +49,28 @@ public class SSLActiveMQCommunicationSetup extends QueueCommunicationSetup{
 	
 	/**
 	 * Sets the parties parameters and create the communication using the given url.<p>
+	 * The key store and trust store used in the ssl protocol should be names "scapiKeystore" and "scapiCacerts" 
+	 * and the password for both of them is the given storePass.<p> 
+	 * 
+	 * In case you use this constructor, Nagles algorithm is disabled; for cryptographic protocols this is 
+	 * typically much better.
+	 *  
+	 * @param url The url of the ActiveMQ broker.
+	 * @param me Data of the current application.
+	 * @param party Data of the other application.
+	 * @param keyStoreName Name of the keystore file of this party.
+	 * @param trustStoreName Name of the truststore file of this party.
+	 * @param storePass The password for the key store and trust store.
+	 * @throws DuplicatePartyException
+	 */
+	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String keyStoreName, String trustStoreName, String storePass) throws DuplicatePartyException {
+		
+		//Call the other constructor without enabling Nagle algorithm. This is much better for cryptographic algorithms.
+		this(url, me, party, keyStoreName, trustStoreName, storePass, false);
+	}
+	
+	/**
+	 * Sets the parties parameters and create the communication using the given url.<p>
 	 * 
 	 * The created connection uses the TLSv1.2 protocol, the enabled cipherSuits are TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256 
 	 * and TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 and requires client authentication.
@@ -62,11 +84,35 @@ public class SSLActiveMQCommunicationSetup extends QueueCommunicationSetup{
 	 * @param me Data of the current application.
 	 * @param party Data of the other application.
 	 * @param storePass The password for the key store and trust store.
-	 * @param enableNagle 
+	 * @param enableNagle Indicates if to use Nagle's algorithm or not. For cryptographic algorithms it is much better to disable Nagle's algorithm.
 	 * @throws DuplicatePartyException
 	 */
 	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String storePass, boolean enableNagle) throws DuplicatePartyException {
-		
+		this(url, me, party, "scapiKeystore.jks", "scapiCacerts.jks", storePass, enableNagle);
+	}
+	
+	/**
+	 * Sets the parties parameters and create the communication using the given url.<p>
+	 * 
+	 * The created connection uses the TLSv1.2 protocol, the enabled cipherSuits are TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256 
+	 * and TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 and requires client authentication.
+	 * 
+	 * The key store and trust store used in the ssl protocol should be names "scapiKeystore" and "scapiCacerts" 
+	 * and the password for both of them is the given storePass.
+	 * 
+	 * Note that using this function you can choose to use or not to use the Nagle algorithm.
+	 * 
+	 * @param url The url of the ActiveMQ broker.
+	 * @param me Data of the current application.
+	 * @param party Data of the other application.
+	 * @param keyStoreName Name of the keystore file of this party.
+	 * @param trustStoreName Name of the truststore file of this party.
+	 * @param storePass The password for the key store and trust store.
+	 * @param enableNagle Indicates if to use Nagle's algorithm or not. For cryptographic algorithms it is much better to disable Nagle's algorithm.
+	 * @throws DuplicatePartyException
+	 */
+	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String keyStoreName, String trustStoreName, String storePass, boolean enableNagle) throws DuplicatePartyException {
+	
 		try {
 			// Create an ActiveMQConnectionFactory with the given URL. 
 			String uri = "failover:ssl://"+url;
@@ -84,13 +130,13 @@ public class SSLActiveMQCommunicationSetup extends QueueCommunicationSetup{
 			
 			//Loading the trust store containing the certificate that should be received from the other party.
 			KeyStore trustStore = KeyStore.getInstance("JKS");
-			trustStore.load(new FileInputStream("scapiCacerts.jks"), storePass.toCharArray());
+			trustStore.load(new FileInputStream(trustStoreName), storePass.toCharArray());
 	        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
 	        tmf.init(trustStore);
 	         
 	        //Loading the key store containing the certificate that should be sent to the other party.
 	        KeyStore keyStore = KeyStore.getInstance("JKS");
-	        keyStore.load(new FileInputStream("scapiKeystore.jks"), storePass.toCharArray());
+	        keyStore.load(new FileInputStream(keyStoreName), storePass.toCharArray());
 	        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
 	        kmf.init(keyStore, storePass.toCharArray());
 	         
