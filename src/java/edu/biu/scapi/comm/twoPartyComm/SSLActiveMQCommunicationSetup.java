@@ -11,6 +11,7 @@ import java.security.cert.CertificateException;
 import java.util.logging.Level;
 
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.activemq.ActiveMQSslConnectionFactory;
@@ -39,9 +40,11 @@ public class SSLActiveMQCommunicationSetup extends QueueCommunicationSetup{
 	 * @param me Data of the current application.
 	 * @param party Data of the other application.
 	 * @param storePass The password for the key store and trust store.
-	 * @throws DuplicatePartyException
+	 * @throws DuplicatePartyException In case both parties are the same.
+	 * @throws IOException In case there is a problem with the key store or trust store file.
+	 * @throws SSLException In case there is a problem during the SSL protocol initialization.
 	 */
-	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String storePass) throws DuplicatePartyException {
+	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String storePass) throws DuplicatePartyException, SSLException, IOException {
 		
 		//Call the other constructor without enabling Nagle algorithm. This is much better for cryptographic algorithms.
 		this(url, me, party, storePass, false);
@@ -61,9 +64,11 @@ public class SSLActiveMQCommunicationSetup extends QueueCommunicationSetup{
 	 * @param keyStoreName Name of the keystore file of this party.
 	 * @param trustStoreName Name of the truststore file of this party.
 	 * @param storePass The password for the key store and trust store.
-	 * @throws DuplicatePartyException
+	 * @throws DuplicatePartyException In case both parties are the same.
+	 * @throws IOException In case there is a problem with the key store or trust store file.
+	 * @throws SSLException In case there is a problem during the SSL protocol initialization. 
 	 */
-	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String keyStoreName, String trustStoreName, String storePass) throws DuplicatePartyException {
+	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String keyStoreName, String trustStoreName, String storePass) throws DuplicatePartyException, SSLException, IOException {
 		
 		//Call the other constructor without enabling Nagle algorithm. This is much better for cryptographic algorithms.
 		this(url, me, party, keyStoreName, trustStoreName, storePass, false);
@@ -85,9 +90,11 @@ public class SSLActiveMQCommunicationSetup extends QueueCommunicationSetup{
 	 * @param party Data of the other application.
 	 * @param storePass The password for the key store and trust store.
 	 * @param enableNagle Indicates if to use Nagle's algorithm or not. For cryptographic algorithms it is much better to disable Nagle's algorithm.
-	 * @throws DuplicatePartyException
+	 * @throws DuplicatePartyException In case both parties are the same.
+	 * @throws IOException In case there is a problem with the key store or trust store file.
+	 * @throws SSLException In case there is a problem during the SSL protocol initialization.
 	 */
-	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String storePass, boolean enableNagle) throws DuplicatePartyException {
+	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String storePass, boolean enableNagle) throws DuplicatePartyException, SSLException, IOException {
 		this(url, me, party, "scapiKeystore.jks", "scapiCacerts.jks", storePass, enableNagle);
 	}
 	
@@ -109,9 +116,11 @@ public class SSLActiveMQCommunicationSetup extends QueueCommunicationSetup{
 	 * @param trustStoreName Name of the truststore file of this party.
 	 * @param storePass The password for the key store and trust store.
 	 * @param enableNagle Indicates if to use Nagle's algorithm or not. For cryptographic algorithms it is much better to disable Nagle's algorithm.
-	 * @throws DuplicatePartyException
+	 * @throws DuplicatePartyException In case both parties are the same.
+	 * @throws IOException In case there is a problem with the key store or trust store file.
+	 * @throws SSLException In case there is a problem during the SSL protocol initialization.
 	 */
-	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String keyStoreName, String trustStoreName, String storePass, boolean enableNagle) throws DuplicatePartyException {
+	public SSLActiveMQCommunicationSetup(String url, PartyData me, PartyData party, String keyStoreName, String trustStoreName, String storePass, boolean enableNagle) throws DuplicatePartyException, SSLException, IOException {
 	
 		try {
 			// Create an ActiveMQConnectionFactory with the given URL. 
@@ -147,17 +156,19 @@ public class SSLActiveMQCommunicationSetup extends QueueCommunicationSetup{
 	        //in order to communicate using the ActiveMQ implementation.
 			doConstruct(factory, new ActiveMQDestroyer(), me, party);
 		
-		} catch (IOException e) {
-			Logging.getLogger().log(Level.FINEST, e.toString());    
-		} catch (KeyStoreException e) {
-			Logging.getLogger().log(Level.SEVERE, e.toString()); 
-		} catch (NoSuchAlgorithmException e) {
-			Logging.getLogger().log(Level.SEVERE, e.toString()); 
-		} catch (CertificateException e) {
-			Logging.getLogger().log(Level.SEVERE, e.toString()); 
 		} catch (UnrecoverableKeyException e) {
-			Logging.getLogger().log(Level.SEVERE, e.toString()); 
-		}
+			Logging.getLogger().log(Level.SEVERE, e.toString());    
+			throw new SSLException(e.getCause());
+		} catch (KeyStoreException e) {
+			Logging.getLogger().log(Level.SEVERE, e.toString());    
+			throw new SSLException(e.getCause());
+		} catch (CertificateException e) {
+			Logging.getLogger().log(Level.SEVERE, e.toString());    
+			throw new SSLException(e.getCause());
+		} catch (NoSuchAlgorithmException e) {
+			Logging.getLogger().log(Level.SEVERE, e.toString());    
+			throw new SSLException(e.getCause());
+		} 
 	}
 
 }
