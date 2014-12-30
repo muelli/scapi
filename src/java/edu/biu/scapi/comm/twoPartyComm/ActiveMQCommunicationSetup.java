@@ -40,7 +40,7 @@ import edu.biu.scapi.exceptions.DuplicatePartyException;
  * The constructor of this class create the ActiveMQ connection factory and the ActiveMQDestroyer and pass it to the 
  * constructor of the QueueCommunicationSetup to work with.
  * 
- *  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
+ * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
 public class ActiveMQCommunicationSetup extends QueueCommunicationSetup{
@@ -69,7 +69,7 @@ public class ActiveMQCommunicationSetup extends QueueCommunicationSetup{
 	 * @param url The url of the ActiveMQ broker.
 	 * @param me Data of the current application.
 	 * @param party Data of the other application.
-	 * @param enableNagle 
+	 * @param enableNagle Indicates if to use Nagle's algorithm or not. For cryptographic algorithms it is much better to disable Nagle's algorithm. 
 	 * @throws DuplicatePartyException
 	 */
 	public ActiveMQCommunicationSetup(String url, PartyData me, PartyData party, boolean enableNagle) throws DuplicatePartyException {

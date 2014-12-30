@@ -27,7 +27,6 @@ package edu.biu.scapi.comm.twoPartyComm;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -39,6 +38,7 @@ import java.util.logging.Level;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
 import edu.biu.scapi.exceptions.DuplicatePartyException;
@@ -50,9 +50,9 @@ import edu.biu.scapi.generals.Logging;
  * This class creates an {@link SSLSocketChannel} while the SocketCommunicationSetup creates a {@link PlainTCPSocketChannel}.<p>
  * 
  * In order to create an sslSocket you should have an {@link SSLContext} which should be loaded with the key store and trust store. 
- * The keyStore contains the certificate that should be sent to the other party, we hardcoded the name as "scapiKeystore".
- * The trustStore contains the certificate that should be received from the other party, we hardcoded the name as "scapiCacerts".
- * This loading is done one in the constructor of this class and is passed to the {@link SSLSocketListenerThread} and to each {@link SSLSocketChannel}. This factory is used to send the certificate of this application.
+ * The keyStore contains the certificate that should be sent to the other party, in SCAPI the default name is "scapiKeystore".
+ * The trustStore contains the certificate that should be received from the other party, in SCAPI the default name as "scapiCacerts".
+ * This loading is done once in the constructor of this class and is passed to the {@link SSLSocketListenerThread} and to each {@link SSLSocketChannel}. This factory is used to send the certificate of this application.
  * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
@@ -65,10 +65,29 @@ public class SSLSocketCommunicationSetup extends SocketCommunicationSetup{
 	 * Constructor that gets the data of both parties and the password to the keyStore and trustStore.
 	 * @param me The data of the current application.
 	 * @param party The data of the other application.
-	 * @param storePassword The password to the keyStore and trustStore
-	 * @throws DuplicatePartyException
+	 * @param storePass The password to the keyStore and trustStore
+	 * @throws DuplicatePartyException In case both parties are the same.
+	 * @throws IOException In case there is a problem with the key store or trust store file.
+	 * @throws SSLException In case there is a problem during the SSL protocol initialization.
 	 */
-	public SSLSocketCommunicationSetup(PartyData me, PartyData party, String storePass) throws DuplicatePartyException {
+	public SSLSocketCommunicationSetup(PartyData me, PartyData party, String storePass) throws DuplicatePartyException, SSLException, IOException {
+		//Call the other constructor with scapi's default key store names.
+		this(me, party, "scapiKeystore.jks", "scapiCacerts.jks", storePass);
+		
+	}
+	
+	/**
+	 * Constructor that gets the data of both parties, the keystore and truststore files names and the password to them.
+	 * @param me The data of the current application.
+	 * @param party The data of the other application.
+	 * @param keyStoreName Name of the keystore file of this party.
+	 * @param trustStoreName Name of the truststore file of this party.
+	 * @param storePass The password to the keyStore and trustStore
+	 * @throws DuplicatePartyException In case both parties are the same.
+	 * @throws IOException In case there is a problem with the key store or trust store file.
+	 * @throws SSLException In case there is a problem during the SSL protocol initialization.
+	 */
+	public SSLSocketCommunicationSetup(PartyData me, PartyData party, String keyStoreName, String trustStoreName, String storePass) throws DuplicatePartyException, SSLException, IOException{
 		super(me, party);
 		
 		//Creating the SSL Context to get the socket factories from.
@@ -76,13 +95,13 @@ public class SSLSocketCommunicationSetup extends SocketCommunicationSetup{
 			
 			//Loading the trust store containing the certificate that should be received from the other party.
 			KeyStore trustStore = KeyStore.getInstance("JKS");
-			trustStore.load(new FileInputStream("scapiCacerts.jks"), storePass.toCharArray());
+			trustStore.load(new FileInputStream(trustStoreName), storePass.toCharArray());
 	        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
 	        tmf.init(trustStore);
 	         
 	        //Loading the key store containing the certificate that should be sent to the other party.
 	        KeyStore keyStore = KeyStore.getInstance("JKS");
-	        keyStore.load(new FileInputStream("scapiKeystore.jks"), storePass.toCharArray());
+	        keyStore.load(new FileInputStream(keyStoreName), storePass.toCharArray());
 	        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
 	        kmf.init(keyStore, storePass.toCharArray());
 	         
@@ -90,48 +109,31 @@ public class SSLSocketCommunicationSetup extends SocketCommunicationSetup{
 	        sc = SSLContext.getInstance("TLSv1.2");
 	        sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
 		
-		} catch (IOException e) {
-			Logging.getLogger().log(Level.FINEST, e.toString());    
-		} catch (KeyStoreException e) {
-			Logging.getLogger().log(Level.SEVERE, e.toString()); 
-		} catch (NoSuchAlgorithmException e) {
-			Logging.getLogger().log(Level.SEVERE, e.toString()); 
-		} catch (CertificateException e) {
-			Logging.getLogger().log(Level.SEVERE, e.toString()); 
-		} catch (KeyManagementException e) {
-			Logging.getLogger().log(Level.SEVERE, e.toString()); 
 		} catch (UnrecoverableKeyException e) {
-			Logging.getLogger().log(Level.SEVERE, e.toString()); 
-		}
+			Logging.getLogger().log(Level.SEVERE, e.toString());    
+			throw new SSLException(e.getCause());
+		} catch (KeyStoreException e) {
+			Logging.getLogger().log(Level.SEVERE, e.toString());    
+			throw new SSLException(e.getCause());
+		} catch (CertificateException e) {
+			Logging.getLogger().log(Level.SEVERE, e.toString());    
+			throw new SSLException(e.getCause());
+		} catch (NoSuchAlgorithmException e) {
+			Logging.getLogger().log(Level.SEVERE, e.toString());    
+			throw new SSLException(e.getCause());
+		} catch (KeyManagementException e) {
+			Logging.getLogger().log(Level.SEVERE, e.toString());    
+			throw new SSLException(e.getCause());
+		} 
+		
+		//Create the connector object that creates and connects the channels.
+		connector = new TwoPartySocketConnector(me, other, sc.getSocketFactory());
 	}
 	
 	@Override
-	protected void establishAndSecureConnections(String[] connectionsIds) {
-		//Create an InetSocketAddress of the other party.
-		InetSocketAddress inetSocketAdd = new InetSocketAddress(other.getIpAddress(), other.getPort());
-		
-		int size = connectionsIds.length;
-		//Create an array to hold the created channels.
-		SSLSocketChannel[] channels = new SSLSocketChannel[size];
-		
-		//Create the number of channels as requested.
-		for (int i=0; i<size; i++){
-			//Create an ssl channel.
-			channels[i] = new SSLSocketChannel(inetSocketAdd, sc.getSocketFactory());
-			
-			//Set to NOT_INIT state.
-			channels[i].setState(PlainTCPSocketChannel.State.NOT_INIT);
-			//Add to the established connection object.
-			establishedConnections.addConnection(connectionsIds[i], channels[i]);
-		}
-		
-		//Create a listening thread with the created channels.
-		//The listening thread receives calls from the other party and set the creates sockets as the receiveSocket of the channels.
+	protected void createListener(PlainTCPSocketChannel[] channels) {
 		listeningThread = new SSLSocketListenerThread(channels, me, other.getIpAddress(), sc.getServerSocketFactory());
-		listeningThread.start();
-		
-		//Start the connections between me to the other party.
-		connect(channels);
 	}
+	
 
 }

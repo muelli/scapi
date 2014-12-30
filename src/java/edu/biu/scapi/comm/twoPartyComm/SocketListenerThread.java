@@ -69,7 +69,7 @@ class SocketListenerThread extends Thread{
 		this.channels = channels;
 		this.partyAddr = partyAdd;
 		
-		CreateServerSocket(me);
+		createServerSocket(me);
 	}
 
 
@@ -77,7 +77,7 @@ class SocketListenerThread extends Thread{
 	 * Created the {@link ServerSocketChannel}.
 	 * @param me
 	 */
-	protected void CreateServerSocket(SocketPartyData me) {
+	protected void createServerSocket(SocketPartyData me) {
 		//prepare the listener.
 		try {
 			ServerSocketChannel channel = ServerSocketChannel.open();
@@ -126,9 +126,9 @@ class SocketListenerThread extends Thread{
 			SocketChannel socketChannel = null;
 			try {
 			
-				//Use the server socket to listen to incoming connections.
 				Logging.getLogger().log(Level.INFO, "Trying to listen "+ listener.getLocalPort());
 				
+				//Use the server socket to listen to incoming connections.
 				socketChannel = listener.getChannel().accept();
 			
 			}	catch (ClosedChannelException e) {

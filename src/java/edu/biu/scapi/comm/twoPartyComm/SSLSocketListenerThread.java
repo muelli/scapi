@@ -44,7 +44,7 @@ import edu.biu.scapi.generals.Logging;
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
  *
  */
-public class SSLSocketListenerThread extends SocketListenerThread {
+class SSLSocketListenerThread extends SocketListenerThread {
 	
 	private SSLServerSocketFactory ssf; //Used to create the ssl server socket.
 	
@@ -63,7 +63,7 @@ public class SSLSocketListenerThread extends SocketListenerThread {
 	/**
 	 * created the {@link SSLServerSocket} using the {@link SSLServerSocketFactory} given in the constructor.
 	 */
-	protected void CreateServerSocket(SocketPartyData me) {
+	protected void createServerSocket(SocketPartyData me) {
 		//prepare the listener.
 		try {
 
@@ -96,9 +96,9 @@ public class SSLSocketListenerThread extends SocketListenerThread {
 			Socket socket = null;
 			try {
 			
-				//Use the server socket to listen to incoming connections.
 				Logging.getLogger().log(Level.INFO, "Trying to listen "+ listener.getLocalPort());
 				
+				//Use the server socket to listen to incoming connections.
 				socket = listener.accept();
 			
 			}	catch (ClosedChannelException e) {

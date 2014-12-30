@@ -166,10 +166,10 @@ public class QueueCommunicationSetup implements TwoPartyCommunicationSetup, Time
 		watchdog.stop();
 		
 		if (bTimedOut){
-			Channel[] channels = (Channel[]) connectedChannels.values().toArray();
+			Object[] channels = connectedChannels.values().toArray();
 			int len = channels.length;
 			for (int i=0; i<len; i++){
-				channels[i].close();
+				((Channel) channels[i]).close();
 			}
 			throw new TimeoutException("timeout has occurred");
 		}
