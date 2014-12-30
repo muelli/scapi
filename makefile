@@ -67,8 +67,8 @@ export SHARED_LIB_EXT
 export JNI_LIB_EXT
 
 # target names
-CLEAN_TARGETS:=clean-cryptopp clean-miracl clean-miracl-cpp clean-otextension clean-ntl clean-openssl clean-bouncycastle
-CLEAN_JNI_TARGETS:=clean-jni-cryptopp clean-jni-miracl clean-jni-otextension clean-jni-ntl clean-jni-openssl clean-jni-assets
+CLEAN_TARGETS:=clean-cryptopp clean-miracl clean-miracl-cpp clean-otextension clean-ntl clean-openssl clean-opengarble clean-bouncycastle
+CLEAN_JNI_TARGETS:=clean-jni-cryptopp clean-jni-miracl clean-jni-otextension clean-jni-ntl clean-jni-openssl clean-jni-opengarble clean-jni-assets
 
 # target names of jni shared libraries
 JNI_CRYPTOPP:=src/jni/CryptoPPJavaInterface/libCryptoPPJavaInterface$(JNI_LIB_EXT)
@@ -76,7 +76,8 @@ JNI_MIRACL:=src/jni/MiraclJavaInterface/libMiraclJavaInterface$(JNI_LIB_EXT)
 JNI_OTEXTENSION:=src/jni/OtExtensionJavaInterface/libOtExtensionJavaInterface$(JNI_LIB_EXT)
 JNI_NTL:=src/jni/NTLJavaInterface/libNTLJavaInterface$(JNI_LIB_EXT)
 JNI_OPENSSL:=src/jni/OpenSSLJavaInterface/libOpenSSLJavaInterface$(JNI_LIB_EXT)
-JNI_TARGETS=jni-cryptopp jni-miracl jni-openssl jni-otextension jni-ntl
+JNI_OPENGARBLE:=src/jni/OpenGarbleJavaInterface/libOpenGarbleJavaInterface$(JNI_LIB_EXT)
+JNI_TARGETS=jni-cryptopp jni-miracl jni-openssl jni-otextension jni-ntl jni-opengarble
 
 # basenames of created jars (apache commons, bouncy castle, scapi)
 #BASENAME_BOUNCYCASTLE:=bcprov-jdk15on-151b18.jar
@@ -167,6 +168,13 @@ compile-openssl:
 	@$(MAKE) -C $(builddir)/OpenSSL install
 	@touch compile-openssl
 
+compile-opengarble:
+	@echo "Compiling the OpenGarble library..."
+	@cp -r lib/OpenGarble $(builddir)/OpenGarble
+	@$(MAKE) -C $(builddir)/OpenGarble
+	@$(MAKE) -C $(builddir)/OpenGarble install
+	@touch compile-opengarble
+
 compile-bouncycastle: $(JAR_BOUNCYCASTLE)
 compile-scapi: $(JAR_SCAPI)
 compile-scripts: $(SCRIPTS)
@@ -177,6 +185,7 @@ jni-miracl: $(JNI_MIRACL)
 jni-otextension: $(JNI_OTEXTENSION)
 jni-ntl: $(JNI_NTL)
 jni-openssl: $(JNI_OPENSSL)
+jni-opengarble: $(JNI_OPENGARBLE)
 
 # jni real targets
 $(JNI_CRYPTOPP): compile-cryptopp
@@ -202,6 +211,11 @@ $(JNI_NTL): compile-ntl
 $(JNI_OPENSSL): compile-openssl
 	@echo "Compiling the OpenSSL jni interface..."
 	@$(MAKE) -C src/jni/OpenSSLJavaInterface
+	@cp $@ assets/
+
+$(JNI_OPENGARBLE): compile-opengarble
+	@echo "Compiling the OpenGarble jni interface..."
+	@$(MAKE) -C src/jni/OpenGarbleJavaInterface
 	@cp $@ assets/
 
 # TODO: for now we avoid re-compiling bouncy castle, since it is very unstable,
@@ -271,6 +285,11 @@ clean-openssl:
 	@rm -rf $(builddir)/OpenSSL
 	@rm -f compile-openssl
 
+clean-opengarble:
+	@echo "Cleaning the opengarble build dir..."
+	@rm -rf $(builddir)/OpenGarble
+	@rm -f compile-opengarble
+
 clean-bouncycastle:
 	@echo "Cleaning the bouncycastle build dir..."
 	@rm -rf $(builddir)/BouncyCastle
@@ -296,6 +315,10 @@ clean-jni-ntl:
 clean-jni-openssl:
 	@echo "Cleaning the OpenSSL jni build dir..."
 	@$(MAKE) -C src/jni/OpenSSLJavaInterface clean
+
+clean-jni-opengarble:
+	@echo "Cleaning the OpenGarble jni build dir..."
+	@$(MAKE) -C src/jni/OpenGarbleJavaInterface clean
 
 clean-jni-assets:
 	@echo "Cleaning the JNI assets..."
