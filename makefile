@@ -67,17 +67,18 @@ export SHARED_LIB_EXT
 export JNI_LIB_EXT
 
 # target names
-CLEAN_TARGETS:=clean-cryptopp clean-miracl clean-miracl-cpp clean-otextension clean-ntl clean-openssl clean-opengarble clean-bouncycastle
-CLEAN_JNI_TARGETS:=clean-jni-cryptopp clean-jni-miracl clean-jni-otextension clean-jni-ntl clean-jni-openssl clean-jni-opengarble clean-jni-assets
+CLEAN_TARGETS:=clean-cryptopp clean-miracl clean-miracl-cpp clean-otextension clean-malotext clean-ntl clean-openssl clean-opengarble clean-bouncycastle
+CLEAN_JNI_TARGETS:=clean-jni-cryptopp clean-jni-miracl clean-jni-otextension clean-jni-malotext clean-jni-ntl clean-jni-openssl clean-jni-opengarble clean-jni-assets
 
 # target names of jni shared libraries
 JNI_CRYPTOPP:=src/jni/CryptoPPJavaInterface/libCryptoPPJavaInterface$(JNI_LIB_EXT)
 JNI_MIRACL:=src/jni/MiraclJavaInterface/libMiraclJavaInterface$(JNI_LIB_EXT)
 JNI_OTEXTENSION:=src/jni/OtExtensionJavaInterface/libOtExtensionJavaInterface$(JNI_LIB_EXT)
+JNI_MALOTEXT:=src/jni/MaliciousOtExtensionJavaInterface/libMaliciousOtExtensionJavaInterface$(JNI_LIB_EXT)
 JNI_NTL:=src/jni/NTLJavaInterface/libNTLJavaInterface$(JNI_LIB_EXT)
 JNI_OPENSSL:=src/jni/OpenSSLJavaInterface/libOpenSSLJavaInterface$(JNI_LIB_EXT)
 JNI_OPENGARBLE:=src/jni/OpenGarbleJavaInterface/libOpenGarbleJavaInterface$(JNI_LIB_EXT)
-JNI_TARGETS=jni-cryptopp jni-miracl jni-openssl jni-otextension jni-ntl jni-opengarble
+JNI_TARGETS=jni-cryptopp jni-miracl jni-openssl jni-otextension jni-malotext jni-ntl #jni-opengarble
 
 # basenames of created jars (apache commons, bouncy castle, scapi)
 #BASENAME_BOUNCYCASTLE:=bcprov-jdk15on-151b18.jar
@@ -103,7 +104,7 @@ INSTALL_DIR=$(libdir)/scapi
 SCRIPTS:=scripts/scapi.sh scripts/scapic.sh
 
 # external libs
-EXTERNAL_LIBS_TARGETS:=compile-cryptopp compile-miracl compile-openssl compile-otextension compile-ntl
+EXTERNAL_LIBS_TARGETS:=compile-cryptopp compile-miracl compile-openssl compile-otextension compile-malotext compile-ntl
 
 ## targets
 all: $(JNI_TARGETS) $(JAR_BOUNCYCASTLE) $(JAR_APACHE_COMMONS) compile-scapi
@@ -150,6 +151,14 @@ compile-otextension: compile-openssl compile-miracl-cpp
 	@$(MAKE) -C $(builddir)/OTExtension CXX=$(CXX) SHARED_LIB_EXT=$(SHARED_LIB_EXT) install
 	@touch compile-otextension
 
+# TODO:
+compile-malotext: compile-openssl compile-miracl-cpp
+	@echo "Compiling the Malicious OtExtension library..."
+	@cp -r lib/MaliciousOTExtension $(builddir)/MaliciousOTExtension
+	@$(MAKE) -C $(builddir)/MaliciousOTExtension CXX=$(CXX)
+	@$(MAKE) -C $(builddir)/MaliciousOTExtension CXX=$(CXX) SHARED_LIB_EXT=$(SHARED_LIB_EXT) install
+	@touch compile-malotext
+
 # TODO: add GMP and GF2X
 compile-ntl:
 	@echo "Compiling the NTL library..."
@@ -183,6 +192,7 @@ compile-scripts: $(SCRIPTS)
 jni-cryptopp: $(JNI_CRYPTOPP)
 jni-miracl: $(JNI_MIRACL)
 jni-otextension: $(JNI_OTEXTENSION)
+jni-malotext: $(JNI_MALOTEXT)
 jni-ntl: $(JNI_NTL)
 jni-openssl: $(JNI_OPENSSL)
 jni-opengarble: $(JNI_OPENGARBLE)
@@ -201,6 +211,11 @@ $(JNI_MIRACL): compile-miracl
 $(JNI_OTEXTENSION): compile-otextension
 	@echo "Compiling the OtExtension jni interface..."
 	@$(MAKE) -C src/jni/OtExtensionJavaInterface CXX=$(CXX)
+	@cp $@ assets/
+
+$(JNI_MALOTEXT): compile-malotext
+	@echo "Compiling the Malicious OtExtension jni interface..."
+	@$(MAKE) -C src/jni/MaliciousOtExtensionJavaInterface CXX=$(CXX)
 	@cp $@ assets/
 
 $(JNI_NTL): compile-ntl
@@ -275,6 +290,11 @@ clean-otextension:
 	@rm -rf $(builddir)/OTExtension
 	@rm -f compile-otextension
 
+clean-malotext:
+	@echo "Cleaning the malicious ot extension build dir..."
+	@rm -rf $(builddir)/MaliciousOTExtension
+	@rm -f compile-malotext
+
 clean-ntl:
 	@echo "Cleaning the ntl build dir..."
 	@rm -rf $(builddir)/NTL
@@ -307,6 +327,10 @@ clean-jni-miracl:
 clean-jni-otextension:
 	@echo "Cleaning the OtExtension jni build dir..."
 	@$(MAKE) -C src/jni/OtExtensionJavaInterface clean
+
+clean-jni-malotext:
+	@echo "Cleaning the Malicious Ot Extension jni build dir..."
+	@$(MAKE) -C src/jni/MaliciousOtExtensionJavaInterface clean
 
 clean-jni-ntl:
 	@echo "Cleaning the NTL jni build dir..."
