@@ -53,18 +53,7 @@ import edu.biu.scapi.generals.Logging;
  */
 public class SSLSocketChannel extends PlainTCPSocketChannel{
 	
-	private SSLSocketFactory ssf; //Used to create the ssl socket.
-	
-	/**
-	 * A constructor that set the state of this channel to not ready.
-	 * @param ssf The socketFactory used to create the ssl socket.
-	 */
-	SSLSocketChannel(SSLSocketFactory ssf){
-		
-		state = State.NOT_INIT;
-		this.ssf = ssf;
-		     
-	}
+	private SSLSocketFactory ssf; //Used to create the ssl sockets.
 	
 	/**
 	 * A constructor that create the socket address according to the given ip and port and set the state of this channel to not ready.
@@ -72,10 +61,9 @@ public class SSLSocketChannel extends PlainTCPSocketChannel{
 	 * @param port other party's port.
 	 * @param ssf The socketFactory used to create the ssl socket.
 	 */
-	SSLSocketChannel(InetAddress ipAddress, int port, SSLSocketFactory ssf) {
+	SSLSocketChannel(InetAddress ipAddress, int port, SSLSocketFactory ssf, boolean checkIdentity, SocketPartyData me) {
 		
-		this(ssf);
-		socketAddress = new InetSocketAddress(ipAddress, port);
+		this(new InetSocketAddress(ipAddress, port), ssf, checkIdentity, me);
 	}
 	
 	/**
@@ -83,21 +71,21 @@ public class SSLSocketChannel extends PlainTCPSocketChannel{
 	 * @param socketAddress other end's InetSocketAddress
 	 * @param ssf The socketFactory used to create the ssl socket.
 	 */
-	SSLSocketChannel(InetSocketAddress socketAddress, SSLSocketFactory ssf) {
+	SSLSocketChannel(InetSocketAddress socketAddress, SSLSocketFactory ssf, boolean checkIdentity, SocketPartyData me) {
 		
-		this(ssf);
-		this.socketAddress = socketAddress;
+		super(socketAddress, checkIdentity, me);
+		this.ssf = ssf;
 	}
 	
+	@Override
 	void connect()  {
-		
 		//try to connect
 		Logging.getLogger().log(Level.INFO, "Trying to connect to " + socketAddress.getAddress() + " on port " + socketAddress.getPort());
 		
 		//create the SSL socket. Cannot reconnect if the function connect fails since it closes the socket.
 		try {
 			sendSocket = ssf.createSocket(socketAddress.getAddress(), socketAddress.getPort());
-		
+			
 			//Set the enables protocol to TLS 1.2.
 			String [] protocols = new String[1];
 			protocols[0] = "TLSv1.2";
@@ -113,15 +101,29 @@ public class SSLSocketChannel extends PlainTCPSocketChannel{
 			((SSLSocket)sendSocket).setUseClientMode(true);
 			((SSLSocket)sendSocket).addHandshakeCompletedListener(new SSLHandshakeCompletedListener(this));
 			
+			//There are cases where there is a need to check the identity of an incoming connection. 
+			//For example, in case of multiparty communication each party should check who is the party that connect.
+			//For that reason, we send the identity of the current application after getting the socket. 
+			if (checkIdentity){
+				sendIdentity();
+			}
+			
 			//Start the handshaking.
 			((SSLSocket)sendSocket).startHandshake();
 			
 		} catch (IOException e) {
+			//This exception can be thrown every time the socket didn't manage to connect. 
+			//This is fine because the channel tries to connect until it succeed.
 			Logging.getLogger().log(Level.FINEST, e.toString());
 		}
 	
 	}
 
+	/**
+	 * Listens until the SSL handshake is complete.
+	 * Then, sets the channel as the receive socket.
+	 * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University (Moriya Farbstein)
+	 */
 	class SSLHandshakeCompletedListener implements HandshakeCompletedListener{
 
 		SSLSocketChannel channel;
@@ -129,13 +131,18 @@ public class SSLSocketChannel extends PlainTCPSocketChannel{
 			this.channel = channel;
 		}
 		
+		/**
+		 * After the send socket has been created, set its outputStream to this ObjectOutputStream and call setReady().
+		 */
 		@Override
 		public void handshakeCompleted(HandshakeCompletedEvent arg0) {
 			
 			Logging.getLogger().log(Level.INFO, "Socket connected");
 			try {
 				channel.outStream = new ObjectOutputStream(arg0.getSocket().getOutputStream());
+				
 			} catch (IOException e) {
+				
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -145,5 +152,6 @@ public class SSLSocketChannel extends PlainTCPSocketChannel{
 			setReady();
 		}
 	}
+	
 		
 }
