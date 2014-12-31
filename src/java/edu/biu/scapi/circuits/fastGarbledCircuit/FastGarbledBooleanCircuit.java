@@ -47,6 +47,8 @@ public interface FastGarbledBooleanCircuit {
 	 * of the corresponding input bits.
 	 * @param ungarbledInputBits An array containing the <b> non garbled</b> value for each input wire of the given party number. 
 	 * @param allInputWireValues The array containing both garbled values (keys) for each input wire.
+	 * The input values are placed one after another, meaning that the input values are in the following format:
+	 *  [k0,0   k0,1    k1,0   k1,1   k2,0   k2,1 ....] (while k0,1 is key 1 of wire 0).
 	 * @param partyNumber The number of party which the inputs belong to.
 	 * @return an array containing a single key of each input wire of the given party.
 	 */
@@ -66,6 +68,8 @@ public interface FastGarbledBooleanCircuit {
      * Alice constructs n circuits and Bob can verify n-1 of them (of his choice) to confirm that they are indeed garbling of the 
      * agreed upon non garbled circuit. In order to verify, Alice has to give Bob both keys for each of the input wires.
      * @param allInputWireValues An array containing both keys for each input wire.
+     * The input values are placed one after another, meaning that the input values are in the following format:
+	 *  [k0,0   k0,1    k1,0   k1,1   k2,0   k2,1 ....] (while k0,1 is key 1 of wire 0).
      * @return {@code true} if this {@code GarbledBooleanCircuit} is a garbling the given keys, {@code false} if it is not.
      */
 	public boolean verify(byte[] allInputWireValues) ;
@@ -75,7 +79,11 @@ public interface FastGarbledBooleanCircuit {
      * The verify function verifies that the translation table matches the resulted output garbled values, while this function does not check it 
      * but return the resulted output garbled values. 
      * @param allInputWireValues An array containing both keys for each input wire.
+     * The input values are placed one after another, meaning that the input values are in the following format:
+	 *  [k0,0   k0,1    k1,0   k1,1   k2,0   k2,1 ....] (while k0,1 is key 1 of wire 0).
      * @param allOutputWireValues An array containing both keys for each output wire. 
+     * The output values are placed one after another, meaning that the output values are in the following format:
+	 *  [k0,0   k0,1    k1,0   k1,1   k2,0   k2,1 ....] (while k0,1 is key 1 of wire 0).
      * When calling the function this array should be empty and will be filled during the process of the function.
      * @return {@code true} if this {@code GarbledBooleanCircuit} is a garbling the given keys, {@code false} if it is not.
      */
@@ -87,6 +95,8 @@ public interface FastGarbledBooleanCircuit {
 	 * 
 	 * The internalVerify function followed by this function are actually executes the whole verify of the circuit.
 	 * @param allOutputWireValues both keys of each output wire.
+	 * The output values are placed one after another, meaning that the output values are in the following format:
+	 *  [k0,0   k0,1    k1,0   k1,1   k2,0   k2,1 ....] (while k0,1 is key 1 of wire 0).
 	 * @return {@code true} if the given keys match the translation table ,{@code false} if not.
 	 */
 	public boolean verifyTranslationTable(byte[] allOutputWireValues);
@@ -104,6 +114,8 @@ public interface FastGarbledBooleanCircuit {
 	 * Then, translates the garbled output obtained from the {@link #compute()} function into a meaningful(i.e. 0-1) output.<p>
 	 * @param garbledOutput An array contains the garbled output. 
 	 * @param allOutputWireValues both values for each output wire.
+	 * The output values are placed one after another, meaning that the output values are in the following format:
+	 *  [k0,0   k0,1    k1,0   k1,1   k2,0   k2,1 ....] (while k0,1 is key 1 of wire 0).
 	 * @return an array contains the output bit for each output wire.
 	 * @throws CheatAttemptException if there is a garbledOutput values that is not one of the two possibilities.
 	 */
