@@ -69,9 +69,13 @@ import edu.biu.scapi.generals.Logging;
  * CommunicationSetup implements the org.apache.commons.exec.TimeoutObserver interface. 
  * This interface supplies a mechanism for notifying classes that a timeout has arrived. 
  * 
+ * This class deprecated since there are new communication implementations. A communication between two parties can be 
+ * found at edu.biu.scapi.twoPartyComm package and communication between multiple parties can be found at 
+ * edu.biu.scapi.multiPartyComm package. 
+ * 
  * @author Cryptography and Computer Security Research Group Department of Computer Science Bar-Ilan University
  */
-
+@Deprecated
 public class CommunicationSetup implements TimeoutObserver{
 	private boolean bTimedOut = false;
 	private boolean enableNagle = false;
