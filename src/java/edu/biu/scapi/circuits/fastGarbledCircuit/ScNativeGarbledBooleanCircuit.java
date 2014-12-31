@@ -142,11 +142,9 @@ public class ScNativeGarbledBooleanCircuit implements FastGarbledBooleanCircuit{
 		allOutputWireValues  = new byte[outputWireIndices.length*SCAPI_NATIVE_KEY_SIZE*2];
 		translationTable = new byte[outputWireIndices.length];
 		
-		//System.out.println("before garble " + System.currentTimeMillis());
 		garble(allInputWireValues, allOutputWireValues, translationTable, seed,garbledCircuitPtr);
 		//PATCH should be removed after jni problems are solved.
 		//temp.getTime();
-		//System.out.println("after garble " + System.currentTimeMillis());
 		
 		FastCircuitCreationValues outputVal = new FastCircuitCreationValues(allInputWireValues, allOutputWireValues, translationTable);
 		
@@ -275,10 +273,6 @@ public class ScNativeGarbledBooleanCircuit implements FastGarbledBooleanCircuit{
 		return translate(garbledCircuitPtr,garbledOutput);
 	}
 	
-
-	public byte[] verifyTranslate(byte[] garbledOutput, byte[] bothOutputKeys) {
-		return verifyTranslate(garbledCircuitPtr,garbledOutput, bothOutputKeys);
-	}
 	/**
 	 * Verifies that the given garbledOutput is valid values according to the given all OutputWireValues. <p>
 	 * Meaning, for each output wire, checks that the garbled wire is one of the two possibilities.
@@ -291,7 +285,7 @@ public class ScNativeGarbledBooleanCircuit implements FastGarbledBooleanCircuit{
 	@Override
 	public byte[] verifiedTranslate(byte[] garbledOutput,
 			byte[] allOutputWireValues) throws CheatAttemptException {
-		return null;
+		return verifyTranslate(garbledCircuitPtr, garbledOutput, allOutputWireValues);
 	}
 	
 	
