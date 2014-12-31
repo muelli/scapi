@@ -18,7 +18,6 @@ import edu.biu.scapi.comm.twoPartyComm.PlainTCPSocketChannel;
 import edu.biu.scapi.comm.twoPartyComm.SSLSocketChannel;
 import edu.biu.scapi.comm.twoPartyComm.SocketPartyData;
 import edu.biu.scapi.comm.twoPartyComm.TwoPartySocketConnector;
-import edu.biu.scapi.exceptions.DuplicatePartyException;
 import edu.biu.scapi.generals.Logging;
 
 /**
@@ -43,10 +42,9 @@ public class SSLSocketMultipartyCommunicationSetup extends SocketMultipartyCommu
 	 * Constructor that gets the data of all parties and the password to the keyStore and trustStore.
 	 * @param parties The data of all the parties.
 	 * @param storePassword The password to the keyStore and trustStore.
-	 * @throws DuplicatePartyException in case there are two parties hat are equal.
 	 * @throws SSLException In case there is a problem during the SSL protocol initialization.
 	 */
-	public SSLSocketMultipartyCommunicationSetup(List<PartyData> parties, String storePass) throws DuplicatePartyException, SSLException {
+	public SSLSocketMultipartyCommunicationSetup(List<PartyData> parties, String storePass) throws SSLException {
 		//Call the other constructor with the default key sotre and trust store names.
 		this(parties, "scapiKeystore.jks", "scapiCacerts.jks", storePass);
 	}
@@ -57,10 +55,9 @@ public class SSLSocketMultipartyCommunicationSetup extends SocketMultipartyCommu
 	 * @param keyStoreName Name of the keyStore file.
 	 * @param trustStoreName Name of the trustStore file.
 	 * @param storePassword The password to the keyStore and trustStore.
-	 * @throws DuplicatePartyException in case there are two parties hat are equal.
 	 * @throws SSLException In case there is a problem during the SSL protocol initialization.
 	 */
-	public SSLSocketMultipartyCommunicationSetup(List<PartyData> parties, String keyStoreName, String trustStoreName, String storePass) throws DuplicatePartyException, SSLException{
+	public SSLSocketMultipartyCommunicationSetup(List<PartyData> parties, String keyStoreName, String trustStoreName, String storePass) throws SSLException{
 		
 		//Creating the SSL Context to get the socket factories from.
 		try {
