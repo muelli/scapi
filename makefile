@@ -264,6 +264,10 @@ install: all clean-scripts compile-scripts
 	install -d $(INSTALL_DIR)
 	install -m 0644 assets/*$(JNI_LIB_EXT) $(INSTALL_DIR)
 	install -m 0644 assets/*.jar $(INSTALL_DIR)
+	install -d $(INSTALL_DIR)/lib
+	install -m 0755 install/lib/libcryptopp.so $(INSTALL_DIR)
+	install -m 0755 install/ssl/lib/libcrypto.so.1.1.0 $(INSTALL_DIR)
+	install -m 0755 install/lib/libOTExtension.so $(INSTALL_DIR)
 	install -d $(bindir)
 	install -m 0755 scripts/scapi.sh $(bindir)/scapi
 	install -m 0755 scripts/scapic.sh $(bindir)/scapic
