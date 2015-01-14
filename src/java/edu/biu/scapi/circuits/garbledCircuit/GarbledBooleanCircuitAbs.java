@@ -84,14 +84,14 @@ abstract class GarbledBooleanCircuitAbs implements GarbledBooleanCircuit{
 	}
 	
 	@Override
- 	public void setGarbledInputFromUngarbledInput(Map<Integer, Byte> ungarbledInput, Map<Integer, SecretKey[]> allInputWireValues) {
+ 	public void setGarbledInputFromUngarbledInput(Map<Integer, Boolean> ungarbledInput, Map<Integer, SecretKey[]> allInputWireValues) {
   		
   		Map<Integer, GarbledWire> inputs = new HashMap<Integer, GarbledWire>();
   		Set<Integer> keys = ungarbledInput.keySet();
   		
   		//For each wireIndex, fill the map with wire index and garbled input.
   		for (Integer wireIndex : keys) {
-  			inputs.put(wireIndex, new GarbledWire(allInputWireValues.get(wireIndex)[ungarbledInput.get(wireIndex)]));
+  			inputs.put(wireIndex, new GarbledWire(allInputWireValues.get(wireIndex)[(ungarbledInput.get(wireIndex) == true) ?   1 : 0]));
   		}
   		setInputs(inputs);
   	}

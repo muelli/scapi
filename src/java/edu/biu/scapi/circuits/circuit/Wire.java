@@ -36,7 +36,7 @@ public class Wire {
 	/**
 	 * The value that this wire carries. It can be set to either 0 or 1
   	 */
-	private byte value;
+	private boolean value;
 
 	/**
 	 * Creates a {@code Wire} and sets it to the specified value.
@@ -48,7 +48,7 @@ public class Wire {
 		if (value < 0 || value > 1) {
 			  throw new IllegalArgumentException("Wire value can only be 0 or 1");
 		} else {
-			this.value = value;
+			this.value = value==1 ? true : false;
 		}
 	}
 
@@ -60,7 +60,7 @@ public class Wire {
 	 * 
 	 * @return the value (0 or 1) that this {@code Wire} is set to.
 	 */
-	public byte getValue() {
+	public boolean getValue() {
 		return value;
 	}
 }

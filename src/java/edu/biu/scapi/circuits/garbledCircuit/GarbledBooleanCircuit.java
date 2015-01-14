@@ -83,7 +83,7 @@ public interface GarbledBooleanCircuit {
 	 * @param ungarbledInput A map containing the {@code GarbledWire} indices and <b> non garbled</b> value for that index. 
 	 * @param allInputWireValues The map containing both garbled values for each input wire.
 	 */
-	public void setGarbledInputFromUngarbledInput(Map<Integer, Byte> ungarbledInput, Map<Integer, SecretKey[]> allInputWireValues) ;
+	public void setGarbledInputFromUngarbledInput(Map<Integer, Boolean> ungarbledInput, Map<Integer, SecretKey[]> allInputWireValues) ;
  
 	/**
 	 * This method computes the circuit if the input has been set. <p>
